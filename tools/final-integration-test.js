@@ -15,10 +15,10 @@ const https = require('https');
 // Configuration
 const isProduction = process.argv.includes('--production');
 const API_BASE = isProduction 
-  ? 'https://api.ngurrapathways.com.au'
+  ? 'https://api.ngurrapathways.life'
   : 'http://localhost:3333';
 const WEB_BASE = isProduction
-  ? 'https://ngurrapathways.com.au'
+  ? 'https://ngurrapathways.life'
   : 'http://localhost:3000';
 
 // Colors for terminal output
@@ -258,7 +258,7 @@ const tests = {
     try {
       const res = await request(`${API_BASE}/health`, {
         headers: {
-          'Origin': 'https://ngurrapathways.com.au',
+          'Origin': 'https://ngurrapathways.life',
         },
       });
 

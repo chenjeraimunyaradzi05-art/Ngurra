@@ -48,7 +48,7 @@ const popularSearches = [
 const quickResults: SearchResult[] = [
   { id: '1', type: 'job', title: 'Indigenous Community Liaison Officer', subtitle: 'Rio Tinto • Perth, WA', href: '/jobs/indigenous-community-liaison-officer' },
   { id: '2', type: 'job', title: 'First Nations Software Developer', subtitle: 'Atlassian • Sydney, NSW', href: '/jobs/first-nations-software-developer' },
-  { id: '3', type: 'company', title: 'BHP', subtitle: 'Mining & Resources', href: '/employers/bhp' },
+  { id: '3', type: 'company', title: 'BHP', subtitle: 'Mining & Resources', href: '/business/bhp' },
   { id: '4', type: 'course', title: 'Certificate IV in Business', subtitle: 'TAFE NSW • Online', href: '/courses/cert-iv-business' },
   { id: '5', type: 'mentor', title: 'Sarah Thompson', subtitle: 'Senior Indigenous Advisor', href: '/mentorship/mentors/sarah-thompson' },
 ];
@@ -347,7 +347,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
               <Link href="/jobs" onClick={onClose} className="text-xs text-blue-500 hover:text-blue-600">
                 Browse Jobs
               </Link>
-              <Link href="/employers" onClick={onClose} className="text-xs text-blue-500 hover:text-blue-600">
+              <Link href="/business" onClick={onClose} className="text-xs text-blue-500 hover:text-blue-600">
                 Companies
               </Link>
               <Link href="/courses" onClick={onClose} className="text-xs text-blue-500 hover:text-blue-600">

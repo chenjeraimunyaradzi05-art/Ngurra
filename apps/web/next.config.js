@@ -91,8 +91,8 @@ const csp = Object.entries(cspDirectives)
   .join(' ');
 
 const nextConfig = {
-  // Disable output file tracing to fix Netlify build error with middleware.js.nft.json
-  outputFileTracing: false,
+  // Configure monorepo root for output file tracing
+  outputFileTracingRoot: path.resolve(__dirname, '../../'),
 
   // Configure Turbopack root to the monorepo root
   turbopack: {

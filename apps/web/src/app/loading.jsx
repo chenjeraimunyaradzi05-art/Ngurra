@@ -6,17 +6,17 @@ export default function Loading() {
         <div className="relative w-14 h-14">
           {/* Outer ring - gold */}
           <div 
-            className="absolute inset-0 rounded-full animate-spin border-3 border-transparent border-t-yellow-400"
+            className="absolute inset-0 rounded-full animate-spin border-[3px] border-transparent border-t-yellow-400"
             style={{ animationDuration: '1.5s' }}
           />
           {/* Middle ring - emerald */}
           <div 
-            className="absolute inset-1 rounded-full animate-spin border-3 border-transparent border-t-emerald-400"
+            className="absolute inset-1 rounded-full animate-spin border-[3px] border-transparent border-t-emerald-400"
             style={{ animationDuration: '1s', animationDirection: 'reverse' }}
           />
           {/* Inner ring - rose */}
           <div 
-            className="absolute inset-2 rounded-full animate-spin border-3 border-transparent border-t-rose-400"
+            className="absolute inset-2 rounded-full animate-spin border-[3px] border-transparent border-t-rose-400"
             style={{ animationDuration: '0.75s' }}
           />
           {/* Center gem */}
@@ -33,7 +33,7 @@ export default function Loading() {
           <p className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-emerald-400 to-rose-400 animate-pulse">
             Loading...
           </p>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-400 dark:text-slate-500">
             Preparing your experience
           </p>
         </div>

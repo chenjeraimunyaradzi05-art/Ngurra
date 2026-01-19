@@ -185,7 +185,7 @@ async function handleInvoicePaymentFailed(invoice) {
             <p>We were unable to process your subscription payment of <strong>${amountFormatted}</strong>.</p>
             <p>To avoid service interruption, please update your payment method:</p>
             <p style="margin: 24px 0;">
-              <a href="${invoice.hosted_invoice_url || 'https://ngurrapathways.com.au/company/billing'}" 
+              <a href="${invoice.hosted_invoice_url || 'https://ngurrapathways.life/company/billing'}" 
                  style="background: #6B4C9A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
                 Update Payment Method
               </a>
@@ -199,7 +199,7 @@ async function handleInvoicePaymentFailed(invoice) {
             </p>
           </div>
         `,
-        text: `Payment Failed\n\nWe were unable to process your subscription payment of ${amountFormatted}.\n\nPlease update your payment method at: ${invoice.hosted_invoice_url || 'https://ngurrapathways.com.au/company/billing'}\n\nNgurra Pathways`
+        text: `Payment Failed\n\nWe were unable to process your subscription payment of ${amountFormatted}.\n\nPlease update your payment method at: ${invoice.hosted_invoice_url || 'https://ngurrapathways.life/company/billing'}\n\nNgurra Pathways`
       });
       console.log(`Payment failed email sent to ${user.email}`);
     }

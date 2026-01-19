@@ -79,14 +79,8 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Cache pnpm store for faster builds
-[[plugins]]
-  package = "netlify-plugin-cache"
-  [plugins.inputs]
-    paths = ["node_modules/.pnpm-store", ".pnpm-store", "apps/web/.next/cache"]
+# Note: netlify-plugin-cache removed - Next.js plugin handles caching automatically
 
-# =============================================================================
-# Headers for Security
 # =============================================================================
 # Headers for Security
 # =============================================================================

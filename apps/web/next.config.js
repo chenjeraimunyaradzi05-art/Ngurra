@@ -44,15 +44,15 @@ const cspDirectives = {
     'https://res.cloudinary.com',
     'https://images.unsplash.com',
     'https://logo.clearbit.com',
-    'https://*.ngurrapathways.com.au',
+    'https://*.ngurrapathways.life',
     'https://avatars.githubusercontent.com', // GitHub avatars
     'https://lh3.googleusercontent.com', // Google avatars
   ],
   'connect-src': [
     "'self'",
-    'https://*.ngurrapathways.com.au',
+    'https://*.ngurrapathways.life',
     'https://api.stripe.com',
-    'wss://*.ngurrapathways.com.au', // WebSocket connections
+    'wss://*.ngurrapathways.life', // WebSocket connections
     'https://meet.jit.si',
     ...(isProduction
       ? []
@@ -91,6 +91,9 @@ const csp = Object.entries(cspDirectives)
   .join(' ');
 
 const nextConfig = {
+  // Disable output file tracing to fix Netlify build error with middleware.js.nft.json
+  outputFileTracing: false,
+
   // Configure Turbopack root to the monorepo root
   turbopack: {
     root: path.resolve(__dirname, '../..'),
@@ -117,7 +120,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.ngurrapathways.com.au',
+        hostname: '**.ngurrapathways.life',
       },
       {
         protocol: 'https',

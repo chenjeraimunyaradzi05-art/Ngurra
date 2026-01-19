@@ -1,0 +1,4 @@
+{
+  "trustedPrefixes": ["update/snapshots-"],
+  "trustedAuthors": ["github-actions[bot]", "github-actions"]
+}

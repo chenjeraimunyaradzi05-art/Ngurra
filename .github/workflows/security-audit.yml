@@ -1,0 +1,200 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run weekly on Monday at 9am UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --json > audit-results.json || true
+
+      - name: Parse audit results
+        id: audit
+        run: |
+          HIGH_COUNT=$(cat audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL_COUNT=$(cat audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+          echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+
+      - name: Fail on critical vulnerabilities
+        if: steps.audit.outputs.critical > 0
+        run: |
+          echo "❌ Found ${{ steps.audit.outputs.critical }} critical vulnerabilities"
+          exit 1
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-results
+          path: audit-results.json
+
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+
+  secret-scanning:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check licenses
+        run: npx license-checker --production --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;CC0-1.0;Unlicense'
+
+  owasp-zap:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ngurra
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: ngurra_security
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup database
+        run: |
+          cd apps/api
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://ngurra:test_password@localhost:5432/ngurra_security
+          DEV_JWT_SECRET: test-jwt-secret-for-security-scan
+          NODE_ENV: test
+
+      - name: Start API server
+        run: |
+          cd apps/api
+          npm run start &
+          sleep 15
+        env:
+          DATABASE_URL: postgresql://ngurra:test_password@localhost:5432/ngurra_security
+          DEV_JWT_SECRET: test-jwt-secret-for-security-scan
+          PORT: 3001
+          NODE_ENV: test
+
+      - name: Run OWASP ZAP scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:3001'
+          rules_file_name: '.zap-rules.tsv'
+          cmd_options: '-a'
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owasp-zap-report
+          path: report_html.html
+
+  notify-results:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [dependency-audit, codeql-analysis, secret-scanning]
+    if: always()
+    
+    steps:
+      - name: Send notification
+        uses: slackapi/slack-github-action@v1.24.0
+        if: failure()
+        with:
+          payload: |
+            {
+              "text": "⚠️ Security audit found issues. Please review: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Pre-commit hook for Ngurra Pathways
+# Runs lint-staged to check and fix code before committing
+
+# Run lint-staged
+npx lint-staged
+
+# If lint-staged fails, abort the commit
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Pre-commit checks failed. Please fix the errors above."
+  echo "   Run 'npm run lint' to see all issues."
+  echo ""
+  exit 1
+fi

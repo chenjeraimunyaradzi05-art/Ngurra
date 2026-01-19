@@ -1,0 +1,136 @@
+# Alertmanager Configuration for Ngurra Pathways
+#
+# Routes alerts to appropriate channels based on severity and service.
+#
+# NOTE: Replace placeholder URLs with actual values before production deployment:
+# - SLACK_WEBHOOK_URL: Get from Slack App settings
+# - PAGERDUTY_SERVICE_KEY: Get from PagerDuty integration
+# - SENDGRID_API_KEY: Get from SendGrid account
+
+global:
+  # Default SMTP settings
+  smtp_smarthost: 'smtp.sendgrid.net:587'
+  smtp_from: 'alerts@ngurrapathways.com.au'
+  smtp_auth_username: 'apikey'
+  smtp_auth_password: 'SG.placeholder-replace-with-actual-key'
+  
+  # Slack webhook - REPLACE with actual webhook URL
+  slack_api_url: 'https://hooks.slack.com/services/PLACEHOLDER/REPLACE/WITHACTUALURL'
+  
+  # Timeouts
+  resolve_timeout: 5m
+
+# Inhibition rules to prevent alert storms
+inhibit_rules:
+  # If a critical alert is firing, suppress warnings for the same service
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['service', 'instance']
+
+# Alert routing
+route:
+  # Default receiver
+  receiver: 'slack-notifications'
+  
+  # Group by service and alertname
+  group_by: ['alertname', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  
+  # Child routes for specific handling
+  routes:
+    # Critical alerts go to PagerDuty
+    - match:
+        severity: critical
+      receiver: 'pagerduty-critical'
+      continue: true  # Also send to Slack
+    
+    # Security alerts go to security channel
+    - match:
+        service: security
+      receiver: 'slack-security'
+    
+    # Database alerts go to database team
+    - match:
+        service: database
+      receiver: 'slack-database'
+    
+    # Business metric alerts go to product team
+    - match:
+        service: business
+      receiver: 'slack-product'
+
+# Receivers configuration
+receivers:
+  # Default Slack channel
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#alerts-platform'
+        username: 'Ngurra AlertBot'
+        icon_emoji: ':warning:'
+        send_resolved: true
+        title: '{{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: '{{ template "grafana.url" . }}'
+          - type: button
+            text: 'Runbook'
+            url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+
+  # PagerDuty for critical alerts - REPLACE with actual service key
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - service_key: 'placeholder-replace-with-pagerduty-key'
+        send_resolved: true
+        description: '{{ template "pagerduty.description" . }}'
+        details:
+          firing: '{{ template "pagerduty.firing" . }}'
+          num_firing: '{{ .Alerts.Firing | len }}'
+          num_resolved: '{{ .Alerts.Resolved | len }}'
+
+  # Security team Slack channel
+  - name: 'slack-security'
+    slack_configs:
+      - channel: '#security-incidents'
+        username: 'Security Alert'
+        icon_emoji: ':shield:'
+        send_resolved: true
+        title: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.text" . }}'
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+
+  # Database team Slack channel
+  - name: 'slack-database'
+    slack_configs:
+      - channel: '#alerts-database'
+        username: 'Database Alert'
+        icon_emoji: ':floppy_disk:'
+        send_resolved: true
+        title: '🗄️ Database Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.text" . }}'
+
+  # Product team Slack channel (for business metrics)
+  - name: 'slack-product'
+    slack_configs:
+      - channel: '#product-metrics'
+        username: 'Metrics Bot'
+        icon_emoji: ':chart_with_upwards_trend:'
+        send_resolved: true
+        title: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.text" . }}'
+
+  # Email fallback (for when Slack is down)
+  - name: 'email-fallback'
+    email_configs:
+      - to: 'platform-oncall@ngurrapathways.com.au'
+        send_resolved: true
+        html: '{{ template "email.html" . }}'
+
+# Templates for alert formatting
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'

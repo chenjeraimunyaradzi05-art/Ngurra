@@ -1,0 +1,62 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env", ".env.local"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": ["DATABASE_URL", "NEXT_PUBLIC_API_URL"]
+    },
+    "build:docker": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "cache": false
+    },
+    "lint": {
+      "outputs": [],
+      "cache": true
+    },
+    "lint:fix": {
+      "outputs": [],
+      "cache": false
+    },
+    "typecheck": {
+      "outputs": [],
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "cache": true,
+      "dependsOn": ["build"]
+    },
+    "test:e2e": {
+      "outputs": ["test-results/**", "playwright-report/**"],
+      "cache": false,
+      "dependsOn": ["build"]
+    },
+    "test:unit": {
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:generate": {
+      "outputs": ["node_modules/.prisma/**"],
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false,
+      "dependsOn": ["db:migrate"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

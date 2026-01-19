@@ -1,0 +1,80 @@
+name: E2E — Playwright tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL_SQLITE: file:./dev_test.db
+      API_URL: http://localhost:3333
+      E2E_BASE_URL: http://localhost:3000
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache npm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-store-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-store-${{ runner.os }}-
+
+      - name: Build API and web
+        run: |
+          npm --prefix apps/api run build
+          npm --prefix apps/web run build
+
+      - name: Prepare database & seed
+        working-directory: ./apps/api
+        run: |
+          npx prisma db push --accept-data-loss
+          npm run seed
+
+      - name: Start API server
+        run: |
+          npm --prefix apps/api run start &> api.log &
+          # wait until API is healthy
+          for i in {1..30}; do if curl -sSf http://localhost:3333/ >/dev/null 2>&1; then break; fi; sleep 1; done
+
+      - name: Start Web server
+        run: |
+          npm --prefix apps/web run start &> web.log &
+          for i in {1..30}; do if curl -sSf http://localhost:3000/ >/dev/null 2>&1; then break; fi; sleep 1; done
+
+      - name: Install Playwright browsers
+        working-directory: ./apps/web
+        run: npm run e2e:install
+
+      - name: Run Playwright E2E tests
+        working-directory: ./apps/web
+        run: npm run test:e2e:ci
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: |
+            apps/web/test-results
+            apps/web/playwright-report
+            apps/web/tests/**-snapshots
+            api.log
+            web.log
+            apps/web/test-results/html

@@ -86,7 +86,7 @@ jobs:
 
       - name: Create PR for snapshot changes
         if: steps.commit.outputs.branch != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           BRANCH: ${{ steps.commit.outputs.branch }}
         with:
@@ -108,7 +108,7 @@ jobs:
             }
       - name: Auto-approve and merge snapshot PR (trusted flow)
         if: steps.commit.outputs.branch != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           BRANCH: ${{ steps.commit.outputs.branch }}
         with:

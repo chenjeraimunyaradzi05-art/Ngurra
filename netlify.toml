@@ -1,0 +1,146 @@
+[build]
+  base      = "apps/web"
+  command   = "npm install && npm run build"
+  publish   = ".next"
+  functions = "../netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Set in Netlify UI: JWT_SECRET, DATABASE_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+  # Email: SENDGRID_API_KEY, SENDGRID_FROM or AWS SES keys
+  # Rate limiting: RATE_LIMIT_SECRET, AI_RATE_LIMIT_PER_MINUTE
+  # OAuth: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET
+  # Auth: NEXTAUTH_SECRET
+
+# =============================================================================
+# Production Context (main/master branch)
+# =============================================================================
+[context.production]
+  base    = "apps/web"
+  command = "npm install && npm run build"
+
+[context.production.environment]
+  NEXT_PUBLIC_API_URL = "https://api.gimbi.com.au"
+  NEXT_PUBLIC_SOCKET_URL = "https://api.gimbi.com.au"
+  NEXTAUTH_URL = "https://ngurrapathways.com.au"
+  NODE_ENV = "production"
+
+# =============================================================================
+# Staging Context (staging branch)
+# =============================================================================
+[context.staging]
+  base    = "apps/web"
+  command = "npm install && npm run build"
+
+[context.staging.environment]
+  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
+  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
+  NEXTAUTH_URL = "https://staging.ngurrapathways.com.au"
+  NODE_ENV = "staging"
+
+# =============================================================================
+# Deploy Preview Context (PR branches)
+# =============================================================================
+[context.deploy-preview]
+  base    = "apps/web"
+  command = "npm install && npm run build"
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
+  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
+  NEXTAUTH_URL = "https://deploy-preview-<id>--ngurrapathways.netlify.app"
+  NODE_ENV = "preview"
+
+# =============================================================================
+# Branch Deploy Context (feature branches)
+# =============================================================================
+[context.branch-deploy]
+  base    = "apps/web"
+  command = "npm install && npm run build"
+
+[context.branch-deploy.environment]
+  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
+  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
+  NEXTAUTH_URL = "https://branch-<name>--ngurrapathways.netlify.app"
+  NODE_ENV = "preview"
+
+# =============================================================================
+# Development
+# =============================================================================
+[dev]
+  command   = "npm run dev --prefix apps/web"
+  functions = "netlify/functions"
+  port      = 8888
+  autoLaunch = false
+
+# =============================================================================
+# Plugins
+# =============================================================================
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Cache pnpm store for faster builds
+[[plugins]]
+  package = "netlify-plugin-cache"
+  [plugins.inputs]
+    paths = ["node_modules/.pnpm-store", ".pnpm-store", "apps/web/.next/cache"]
+
+# =============================================================================
+# Headers for Security
+# =============================================================================
+# Headers for Security
+# =============================================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
+
+# Static assets caching
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    # SECURITY: Restrict CORS to specific trusted domains (do not use wildcard "*")
+    Access-Control-Allow-Origin = "https://ngurrapathways.com.au"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Authorization, Content-Type"
+    Access-Control-Allow-Credentials = "true"
+
+# =============================================================================
+# Redirects
+# =============================================================================
+# Health check endpoints
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+# WWW to non-WWW redirect
+[[redirects]]
+  from = "https://www.ngurrapathways.com.au/*"
+  to = "https://ngurrapathways.com.au/:splat"
+  status = 301
+  force = true
+
+# Trailing slash normalization
+[[redirects]]
+  from = "/*/"
+  to = "/:splat"
+  status = 301

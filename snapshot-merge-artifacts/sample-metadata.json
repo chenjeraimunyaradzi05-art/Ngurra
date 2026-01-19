@@ -1,0 +1,24 @@
+{
+  "pr_number": 42,
+  "merge_sha": "7862c072ec74",
+  "short_sha": "684fb2",
+  "run_url": "https://github.com/your-org/your-repo/actions/runs/1234567890",
+  "merged_by": "local:dry-run",
+  "files_changed": [
+    "apps/web/tests/snapshots/example-1.png",
+    "apps/web/tests/snapshots/example-2.png"
+  ],
+  "timestamp": "2025-12-31T14:24:24.691Z",
+  "preview_urls": [
+    "https://via.placeholder.com/1200x630.png?text=preview-1"
+  ],
+  "thumbnail_urls": {
+    "small": [
+      "https://via.placeholder.com/320x180.png?text=thumb-1-small"
+    ],
+    "medium": [
+      "https://via.placeholder.com/640x360.png?text=thumb-1-medium"
+    ]
+  },
+  "preview_type": "public"
+}

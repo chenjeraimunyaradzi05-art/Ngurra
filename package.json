@@ -1,0 +1,110 @@
+{
+  "name": "gimbi-serverless-demo",
+  "version": "1.0.0",
+  "description": "Serverless function demos for the Gimbi careers site (Netlify-style)",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "npm run test:all",
+    "build:api": "npm --prefix apps/api run build",
+    "build:web": "npm --prefix apps/web run build",
+    "build:all": "npm run build:api && npm run build:web",
+    "test:api": "npm --prefix apps/api test",
+    "test:web": "npm --prefix apps/web test",
+    "test:all": "npm run test:api && npm run test:web",
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "start:api": "npm --prefix apps/api start",
+    "start:web": "npm --prefix apps/web start",
+    "a11y": "node tools/audit-a11y.js",
+    "dev:ai": "node tools/prototype-ai-server.js",
+    "optimize:photos": "node tools/optimize-photo-uploads.js",
+    "optimize:img": "node tools/optimize-images.js",
+    "dev": "npx serve -l 8080 .",
+    "lint": "npm --prefix apps/web run lint",
+    "format": "npm --prefix apps/web run format",
+    "format:write": "npm --prefix apps/web run format:write",
+    "ci:e2e": "npm --prefix apps/api run build && npm --prefix apps/web run build && concurrently -k -s first -n api,web,e2e \"npm --prefix apps/api run start\" \"npm --prefix apps/web run start\" \"wait-on http://localhost:3333/health http://localhost:3000 && npm --prefix apps/web run e2e:install && npm --prefix apps/web run test:e2e\"",
+    "generate:sample-metadata": "node tools/create-sample-metadata.js",
+    "generate:sample-metadata:1": "node tools/create-sample-metadata.js --count 1",
+    "generate:sample-metadata:3": "node tools/create-sample-metadata.js --count 3",
+    "generate:sample-metadata:random": "node tools/create-sample-metadata.js --min 1 --max 6",
+    "generate:sample-metadata:signed": "node tools/create-sample-metadata.js --signed",
+    "generate:sample-metadata:signed:3": "node tools/create-sample-metadata.js --signed --count 3",
+    "validate:docs": "node tools/validate-snapshot-ci-md.js",
+    "send-test:webhook": "node tools/send-test-webhook.js",
+    "send-test:webhook:staging": "node tools/send-test-webhook.js --staging",
+    "send-test:webhook:staging:confirm": "node tools/send-test-webhook.js --staging --confirm",
+    "ci:trigger:dryrun": "pwsh -File tools/trigger-ci-dryrun.ps1",
+    "ci:fetch-artifact": "pwsh -File tools/fetch-last-artifact.ps1",
+    "ci:local-dryrun": "node tools/local-dryrun.js",
+    "ci:local-dryrun:staging": "node tools/local-dryrun.js --staging",
+    "validate:ci-tools": "npm run validate:docs && npm run generate:sample-metadata:random && npm run ci:local-dryrun -- --count 2 --platform all && npm run ci:fetch-artifact -- --repo $npm_package_repository_url --dry-run",
+    "test:tools": "node tools/self-check.js",
+    "test:tools:ci": "node tools/test-tools.js",
+    "prepare": "husky",
+    "typecheck": "turbo run typecheck",
+    "security:audit": "node scripts/security-audit.js",
+    "security:audit:ci": "node scripts/security-audit.js --ci",
+    "security:check": "npm audit --audit-level=high && npm --prefix apps/api run audit",
+    "db:up": "docker-compose -f docker-compose.dev.yml up -d postgres redis",
+    "db:down": "docker-compose -f docker-compose.dev.yml down",
+    "db:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "db:migrate": "npm --prefix apps/api run db:migrate",
+    "db:seed": "npm --prefix apps/api run seed",
+    "db:studio": "npm --prefix apps/api run db:studio",
+    "livekit:start": "pwsh -File scripts/dev-livekit.ps1 start",
+    "livekit:stop": "pwsh -File scripts/dev-livekit.ps1 stop",
+    "livekit:rm": "pwsh -File scripts/dev-livekit.ps1 remove",
+    "livekit:cleanup": "pwsh -File scripts/dev-livekit.ps1 cleanup",
+    "livekit:status": "pwsh -File scripts/dev-livekit.ps1 status",
+    "livekit:logs": "pwsh -File scripts/dev-livekit.ps1 logs",
+    "clean": "turbo run clean && rimraf node_modules/.cache"
+  },
+  "bin": {
+    "send-test-webhook": "tools/send-test-webhook.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1410.0",
+    "jsonwebtoken": "^9.0.0",
+    "lucide-react": "^0.562.0",
+    "node-fetch": "^2.6.12",
+    "rate-limit-redis": "^4.3.1",
+    "sharp": "^0.34.5"
+  },
+  "optionalDependencies": {
+    "@sendgrid/mail": "^7.8.0"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.3",
+    "axe-core": "^4.8.0",
+    "cors": "^2.8.5",
+    "eslint": "^9.39.2",
+    "express": "^4.18.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "minimist": "^1.2.8",
+    "prettier": "^3.7.4",
+    "puppeteer": "^21.4.1",
+    "concurrently": "^9.2.1",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.7.2",
+    "wait-on": "^8.0.4",
+    "ws": "^8.13.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.prisma": [
+      "prettier --write"
+    ]
+  }
+}

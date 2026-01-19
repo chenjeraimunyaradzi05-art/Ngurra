@@ -1,0 +1,516 @@
+
+Scanning C:\Users\mutir\OneDrive\Desktop\Gimbi...
+
+Scanning apps/api/src...
+Scanning apps/web/src...
+Scanning netlify/functions...
+Scanning tools...
+
+========================================
+       SECURITY AUDIT REPORT
+========================================
+
+Summary:
+  CRITICAL: 0
+  HIGH:     1
+  MEDIUM:   6
+  LOW:      0
+  INFO:     116
+  TOTAL:    123
+
+Findings:
+
+­ƒƒá [HIGH] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\auth.test.ts:38
+   Possible hardcoded secret detected
+   > process.env.JWT_SECRET = 'test-secret-key-at-least-32-characters-long';
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\experiments.ts:26
+   MD5 hash usage - use stronger algorithm like SHA-256
+   > .createHash('md5')
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\experiments.ts:120
+   MD5 hash usage - use stronger algorithm like SHA-256
+   > .createHash('md5')
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\app\dev\notifications\page.jsx:37
+   dangerouslySetInnerHTML usage - ensure content is sanitized
+   > <script dangerouslySetInnerHTML={{ __html: `
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\app\jobs\[id]\page.jsx:187
+   dangerouslySetInnerHTML usage - ensure content is sanitized
+   > <div className="prose prose-invert prose-sm max-w-none text-slate-200" dangerous
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\app\jobs\[id]\[slug]\page.jsx:87
+   dangerouslySetInnerHTML usage - ensure content is sanitized
+   > <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description || ''
+
+­ƒƒí [MEDIUM] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\i18n.tsx:249
+   dangerouslySetInnerHTML usage - ensure content is sanitized
+   > return <span dangerouslySetInnerHTML={{ __html: translated }} />;
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\app.ts:19
+   Console logging in code - consider using structured logger
+   > console.log('Ô£à Environment validation passed');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:279
+   Console logging in code - consider using structured logger
+   > console.log('Running cleanup-expired-sessions');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:285
+   Console logging in code - consider using structured logger
+   > console.log('Running cleanup-expired-tokens');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:290
+   Console logging in code - consider using structured logger
+   > console.log('Running cleanup-old-audit-logs');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:295
+   Console logging in code - consider using structured logger
+   > console.log('Running cleanup-orphaned-files');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:300
+   Console logging in code - consider using structured logger
+   > console.log('Running send-daily-job-digest');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:305
+   Console logging in code - consider using structured logger
+   > console.log('Running send-application-reminders');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:310
+   Console logging in code - consider using structured logger
+   > console.log('Running send-mentorship-reminders');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:315
+   Console logging in code - consider using structured logger
+   > console.log('Running generate-daily-analytics');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:320
+   Console logging in code - consider using structured logger
+   > console.log('Running generate-weekly-reports');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:325
+   Console logging in code - consider using structured logger
+   > console.log('Running expire-old-job-listings');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:330
+   Console logging in code - consider using structured logger
+   > console.log('Running index-new-jobs');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\jobs\scheduled.ts:335
+   Console logging in code - consider using structured logger
+   > console.log('Running health-check-external-services');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\audit.ts:161
+   Console logging in code - consider using structured logger
+   > console.log('[AUDIT]', JSON.stringify(event, null, 2));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\audit.ts:216
+   Console logging in code - consider using structured logger
+   > console.log(JSON.stringify({
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\audit.ts:242
+   Console logging in code - consider using structured logger
+   > console.log('Audit query:', filters);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\audit.ts:253
+   Console logging in code - consider using structured logger
+   > console.log(`Cleaning up audit logs older than ${cutoffDate.toISOString()}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\circuitBreaker.ts:135
+   Console logging in code - consider using structured logger
+   > console.log(`Circuit breaker [${this.name}] state: ${oldState} -> ${newState}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\course-sync.ts:103
+   Console logging in code - consider using structured logger
+   > console.log('[Course Sync] Starting course synchronization...');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\course-sync.ts:110
+   Console logging in code - consider using structured logger
+   > console.log(`[Course Sync] Fetching courses from ${provider.name}...`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\course-sync.ts:135
+   Console logging in code - consider using structured logger
+   > console.log(`[Course Sync] Synced ${courses.length} courses from ${provider.name
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\course-sync.ts:143
+   Console logging in code - consider using structured logger
+   > console.log(`[Course Sync] Completed in ${duration}ms. Synced: ${totalSynced}, E
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\course-sync.ts:164
+   Console logging in code - consider using structured logger
+   > console.log(`[Course Sync] Marked ${result.count} stale courses as inactive`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\experiments.ts:69
+   Console logging in code - consider using structured logger
+   > console.log(`[Experiments] Cache refreshed with ${experiments.length} active exp
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\experiments.ts:221
+   Console logging in code - consider using structured logger
+   > console.log(`[Experiments] Conversion tracked: ${experimentName}/${eventName} fo
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\logger.ts:126
+   Console logging in code - consider using structured logger
+   > console.log(output);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\logging.ts:222
+   Console logging in code - consider using structured logger
+   > console.log(prettyPrint(entry));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\logging.ts:224
+   Console logging in code - consider using structured logger
+   > console.log(JSON.stringify(entry));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:28
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Firebase Cloud Messaging initialized');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:102
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Mock notification (FCM not configured):', { token, notificat
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:154
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Mock batch notification:', { count: tokens.length, notificat
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:226
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Mock topic notification:', { topic, notification });
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:259
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Mock subscribe:', { token, topic });
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\pushNotifications.ts:280
+   Console logging in code - consider using structured logger
+   > console.log('[Push] Mock unsubscribe:', { token, topic });
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\redisCache.ts:13
+   Console logging in code - consider using structured logger
+   > console.log('[Cache] Redis URL not configured, using in-memory cache');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\redisCache.ts:32
+   Console logging in code - consider using structured logger
+   > console.log('[Cache] Redis connected');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\redisCache.ts:35
+   Console logging in code - consider using structured logger
+   > console.log('[Cache] Redis initialized');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\redisCache.ts:39
+   Console logging in code - consider using structured logger
+   > console.log('[Cache] Falling back to in-memory cache');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\sessionRecording.ts:338
+   Console logging in code - consider using structured logger
+   > console.log(`[S3] Would upload ${filePath} to bucket ${S3_BUCKET}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\sessionRecording.ts:403
+   Console logging in code - consider using structured logger
+   > console.log(`[Cleanup] Expired recording: ${recording.id}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\sms.ts:29
+   Console logging in code - consider using structured logger
+   > console.log(`[SMS Capture] To: ${to}, Message: ${message.substring(0, 50)}...`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\sms.ts:47
+   Console logging in code - consider using structured logger
+   > console.log(`[SMS] Sent to ${to}: ${result.sid}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\stripeConnect.ts:47
+   Console logging in code - consider using structured logger
+   > console.log('[StripeConnect] Mock account creation:', options);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\stripeConnect.ts:98
+   Console logging in code - consider using structured logger
+   > console.log('[StripeConnect] Mock onboarding link for:', accountId);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\stripeConnect.ts:124
+   Console logging in code - consider using structured logger
+   > console.log('[StripeConnect] Mock dashboard link for:', accountId);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\lib\stripeConnect.ts:184
+   Console logging in code - consider using structured logger
+   > console.log('[StripeConnect] Mock transfer:', options);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\middleware\rateLimitRedis.ts:77
+   Console logging in code - consider using structured logger
+   > console.log('[RateLimit] Redis URL not configured, using in-memory store');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\middleware\rateLimitRedis.ts:94
+   Console logging in code - consider using structured logger
+   > console.log('[RateLimit] Redis rate limiter initialized');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\middleware\requestLogger.ts:78
+   Console logging in code - consider using structured logger
+   > console.log(JSON.stringify({
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\middleware\requestLogger.ts:99
+   Console logging in code - consider using structured logger
+   > console.log(JSON.stringify({
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\middleware\requestLogger.ts:147
+   Console logging in code - consider using structured logger
+   > console.log(
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\advertising.ts:51
+   Console logging in code - consider using structured logger
+   > console.log('Advertising inquiry received:', {
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\advertising.ts:84
+   Console logging in code - consider using structured logger
+   > console.log('Advertising notification sent to partnerships team');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\advertising.ts:105
+   Console logging in code - consider using structured logger
+   > console.log('Advertising confirmation sent to:', email);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\contact.ts:61
+   Console logging in code - consider using structured logger
+   > console.log('Contact notification sent to support team');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\contact.ts:81
+   Console logging in code - consider using structured logger
+   > console.log('Contact confirmation sent to:', email);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\data-export.ts:259
+   Console logging in code - consider using structured logger
+   > console.log(`[DataExport] Export ${exportId} completed`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\referrals.ts:332
+   Console logging in code - consider using structured logger
+   > console.log(`[Referrals] Awarded ${CREDITS.HIRED} credits to referrer for hire`)
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\saved-searches.ts:370
+   Console logging in code - consider using structured logger
+   > console.log(`[JobAlerts] Processing ${frequency} alerts...`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\saved-searches.ts:381
+   Console logging in code - consider using structured logger
+   > console.log(`[JobAlerts] Found ${searches.length} searches to process`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\saved-searches.ts:490
+   Console logging in code - consider using structured logger
+   > console.log(`[JobAlerts] Completed: ${results.processed} processed, ${results.em
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\search.ts:498
+   Console logging in code - consider using structured logger
+   > console.log('Advanced search modules not fully loaded:', e.message);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:31
+   Console logging in code - consider using structured logger
+   > console.log('[Webhook] Stripe not configured, skipping webhook processing');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:48
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Received event: ${event.type}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:73
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Unhandled event type: ${event.type}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:98
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Checkout completed for user ${userId}, tier ${tier}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:136
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Subscription activated for user ${userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:152
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] No subscription found for customer ${customerId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:156
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Payment succeeded for user ${companySubscription.userId}`
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:206
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] No subscription found for customer ${customerId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:249
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Payment failed email sent to ${user.email}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:268
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] No subscription found for ${subscriptionId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:272
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Subscription updated for user ${companySubscription.userI
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:301
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] No subscription found for ${subscriptionId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:305
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook] Subscription deleted for user ${companySubscription.userI
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\routes\webhooks.ts:329
+   Console logging in code - consider using structured logger
+   > console.log(`[Webhook Test] Simulating event: ${eventType}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\authService.ts:306
+   Console logging in code - consider using structured logger
+   > console.log(`Password reset token for ${email}: ${resetToken}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:259
+   Console logging in code - consider using structured logger
+   > console.log('[SendGrid] Sending email:', options.subject);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:267
+   Console logging in code - consider using structured logger
+   > console.log('[Postmark] Sending email:', options.subject);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:275
+   Console logging in code - consider using structured logger
+   > console.log('[SES] Sending email:', options.subject);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:280
+   Console logging in code - consider using structured logger
+   > console.log('='.repeat(50));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:281
+   Console logging in code - consider using structured logger
+   > console.log('[Email] To:', options.to);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:282
+   Console logging in code - consider using structured logger
+   > console.log('[Email] Subject:', options.subject);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:283
+   Console logging in code - consider using structured logger
+   > console.log('[Email] Template:', options.template);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:284
+   Console logging in code - consider using structured logger
+   > console.log('[Email] Data:', JSON.stringify(options.data, null, 2));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\email.ts:285
+   Console logging in code - consider using structured logger
+   > console.log('='.repeat(50));
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:310
+   Console logging in code - consider using structured logger
+   > console.log(`Notification ${payload.type} disabled for user ${payload.userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:317
+   Console logging in code - consider using structured logger
+   > console.log(`User ${payload.userId} in quiet hours, scheduling notification`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:565
+   Console logging in code - consider using structured logger
+   > console.log(`Marking notification ${notificationId} as read for user ${userId}`)
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:575
+   Console logging in code - consider using structured logger
+   > console.log(`Marking all notifications as read for user ${userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:584
+   Console logging in code - consider using structured logger
+   > console.log(`Archiving notification ${notificationId} for user ${userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:593
+   Console logging in code - consider using structured logger
+   > console.log(`Deleting notification ${notificationId} for user ${userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:602
+   Console logging in code - consider using structured logger
+   > console.log(`Deleting notifications for user ${userId}`, options);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:677
+   Console logging in code - consider using structured logger
+   > console.log(`Registering device for user ${userId}: ${platform} - ${deviceToken.
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:685
+   Console logging in code - consider using structured logger
+   > console.log(`Unregistering device for user ${userId}: ${deviceToken.slice(0, 10)
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:820
+   Console logging in code - consider using structured logger
+   > console.log(`Storing notification: ${notification.id}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:825
+   Console logging in code - consider using structured logger
+   > console.log(`Queuing email notification: ${notification.id}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:830
+   Console logging in code - consider using structured logger
+   > console.log(`Sending push notification: ${notification.id}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\api\src\services\notificationService.ts:835
+   Console logging in code - consider using structured logger
+   > console.log(`Sending SMS notification: ${notification.id}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\analytics.ts:47
+   Console logging in code - consider using structured logger
+   > console.log('[Analytics] PostHog initialized');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\analytics.ts:50
+   Console logging in code - consider using structured logger
+   > console.log('[Analytics] Initialized');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\analytics.ts:66
+   Console logging in code - consider using structured logger
+   > console.log(`[Analytics] ${event}`, safeProperties);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\analytics.ts:88
+   Console logging in code - consider using structured logger
+   > console.log(`[Analytics] Identify: ${userId}`, safeProperties);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\analytics.ts:103
+   Console logging in code - consider using structured logger
+   > console.log('[Analytics] Reset');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\socket.ts:113
+   Console logging in code - consider using structured logger
+   > console.log('Socket already connected');
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\socket.ts:147
+   Console logging in code - consider using structured logger
+   > console.log('Socket connected:', this.socket?.id);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\socket.ts:155
+   Console logging in code - consider using structured logger
+   > console.log('Socket disconnected:', reason);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\lib\socket.ts:168
+   Console logging in code - consider using structured logger
+   > console.log('Socket authenticated:', data.userId);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\apps\web\src\stores\messagingStore.ts:497
+   Console logging in code - consider using structured logger
+   > console.log('Unknown WebSocket message type:', data.type);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:84
+   Console logging in code - consider using structured logger
+   > console.log(`Checkout completed for user ${userId}, tier: ${tier}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:132
+   Console logging in code - consider using structured logger
+   > console.log(`Invoice paid for user ${subscription.userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:204
+   Console logging in code - consider using structured logger
+   > console.log(`Payment failed email sent to ${user.email}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:210
+   Console logging in code - consider using structured logger
+   > console.log(`Invoice payment failed for user ${subscription.userId}`);
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:242
+   Console logging in code - consider using structured logger
+   > console.log(`Subscription updated for user ${dbSubscription.userId}, tier: ${tie
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:272
+   Console logging in code - consider using structured logger
+   > console.log(`Subscription deleted for user ${dbSubscription.userId}, downgraded 
+
+Ôä╣´©Å [INFO] C:\Users\mutir\OneDrive\Desktop\Gimbi\netlify\functions\stripe-webhook.js:327
+   Console logging in code - consider using structured logger
+   > console.log(`Unhandled event type: ${stripeEvent.type}`);
+
+ÔØî Security audit failed - fix CRITICAL and HIGH issues
+

@@ -1,0 +1,256 @@
+# =====================================
+# Ngurra Pathways - Production Docker Compose
+# =====================================
+# Complete production stack with all services
+# Security: Resource limits, read-only filesystems, security options
+
+version: '3.8'
+
+services:
+  # =====================================
+  # API Service
+  # =====================================
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: ngurra-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - TRUST_PROXY=1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health/ready', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ngurra-network
+    volumes:
+      - api-logs:/app/logs
+      - api-tmp:/app/tmp
+    # Step 44: Read-only root filesystem with tmpfs for writable directories
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M,mode=1777
+    # Step 45: Resource limits for DoS prevention
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+  # =====================================
+  # Background Worker Service
+  # =====================================
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: ngurra-worker
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      # SECURITY FIX: Redis requires password authentication
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+    depends_on:
+      - api
+      - redis
+    networks:
+      - ngurra-network
+    volumes:
+      - worker-logs:/app/logs
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # =====================================
+  # Next.js Web Application
+  # =====================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: ngurra-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://api:3001
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ngurra-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # =====================================
+  # PostgreSQL Database
+  # =====================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: ngurra-postgres
+    restart: unless-stopped
+    # SECURITY: No ports exposed to host - only accessible within Docker network
+    # Database should never be directly accessible from the internet
+    # ports:
+    #   - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-ngurra}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-ngurra_production}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ngurra}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ngurra-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # =====================================
+  # Redis Cache & Queue
+  # =====================================
+  redis:
+    image: redis:7-alpine
+    container_name: ngurra-redis
+    restart: unless-stopped
+    # SECURITY: No ports exposed to host - only accessible within Docker network
+    # Redis should never be directly accessible from the internet
+    # ports:
+    #   - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ngurra-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
+
+  # =====================================
+  # Nginx Reverse Proxy
+  # =====================================
+  nginx:
+    image: nginx:alpine
+    container_name: ngurra-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/www:/var/www:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - ngurra-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+
+  # =====================================
+  # Backup Service (runs daily)
+  # =====================================
+  backup:
+    image: postgres:16-alpine
+    container_name: ngurra-backup
+    restart: "no"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER:-ngurra}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-ngurra_production}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${BACKUP_S3_BUCKET}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    command: ["/bin/sh", "/backup.sh"]
+    depends_on:
+      - postgres
+    networks:
+      - ngurra-network
+    profiles:
+      - backup
+
+# =====================================
+# Networks
+# =====================================
+networks:
+  ngurra-network:
+    driver: bridge
+
+# =====================================
+# Volumes
+# =====================================
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  api-logs:
+    driver: local
+  worker-logs:
+    driver: local

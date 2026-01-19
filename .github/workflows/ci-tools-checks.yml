@@ -1,0 +1,45 @@
+name: CI — tools smoke checks
+
+on:
+  push:
+    paths:
+      - 'SNAPSHOT_CI_VALIDATION.md'
+      - 'tools/**'
+      - 'package.json'
+  pull_request:
+    paths:
+      - 'SNAPSHOT_CI_VALIDATION.md'
+      - 'tools/**'
+      - 'package.json'
+
+jobs:
+  smoke-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate docs placeholder checks
+        run: npm run validate:docs
+
+      - name: Generate sample metadata (random)
+        run: npm run generate:sample-metadata:random
+
+      - name: Run local dry-run simulation (no network posts)
+        run: npm run ci:local-dryrun -- --count 2 --platform all
+
+      - name: Run tools tests (CI-safe)
+        run: npm run test:tools:ci
+
+      - name: Fetch artifact helper (dry-run)
+        run: npm run ci:fetch-artifact -- --repo ${{ github.repository }} --dry-run
+
+      - name: Lint-check README mentions
+        run: node tools/validate-snapshot-ci-md.js

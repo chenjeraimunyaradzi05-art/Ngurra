@@ -1,8 +1,17 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+
+// Bundle analyzer is optional - only load if installed and ANALYZE=true
+let withBundleAnalyzer = (config) => config;
+if (process.env.ANALYZE === 'true') {
+  try {
+    withBundleAnalyzer = require('@next/bundle-analyzer')({
+      enabled: true,
+    });
+  } catch (e) {
+    console.warn('Bundle analyzer not installed, skipping...');
+  }
+}
 
 // ============================================
 // Content Security Policy Configuration

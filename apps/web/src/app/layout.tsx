@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     creator: 'Ngurra Pathways',
     publisher: 'Ngurra Pathways',
     manifest: '/manifest.json',
-    metadataBase: new URL('https://ngurrapathways.com.au'),
+    metadataBase: new URL('https://ngurrapathways.life'),
     alternates: {
         canonical: '/',
     },
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     openGraph: {
         type: 'website',
         locale: 'en_AU',
-        url: 'https://ngurrapathways.com.au',
+        url: 'https://ngurrapathways.life',
         siteName: 'Ngurra Pathways',
         title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
         description: 'A culturally-grounded employment, education & mentorship platform for First Nations futures',

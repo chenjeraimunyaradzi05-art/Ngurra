@@ -15,12 +15,7 @@ import type { NextRequest } from 'next/server';
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  // Use btoa for Edge compatibility
-  let binary = '';
-  for (let i = 0; i < array.length; i++) {
-    binary += String.fromCharCode(array[i]);
-  }
-  return btoa(binary);
+  return Buffer.from(array).toString('base64');
 }
 
 // Paths that don't need CSP nonce (static assets)
@@ -68,6 +63,15 @@ function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
   
+  // Lazy cleanup: remove old entries when checking (every 100th request)
+  if (rateLimitMap.size > 100 && Math.random() < 0.01) {
+    for (const [key, val] of rateLimitMap) {
+      if (now - val.timestamp > RATE_LIMIT_WINDOW) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+  
   if (!entry || now - entry.timestamp > RATE_LIMIT_WINDOW) {
     rateLimitMap.set(ip, { count: 1, timestamp: now });
     return false;
@@ -82,15 +86,8 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-// Clean up old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, entry] of rateLimitMap) {
-    if (now - entry.timestamp > RATE_LIMIT_WINDOW) {
-      rateLimitMap.delete(ip);
-    }
-  }
-}, 60000);
+// Note: Cleanup happens lazily in isRateLimited function
+// setInterval is not supported in serverless/edge environments
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -137,8 +134,8 @@ export function middleware(request: NextRequest) {
       ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com https://meet.jit.si`
       : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://meet.jit.si`,
     `style-src 'self' 'unsafe-inline'`, // Required for CSS-in-JS
-    `img-src 'self' data: blob: https://images.unsplash.com https://logo.clearbit.com https://*.ngurrapathways.com.au https://avatars.githubusercontent.com https://lh3.googleusercontent.com`,
-    `connect-src 'self' https://*.ngurrapathways.com.au https://api.stripe.com wss://*.ngurrapathways.com.au https://meet.jit.si${
+    `img-src 'self' data: blob: https://images.unsplash.com https://logo.clearbit.com https://*.ngurrapathways.life https://avatars.githubusercontent.com https://lh3.googleusercontent.com`,
+    `connect-src 'self' https://*.ngurrapathways.life https://api.stripe.com wss://*.ngurrapathways.life https://meet.jit.si${
       isProduction
         ? ''
         : ' http://localhost:3333 http://127.0.0.1:3333 ws://localhost:3333 ws://127.0.0.1:3333 ws://localhost:3000 ws://127.0.0.1:3000'

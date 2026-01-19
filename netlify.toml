@@ -22,7 +22,7 @@
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://api.gimbi.com.au"
   NEXT_PUBLIC_SOCKET_URL = "https://api.gimbi.com.au"
-  NEXTAUTH_URL = "https://ngurrapathways.com.au"
+  NEXTAUTH_URL = "https://ngurrapathways.life"
   NODE_ENV = "production"
 
 # =============================================================================
@@ -35,7 +35,7 @@
 [context.staging.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
   NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
-  NEXTAUTH_URL = "https://staging.ngurrapathways.com.au"
+  NEXTAUTH_URL = "https://staging.ngurrapathways.life"
   NODE_ENV = "staging"
 
 # =============================================================================
@@ -107,7 +107,7 @@
   for = "/api/*"
   [headers.values]
     # SECURITY: Restrict CORS to specific trusted domains (do not use wildcard "*")
-    Access-Control-Allow-Origin = "https://ngurrapathways.com.au"
+    Access-Control-Allow-Origin = "https://ngurrapathways.life"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Authorization, Content-Type"
     Access-Control-Allow-Credentials = "true"
@@ -128,8 +128,8 @@
 
 # WWW to non-WWW redirect
 [[redirects]]
-  from = "https://www.ngurrapathways.com.au/*"
-  to = "https://ngurrapathways.com.au/:splat"
+  from = "https://www.ngurrapathways.life/*"
+  to = "https://ngurrapathways.life/:splat"
   status = 301
   force = true
 

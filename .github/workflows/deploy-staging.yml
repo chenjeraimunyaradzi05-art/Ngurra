@@ -68,7 +68,7 @@ jobs:
     
     environment:
       name: staging
-      url: https://staging.ngurrapathways.com.au
+      url: https://staging.ngurrapathways.life
 
     steps:
       - uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
         run: |
           echo "✅ Staging deployment completed successfully"
           echo "API: https://api-staging.ngurrapathways.com.au"
-          echo "Web: https://staging.ngurrapathways.com.au"
+          echo "Web: https://staging.ngurrapathways.life"
 
   smoke-test:
     name: Post-deployment Smoke Tests
@@ -171,7 +171,7 @@ jobs:
       - name: Health Check - Web
         run: |
           for i in {1..30}; do
-            if curl -sf "https://staging.ngurrapathways.com.au"; then
+            if curl -sf "https://staging.ngurrapathways.life"; then
               echo "✅ Web is healthy"
               exit 0
             fi

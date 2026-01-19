@@ -91,6 +91,9 @@ const csp = Object.entries(cspDirectives)
   .join(' ');
 
 const nextConfig = {
+  // Optimize for Netlify standalone mode
+  output: 'standalone',
+
   // Configure monorepo root for output file tracing
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
 
@@ -107,7 +110,7 @@ const nextConfig = {
     'http://127.0.0.1:3000',
     'http://localhost:3000',
   ],
-  
+
   // Performance optimizations
   images: {
     // Enable modern image formats for better compression
@@ -142,16 +145,8 @@ const nextConfig = {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
-  
-  // Bundle analyzer (enable with ANALYZE=true)
-  ...(process.env.ANALYZE && {
-    experimental: {
-      // Enable bundle size reporting in build output
-      optimizePackageImports: ['lucide-react'],
-    },
-  }),
-  
-  // Optimize package imports for tree-shaking
+
+  // Experimental features - consolidated
   experimental: {
     optimizePackageImports: [
       'lucide-react',
@@ -159,6 +154,7 @@ const nextConfig = {
       'lodash',
       'recharts',
       '@sentry/nextjs',
+      '@livekit/components-react',
     ],
   },
 
@@ -295,5 +291,4 @@ module.exports = withBundleAnalyzer({
   ...nextConfig,
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns', 'lodash', '@livekit/components-react', 'recharts'],
-  },
-});
+  },nextConfig

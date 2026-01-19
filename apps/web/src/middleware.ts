@@ -15,7 +15,12 @@ import type { NextRequest } from 'next/server';
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return Buffer.from(array).toString('base64');
+  // Use btoa for Edge compatibility
+  let binary = '';
+  for (let i = 0; i < array.length; i++) {
+    binary += String.fromCharCode(array[i]);
+  }
+  return btoa(binary);
 }
 
 // Paths that don't need CSP nonce (static assets)

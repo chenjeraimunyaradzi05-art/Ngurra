@@ -133,7 +133,7 @@ export default function PWAInstallPrompt() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slide-up {
           from {
             transform: translateY(100%);
@@ -147,7 +147,7 @@ export default function PWAInstallPrompt() {
         .animate-slide-up {
           animation: slide-up 0.3s ease-out;
         }
-      `}</style>
+      `}} />
     </div>
   );
 }

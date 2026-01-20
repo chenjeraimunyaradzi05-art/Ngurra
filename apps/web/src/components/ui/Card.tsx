@@ -1,21 +1,24 @@
 'use client';
+/* eslint-disable no-undef */
 
-import React from 'react';
+import type { ElementType } from 'react';
 import Link from 'next/link';
 
-type CardVariant = 
-  | 'default' 
-  | 'elevated' 
-  | 'outlined' 
-  | 'glass' 
-  | 'cosmic' 
+type CardVariant =
+  | 'default'
+  | 'elevated'
+  | 'outlined'
+  | 'glass'
+  | 'cosmic'
   | 'gradient'
-  | 'ngurra'        // Ngurra theme - main sidebar/content cards
-  | 'ngurra-dark'   // Ngurra dark variant
-  | 'aura';         // Gradient CTA style
+  | 'ngurra' // Ngurra theme - main sidebar/content cards
+  | 'ngurra-dark' // Ngurra dark variant
+  | 'aura'; // Gradient CTA style
+
+type CardNode = string | number | boolean | null | undefined | JSX.Element | CardNode[];
 
 interface CardProps {
-  children: React.ReactNode;
+  children: CardNode;
   variant?: CardVariant;
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
@@ -23,26 +26,26 @@ interface CardProps {
   href?: string;
   onClick?: () => void;
   className?: string;
-  as?: React.ElementType;
+  as?: ElementType;
   suppressHydrationWarning?: boolean;
 }
 
 interface CardHeaderProps {
-  children?: React.ReactNode;
+  children?: CardNode;
   title?: string;
   subtitle?: string;
-  action?: React.ReactNode;
-  icon?: React.ReactNode;
+  action?: CardNode;
+  icon?: CardNode;
   className?: string;
 }
 
 interface CardContentProps {
-  children: React.ReactNode;
+  children: CardNode;
   className?: string;
 }
 
 interface CardFooterProps {
-  children: React.ReactNode;
+  children: CardNode;
   className?: string;
   divided?: boolean;
 }
@@ -53,10 +56,12 @@ const variantClasses: Record<CardVariant, string> = {
   elevated: 'bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50',
   outlined: 'bg-transparent border-2 border-gray-300 dark:border-gray-600',
   glass: 'bg-white/10 backdrop-blur-md border border-white/20',
-  cosmic: 'bg-gradient-to-br from-[#1A0F2E]/90 to-[#2D1B69]/80 border border-[#FFD700]/20 backdrop-blur-sm',
+  cosmic:
+    'bg-gradient-to-br from-[#1A0F2E]/90 to-[#2D1B69]/80 border border-[#FFD700]/20 backdrop-blur-sm',
   gradient: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20',
   // Ngurra theme variants - consistent with homepage design system
-  ngurra: 'backdrop-blur-md bg-white/80 border border-slate-200 dark:bg-[#0f172a]/72 dark:border-slate-700/30 shadow-sm',
+  ngurra:
+    'backdrop-blur-md bg-white/80 border border-slate-200 dark:bg-[#0f172a]/72 dark:border-slate-700/30 shadow-sm',
   'ngurra-dark': 'backdrop-blur-md bg-slate-900/90 border border-slate-700/50 shadow-sm',
   aura: 'backdrop-blur-sm border border-white/20 shadow-lg',
 };
@@ -87,17 +92,23 @@ export function Card({
     'transition-colors',
     variantClasses[variant],
     paddingClasses[padding],
-    (hover || clickable) ? 'transition-all duration-200 hover:-translate-y-1 hover:shadow-lg' : '',
-    (clickable || onClick || href) ? 'cursor-pointer' : '',
+    hover || clickable ? 'transition-all duration-200 hover:-translate-y-1 hover:shadow-lg' : '',
+    clickable || onClick || href ? 'cursor-pointer' : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const combinedClasses = classes.trim().replace(/\s+/g, ' ');
 
   // If href is provided, render as Link
   if (href) {
     return (
-      <Link href={href} className={combinedClasses} suppressHydrationWarning={suppressHydrationWarning}>
+      <Link
+        href={href}
+        className={combinedClasses}
+        suppressHydrationWarning={suppressHydrationWarning}
+      >
         {children}
       </Link>
     );
@@ -107,7 +118,11 @@ export function Card({
   if (as) {
     const Component = as;
     return (
-      <Component className={combinedClasses} onClick={onClick} suppressHydrationWarning={suppressHydrationWarning}>
+      <Component
+        className={combinedClasses}
+        onClick={onClick}
+        suppressHydrationWarning={suppressHydrationWarning}
+      >
         {children}
       </Component>
     );
@@ -115,8 +130,8 @@ export function Card({
 
   // Default to div
   return (
-    <div 
-      className={combinedClasses} 
+    <div
+      className={combinedClasses}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -137,20 +152,16 @@ export function CardHeader({
 }: CardHeaderProps) {
   // If children are provided, render them directly
   if (children && !title) {
-    return (
-      <div className={`px-4 py-3 sm:px-6 sm:py-4 ${className}`}>
-        {children}
-      </div>
-    );
+    return <div className={`px-4 py-3 sm:px-6 sm:py-4 ${className}`}>{children}</div>;
   }
 
   return (
-    <div className={`px-4 py-3 sm:px-6 sm:py-4 flex items-start justify-between gap-4 ${className}`}>
+    <div
+      className={`px-4 py-3 sm:px-6 sm:py-4 flex items-start justify-between gap-4 ${className}`}
+    >
       <div className="flex items-start gap-3 min-w-0">
         {icon && (
-          <div className="flex-shrink-0 p-2 rounded-lg bg-gray-100 dark:bg-gray-700/50">
-            {icon}
-          </div>
+          <div className="flex-shrink-0 p-2 rounded-lg bg-gray-100 dark:bg-gray-700/50">{icon}</div>
         )}
         <div className="min-w-0">
           {title && (
@@ -159,40 +170,23 @@ export function CardHeader({
             </h3>
           )}
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              {subtitle}
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
           )}
           {children}
         </div>
       </div>
-      {action && (
-        <div className="flex-shrink-0">
-          {action}
-        </div>
-      )}
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
   );
 }
 
-export function CardContent({
-  children,
-  className = '',
-}: CardContentProps) {
-  return (
-    <div className={`px-4 py-3 sm:px-6 sm:py-4 ${className}`}>
-      {children}
-    </div>
-  );
+export function CardContent({ children, className = '' }: CardContentProps) {
+  return <div className={`px-4 py-3 sm:px-6 sm:py-4 ${className}`}>{children}</div>;
 }
 
-export function CardFooter({
-  children,
-  className = '',
-  divided = true,
-}: CardFooterProps) {
+export function CardFooter({ children, className = '', divided = true }: CardFooterProps) {
   return (
-    <div 
+    <div
       className={`
         px-4 py-3 sm:px-6 sm:py-4
         ${divided ? 'border-t border-gray-200 dark:border-gray-700' : ''}
@@ -213,22 +207,35 @@ interface FeatureCardProps {
   variant?: 'default' | 'cosmic';
 }
 
-export function FeatureCard({ icon, title, description, href, variant = 'default' }: FeatureCardProps) {
+export function FeatureCard({
+  icon,
+  title,
+  description,
+  href,
+  variant = 'default',
+}: FeatureCardProps) {
   const content = (
     <>
-      <div className={`
+      <div
+        className={`
         p-3 rounded-xl mb-4 inline-flex
-        ${variant === 'cosmic' 
-          ? 'bg-gradient-to-br from-[#FFD700]/20 to-[#50C878]/10 border border-[#FFD700]/30' 
-          : 'bg-blue-100 dark:bg-blue-900/30'
+        ${
+          variant === 'cosmic'
+            ? 'bg-gradient-to-br from-[#FFD700]/20 to-[#50C878]/10 border border-[#FFD700]/30'
+            : 'bg-blue-100 dark:bg-blue-900/30'
         }
-      `}>
+      `}
+      >
         {icon}
       </div>
-      <h3 className={`text-lg font-semibold mb-2 ${variant === 'cosmic' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+      <h3
+        className={`text-lg font-semibold mb-2 ${variant === 'cosmic' ? 'text-white' : 'text-gray-900 dark:text-white'}`}
+      >
         {title}
       </h3>
-      <p className={`text-sm ${variant === 'cosmic' ? 'text-gray-300' : 'text-gray-600 dark:text-gray-400'}`}>
+      <p
+        className={`text-sm ${variant === 'cosmic' ? 'text-gray-300' : 'text-gray-600 dark:text-gray-400'}`}
+      >
         {description}
       </p>
     </>
@@ -255,26 +262,31 @@ export function StatsCard({ label, value, change, icon, variant = 'default' }: S
     <Card variant={variant} padding="md">
       <div className="flex items-center justify-between">
         <div>
-          <p className={`text-sm ${variant === 'cosmic' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
+          <p
+            className={`text-sm ${variant === 'cosmic' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}
+          >
             {label}
           </p>
-          <p className={`text-2xl font-bold mt-1 ${variant === 'cosmic' ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+          <p
+            className={`text-2xl font-bold mt-1 ${variant === 'cosmic' ? 'text-white' : 'text-gray-900 dark:text-white'}`}
+          >
             {value}
           </p>
           {change && (
-            <p className={`text-sm mt-1 ${change.type === 'increase' ? 'text-green-500' : 'text-red-500'}`}>
+            <p
+              className={`text-sm mt-1 ${change.type === 'increase' ? 'text-green-500' : 'text-red-500'}`}
+            >
               {change.type === 'increase' ? '↑' : '↓'} {Math.abs(change.value)}%
             </p>
           )}
         </div>
         {icon && (
-          <div className={`
+          <div
+            className={`
             p-3 rounded-lg
-            ${variant === 'cosmic' 
-              ? 'bg-white/5' 
-              : 'bg-gray-100 dark:bg-gray-700'
-            }
-          `}>
+            ${variant === 'cosmic' ? 'bg-white/5' : 'bg-gray-100 dark:bg-gray-700'}
+          `}
+          >
             {icon}
           </div>
         )}

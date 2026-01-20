@@ -83,7 +83,7 @@ function isRateLimited(ip: string): boolean {
 // Note: Cleanup happens lazily in isRateLimited function
 // setInterval is not supported in serverless/edge environments
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for static assets

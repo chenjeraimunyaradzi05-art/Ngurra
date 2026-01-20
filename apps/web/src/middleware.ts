@@ -140,7 +140,7 @@ export function middleware(request: NextRequest) {
         ? ''
         : ' http://localhost:3333 http://127.0.0.1:3333 ws://localhost:3333 ws://127.0.0.1:3333 ws://localhost:3000 ws://127.0.0.1:3000'
     }`,
-    `font-src 'self' data: https://fonts.gstatic.com`,
+    `font-src 'self' data: https://fonts.gstatic.com https://r2cdn.perplexity.ai`,
     `frame-src 'self' https://js.stripe.com https://meet.jit.si`,
     `frame-ancestors 'self'`,
     `media-src 'self' blob: data:`,

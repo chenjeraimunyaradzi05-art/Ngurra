@@ -65,7 +65,7 @@ const cspDirectives = {
           'ws://localhost:3333',
         ]),
   ],
-  'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+  'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://r2cdn.perplexity.ai'],
   'frame-src': [
     "'self'",
     'https://js.stripe.com',

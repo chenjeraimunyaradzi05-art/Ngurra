@@ -48,7 +48,7 @@
     "validate:ci-tools": "npm run validate:docs && npm run generate:sample-metadata:random && npm run ci:local-dryrun -- --count 2 --platform all && npm run ci:fetch-artifact -- --repo $npm_package_repository_url --dry-run",
     "test:tools": "node tools/self-check.js",
     "test:tools:ci": "node tools/test-tools.js",
-    "prepare": "husky",
+    "prepare": "node -e \"if(process.env.NODE_ENV!=='production'){try{require('child_process').execSync('husky',{stdio:'inherit'})}catch(e){}}\"",
     "typecheck": "turbo run typecheck",
     "security:audit": "node scripts/security-audit.js",
     "security:audit:ci": "node scripts/security-audit.js --ci",

@@ -1,17 +1,18 @@
+/* eslint-disable no-undef */
 'use client';
-
-import type { ReactNode } from 'react';
 import Link from 'next/link';
+
+type BreadcrumbNode = string | number | boolean | null | undefined | JSX.Element | BreadcrumbNode[];
 
 interface BreadcrumbItem {
   label: string;
   href?: string;
-  icon?: ReactNode;
+  icon?: BreadcrumbNode;
 }
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  separator?: ReactNode;
+  separator?: BreadcrumbNode;
   variant?: 'default' | 'cosmic';
   className?: string;
 }
@@ -90,7 +91,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   breadcrumbs?: BreadcrumbItem[];
-  action?: ReactNode;
+  action?: BreadcrumbNode;
   variant?: 'default' | 'cosmic';
   className?: string;
 }

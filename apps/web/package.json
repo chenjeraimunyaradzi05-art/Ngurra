@@ -11,7 +11,7 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "node scripts/prebuild-clean.js && next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint .",

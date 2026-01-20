@@ -132,9 +132,3 @@
   to = "https://ngurrapathways.life/:splat"
   status = 301
   force = true
-
-# Trailing slash normalization
-[[redirects]]
-  from = "/*/"
-  to = "/:splat"
-  status = 301

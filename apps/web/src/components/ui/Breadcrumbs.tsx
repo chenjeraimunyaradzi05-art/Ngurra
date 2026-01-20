@@ -1,17 +1,17 @@
 'use client';
 
-import React from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 
 interface BreadcrumbItem {
   label: string;
   href?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  separator?: React.ReactNode;
+  separator?: ReactNode;
   variant?: 'default' | 'cosmic';
   className?: string;
 }
@@ -40,15 +40,11 @@ export function Breadcrumbs({
   const styles = variantClasses[variant];
 
   const defaultSeparator = (
-    <svg 
-      className={`w-4 h-4 ${styles.separator}`} 
-      fill="currentColor" 
-      viewBox="0 0 20 20"
-    >
-      <path 
-        fillRule="evenodd" 
-        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
-        clipRule="evenodd" 
+    <svg className={`w-4 h-4 ${styles.separator}`} fill="currentColor" viewBox="0 0 20 20">
+      <path
+        fillRule="evenodd"
+        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+        clipRule="evenodd"
       />
     </svg>
   );
@@ -58,7 +54,7 @@ export function Breadcrumbs({
       <ol className="flex items-center flex-wrap gap-1">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
-          
+
           return (
             <li key={item.label} className="flex items-center">
               {index > 0 && (
@@ -66,9 +62,9 @@ export function Breadcrumbs({
                   {separator || defaultSeparator}
                 </span>
               )}
-              
+
               {isLast || !item.href ? (
-                <span 
+                <span
                   className={`flex items-center gap-1.5 ${isLast ? styles.current : styles.link}`}
                   aria-current={isLast ? 'page' : undefined}
                 >
@@ -76,10 +72,7 @@ export function Breadcrumbs({
                   {item.label}
                 </span>
               ) : (
-                <Link 
-                  href={item.href}
-                  className={`flex items-center gap-1.5 ${styles.link}`}
-                >
+                <Link href={item.href} className={`flex items-center gap-1.5 ${styles.link}`}>
                   {item.icon}
                   {item.label}
                 </Link>
@@ -97,7 +90,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   breadcrumbs?: BreadcrumbItem[];
-  action?: React.ReactNode;
+  action?: ReactNode;
   variant?: 'default' | 'cosmic';
   className?: string;
 }
@@ -116,7 +109,8 @@ export function PageHeader({
       subtitle: 'text-gray-600 dark:text-gray-400',
     },
     cosmic: {
-      title: 'text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#50C878] to-[#FFD700]',
+      title:
+        'text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#50C878] to-[#FFD700]',
       subtitle: 'text-gray-400',
     },
   };
@@ -128,20 +122,14 @@ export function PageHeader({
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumbs items={breadcrumbs} variant={variant} className="mb-4" />
       )}
-      
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className={styles.title}>{title}</h1>
-          {subtitle && (
-            <p className={`mt-1 ${styles.subtitle}`}>{subtitle}</p>
-          )}
+          {subtitle && <p className={`mt-1 ${styles.subtitle}`}>{subtitle}</p>}
         </div>
-        
-        {action && (
-          <div className="flex-shrink-0">
-            {action}
-          </div>
-        )}
+
+        {action && <div className="flex-shrink-0">{action}</div>}
       </div>
     </div>
   );
@@ -196,7 +184,12 @@ export function BackButton({
   const content = (
     <>
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
       </svg>
       <span>{label}</span>
     </>

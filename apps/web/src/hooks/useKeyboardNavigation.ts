@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useCallback, useRef, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 
 /**
  * Keyboard Navigation Utilities
- * 
+ *
  * Custom hooks and utilities for keyboard accessibility.
  * Ngurra Pathways - Celestial Precious Stone Theme
  */
@@ -40,7 +40,7 @@ export function useFocusTrap<T extends HTMLElement>({
   // Get all focusable elements within the container
   const getFocusableElements = useCallback(() => {
     if (!containerRef.current) return [];
-    
+
     const focusableSelectors = [
       'button:not([disabled])',
       'a[href]',
@@ -50,10 +50,10 @@ export function useFocusTrap<T extends HTMLElement>({
       '[tabindex]:not([tabindex="-1"])',
       '[contenteditable="true"]',
     ].join(', ');
-    
+
     const elements = containerRef.current.querySelectorAll<HTMLElement>(focusableSelectors);
     return Array.from(elements).filter(
-      (el) => el.offsetParent !== null // Visible elements only
+      (el) => el.offsetParent !== null, // Visible elements only
     );
   }, []);
 
@@ -140,6 +140,7 @@ export function useFocusTrap<T extends HTMLElement>({
 // ARROW KEY NAVIGATION HOOK
 // ============================================================================
 
+// eslint-disable-next-line no-unused-vars
 interface UseArrowNavigationOptions<T> {
   /** The list of items to navigate */
   items: T[];
@@ -148,9 +149,11 @@ interface UseArrowNavigationOptions<T> {
   /** Current active index */
   activeIndex: number;
   /** Callback when active index changes */
-  onActiveIndexChange: (index: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onActiveIndexChange: (_index: number) => void;
   /** Callback when item is selected (Enter key) */
-  onSelect?: (item: T, index: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onSelect?: (_item: T, _index: number) => void;
   /** Callback when escape is pressed */
   onEscape?: () => void;
   /** Navigation orientation */
@@ -232,7 +235,7 @@ export function useArrowNavigation<T, E extends HTMLElement>({
         return;
       }
     },
-    [isActive, items, activeIndex, onActiveIndexChange, onSelect, onEscape, orientation, loop]
+    [isActive, items, activeIndex, onActiveIndexChange, onSelect, onEscape, orientation, loop],
   );
 
   return {
@@ -326,7 +329,7 @@ export function useRovingTabIndex({
         itemRefs.current[newIndex]?.focus();
       }
     },
-    [activeIndex, itemCount, orientation]
+    [activeIndex, itemCount, orientation],
   );
 
   const getItemProps = useCallback(
@@ -338,7 +341,7 @@ export function useRovingTabIndex({
       onKeyDown: handleKeyDown,
       onFocus: () => setActiveIndex(index),
     }),
-    [activeIndex, handleKeyDown]
+    [activeIndex, handleKeyDown],
   );
 
   return {
@@ -356,7 +359,8 @@ interface UseTypeaheadOptions {
   /** List of searchable labels */
   items: string[];
   /** Callback when match is found */
-  onMatch: (index: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onMatch: (_index: number) => void;
   /** Timeout before resetting buffer (ms) */
   timeout?: number;
   /** Whether typeahead is active */
@@ -373,7 +377,7 @@ export function useTypeahead({
   isActive = true,
 }: UseTypeaheadOptions) {
   const bufferRef = useRef('');
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -394,7 +398,7 @@ export function useTypeahead({
 
       // Find matching item
       const matchIndex = items.findIndex((item) =>
-        item.toLowerCase().startsWith(bufferRef.current)
+        item.toLowerCase().startsWith(bufferRef.current),
       );
 
       if (matchIndex !== -1) {
@@ -406,7 +410,7 @@ export function useTypeahead({
         bufferRef.current = '';
       }, timeout);
     },
-    [items, onMatch, timeout, isActive]
+    [items, onMatch, timeout, isActive],
   );
 
   // Cleanup on unmount
@@ -467,7 +471,7 @@ export function useFocusVisible() {
   return isFocusVisible;
 }
 
-export default {
+const keyboardNavigationHooks = {
   useFocusTrap,
   useArrowNavigation,
   useEscapeKey,
@@ -475,3 +479,5 @@ export default {
   useTypeahead,
   useFocusVisible,
 };
+
+export default keyboardNavigationHooks;

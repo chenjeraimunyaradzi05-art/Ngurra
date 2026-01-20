@@ -25,8 +25,6 @@ const cspDirectives = {
   'default-src': ["'self'"],
   'script-src': [
     "'self'",
-    // In production, allow inline scripts until nonce-based CSP is implemented
-    isProduction ? "'strict-dynamic'" : "'unsafe-inline'",
     "'unsafe-inline'",
     // Next.js dev server uses eval-based source maps
     ...(isProduction ? [] : ["'unsafe-eval'"]),
@@ -51,8 +49,11 @@ const cspDirectives = {
   'connect-src': [
     "'self'",
     'https://*.ngurrapathways.life',
+    'https://*.gimbi.com.au', // Backend API
+    'https://*.netlify.app', // Deploy previews
     'https://api.stripe.com',
     'wss://*.ngurrapathways.life', // WebSocket connections
+    'wss://*.gimbi.com.au', // WebSocket connections
     'https://meet.jit.si',
     ...(isProduction
       ? []
@@ -98,16 +99,11 @@ const nextConfig = {
   turbopack: {
     root: path.resolve(__dirname, '../..'),
   },
-  
+
   // Silence dev-time warning when accessing the dev server via 127.0.0.1/localhost.
   // This affects Playwright and local dev on Windows.
-  allowedDevOrigins: [
-    '127.0.0.1',
-    'localhost',
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
-  ],
-  
+  allowedDevOrigins: ['127.0.0.1', 'localhost', 'http://127.0.0.1:3000', 'http://localhost:3000'],
+
   // Performance optimizations
   images: {
     // Enable modern image formats for better compression
@@ -136,13 +132,13 @@ const nextConfig = {
       },
     ],
   },
-  
+
   // Compiler optimizations
   compiler: {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
-  
+
   // Bundle analyzer (enable with ANALYZE=true)
   ...(process.env.ANALYZE && {
     experimental: {
@@ -150,16 +146,10 @@ const nextConfig = {
       optimizePackageImports: ['lucide-react'],
     },
   }),
-  
+
   // Optimize package imports for tree-shaking
   experimental: {
-    optimizePackageImports: [
-      'lucide-react',
-      'date-fns',
-      'lodash',
-      'recharts',
-      '@sentry/nextjs',
-    ],
+    optimizePackageImports: ['lucide-react', 'date-fns', 'lodash', 'recharts', '@sentry/nextjs'],
   },
 
   // API proxy rewrites - Route all /api/* requests to the backend
@@ -176,7 +166,7 @@ const nextConfig = {
       ],
     };
   },
-  
+
   // Headers for caching and security
   async headers() {
     return [
@@ -212,15 +202,15 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: [
-              'camera=(self)',       // Allow camera for video calls
-              'microphone=(self)',   // Allow microphone for video calls
-              'geolocation=()',      // Disabled
-              'accelerometer=()',    // Disabled
-              'gyroscope=()',        // Disabled
-              'magnetometer=()',     // Disabled
-              'payment=(self)',      // Allow Stripe
-              'usb=()',              // Disabled
-              'interest-cohort=()',  // Disable FLoC/Topics
+              'camera=(self)', // Allow camera for video calls
+              'microphone=(self)', // Allow microphone for video calls
+              'geolocation=()', // Disabled
+              'accelerometer=()', // Disabled
+              'gyroscope=()', // Disabled
+              'magnetometer=()', // Disabled
+              'payment=(self)', // Allow Stripe
+              'usb=()', // Disabled
+              'interest-cohort=()', // Disable FLoC/Topics
             ].join(', '),
           },
           // Content Security Policy
@@ -294,6 +284,12 @@ const nextConfig = {
 module.exports = withBundleAnalyzer({
   ...nextConfig,
   experimental: {
-    optimizePackageImports: ['lucide-react', 'date-fns', 'lodash', '@livekit/components-react', 'recharts'],
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'lodash',
+      '@livekit/components-react',
+      'recharts',
+    ],
   },
 });

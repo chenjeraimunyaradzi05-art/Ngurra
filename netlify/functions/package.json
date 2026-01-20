@@ -1,0 +1,12 @@
+{
+  "name": "netlify-functions-deps",
+  "version": "1.0.0",
+  "description": "Dependencies for Netlify Functions",
+  "private": true,
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "aws-sdk": "^2.1410.0",
+    "node-fetch": "^2.6.12",
+    "@sendgrid/mail": "^8.1.0"
+  }
+}

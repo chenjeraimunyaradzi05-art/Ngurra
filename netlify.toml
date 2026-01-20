@@ -1,8 +1,8 @@
 [build]
-  base      = "apps/web"
-  command   = "npm install && npm run build"
-  publish   = ".next"
-  functions = "../../netlify/functions"
+  base      = "."
+  command   = "npm install && npm --prefix apps/web run build"
+  publish   = "apps/web/.next"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -16,8 +16,8 @@
 # Production Context (main/master branch)
 # =============================================================================
 [context.production]
-  base    = "apps/web"
-  command = "npm install && npm run build"
+  base    = "."
+  command = "npm install && npm --prefix apps/web run build"
 
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://api.gimbi.com.au"
@@ -29,8 +29,8 @@
 # Staging Context (staging branch)
 # =============================================================================
 [context.staging]
-  base    = "apps/web"
-  command = "npm install && npm run build"
+  base    = "."
+  command = "npm install && npm --prefix apps/web run build"
 
 [context.staging.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
@@ -42,8 +42,8 @@
 # Deploy Preview Context (PR branches)
 # =============================================================================
 [context.deploy-preview]
-  base    = "apps/web"
-  command = "npm install && npm run build"
+  base    = "."
+  command = "npm install && npm --prefix apps/web run build"
 
 [context.deploy-preview.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
@@ -55,8 +55,8 @@
 # Branch Deploy Context (feature branches)
 # =============================================================================
 [context.branch-deploy]
-  base    = "apps/web"
-  command = "npm install && npm run build"
+  base    = "."
+  command = "npm install && npm --prefix apps/web run build"
 
 [context.branch-deploy.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"

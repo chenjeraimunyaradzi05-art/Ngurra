@@ -53,9 +53,9 @@ export default function NotificationProvider({ children }) {
           </div>
       </div>
       {/* provider-level key handling is implemented in React useEffect (Escape -> dismiss last) */}
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .animate-fade-in-down { animation: fadeInDown 260ms ease-out; }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
+      `}} />
     </NotificationsContext.Provider>);
 }

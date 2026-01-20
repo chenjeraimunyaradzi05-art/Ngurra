@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ngurrapathways.life';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ngurrapathways.com.au';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString();

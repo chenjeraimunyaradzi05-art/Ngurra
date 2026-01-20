@@ -1,6 +1,6 @@
 /**
  * Authentication Hook (TypeScript)
- * 
+ *
  * Adapts the Zustand authStore for components expecting the useAuth hook pattern.
  */
 import { useEffect, useRef } from 'react';
@@ -29,9 +29,11 @@ export function useAuth() {
     })
       .then(async (res) => {
         if (!res.ok) {
-          throw new Error('Unauthorized');
+          const text = await res.text();
+          throw new Error(text || 'Unauthorized');
         }
-        return res.json();
+        const text = await res.text();
+        return text ? JSON.parse(text) : null;
       })
       .then((payload) => {
         if (payload?.data) {

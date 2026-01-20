@@ -1,6 +1,6 @@
 /**
  * API Fetch Hooks
- * 
+ *
  * Custom hooks for data fetching with caching, error handling,
  * and optimistic updates.
  */
@@ -24,8 +24,10 @@ export interface FetchOptions {
   /** Polling interval in milliseconds */
   pollingInterval?: number;
   /** Callback on success */
+  // eslint-disable-next-line no-unused-vars
   onSuccess?: (data: any) => void;
   /** Callback on error */
+  // eslint-disable-next-line no-unused-vars
   onError?: (error: Error) => void;
 }
 
@@ -38,7 +40,8 @@ const DEFAULT_CACHE_TIME = 5 * 60 * 1000; // 5 minutes
  */
 export function useFetch<T>(
   url: string | null,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
+  // eslint-disable-next-line no-unused-vars
 ): FetchState<T> & { refetch: () => Promise<void>; mutate: (data: T) => void } {
   const {
     skip = false,
@@ -64,7 +67,7 @@ export function useFetch<T>(
     // Check cache
     const cached = cache.get(url);
     if (cached && Date.now() - cached.timestamp < cacheTime) {
-      setState(s => ({
+      setState((s) => ({
         ...s,
         data: cached.data,
         isLoading: false,
@@ -73,7 +76,7 @@ export function useFetch<T>(
     }
 
     try {
-      setState(s => ({ ...s, isValidating: true }));
+      setState((s) => ({ ...s, isValidating: true }));
 
       const response = await fetch(url, {
         credentials: 'include',
@@ -83,10 +86,12 @@ export function useFetch<T>(
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || `HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
 
       // Update cache
       cache.set(url, { data, timestamp: Date.now() });
@@ -102,7 +107,7 @@ export function useFetch<T>(
       }
     } catch (error: any) {
       if (mountedRef.current) {
-        setState(s => ({
+        setState((s) => ({
           ...s,
           isLoading: false,
           error,
@@ -146,12 +151,15 @@ export function useFetch<T>(
   }, [pollingInterval, fetchData]);
 
   // Optimistic update function
-  const mutate = useCallback((data: T) => {
-    setState(s => ({ ...s, data }));
-    if (url) {
-      cache.set(url, { data, timestamp: Date.now() });
-    }
-  }, [url]);
+  const mutate = useCallback(
+    (data: T) => {
+      setState((s) => ({ ...s, data }));
+      if (url) {
+        cache.set(url, { data, timestamp: Date.now() });
+      }
+    },
+    [url],
+  );
 
   return { ...state, refetch: fetchData, mutate };
 }
@@ -160,9 +168,12 @@ export function useFetch<T>(
  * Hook for POST/PUT/DELETE mutations
  */
 export function useMutation<TData, TVariables>(
-  mutationFn: (variables: TVariables) => Promise<TData>
+  // eslint-disable-next-line no-unused-vars
+  mutationFn: (variables: TVariables) => Promise<TData>,
 ): {
+  // eslint-disable-next-line no-unused-vars
   mutate: (variables: TVariables) => Promise<TData>;
+  // eslint-disable-next-line no-unused-vars
   mutateAsync: (variables: TVariables) => Promise<TData>;
   data: TData | null;
   isLoading: boolean;
@@ -179,22 +190,28 @@ export function useMutation<TData, TVariables>(
     error: null,
   });
 
-  const mutateAsync = useCallback(async (variables: TVariables): Promise<TData> => {
-    setState({ data: null, isLoading: true, error: null });
+  const mutateAsync = useCallback(
+    async (variables: TVariables): Promise<TData> => {
+      setState({ data: null, isLoading: true, error: null });
 
-    try {
-      const data = await mutationFn(variables);
-      setState({ data, isLoading: false, error: null });
-      return data;
-    } catch (error: any) {
-      setState({ data: null, isLoading: false, error });
-      throw error;
-    }
-  }, [mutationFn]);
+      try {
+        const data = await mutationFn(variables);
+        setState({ data, isLoading: false, error: null });
+        return data;
+      } catch (error: any) {
+        setState({ data: null, isLoading: false, error });
+        throw error;
+      }
+    },
+    [mutationFn],
+  );
 
-  const mutate = useCallback((variables: TVariables): Promise<TData> => {
-    return mutateAsync(variables);
-  }, [mutateAsync]);
+  const mutate = useCallback(
+    (variables: TVariables): Promise<TData> => {
+      return mutateAsync(variables);
+    },
+    [mutateAsync],
+  );
 
   const reset = useCallback(() => {
     setState({ data: null, isLoading: false, error: null });
@@ -208,7 +225,7 @@ export function useMutation<TData, TVariables>(
  */
 export function usePaginatedFetch<T>(
   baseUrl: string,
-  options: FetchOptions & { pageSize?: number } = {}
+  options: FetchOptions & { pageSize?: number } = {},
 ) {
   const { pageSize = 20, ...fetchOptions } = options;
   const [page, setPage] = useState(1);
@@ -229,7 +246,7 @@ export function usePaginatedFetch<T>(
       if (page === 1) {
         setAllData(data.items);
       } else {
-        setAllData(prev => [...prev, ...data.items]);
+        setAllData((prev) => [...prev, ...data.items]);
       }
       setHasMore(page < (data.totalPages || 1));
     }
@@ -237,7 +254,7 @@ export function usePaginatedFetch<T>(
 
   const loadMore = useCallback(() => {
     if (!isLoading && hasMore) {
-      setPage(p => p + 1);
+      setPage((p) => p + 1);
     }
   }, [isLoading, hasMore]);
 
@@ -285,7 +302,7 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
  */
 export function useSearch<T>(
   searchUrl: string,
-  options: FetchOptions & { debounceMs?: number } = {}
+  options: FetchOptions & { debounceMs?: number } = {},
 ) {
   const { debounceMs = 300, ...fetchOptions } = options;
   const [query, setQuery] = useState('');

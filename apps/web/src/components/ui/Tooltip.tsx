@@ -46,7 +46,7 @@ export function Tooltip({
 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -133,22 +133,28 @@ export function Tooltip({
 
   const arrowClasses: Record<TooltipPlacement, string> = {
     top: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-t-current border-x-transparent border-b-transparent',
-    bottom: 'top-0 left-1/2 -translate-x-1/2 -translate-y-full border-b-current border-x-transparent border-t-transparent',
+    bottom:
+      'top-0 left-1/2 -translate-x-1/2 -translate-y-full border-b-current border-x-transparent border-t-transparent',
     left: 'right-0 top-1/2 translate-x-full -translate-y-1/2 border-l-current border-y-transparent border-r-transparent',
-    right: 'left-0 top-1/2 -translate-x-full -translate-y-1/2 border-r-current border-y-transparent border-l-transparent',
+    right:
+      'left-0 top-1/2 -translate-x-full -translate-y-1/2 border-r-current border-y-transparent border-l-transparent',
   };
 
   return (
     <>
-      {React.cloneElement(children, {
-        ref: triggerRef,
-        onMouseEnter: showTooltip,
-        onMouseLeave: hideTooltip,
-        onFocus: showTooltip,
-        onBlur: hideTooltip,
-      })}
+      <span
+        ref={triggerRef}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        onFocus={showTooltip}
+        onBlur={hideTooltip}
+        className="inline-flex"
+      >
+        {children}
+      </span>
 
-      {isVisible && typeof window !== 'undefined' &&
+      {isVisible &&
+        typeof window !== 'undefined' &&
         createPortal(
           <div
             ref={tooltipRef}
@@ -166,18 +172,16 @@ export function Tooltip({
             }}
           >
             {content}
-            <span 
+            <span
               className={`absolute w-0 h-0 border-4 ${arrowClasses[placement]}`}
-              style={{ 
-                borderColor: variant === 'cosmic' ? '#1A0F2E' : 
-                            variant === 'light' ? 'white' : 
-                            '#1f2937'
+              style={{
+                borderColor:
+                  variant === 'cosmic' ? '#1A0F2E' : variant === 'light' ? 'white' : '#1f2937',
               }}
             />
           </div>,
-          document.body
-        )
-      }
+          document.body,
+        )}
     </>
   );
 }
@@ -193,7 +197,7 @@ export function Popover({
 }: PopoverProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const calculatePosition = useCallback(() => {
@@ -228,9 +232,11 @@ export function Popover({
     // Keep popover within viewport
     const viewport = { width: window.innerWidth, height: window.innerHeight };
     if (left < 8) left = 8;
-    if (left + popoverRect.width > viewport.width - 8) left = viewport.width - popoverRect.width - 8;
+    if (left + popoverRect.width > viewport.width - 8)
+      left = viewport.width - popoverRect.width - 8;
     if (top < 8) top = 8;
-    if (top + popoverRect.height > viewport.height - 8) top = viewport.height - popoverRect.height - 8;
+    if (top + popoverRect.height > viewport.height - 8)
+      top = viewport.height - popoverRect.height - 8;
 
     setPosition({ top, left });
   }, [placement]);
@@ -287,14 +293,18 @@ export function Popover({
 
   return (
     <>
-      {React.cloneElement(children, {
-        ref: triggerRef,
-        onClick: handleTrigger,
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave,
-      })}
+      <span
+        ref={triggerRef}
+        onClick={handleTrigger}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="inline-flex"
+      >
+        {children}
+      </span>
 
-      {isVisible && typeof window !== 'undefined' &&
+      {isVisible &&
+        typeof window !== 'undefined' &&
         createPortal(
           <div
             ref={popoverRef}
@@ -313,9 +323,8 @@ export function Popover({
           >
             {content}
           </div>,
-          document.body
-        )
-      }
+          document.body,
+        )}
     </>
   );
 }

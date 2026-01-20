@@ -84,10 +84,10 @@ function LeftSidebar() {
   const platformFeatures = [
     { icon: Briefcase, label: 'Job Board', description: 'Culturally safe opportunities', href: '/jobs', color: 'from-pink-500 to-purple-500' },
     { icon: Heart, label: 'Mentorship', description: 'Connect with guides', href: '/mentorship', color: 'from-purple-500 to-indigo-500' },
-    { icon: GraduationCap, label: 'Learning Hub', description: 'Courses & certifications', href: '/courses', color: 'from-indigo-500 to-blue-500' },
+    { icon: GraduationCap, label: 'Learning Hub', description: 'Courses & certifications', href: '/learning', color: 'from-indigo-500 to-blue-500' },
     { icon: Users, label: 'Community', description: 'Network with peers', href: '/community', color: 'from-blue-500 to-cyan-500' },
-    { icon: Building2, label: 'Employers', description: 'Partner organizations', href: '/business', color: 'from-cyan-500 to-teal-500' },
-    { icon: TrendingUp, label: 'Career Paths', description: 'Plan your journey', href: '/career', color: 'from-teal-500 to-green-500' },
+    { icon: Building2, label: 'Employers', description: 'Partner organizations', href: '/employers', color: 'from-cyan-500 to-teal-500' },
+    { icon: TrendingUp, label: 'Career Paths', description: 'Plan your journey', href: '/career-paths', color: 'from-teal-500 to-green-500' },
   ];
 
   const quickStats = [

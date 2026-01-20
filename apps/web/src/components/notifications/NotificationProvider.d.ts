@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+import type { ReactElement, ReactNode } from 'react';
+
 interface NotificationOptions {
   id?: string;
   message: string;
@@ -11,9 +14,9 @@ interface NotificationOptions {
 }
 
 interface NotificationsContext {
-  showNotification: (options: NotificationOptions) => string;
-  hideNotification: (id: string) => void;
+  showNotification: (_options: NotificationOptions) => string;
+  hideNotification: (_id: string) => void;
 }
 
 export function useNotifications(): NotificationsContext;
-export default function NotificationProvider(props: { children: React.ReactNode }): JSX.Element;
+export default function NotificationProvider(_props: { children: ReactNode }): ReactElement;

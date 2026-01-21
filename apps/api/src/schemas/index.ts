@@ -5,6 +5,9 @@
 
 import { z } from 'zod';
 
+// Re-export auth schemas from validation.ts
+export { registerSchema, loginSchema } from '../lib/validation';
+
 // ============================================
 // Common Schemas
 // ============================================

@@ -11,7 +11,7 @@ const entryPoints = await glob('src/**/*.ts', {
 console.log(`Building ${entryPoints.length} files...`);
 
 try {
-  await esbuild.build({
+  const result = await esbuild.build({
     entryPoints,
     bundle: false,
     outdir: 'dist',
@@ -19,8 +19,17 @@ try {
     target: 'node20',
     format: 'cjs',
     sourcemap: true,
-    logLevel: 'info',
+    logLevel: 'warning',
+    // Suppress known warnings about mixed CJS/ESM (these files work at runtime)
+    logOverride: {
+      'commonjs-variable-in-esm': 'silent',
+      'empty-import-meta': 'silent',
+    },
   });
+
+  if (result.warnings.length > 0) {
+    console.log(`⚠️  ${result.warnings.length} warnings (suppressed non-critical)`);
+  }
   
   // Copy prisma schema if exists
   const prismaSchemaPath = 'prisma/schema.prisma';

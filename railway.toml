@@ -1,6 +1,7 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd apps/api && npm install && npm run build && npx prisma generate"
+# Only install and build the API to avoid monorepo timeout
+buildCommand = "cd apps/api && npm install --legacy-peer-deps && npm run build && npx prisma generate"
 watchPatterns = ["apps/api/**"]
 
 [deploy]

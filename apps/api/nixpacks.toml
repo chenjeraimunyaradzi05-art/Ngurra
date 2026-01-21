@@ -1,18 +1,22 @@
 # Nixpacks configuration for ngurra-api
+# Only build the API, not the entire monorepo
+
 [phases.setup]
 nixPkgs = ["nodejs_20", "openssl"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = [
+    "cd apps/api && npm install --legacy-peer-deps"
+]
 
 [phases.build]
 cmds = [
-    "npm run build",
-    "npx prisma generate"
+    "cd apps/api && npm run build",
+    "cd apps/api && npx prisma generate"
 ]
 
 [start]
-cmd = "npm run start"
+cmd = "cd apps/api && npm run start"
 
 [variables]
 NODE_ENV = "production"

@@ -1,12 +1,12 @@
 # Railway configuration for API service
-# IMPORTANT: Set "Root Directory" to "apps/api" in Railway dashboard settings
+# Uses Dockerfile to avoid monorepo auto-detection issues
 
 [build]
-builder = "nixpacks"
-buildCommand = "npm install --legacy-peer-deps && npm run build && npx prisma generate"
+builder = "dockerfile"
+dockerfilePath = "apps/api/Dockerfile.railway"
+watchPatterns = ["apps/api/**"]
 
 [deploy]
-startCommand = "npm run start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"

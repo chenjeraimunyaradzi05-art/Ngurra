@@ -6,6 +6,26 @@
 
 import { Request } from 'express';
 
+/**
+ * Authenticated user information attached to request
+ */
+export interface AuthUser {
+  id: string;
+  email: string;
+  userType?: string;
+}
+
+/**
+ * API Key information attached to request
+ */
+export interface ApiKeyInfo {
+  id: string;
+  name: string;
+  scopes: string[];
+  company: {
+    id: string;
+    userId: string;
+    companyName: string;
   };
 }
 

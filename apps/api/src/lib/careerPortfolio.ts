@@ -520,7 +520,7 @@ export async function confirmMediaUpload(userId, mediaId, metadata = {}) {
     where: { id: mediaId },
     data: {
       status: 'ready',
-      url: getPublicUrl(media.s3Key),
+      url: getS3PublicUrl(media.s3Key),
       title: metadata.title,
       caption: metadata.caption,
       altText: metadata.altText,
@@ -908,7 +908,7 @@ export async function trackProjectView(projectId, viewerId) {
 // HELPERS
 // ============================================================================
 
-function getPublicUrl(s3Key) {
+function getS3PublicUrl(s3Key) {
   const cdnDomain = process.env.CDN_DOMAIN;
   if (cdnDomain) {
     return `https://${cdnDomain}/${s3Key}`;

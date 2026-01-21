@@ -1,0 +1,14 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd apps/api && npm install && npm run build && npx prisma generate"
+watchPatterns = ["apps/api/**"]
+
+[deploy]
+startCommand = "cd apps/api && npm run start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[service]
+internalPort = 3333

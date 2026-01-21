@@ -15,7 +15,6 @@ try {
     entryPoints,
     bundle: false,
     outdir: 'dist',
-    outbase: '.', // Preserve src/ directory structure so dist/src/index.js works
     platform: 'node',
     target: 'node20',
     format: 'cjs',

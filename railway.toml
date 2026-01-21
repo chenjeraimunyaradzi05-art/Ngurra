@@ -1,11 +1,12 @@
+# Railway configuration for API service
+# IMPORTANT: Set "Root Directory" to "apps/api" in Railway dashboard settings
+
 [build]
 builder = "nixpacks"
-# Only install and build the API to avoid monorepo timeout
-buildCommand = "cd apps/api && npm install --legacy-peer-deps && npm run build && npx prisma generate"
-watchPatterns = ["apps/api/**"]
+buildCommand = "npm install --legacy-peer-deps && npm run build && npx prisma generate"
 
 [deploy]
-startCommand = "cd apps/api && npm run start"
+startCommand = "npm run start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"

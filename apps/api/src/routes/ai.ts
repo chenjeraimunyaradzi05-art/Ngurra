@@ -72,11 +72,11 @@ Format each suggestion on a new line starting with a number.`;
         // Ask the configured AI provider with RAG context
         const aiResult = await askAI(prompt, { userId });
         if (aiResult && aiResult.status === 429)
-            return res.status(429).json({ error: 'rate_limited' });
+            return void res.status(429).json({ error: 'rate_limited' });
         
         let suggestionsFromAi: string[] | null = null;
         if (aiResult && aiResult.source === 'safety') {
-            return res.json({ 
+            return void res.json({ 
                 ok: true, 
                 persona: userType, 
                 suggestions: [], 
@@ -100,7 +100,7 @@ Format each suggestion on a new line starting with a number.`;
         }
         
         if (suggestionsFromAi && suggestionsFromAi.length > 0) {
-            return res.json({ 
+            return void res.json({ 
                 ok: true, 
                 persona: userType, 
                 suggestions: suggestionsFromAi, 
@@ -114,7 +114,7 @@ Format each suggestion on a new line starting with a number.`;
         }
         
         // Fallback: context-aware rule-based suggestions using RAG data
-        const suggestions = [];
+        const suggestions: string[] = [];
         
         if (ragContext.user) {
             // Personalized suggestions based on user data
@@ -195,13 +195,13 @@ router.post('/match-explanation', async (req, res) => {
     try {
         const { jobId, candidateId, matchScore } = req.body;
         if (!jobId || !candidateId)
-            return res.status(400).json({ error: 'Missing jobId or candidateId' });
+            return void res.status(400).json({ error: 'Missing jobId or candidateId' });
         const [job, candidate] = await Promise.all([
             prisma.job.findUnique({ where: { id: jobId }, include: { jobSkills: { include: { skill: true } } } }),
             prisma.memberProfile.findUnique({ where: { userId: candidateId }, include: { user: { include: { userSkills: { include: { skill: true } } } } } }),
         ]);
         if (!job || !candidate)
-            return res.status(404).json({ error: 'Job or candidate not found' });
+            return void res.status(404).json({ error: 'Job or candidate not found' });
         const jobSkills = job.jobSkills.map((js) => js.skill.name).join(', ');
         const candidateSkills = candidate.user.userSkills.map((us) => us.skill.name).join(', ');
         const prompt = `
@@ -219,11 +219,11 @@ router.post('/match-explanation', async (req, res) => {
             userId: candidateId,
             feature: 'match-explanation',
         });
-        return res.json({ explanation: aiResult?.text });
+        return void res.json({ explanation: aiResult?.text });
     }
     catch (err) {
         console.error('AI match explanation error', err);
-        return res.status(500).json({ error: 'AI service unavailable' });
+        return void res.status(500).json({ error: 'AI service unavailable' });
     }
 });
 
@@ -232,13 +232,13 @@ router.post('/resume-optimize', async (req, res) => {
     try {
         const { userId, targetJobId } = req.body;
         if (!userId)
-            return res.status(400).json({ error: 'Missing userId' });
+            return void res.status(400).json({ error: 'Missing userId' });
         const profile = await prisma.memberProfile.findUnique({
             where: { userId },
             include: { user: { include: { userSkills: { include: { skill: true } } } } },
         });
         if (!profile)
-            return res.status(404).json({ error: 'Profile not found' });
+            return void res.status(404).json({ error: 'Profile not found' });
         let jobContext = '';
         if (targetJobId) {
             const job = await prisma.job.findUnique({ where: { id: targetJobId } });
@@ -260,11 +260,11 @@ router.post('/resume-optimize', async (req, res) => {
             userId,
             feature: 'resume-optimize',
         });
-        return res.json({ suggestions: aiResult?.text });
+        return void res.json({ suggestions: aiResult?.text });
     }
     catch (err) {
         console.error('AI resume optimize error', err);
-        return res.status(500).json({ error: 'AI service unavailable' });
+        return void res.status(500).json({ error: 'AI service unavailable' });
     }
 });
 
@@ -273,7 +273,7 @@ router.post('/job-description', async (req, res) => {
     try {
         const { title, skills, industry, existingDescription, userId } = req.body;
         if (!title)
-            return res.status(400).json({ error: 'Missing job title' });
+            return void res.status(400).json({ error: 'Missing job title' });
         const prompt = existingDescription
             ? `
         Improve this job description for a "${title}" role in "${industry || 'General'}".
@@ -298,11 +298,11 @@ router.post('/job-description', async (req, res) => {
             userId,
             feature: 'job-description',
         });
-        return res.json({ description: aiResult?.text });
+        return void res.json({ description: aiResult?.text });
     }
     catch (err) {
         console.error('AI job description error', err);
-        return res.status(500).json({ error: 'AI service unavailable' });
+        return void res.status(500).json({ error: 'AI service unavailable' });
     }
 });
 
@@ -311,7 +311,7 @@ router.post('/extract-skills', async (req, res) => {
     try {
         const { text } = req.body;
         if (!text)
-            return res.status(400).json({ error: 'Missing text' });
+            return void res.status(400).json({ error: 'Missing text' });
         // Use simple keyword extraction first to save tokens/latency
         const keywords = extractKeywords(text);
         // If text is short, just return keywords. If long, maybe use LLM for better extraction?
@@ -326,7 +326,7 @@ router.post('/extract-skills', async (req, res) => {
             maxTokens: 200,
             feature: 'extract-skills',
         });
-        let skills = [];
+        let skills: string[] = [];
         try {
             skills = JSON.parse(aiResult?.text || '[]');
         }
@@ -334,11 +334,11 @@ router.post('/extract-skills', async (req, res) => {
             // Fallback to regex/keyword extraction if JSON parse fails
             skills = keywords;
         }
-        return res.json({ skills });
+        return void res.json({ skills });
     }
     catch (err) {
         console.error('AI extract skills error', err);
-        return res.status(500).json({ error: 'AI service unavailable' });
+        return void res.status(500).json({ error: 'AI service unavailable' });
     }
 });
 
@@ -385,7 +385,7 @@ router.post('/wellness', async (req, res) => {
         // Ask configured AI provider (handles rate-limit, caching and safety)
         const aiResult = await askAI(prompt, { userId });
         if (aiResult && aiResult.status === 429)
-            return res.status(429).json({ error: 'rate_limited' });
+            return void res.status(429).json({ error: 'rate_limited' });
         let tips: string[] = [];
         // try to derive persona/userType for wellness route (similar to concierge)
         let userType = 'MEMBER';
@@ -402,7 +402,7 @@ router.post('/wellness', async (req, res) => {
                 tips.push('Contact your trusted family or community Elders and seek cultural support');
                 tips.push('Access 24/7 crisis counselling services available in your region');
             }
-            return res.json({ ok: true, persona: userType, tips, recommendedCourses: [], communityResources, elderSupport, source: 'safety', text: aiResult.text });
+            return void res.json({ ok: true, persona: userType, tips, recommendedCourses: [], communityResources, elderSupport, source: 'safety', text: aiResult.text });
         }
         if (aiResult && aiResult.text) {
             tips = aiResult.text
@@ -453,25 +453,25 @@ router.post('/resume-enhancer', async (req, res) => {
         const jobTitle = String(targetJobTitle || '').trim();
         const jd = String(jobDescription || '').trim();
         if (!resume) {
-            return res.status(400).json({ error: 'resumeText is required' });
+            return void res.status(400).json({ error: 'resumeText is required' });
         }
         if (!jobTitle && !jd) {
-            return res.status(400).json({ error: 'targetJobTitle or jobDescription is required' });
+            return void res.status(400).json({ error: 'targetJobTitle or jobDescription is required' });
         }
         const clippedResume = resume.length > 6000 ? resume.slice(0, 6000) : resume;
         const clippedJd = jd.length > 6000 ? jd.slice(0, 6000) : jd;
         const prompt = `You are an ATS-aware resume coach for Aboriginal and Torres Strait Islander community members.\n\nTask: Improve the resume for the target role and identify missing keywords. Keep advice culturally-safe and strengths-based. Do not invent qualifications, licences, employers, dates, or achievements.\n\nReturn ONLY valid JSON with keys:\n- improvedSummary (string)\n- missingKeywords (array of strings)\n- bulletPointImprovements (array of strings)\n- culturalAlignmentTips (array of strings)\n- disclaimer (string)\n\nTarget job title: ${jobTitle || 'N/A'}\nJob description: ${clippedJd || 'N/A'}\n\nResume: ${clippedResume}`;
         const aiResult = await askAI(prompt, { userId: userId || undefined, ip: req.ip });
         if (aiResult && aiResult.status === 429)
-            return res.status(429).json({ error: 'rate_limited' });
+            return void res.status(429).json({ error: 'rate_limited' });
         if (aiResult && aiResult.source === 'safety') {
-            return res.json({ ok: true, source: 'safety', result: null, text: aiResult.text });
+            return void res.json({ ok: true, source: 'safety', result: null, text: aiResult.text });
         }
 
         if (aiResult && aiResult.text) {
             try {
                 const parsed = JSON.parse(aiResult.text);
-                return res.json({ ok: true, source: aiResult.source || 'ai', result: parsed });
+                return void res.json({ ok: true, source: aiResult.source || 'ai', result: parsed });
             }
             catch {
                 // fall through to heuristic response
@@ -498,11 +498,11 @@ router.post('/resume-enhancer', async (req, res) => {
             ],
             disclaimer: 'Suggestions are guidance only. Do not add qualifications or licences you do not hold.',
         };
-        return res.json({ ok: true, source: aiResult?.source || 'fallback', result });
+        return void res.json({ ok: true, source: aiResult?.source || 'fallback', result });
     }
     catch (err) {
         console.error('AI resume enhancer error', err);
-        return res.status(500).json({ error: 'AI resume enhancer failed' });
+        return void res.status(500).json({ error: 'AI resume enhancer failed' });
     }
 });
 
@@ -517,7 +517,7 @@ router.post('/interview-prep', async (req, res) => {
         const a = String(answer || '').trim();
 
         if (!title && !jd) {
-            return res.status(400).json({ error: 'jobTitle or jobDescription is required' });
+            return void res.status(400).json({ error: 'jobTitle or jobDescription is required' });
         }
 
         const clippedJd = jd.length > 6000 ? jd.slice(0, 6000) : jd;
@@ -547,15 +547,15 @@ Answer (optional): ${clippedAnswer || 'N/A'}`;
 
         const aiResult = await askAI(prompt, { userId: userId || undefined, ip: req.ip });
         if (aiResult && aiResult.status === 429)
-            return res.status(429).json({ error: 'rate_limited' });
+            return void res.status(429).json({ error: 'rate_limited' });
         if (aiResult && aiResult.source === 'safety') {
-            return res.json({ ok: true, source: 'safety', result: null, text: aiResult.text });
+            return void res.json({ ok: true, source: 'safety', result: null, text: aiResult.text });
         }
 
         if (aiResult && aiResult.text) {
             try {
                 const parsed = JSON.parse(aiResult.text);
-                return res.json({ ok: true, source: aiResult.source || 'ai', result: parsed });
+                return void res.json({ ok: true, source: aiResult.source || 'ai', result: parsed });
             }
             catch {
                 // fall through to deterministic response
@@ -597,11 +597,11 @@ Answer (optional): ${clippedAnswer || 'N/A'}`;
             disclaimer: 'Guidance only. Do not claim qualifications, licences, or experience you do not have.',
         };
 
-        return res.json({ ok: true, source: aiResult?.source || 'fallback', result });
+        return void res.json({ ok: true, source: aiResult?.source || 'fallback', result });
     }
     catch (err) {
         console.error('AI interview prep error', err);
-        return res.status(500).json({ error: 'AI interview prep failed' });
+        return void res.status(500).json({ error: 'AI interview prep failed' });
     }
 });
 
@@ -622,3 +622,6 @@ router.get('/opportunity-radar', async (req, res) => {
 });
 
 export default router;
+
+
+

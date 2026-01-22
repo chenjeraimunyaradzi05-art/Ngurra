@@ -21,18 +21,18 @@ const router = express.Router();
  */
 router.post(
   '/job-alerts',
-  auth.authenticate(),
+  auth.authenticate,
   async (req: any, res: any) => {
     try {
       // Check admin permission
       if (req.user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Admin access required' });
+        return void res.status(403).json({ error: 'Admin access required' });
       }
 
       const frequency = req.body.frequency || 'daily';
       
       if (!['instant', 'daily', 'weekly'].includes(frequency)) {
-        return res.status(400).json({ error: 'Invalid frequency. Must be instant, daily, or weekly' });
+        return void res.status(400).json({ error: 'Invalid frequency. Must be instant, daily, or weekly' });
       }
 
       console.log(`[Admin] Job alerts triggered for ${frequency} by user ${req.user.id}`);
@@ -57,12 +57,12 @@ router.post(
  */
 router.post(
   '/pre-apply',
-  auth.authenticate(),
+  auth.authenticate,
   async (req: any, res: any) => {
     try {
       // Check admin permission
       if (req.user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Admin access required' });
+        return void res.status(403).json({ error: 'Admin access required' });
       }
 
       console.log(`[Admin] Pre-apply processing triggered by user ${req.user.id}`);
@@ -86,12 +86,12 @@ router.post(
  */
 router.get(
   '/status',
-  auth.authenticate(),
+  auth.authenticate,
   async (req: any, res: any) => {
     try {
       // Check admin permission
       if (req.user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Admin access required' });
+        return void res.status(403).json({ error: 'Admin access required' });
       }
 
       // Get counts of alerts to be processed
@@ -138,3 +138,5 @@ router.get(
 );
 
 export default router;
+
+

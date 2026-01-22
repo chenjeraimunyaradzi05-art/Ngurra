@@ -17,7 +17,7 @@ const router = Router();
 function requireAdmin(req, res, next) {
   const role = String(req.user?.role || req.user?.userType || '').toLowerCase();
   if (role !== 'admin' && role !== 'super_admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return void res.status(403).json({ error: 'Admin access required' });
   }
   next();
 }
@@ -25,7 +25,7 @@ function requireAdmin(req, res, next) {
 function requireEmployer(req, res, next) {
   const role = String(req.user?.role || req.user?.userType || '').toLowerCase();
   if (role !== 'employer' && role !== 'admin' && role !== 'super_admin') {
-    return res.status(403).json({ error: 'Employer access required' });
+    return void res.status(403).json({ error: 'Employer access required' });
   }
   next();
 }
@@ -232,7 +232,7 @@ router.get('/employer/overview', authenticateJWT, requireEmployer, async (req, r
     });
 
     if (!companyProfile) {
-      return res.status(404).json({ error: 'Company profile not found' });
+      return void res.status(404).json({ error: 'Company profile not found' });
     }
 
     const companyId = companyProfile.id;
@@ -319,11 +319,11 @@ router.get('/employer/jobs/:jobId', authenticateJWT, requireEmployer, async (req
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     if (job.company.userId !== userId && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
 
     const [
@@ -384,7 +384,7 @@ router.get('/mentor/overview', authenticateJWT, async (req, res) => {
     });
 
     if (!mentorProfile) {
-      return res.status(404).json({ error: 'Mentor profile not found' });
+      return void res.status(404).json({ error: 'Mentor profile not found' });
     }
 
     const now = new Date();
@@ -440,3 +440,4 @@ router.get('/mentor/overview', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+

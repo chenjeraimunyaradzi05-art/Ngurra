@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
+import asyncHandler from '../utils/asyncHandler';
 import { prisma } from '../db';
 import auth from '../middleware/auth';
 
-// Extend Request to include user from auth middleware
-interface AuthRequest extends Request {
-  user?: { id: string; userType: string; email?: string };
-}
+// Extend Request (handled globally in auth.ts now)
+// interface AuthRequest extends Request { ... } removed
+
 
 // Type definitions for social feed
 interface SocialPost {
@@ -106,7 +106,7 @@ function calculateFeedScore(post: any, userId: string, connections: string[], fo
 /**
  * GET /feed - Get personalized feed (or public feed if not authenticated)
  */
-router.get('/', auth.optionalAuth(), async (req: AuthRequest, res: Response) => {
+router.get('/', auth.optionalAuth, async (req, res) => {
   try {
     const userId = req.user?.id;
     const page = parseInt(req.query.page as string) || 1;
@@ -188,7 +188,7 @@ router.get('/', auth.optionalAuth(), async (req: AuthRequest, res: Response) => 
         };
       });
       
-      return res.json({ posts: enrichedPosts, hasMore: posts.length === limit });
+      return void res.json({ posts: enrichedPosts, hasMore: posts.length === limit });
     }
 
     // Get user's safety settings
@@ -343,7 +343,7 @@ router.get('/', auth.optionalAuth(), async (req: AuthRequest, res: Response) => 
 /**
  * GET /feed/discover - Discover new content
  */
-router.get('/discover', auth.optionalAuth(), async (req: AuthRequest, res: Response) => {
+router.get('/discover', auth.optionalAuth, async (req, res) => {
   try {
     const userId = req.user?.id;
     const page = parseInt(req.query.page as string) || 1;
@@ -404,7 +404,7 @@ router.get('/discover', auth.optionalAuth(), async (req: AuthRequest, res: Respo
 /**
  * POST /feed/posts - Create a post
  */
-router.post('/posts', auth.authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/posts', auth.authenticate, async (req, res) => {
   try {
     const userId = req.user!.id;
     const {
@@ -433,24 +433,24 @@ router.post('/posts', auth.authenticate(), async (req: AuthRequest, res: Respons
     const hasPoll = Array.isArray(pollOptions) && pollOptions.length > 0;
 
     if (!hasText && !hasMedia && !hasArticle && !hasPoll) {
-      return res.status(400).json({ error: 'Post must include content or media' });
+      return void res.status(400).json({ error: 'Post must include content or media' });
     }
 
     if (contentStr.length > 2000) {
-      return res.status(400).json({ error: 'Content is too long (max 2000 characters)' });
+      return void res.status(400).json({ error: 'Content is too long (max 2000 characters)' });
     }
 
     if (hasMedia) {
       if (normalizedMediaUrls.length > 3) {
-        return res.status(400).json({ error: 'Too many media items (max 3)' });
+        return void res.status(400).json({ error: 'Too many media items (max 3)' });
       }
       for (const url of normalizedMediaUrls) {
         if (typeof url !== 'string' || url.length === 0) {
-          return res.status(400).json({ error: 'Invalid media URL' });
+          return void res.status(400).json({ error: 'Invalid media URL' });
         }
         // Guardrail: prevent very large payloads (e.g. huge data URLs)
         if (url.length > 1_000_000) {
-          return res.status(400).json({ error: 'Media item is too large' });
+          return void res.status(400).json({ error: 'Media item is too large' });
         }
       }
     }
@@ -463,7 +463,7 @@ router.post('/posts', auth.authenticate(), async (req: AuthRequest, res: Respons
     // Rate limiting check
     const rateLimit = await checkRateLimit(userId, 'post');
     if (!rateLimit.allowed) {
-      return res.status(429).json({ 
+      return void res.status(429).json({ 
         error: 'Rate limit exceeded', 
         retryAfter: rateLimit.retryAfter 
       });
@@ -536,7 +536,7 @@ router.post('/posts', auth.authenticate(), async (req: AuthRequest, res: Respons
 /**
  * GET /feed/posts/:id - Get a single post
  */
-router.get('/posts/:id', auth.optionalAuth(), async (req: AuthRequest, res: Response) => {
+router.get('/posts/:id', auth.optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -554,17 +554,17 @@ router.get('/posts/:id', auth.optionalAuth(), async (req: AuthRequest, res: Resp
     });
 
     if (!post || !post.isActive) {
-      return res.status(404).json({ error: 'Post not found' });
+      return void res.status(404).json({ error: 'Post not found' });
     }
 
     // Check visibility
     if (post.visibility === 'private' && post.authorId !== userId) {
-      return res.status(404).json({ error: 'Post not found' });
+      return void res.status(404).json({ error: 'Post not found' });
     }
 
     if (post.visibility === 'connections' && post.authorId !== userId) {
       if (!userId) {
-        return res.status(404).json({ error: 'Post not found' });
+        return void res.status(404).json({ error: 'Post not found' });
       }
       const connection = await prisma.userConnection.findFirst({
         where: {
@@ -577,7 +577,7 @@ router.get('/posts/:id', auth.optionalAuth(), async (req: AuthRequest, res: Resp
         select: { id: true }
       });
       if (!connection) {
-        return res.status(404).json({ error: 'Post not found' });
+        return void res.status(404).json({ error: 'Post not found' });
       }
     }
 
@@ -616,7 +616,7 @@ router.get('/posts/:id', auth.optionalAuth(), async (req: AuthRequest, res: Resp
 /**
  * DELETE /feed/posts/:id - Delete a post
  */
-router.delete('/posts/:id', auth.authenticate(), async (req: AuthRequest, res: Response) => {
+router.delete('/posts/:id', auth.authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -626,11 +626,11 @@ router.delete('/posts/:id', auth.authenticate(), async (req: AuthRequest, res: R
     });
 
     if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
+      return void res.status(404).json({ error: 'Post not found' });
     }
 
     if (post.authorId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     await prisma.socialPost.update({
@@ -652,7 +652,7 @@ router.delete('/posts/:id', auth.authenticate(), async (req: AuthRequest, res: R
 /**
  * POST /feed/posts/:id/react - React to a post
  */
-router.post('/posts/:id/react', auth.authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/posts/:id/react', auth.authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -660,13 +660,13 @@ router.post('/posts/:id/react', auth.authenticate(), async (req: AuthRequest, re
 
     const validReactions = ['like', 'love', 'support', 'celebrate', 'insightful', 'curious'];
     if (!validReactions.includes(type)) {
-      return res.status(400).json({ error: 'Invalid reaction type' });
+      return void res.status(400).json({ error: 'Invalid reaction type' });
     }
 
     // Rate limiting
     const rateLimit = await checkRateLimit(userId, 'reaction');
     if (!rateLimit.allowed) {
-      return res.status(429).json({ error: 'Rate limit exceeded' });
+      return void res.status(429).json({ error: 'Rate limit exceeded' });
     }
 
     const existing = await prisma.socialReaction.findUnique({
@@ -685,14 +685,14 @@ router.post('/posts/:id/react', auth.authenticate(), async (req: AuthRequest, re
             data: { likeCount: { decrement: 1 } }
           })
         ]);
-        return res.json({ success: true, reaction: null });
+        return void res.json({ success: true, reaction: null });
       } else {
         // Update reaction
         await prisma.socialReaction.update({
           where: { postId_userId: { postId: id, userId } },
           data: { type }
         });
-        return res.json({ success: true, reaction: type });
+        return void res.json({ success: true, reaction: type });
       }
     }
 
@@ -741,20 +741,20 @@ router.post('/posts/:id/react', auth.authenticate(), async (req: AuthRequest, re
 /**
  * POST /feed/posts/:id/comments - Add a comment
  */
-router.post('/posts/:id/comments', auth.authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/posts/:id/comments', auth.authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
     const { content, parentId } = req.body;
 
     if (!content || content.length > 1000) {
-      return res.status(400).json({ error: 'Content is required (max 1000 characters)' });
+      return void res.status(400).json({ error: 'Content is required (max 1000 characters)' });
     }
 
     // Rate limiting
     const rateLimit = await checkRateLimit(userId, 'comment');
     if (!rateLimit.allowed) {
-      return res.status(429).json({ error: 'Rate limit exceeded' });
+      return void res.status(429).json({ error: 'Rate limit exceeded' });
     }
 
     const comment = await prisma.socialComment.create({
@@ -820,7 +820,7 @@ router.post('/posts/:id/comments', auth.authenticate(), async (req: AuthRequest,
 /**
  * GET /feed/posts/:id/comments - Get comments for a post
  */
-router.get('/posts/:id/comments', auth.optionalAuth(), async (req: AuthRequest, res: Response) => {
+router.get('/posts/:id/comments', auth.optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page as string) || 1;
@@ -834,14 +834,14 @@ router.get('/posts/:id/comments', auth.optionalAuth(), async (req: AuthRequest, 
       select: { id: true, isActive: true, visibility: true, authorId: true }
     });
     if (!post || !post.isActive) {
-      return res.status(404).json({ error: 'Post not found' });
+      return void res.status(404).json({ error: 'Post not found' });
     }
     if (post.visibility === 'private' && post.authorId !== userId) {
-      return res.status(404).json({ error: 'Post not found' });
+      return void res.status(404).json({ error: 'Post not found' });
     }
     if (post.visibility === 'connections' && post.authorId !== userId) {
       if (!userId) {
-        return res.status(404).json({ error: 'Post not found' });
+        return void res.status(404).json({ error: 'Post not found' });
       }
       const connection = await prisma.userConnection.findFirst({
         where: {
@@ -854,7 +854,7 @@ router.get('/posts/:id/comments', auth.optionalAuth(), async (req: AuthRequest, 
         select: { id: true }
       });
       if (!connection) {
-        return res.status(404).json({ error: 'Post not found' });
+        return void res.status(404).json({ error: 'Post not found' });
       }
     }
 
@@ -909,7 +909,7 @@ router.get('/posts/:id/comments', auth.optionalAuth(), async (req: AuthRequest, 
 /**
  * GET /feed/reels - Get reels feed
  */
-router.get('/reels', auth.optionalAuth(), async (req: AuthRequest, res: Response) => {
+router.get('/reels', auth.optionalAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -948,7 +948,7 @@ router.get('/reels', auth.optionalAuth(), async (req: AuthRequest, res: Response
 /**
  * POST /feed/reels - Upload a reel
  */
-router.post('/reels', auth.authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/reels', auth.authenticate, async (req, res) => {
   try {
     const userId = req.user!.id;
     const {
@@ -960,7 +960,7 @@ router.post('/reels', auth.authenticate(), async (req: AuthRequest, res: Respons
     } = req.body;
 
     if (!videoUrl || !duration) {
-      return res.status(400).json({ error: 'Video URL and duration are required' });
+      return void res.status(400).json({ error: 'Video URL and duration are required' });
     }
 
     // Extract hashtags
@@ -1075,3 +1075,7 @@ async function checkRateLimit(userId: string, action: string): Promise<RateLimit
 }
 
 export default router;
+
+
+
+

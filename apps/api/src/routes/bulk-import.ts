@@ -83,7 +83,7 @@ router.get('/', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const imports = await prisma.bulkImportJob.findMany({
@@ -113,7 +113,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const importJob = await prisma.bulkImportJob.findFirst({
@@ -121,7 +121,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
     
     if (!importJob) {
-      return res.status(404).json({ error: 'Import not found' });
+      return void res.status(404).json({ error: 'Import not found' });
     }
     
     const result = {
@@ -146,7 +146,7 @@ router.post('/jobs', requireAuth, async (req, res) => {
     const { csvData, fileName = 'jobs-import.csv' } = req.body;
     
     if (!csvData) {
-      return res.status(400).json({ error: 'CSV data required' });
+      return void res.status(400).json({ error: 'CSV data required' });
     }
     
     const company = await prisma.companyProfile.findFirst({
@@ -154,7 +154,7 @@ router.post('/jobs', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Parse CSV
@@ -162,15 +162,15 @@ router.post('/jobs', requireAuth, async (req, res) => {
     try {
       rows = parseCSV(csvData);
     } catch (parseErr) {
-      return res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
+      return void res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
     }
     
     if (rows.length === 0) {
-      return res.status(400).json({ error: 'CSV is empty' });
+      return void res.status(400).json({ error: 'CSV is empty' });
     }
     
     if (rows.length > MAX_ROWS) {
-      return res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
+      return void res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
     }
     
     // Validate required columns
@@ -179,7 +179,7 @@ router.post('/jobs', requireAuth, async (req, res) => {
     const missing = required.filter(r => !columns.includes(r));
     
     if (missing.length > 0) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Missing required columns', 
         missing,
         received: columns 
@@ -285,7 +285,7 @@ router.post('/candidates', requireAuth, async (req, res) => {
     const { csvData, fileName = 'candidates-import.csv' } = req.body;
     
     if (!csvData) {
-      return res.status(400).json({ error: 'CSV data required' });
+      return void res.status(400).json({ error: 'CSV data required' });
     }
     
     const company = await prisma.companyProfile.findFirst({
@@ -293,7 +293,7 @@ router.post('/candidates', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Parse CSV
@@ -301,15 +301,15 @@ router.post('/candidates', requireAuth, async (req, res) => {
     try {
       rows = parseCSV(csvData);
     } catch (parseErr) {
-      return res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
+      return void res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
     }
     
     if (rows.length === 0) {
-      return res.status(400).json({ error: 'CSV is empty' });
+      return void res.status(400).json({ error: 'CSV is empty' });
     }
     
     if (rows.length > MAX_ROWS) {
-      return res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
+      return void res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
     }
     
     // Validate required columns
@@ -318,7 +318,7 @@ router.post('/candidates', requireAuth, async (req, res) => {
     const missing = required.filter(r => !columns.includes(r));
     
     if (missing.length > 0) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Missing required columns', 
         missing,
         received: columns 
@@ -442,7 +442,7 @@ router.post('/courses', requireAuth, async (req, res) => {
     const { csvData, fileName = 'courses-import.csv' } = req.body;
     
     if (!csvData) {
-      return res.status(400).json({ error: 'CSV data required' });
+      return void res.status(400).json({ error: 'CSV data required' });
     }
     
     // Get institution profile
@@ -456,7 +456,7 @@ router.post('/courses', requireAuth, async (req, res) => {
     });
     
     if (!institution && !company) {
-      return res.status(403).json({ error: 'Institution or company profile required' });
+      return void res.status(403).json({ error: 'Institution or company profile required' });
     }
     
     const companyId = company?.id;
@@ -466,15 +466,15 @@ router.post('/courses', requireAuth, async (req, res) => {
     try {
       rows = parseCSV(csvData);
     } catch (parseErr) {
-      return res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
+      return void res.status(400).json({ error: 'Invalid CSV format', details: parseErr.message });
     }
     
     if (rows.length === 0) {
-      return res.status(400).json({ error: 'CSV is empty' });
+      return void res.status(400).json({ error: 'CSV is empty' });
     }
     
     if (rows.length > MAX_ROWS) {
-      return res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
+      return void res.status(400).json({ error: `Maximum ${MAX_ROWS} rows per import` });
     }
     
     // Validate required columns
@@ -483,7 +483,7 @@ router.post('/courses', requireAuth, async (req, res) => {
     const missing = required.filter(r => !columns.includes(r));
     
     if (missing.length > 0) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Missing required columns', 
         missing,
         received: columns 
@@ -590,7 +590,7 @@ router.get('/templates/:type', (req, res) => {
   };
   
   if (!templates[type]) {
-    return res.status(404).json({ 
+    return void res.status(404).json({ 
       error: 'Unknown template type', 
       available: Object.keys(templates) 
     });
@@ -605,4 +605,5 @@ export default router;
 
 
 export {};
+
 

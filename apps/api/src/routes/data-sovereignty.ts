@@ -164,7 +164,7 @@ router.post('/export', authenticateJWT, async (req, res) => {
     }
 
     if (existingExport) {
-      return res.status(409).json({
+      return void res.status(409).json({
         error: 'Export already in progress',
         exportId: existingExport.id,
         status: existingExport.status
@@ -229,11 +229,11 @@ router.get('/export/:exportId', authenticateJWT, async (req, res) => {
       : sovereigntyStore.getExport(exportId);
 
     if (!exportRequest) {
-      return res.status(404).json({ error: 'Export request not found' });
+      return void res.status(404).json({ error: 'Export request not found' });
     }
 
     if (exportRequest.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to access this export' });
+      return void res.status(403).json({ error: 'Not authorized to access this export' });
     }
 
     res.json({
@@ -266,7 +266,7 @@ router.post('/delete', authenticateJWT, async (req, res) => {
     });
 
     if (!user || user.email !== confirmEmail) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Email confirmation does not match your account email'
       });
     }
@@ -285,7 +285,7 @@ router.post('/delete', authenticateJWT, async (req, res) => {
     }
 
     if (existingRequest) {
-      return res.status(409).json({
+      return void res.status(409).json({
         error: 'Deletion request already exists',
         deletionDate: existingRequest.scheduledDeletionAt
       });
@@ -352,7 +352,7 @@ router.post('/delete/cancel', authenticateJWT, async (req, res) => {
       : sovereigntyStore.getDeletionRequest(userId);
 
     if (!deletionRequest) {
-      return res.status(404).json({ error: 'No pending deletion request found' });
+      return void res.status(404).json({ error: 'No pending deletion request found' });
     }
 
     if (prisma.accountDeletionRequest) {
@@ -660,20 +660,20 @@ router.get('/export/:exportId/download', authenticateJWT, async (req, res) => {
       : sovereigntyStore.getExport(exportId);
 
     if (!exportRequest) {
-      return res.status(404).json({ error: 'Export not found' });
+      return void res.status(404).json({ error: 'Export not found' });
     }
 
     if (exportRequest.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     if (exportRequest.status !== 'completed') {
-      return res.status(400).json({ error: 'Export not ready', status: exportRequest.status });
+      return void res.status(400).json({ error: 'Export not ready', status: exportRequest.status });
     }
 
     const expiresAt = exportRequest.expiresAt ? new Date(exportRequest.expiresAt) : null;
     if (expiresAt && new Date() > expiresAt) {
-      return res.status(410).json({ error: 'Export has expired' });
+      return void res.status(410).json({ error: 'Export has expired' });
     }
 
     const contentType = exportRequest.format === 'json' 
@@ -692,4 +692,5 @@ router.get('/export/:exportId/download', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 

@@ -33,7 +33,7 @@ router.get('/', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const config = await prisma.tenantConfig.findUnique({
@@ -82,13 +82,13 @@ router.post('/', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Validate subdomain format
     if (subdomain) {
       if (!/^[a-z0-9-]+$/.test(subdomain) || subdomain.length < 3 || subdomain.length > 50) {
-        return res.status(400).json({ 
+        return void res.status(400).json({ 
           error: 'Subdomain must be 3-50 lowercase alphanumeric characters or hyphens' 
         });
       }
@@ -99,7 +99,7 @@ router.post('/', requireAuth, async (req, res) => {
       });
       
       if (existing) {
-        return res.status(400).json({ error: 'Subdomain is already taken' });
+        return void res.status(400).json({ error: 'Subdomain is already taken' });
       }
     }
     
@@ -107,7 +107,7 @@ router.post('/', requireAuth, async (req, res) => {
     if (customDomain) {
       // Simple domain validation
       if (!/^[a-z0-9][a-z0-9.-]+[a-z0-9]$/.test(customDomain.toLowerCase())) {
-        return res.status(400).json({ error: 'Invalid domain format' });
+        return void res.status(400).json({ error: 'Invalid domain format' });
       }
       
       // Check if domain is taken
@@ -116,13 +116,13 @@ router.post('/', requireAuth, async (req, res) => {
       });
       
       if (existing) {
-        return res.status(400).json({ error: 'Domain is already configured' });
+        return void res.status(400).json({ error: 'Domain is already configured' });
       }
     }
     
     // Validate data region
     if (dataRegion && !DATA_REGIONS[dataRegion]) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Invalid data region', 
         valid: Object.keys(DATA_REGIONS) 
       });
@@ -197,7 +197,7 @@ router.patch('/branding', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     let config = await prisma.tenantConfig.findUnique({
@@ -253,7 +253,7 @@ router.patch('/features', requireAuth, async (req, res) => {
     const { features } = req.body;
     
     if (!features || typeof features !== 'object') {
-      return res.status(400).json({ error: 'Features object required' });
+      return void res.status(400).json({ error: 'Features object required' });
     }
     
     const company = await prisma.companyProfile.findFirst({
@@ -261,7 +261,7 @@ router.patch('/features', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     let config = await prisma.tenantConfig.findUnique({
@@ -316,7 +316,7 @@ router.post('/verify-domain', requireAuth, async (req, res) => {
     const { domain } = req.body;
     
     if (!domain) {
-      return res.status(400).json({ error: 'Domain required' });
+      return void res.status(400).json({ error: 'Domain required' });
     }
     
     const company = await prisma.companyProfile.findFirst({
@@ -324,7 +324,7 @@ router.post('/verify-domain', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Generate verification token
@@ -364,7 +364,7 @@ router.post('/check-domain', requireAuth, async (req, res) => {
     const { domain } = req.body;
     
     if (!domain) {
-      return res.status(400).json({ error: 'Domain required' });
+      return void res.status(400).json({ error: 'Domain required' });
     }
     
     const company = await prisma.companyProfile.findFirst({
@@ -372,7 +372,7 @@ router.post('/check-domain', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const expectedToken = `ngp-verify-${company.id.substring(0, 8)}`;
@@ -423,5 +423,6 @@ router.post('/check-domain', requireAuth, async (req, res) => {
 });
 
 export default router;
+
 
 

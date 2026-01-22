@@ -27,7 +27,7 @@ const validate = (schema: z.ZodSchema) => (req: Request, res: Response, next: Ne
     schema.parse(req.body);
     next();
   } catch (error) {
-    return res.status(400).json({ error: 'Validation failed', details: error });
+    return void res.status(400).json({ error: 'Validation failed', details: error });
   }
 };
 
@@ -36,7 +36,7 @@ const canManageEvents = (req: Request, res: Response, next: NextFunction) => {
   const user = (req as any).user;
   const allowedRoles = ['admin', 'superadmin', 'elder', 'mentor'];
   if (!user || !allowedRoles.includes(user.role)) {
-    return res.status(403).json({ error: 'Insufficient permissions to manage events' });
+    return void res.status(403).json({ error: 'Insufficient permissions to manage events' });
   }
   next();
 };
@@ -269,7 +269,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     });
 
     if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+      return void res.status(404).json({ error: 'Event not found' });
     }
 
     res.json(event);
@@ -360,14 +360,14 @@ router.put('/:id', authenticate, canManageEvents, validate(updateCulturalEventSc
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Event not found' });
+      return void res.status(404).json({ error: 'Event not found' });
     }
 
     const user = (req as any).user;
 
     // Check ownership (admins can edit any, others can only edit their own)
     if (!['admin', 'superadmin'].includes(user.role) && existing.createdBy !== user.id) {
-      return res.status(403).json({ error: 'You can only edit events you created' });
+      return void res.status(403).json({ error: 'You can only edit events you created' });
     }
 
     const updateData: UpdateData = {};
@@ -407,14 +407,14 @@ router.delete('/:id', authenticate, canManageEvents, async (req: Request, res: R
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Event not found' });
+      return void res.status(404).json({ error: 'Event not found' });
     }
 
     const user = (req as any).user;
 
     // Check ownership (admins can delete any, others can only delete their own)
     if (!['admin', 'superadmin'].includes(user.role) && existing.createdBy !== user.id) {
-      return res.status(403).json({ error: 'You can only delete events you created' });
+      return void res.status(403).json({ error: 'You can only delete events you created' });
     }
 
     await prisma.culturalEvent.delete({
@@ -494,4 +494,5 @@ END:VEVENT
 });
 
 export default router;
+
 

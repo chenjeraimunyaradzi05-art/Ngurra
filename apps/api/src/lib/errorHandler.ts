@@ -145,7 +145,7 @@ export function sendError(res: Response, error: any, requestId: string | null = 
     res.set('Retry-After', String(error.retryAfter));
   }
 
-  return res.status(statusCode).json(response);
+  return void res.status(statusCode).json(response);
 }
 
 /**
@@ -158,7 +158,7 @@ export function sendSuccess(res: Response, data: any, statusCode = 200, meta: an
     response.meta = meta;
   }
 
-  return res.status(statusCode).json(response);
+  return void res.status(statusCode).json(response);
 }
 
 /**
@@ -167,7 +167,7 @@ export function sendSuccess(res: Response, data: any, statusCode = 200, meta: an
 export function sendPaginated(res: Response, items: any[], total: number, page: number, pageSize: number, meta: any = null) {
   const totalPages = Math.ceil(total / pageSize);
   
-  return res.json({
+  return void res.json({
     success: true,
     data: items,
     pagination: {
@@ -282,3 +282,4 @@ export function notFoundHandler(req: Request, res: Response) {
   // @ts-ignore
   return sendError(res, Errors.notFound('Endpoint'), req.requestId);
 }
+

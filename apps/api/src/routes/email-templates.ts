@@ -279,7 +279,7 @@ Need to reschedule? {{rescheduleUrl}}`,
  * GET /admin/email-templates
  * List all email templates
  */
-router.get('/', authenticate(), authorize('ADMIN'), async (req, res) => {
+router.get('/', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
     // Try to get from database first
     let templates = await prisma.emailTemplate.findMany({
@@ -310,7 +310,7 @@ router.get('/', authenticate(), authorize('ADMIN'), async (req, res) => {
  * GET /admin/email-templates/:slug
  * Get a specific template
  */
-router.get('/:slug', authenticate(), authorize('ADMIN'), async (req, res) => {
+router.get('/:slug', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
     const { slug } = req.params;
 
@@ -329,7 +329,7 @@ router.get('/:slug', authenticate(), authorize('ADMIN'), async (req, res) => {
     }
 
     if (!template) {
-      return res.status(404).json({ error: 'Template not found' });
+      return void res.status(404).json({ error: 'Template not found' });
     }
 
     res.json({ template });
@@ -343,7 +343,7 @@ router.get('/:slug', authenticate(), authorize('ADMIN'), async (req, res) => {
  * PUT /admin/email-templates/:slug
  * Update a template
  */
-router.put('/:slug', authenticate(), authorize('ADMIN'), async (req, res) => {
+router.put('/:slug', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
     const { slug } = req.params;
     const { name, subject, htmlTemplate, textTemplate, variables, isActive } = req.body;
@@ -384,7 +384,7 @@ router.put('/:slug', authenticate(), authorize('ADMIN'), async (req, res) => {
  * POST /admin/email-templates/:slug/preview
  * Preview a template with sample data
  */
-router.post('/:slug/preview', authenticate(), authorize('ADMIN'), async (req, res) => {
+router.post('/:slug/preview', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
     const { slug } = req.params;
     const { sampleData } = req.body;
@@ -398,7 +398,7 @@ router.post('/:slug/preview', authenticate(), authorize('ADMIN'), async (req, re
     }
 
     if (!template) {
-      return res.status(404).json({ error: 'Template not found' });
+      return void res.status(404).json({ error: 'Template not found' });
     }
 
     // Replace variables with sample data
@@ -451,13 +451,13 @@ router.post('/:slug/preview', authenticate(), authorize('ADMIN'), async (req, re
  * POST /admin/email-templates/:slug/send-test
  * Send a test email
  */
-router.post('/:slug/send-test', authenticate(), authorize('ADMIN'), async (req, res) => {
+router.post('/:slug/send-test', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
     const { slug } = req.params;
     const { toEmail, sampleData } = req.body;
 
     if (!toEmail) {
-      return res.status(400).json({ error: 'Recipient email required' });
+      return void res.status(400).json({ error: 'Recipient email required' });
     }
 
     // Get preview content
@@ -521,4 +521,6 @@ async function renderTemplate(slug, data) {
 
 export default router;
 export { renderTemplate, DEFAULT_TEMPLATES };
+
+
 

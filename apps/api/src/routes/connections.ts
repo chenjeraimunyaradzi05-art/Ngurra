@@ -245,11 +245,11 @@ router.post('/request', authenticateJWT, async (req, res) => {
     const { addresseeId, message } = req.body;
 
     if (!addresseeId) {
-      return res.status(400).json({ error: 'Addressee ID is required' });
+      return void res.status(400).json({ error: 'Addressee ID is required' });
     }
 
     if (addresseeId === userId) {
-      return res.status(400).json({ error: 'Cannot connect with yourself' });
+      return void res.status(400).json({ error: 'Cannot connect with yourself' });
     }
 
     // Check if blocked
@@ -263,7 +263,7 @@ router.post('/request', authenticateJWT, async (req, res) => {
     });
 
     if (blocked) {
-      return res.status(403).json({ error: 'Cannot send connection request' });
+      return void res.status(403).json({ error: 'Cannot send connection request' });
     }
 
     // Check addressee's safety settings
@@ -272,7 +272,7 @@ router.post('/request', authenticateJWT, async (req, res) => {
     });
 
     if (safetySettings?.allowConnectionRequests === false) {
-      return res.status(403).json({ error: 'User is not accepting connection requests' });
+      return void res.status(403).json({ error: 'User is not accepting connection requests' });
     }
 
     // Check for existing connection
@@ -287,13 +287,13 @@ router.post('/request', authenticateJWT, async (req, res) => {
 
     if (existing) {
       if (existing.status === 'accepted') {
-        return res.status(400).json({ error: 'Already connected' });
+        return void res.status(400).json({ error: 'Already connected' });
       }
       if (existing.status === 'pending') {
-        return res.status(400).json({ error: 'Connection request already pending' });
+        return void res.status(400).json({ error: 'Connection request already pending' });
       }
       if (existing.status === 'blocked') {
-        return res.status(403).json({ error: 'Cannot send connection request' });
+        return void res.status(403).json({ error: 'Cannot send connection request' });
       }
     }
 
@@ -306,7 +306,7 @@ router.post('/request', authenticateJWT, async (req, res) => {
     });
 
     if (recentRequests >= 20) {
-      return res.status(429).json({ error: 'Too many connection requests. Please wait.' });
+      return void res.status(429).json({ error: 'Too many connection requests. Please wait.' });
     }
 
     const connection = await prisma.userConnection.create({
@@ -349,11 +349,11 @@ router.put('/:id/accept', authenticateJWT, async (req, res) => {
     });
 
     if (!connection || connection.addresseeId !== userId) {
-      return res.status(404).json({ error: 'Connection request not found' });
+      return void res.status(404).json({ error: 'Connection request not found' });
     }
 
     if (connection.status !== 'pending') {
-      return res.status(400).json({ error: 'Request is not pending' });
+      return void res.status(400).json({ error: 'Request is not pending' });
     }
 
     await prisma.userConnection.update({
@@ -392,7 +392,7 @@ router.put('/:id/reject', authenticateJWT, async (req, res) => {
     });
 
     if (!connection || connection.addresseeId !== userId) {
-      return res.status(404).json({ error: 'Connection request not found' });
+      return void res.status(404).json({ error: 'Connection request not found' });
     }
 
     await prisma.userConnection.update({
@@ -420,7 +420,7 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
     });
 
     if (!connection || (connection.requesterId !== userId && connection.addresseeId !== userId)) {
-      return res.status(404).json({ error: 'Connection not found' });
+      return void res.status(404).json({ error: 'Connection not found' });
     }
 
     await prisma.userConnection.delete({
@@ -540,11 +540,11 @@ router.post('/follow', authenticateJWT, async (req, res) => {
     const { followingId, followType = 'user' } = req.body;
 
     if (!followingId) {
-      return res.status(400).json({ error: 'Following ID is required' });
+      return void res.status(400).json({ error: 'Following ID is required' });
     }
 
     if (followType === 'user' && followingId === userId) {
-      return res.status(400).json({ error: 'Cannot follow yourself' });
+      return void res.status(400).json({ error: 'Cannot follow yourself' });
     }
 
     // Check if already following
@@ -553,7 +553,7 @@ router.post('/follow', authenticateJWT, async (req, res) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'Already following' });
+      return void res.status(400).json({ error: 'Already following' });
     }
 
     // Check blocks
@@ -568,7 +568,7 @@ router.post('/follow', authenticateJWT, async (req, res) => {
       });
 
       if (blocked) {
-        return res.status(403).json({ error: 'Cannot follow this user' });
+        return void res.status(403).json({ error: 'Cannot follow this user' });
       }
     }
 
@@ -581,7 +581,7 @@ router.post('/follow', authenticateJWT, async (req, res) => {
     });
 
     if (recentFollows >= 30) {
-      return res.status(429).json({ error: 'Too many follows. Please wait.' });
+      return void res.status(429).json({ error: 'Too many follows. Please wait.' });
     }
 
     await prisma.userFollow.create({
@@ -676,7 +676,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
     const { participantIds, name, initialMessage } = req.body;
 
     if (!participantIds || participantIds.length === 0) {
-      return res.status(400).json({ error: 'Participants are required' });
+      return void res.status(400).json({ error: 'Participants are required' });
     }
 
     // Check DM permissions for each participant
@@ -692,7 +692,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
       });
 
       if (blocked) {
-        return res.status(403).json({ error: 'Cannot message one or more users' });
+        return void res.status(403).json({ error: 'Cannot message one or more users' });
       }
 
       // Check safety settings
@@ -702,7 +702,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
 
       if (safetySettings) {
         if (safetySettings.dmPolicy === 'nobody') {
-          return res.status(403).json({ error: 'User is not accepting messages' });
+          return void res.status(403).json({ error: 'User is not accepting messages' });
         }
 
         if (safetySettings.dmPolicy === 'connections') {
@@ -717,7 +717,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
           });
 
           if (!isConnected) {
-            return res.status(403).json({ error: 'You must be connected to message this user' });
+            return void res.status(403).json({ error: 'You must be connected to message this user' });
           }
         }
 
@@ -727,7 +727,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
           });
 
           if (!trustScore || trustScore.trustLevel !== 'verified') {
-            return res.status(403).json({ error: 'Only verified users can message this user' });
+            return void res.status(403).json({ error: 'Only verified users can message this user' });
           }
         }
       }
@@ -750,7 +750,7 @@ router.post('/conversations', authenticateJWT, async (req, res) => {
       });
 
       if (existingConvo && existingConvo.participants.length === 2) {
-        return res.json({ conversation: existingConvo, isExisting: true });
+        return void res.json({ conversation: existingConvo, isExisting: true });
       }
     }
 
@@ -805,7 +805,7 @@ router.get('/conversations/:id/messages', authenticateJWT, async (req, res) => {
     });
 
     if (!participant || participant.hasLeft) {
-      return res.status(403).json({ error: 'Not a participant in this conversation' });
+      return void res.status(403).json({ error: 'Not a participant in this conversation' });
     }
 
     const where: any = { conversationId: id, isDeleted: false };
@@ -842,7 +842,7 @@ router.post('/conversations/:id/messages', authenticateJWT, async (req, res) => 
     const { content, messageType = 'text', mediaUrl, fileName, fileSize } = req.body;
 
     if (!content && !mediaUrl) {
-      return res.status(400).json({ error: 'Content or media is required' });
+      return void res.status(400).json({ error: 'Content or media is required' });
     }
 
     // Verify participant
@@ -851,7 +851,7 @@ router.post('/conversations/:id/messages', authenticateJWT, async (req, res) => 
     });
 
     if (!participant || participant.hasLeft) {
-      return res.status(403).json({ error: 'Not a participant in this conversation' });
+      return void res.status(403).json({ error: 'Not a participant in this conversation' });
     }
 
     // Rate limiting
@@ -863,7 +863,7 @@ router.post('/conversations/:id/messages', authenticateJWT, async (req, res) => 
     });
 
     if (recentMessages >= 10) {
-      return res.status(429).json({ error: 'Too many messages. Please slow down.' });
+      return void res.status(429).json({ error: 'Too many messages. Please slow down.' });
     }
 
     const message = await prisma.directMessage.create({
@@ -898,4 +898,5 @@ router.post('/conversations/:id/messages', authenticateJWT, async (req, res) => 
 });
 
 export default router;
+
 

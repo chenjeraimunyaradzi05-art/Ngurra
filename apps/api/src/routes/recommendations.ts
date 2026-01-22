@@ -89,7 +89,7 @@ router.get('/:jobId/score', authenticateJWT, async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return void res.status(404).json({ error: 'User not found' });
     }
 
     // Get job
@@ -101,7 +101,7 @@ router.get('/:jobId/score', authenticateJWT, async (req, res) => {
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     // Build user profile
@@ -145,7 +145,7 @@ router.post('/feedback', authenticateJWT, async (req, res) => {
   const { jobId, feedback, reason } = req.body;
 
   if (!jobId || !feedback) {
-    return res.status(400).json({ 
+    return void res.status(400).json({ 
       error: 'Missing required fields',
       required: ['jobId', 'feedback'],
     });
@@ -153,7 +153,7 @@ router.post('/feedback', authenticateJWT, async (req, res) => {
 
   const validFeedback = ['interested', 'not_interested', 'applied', 'irrelevant'];
   if (!validFeedback.includes(feedback)) {
-    return res.status(400).json({
+    return void res.status(400).json({
       error: 'Invalid feedback value',
       valid: validFeedback,
     });
@@ -249,7 +249,7 @@ router.get('/mentors', authenticateJWT, async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return void res.status(404).json({ error: 'User not found' });
     }
 
     // Build query for mentors
@@ -376,7 +376,7 @@ router.post('/mentors/feedback', authenticateJWT, async (req, res) => {
   const { mentorId, feedback, reason } = req.body;
 
   if (!mentorId || !feedback) {
-    return res.status(400).json({
+    return void res.status(400).json({
       error: 'Missing required fields',
       required: ['mentorId', 'feedback'],
     });
@@ -384,7 +384,7 @@ router.post('/mentors/feedback', authenticateJWT, async (req, res) => {
 
   const validFeedback = ['interested', 'not_interested', 'connected', 'irrelevant'];
   if (!validFeedback.includes(feedback)) {
-    return res.status(400).json({
+    return void res.status(400).json({
       error: 'Invalid feedback value',
       valid: validFeedback,
     });
@@ -410,4 +410,5 @@ router.post('/mentors/feedback', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 

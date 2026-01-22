@@ -17,10 +17,10 @@ const tafeSchema = z.object({
 router.post('/profile', auth.authenticate, async (req, res) => {
     const parse = tafeSchema.safeParse(req.body);
     if (!parse.success)
-        return res.status(400).json({ error: parse.error.flatten() });
+        return void res.status(400).json({ error: parse.error.flatten() });
     const userId = (req as any).user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
     try {
         const data = parse.data;
         const profile = await prisma.institutionProfile.upsert({
@@ -35,12 +35,12 @@ router.post('/profile', auth.authenticate, async (req, res) => {
             },
             update: { ...data }
         });
-        return res.json({ profile });
+        return void res.json({ profile });
     }
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('TAFE profile error:', err);
-        return res.status(500).json({ error: 'Profile save failed' });
+        return void res.status(500).json({ error: 'Profile save failed' });
     }
 });
 
@@ -48,16 +48,17 @@ router.post('/profile', auth.authenticate, async (req, res) => {
 router.get('/profile', auth.authenticate, async (req, res) => {
     const userId = (req as any).user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
     try {
         const profile = await prisma.institutionProfile.findUnique({ where: { userId } });
-        return res.json({ profile });
+        return void res.json({ profile });
     }
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Fetch TAFE profile error:', err);
-        return res.status(500).json({ error: 'Fetch failed' });
+        return void res.status(500).json({ error: 'Fetch failed' });
     }
 });
 
 export default router;
+

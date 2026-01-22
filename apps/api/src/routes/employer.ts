@@ -193,7 +193,7 @@ const JOB_TEMPLATES = [
   },
 ];
 
-router.use(optionalAuth());
+router.use(optionalAuth);
 
 // ---------------------------
 // Jobs
@@ -209,7 +209,7 @@ router.get('/jobs', async (req, res, next) => {
 
     if ((req as any).user?.id) {
       const jobs = await prisma.job.findMany({ where: { userId: (req as any).user.id }, orderBy: { createdAt: 'desc' } });
-      return res.json(jobs.map((j) => normalizeJobListItem(j)));
+      return void res.json(jobs.map((j) => normalizeJobListItem(j)));
     }
 
     res.json(Array.from(jobsById.values()).map((j) => normalizeJobListItem(j)));
@@ -224,7 +224,7 @@ router.get('/jobs/:id', async (req, res, next) => {
 
     if ((req as any).user?.id) {
       const job = await prisma.job.findUnique({ where: { id: req.params.id } });
-      if (!job || job.userId !== (req as any).user.id) return res.status(404).json({ error: 'Not found' });
+      if (!job || job.userId !== (req as any).user.id) return void res.status(404).json({ error: 'Not found' });
 
       // Return a UI-friendly shape (fields not in DB are defaulted)
       const posting = {
@@ -254,11 +254,11 @@ router.get('/jobs/:id', async (req, res, next) => {
         publishedAt: job.postedAt.toISOString(),
       };
 
-      return res.json(posting);
+      return void res.json(posting);
     }
 
     const demo = jobsById.get(req.params.id);
-    if (!demo) return res.status(404).json({ error: 'Not found' });
+    if (!demo) return void res.status(404).json({ error: 'Not found' });
     res.json(demo);
   } catch (error) {
     next(error);
@@ -286,7 +286,7 @@ router.post('/jobs', async (req, res, next) => {
         },
       });
 
-      return res.json({
+      return void res.json({
         ...body,
         id: created.id,
         createdAt: created.createdAt.toISOString(),
@@ -316,7 +316,7 @@ router.put('/jobs/:id', async (req, res, next) => {
 
     if ((req as any).user?.id) {
       const existing = await prisma.job.findUnique({ where: { id: req.params.id } });
-      if (!existing || existing.userId !== (req as any).user.id) return res.status(404).json({ error: 'Not found' });
+      if (!existing || existing.userId !== (req as any).user.id) return void res.status(404).json({ error: 'Not found' });
 
       await prisma.job.update({
         where: { id: req.params.id },
@@ -331,11 +331,11 @@ router.put('/jobs/:id', async (req, res, next) => {
         },
       });
 
-      return res.json({ ...body, id: req.params.id });
+      return void res.json({ ...body, id: req.params.id });
     }
 
     const existing = jobsById.get(req.params.id);
-    if (!existing) return res.status(404).json({ error: 'Not found' });
+    if (!existing) return void res.status(404).json({ error: 'Not found' });
     const updated = { ...existing, ...body, id: req.params.id };
     jobsById.set(req.params.id, updated);
     res.json(updated);
@@ -350,13 +350,13 @@ router.post('/jobs/:id/publish', async (req, res, next) => {
 
     if ((req as any).user?.id) {
       const existing = await prisma.job.findUnique({ where: { id: req.params.id } });
-      if (!existing || existing.userId !== (req as any).user.id) return res.status(404).json({ error: 'Not found' });
+      if (!existing || existing.userId !== (req as any).user.id) return void res.status(404).json({ error: 'Not found' });
       await prisma.job.update({ where: { id: req.params.id }, data: { isActive: true, postedAt: new Date() } as any });
-      return res.json({ ok: true });
+      return void res.json({ ok: true });
     }
 
     const existing = jobsById.get(req.params.id);
-    if (!existing) return res.status(404).json({ error: 'Not found' });
+    if (!existing) return void res.status(404).json({ error: 'Not found' });
     existing.status = 'active';
     existing.publishedAt = nowIso();
     jobsById.set(req.params.id, existing);
@@ -451,7 +451,7 @@ router.get('/applicants', async (req, res, next) => {
         .filter((a) => (stage ? a.stage === stage : true))
         .filter((a) => (q ? (a.candidate.name + ' ' + a.candidate.email).toLowerCase().includes(q.toLowerCase()) : true));
 
-      return res.json({ applicants, total });
+      return void res.json({ applicants, total });
     }
 
     // Demo mode
@@ -475,7 +475,7 @@ router.get('/applicants/:id', (req, res) => {
   ensureDemoSeed();
 
   const a = applicantsById.get(req.params.id);
-  if (a) return res.json(a);
+  if (a) return void res.json(a);
 
   // If authenticated, client can still fetch via /applicants list; keep simple
   if (requireAuthInProd(req, res)) return;
@@ -487,18 +487,18 @@ router.put('/applicants/:id/stage', async (req, res, next) => {
     ensureDemoSeed();
 
     const stage = req.body?.stage;
-    if (!stage) return res.status(400).json({ error: 'stage required' });
+    if (!stage) return void res.status(400).json({ error: 'stage required' });
 
     if ((req as any).user?.id) {
       // Store stage as application status for now
       const status = String(stage).toUpperCase().replace(/-/g, '_');
       await prisma.jobApplication.update({ where: { id: req.params.id }, data: { status } }).catch(() => undefined);
       applicantMetaById.set(req.params.id, { ...(applicantMetaById.get(req.params.id) || {}), stage, lastActivityAt: nowIso() });
-      return res.json({ ok: true });
+      return void res.json({ ok: true });
     }
 
     const a = applicantsById.get(req.params.id);
-    if (!a) return res.status(404).json({ error: 'Not found' });
+    if (!a) return void res.status(404).json({ error: 'Not found' });
     a.stage = stage;
     a.lastActivityAt = nowIso();
     applicantsById.set(req.params.id, a);
@@ -513,7 +513,7 @@ router.put('/applicants/bulk/stage', async (req, res, next) => {
     ensureDemoSeed();
 
     const { applicantIds, stage } = req.body || {};
-    if (!Array.isArray(applicantIds) || !stage) return res.status(400).json({ error: 'applicantIds and stage required' });
+    if (!Array.isArray(applicantIds) || !stage) return void res.status(400).json({ error: 'applicantIds and stage required' });
 
     for (const id of applicantIds) {
       const a = applicantsById.get(id);
@@ -535,7 +535,7 @@ router.post('/applicants/:id/notes', (req, res) => {
   ensureDemoSeed();
 
   const content = String(req.body?.content || '').trim();
-  if (!content) return res.status(400).json({ error: 'content required' });
+  if (!content) return void res.status(400).json({ error: 'content required' });
 
   const meta = applicantMetaById.get(req.params.id) || {};
   const notes = meta.notes ?? [];
@@ -663,7 +663,7 @@ router.get('/interviews', (req, res) => {
 router.get('/interviews/:id', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const it = interviewsById.get(req.params.id);
-  if (!it) return res.status(404).json({ error: 'Not found' });
+  if (!it) return void res.status(404).json({ error: 'Not found' });
   res.json(it);
 });
 
@@ -700,7 +700,7 @@ router.post('/interviews', (req, res) => {
 router.put('/interviews/:id', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = interviewsById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
   const updated = { ...existing, ...(req.body || {}), id: req.params.id };
   interviewsById.set(req.params.id, updated);
   res.json(updated);
@@ -709,7 +709,7 @@ router.put('/interviews/:id', (req, res) => {
 router.post('/interviews/:id/cancel', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = interviewsById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
   existing.status = 'cancelled';
   interviewsById.set(req.params.id, existing);
   res.json({ ok: true });
@@ -718,7 +718,7 @@ router.post('/interviews/:id/cancel', (req, res) => {
 router.post('/interviews/:id/feedback', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = interviewsById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
 
   const fb = {
     rating: req.body?.rating ?? 0,
@@ -782,7 +782,7 @@ router.get('/offers', (req, res) => {
 router.get('/offers/:id', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const offer = offersById.get(req.params.id);
-  if (!offer) return res.status(404).json({ error: 'Not found' });
+  if (!offer) return void res.status(404).json({ error: 'Not found' });
   res.json(offer);
 });
 
@@ -819,7 +819,7 @@ router.post('/offers', (req, res) => {
 router.put('/offers/:id', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = offersById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
   const updated = { ...existing, ...(req.body || {}), id: req.params.id };
   offersById.set(req.params.id, updated);
   res.json(updated);
@@ -828,7 +828,7 @@ router.put('/offers/:id', (req, res) => {
 router.post('/offers/:id/send', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = offersById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
   existing.status = 'sent';
   existing.sentAt = nowIso();
   existing.timeline = [{ action: 'Sent', date: nowIso(), user: (req as any).user?.email ?? 'System' }, ...(existing.timeline || [])];
@@ -839,7 +839,7 @@ router.post('/offers/:id/send', (req, res) => {
 router.post('/offers/:id/withdraw', (req, res) => {
   if (requireAuthInProd(req, res)) return;
   const existing = offersById.get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Not found' });
+  if (!existing) return void res.status(404).json({ error: 'Not found' });
   existing.status = 'withdrawn';
   existing.timeline = [{ action: 'Withdrawn', date: nowIso(), user: (req as any).user?.email ?? 'System', note: req.body?.reason }, ...(existing.timeline || [])];
   offersById.set(req.params.id, existing);
@@ -847,3 +847,5 @@ router.post('/offers/:id/withdraw', (req, res) => {
 });
 
 export default router;
+
+

@@ -27,7 +27,7 @@ router.post('/track', async (req: Request, res: Response) => {
   try {
     const result = trackEventSchema.safeParse(req.body);
     if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request', details: result.error.errors });
+      return void res.status(400).json({ error: 'Invalid request', details: result.error.errors });
     }
 
     const { jobId, eventType, sessionId, duration } = result.data;
@@ -58,7 +58,7 @@ router.post('/duration', async (req: Request, res: Response) => {
     const { jobId, duration } = req.body;
 
     if (!jobId || typeof duration !== 'number' || duration <= 0) {
-      return res.status(400).json({ error: 'Invalid jobId or duration' });
+      return void res.status(400).json({ error: 'Invalid jobId or duration' });
     }
 
     await jobPerformanceService.updatePageDuration(jobId, duration);
@@ -76,7 +76,7 @@ router.post('/duration', async (req: Request, res: Response) => {
  */
 router.get(
   '/:jobId',
-  authenticate(),
+  authenticate,
   requirePermission('job:read'),
   requireOwnership('job', 'jobId'),
   async (req: Request, res: Response) => {
@@ -101,7 +101,7 @@ router.get(
  * GET /job-performance/employer/dashboard
  * Get aggregated performance metrics for all jobs owned by the employer
  */
-router.get('/employer/dashboard', authenticate(), async (req: Request, res: Response) => {
+router.get('/employer/dashboard', authenticate, async (req: Request, res: Response) => {
   try {
     // @ts-ignore - user is attached by auth middleware
     const userId = req.user.id;
@@ -120,3 +120,5 @@ router.get('/employer/dashboard', authenticate(), async (req: Request, res: Resp
 });
 
 export default router;
+
+

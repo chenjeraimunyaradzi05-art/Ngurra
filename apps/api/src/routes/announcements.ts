@@ -17,7 +17,7 @@ const router = express.Router();
 // Role check middleware
 const requireAdmin = (req, res, next) => {
   if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return void res.status(403).json({ error: 'Admin access required' });
   }
   next();
 };
@@ -158,7 +158,7 @@ router.get('/:id', authenticateJWT, async (req, res) => {
     });
 
     if (!announcement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return void res.status(404).json({ error: 'Announcement not found' });
     }
 
     res.json({
@@ -239,7 +239,7 @@ router.put('/:id', authenticateJWT, requireAdmin, validate(updateAnnouncementSch
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return void res.status(404).json({ error: 'Announcement not found' });
     }
 
     const updateData: any = {};
@@ -281,7 +281,7 @@ router.delete('/:id', authenticateJWT, requireAdmin, async (req, res) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return void res.status(404).json({ error: 'Announcement not found' });
     }
 
     // Delete dismissals first (cascade)
@@ -314,7 +314,7 @@ router.post('/:id/dismiss', authenticateJWT, async (req, res) => {
     });
 
     if (!announcement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return void res.status(404).json({ error: 'Announcement not found' });
     }
 
     // Check if already dismissed
@@ -328,7 +328,7 @@ router.post('/:id/dismiss', authenticateJWT, async (req, res) => {
     });
 
     if (existing) {
-      return res.json({ success: true, message: 'Already dismissed' });
+      return void res.json({ success: true, message: 'Already dismissed' });
     }
 
     await prisma.announcementDismissal.create({
@@ -362,7 +362,7 @@ router.get('/:id/stats', authenticateJWT, requireAdmin, async (req, res) => {
     });
 
     if (!announcement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return void res.status(404).json({ error: 'Announcement not found' });
     }
 
     const targetRoles = announcement.targetRoles ? JSON.parse(announcement.targetRoles) : [];
@@ -396,4 +396,5 @@ router.get('/:id/stats', authenticateJWT, requireAdmin, async (req, res) => {
 });
 
 export default router;
+
 

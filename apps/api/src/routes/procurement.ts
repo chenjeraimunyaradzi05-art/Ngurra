@@ -105,7 +105,7 @@ router.get('/opportunities/:id', async (req, res) => {
     });
 
     if (!opportunity) {
-      return res.status(404).json({ error: 'Opportunity not found' });
+      return void res.status(404).json({ error: 'Opportunity not found' });
     }
 
     res.json({ opportunity });
@@ -119,10 +119,10 @@ router.get('/opportunities/:id', async (req, res) => {
  * POST /procurement/opportunities
  * Create procurement opportunity (GOVERNMENT/ADMIN)
  */
-router.post('/opportunities', authenticate(), async (req, res) => {
+router.post('/opportunities', authenticate, async (req, res) => {
   try {
     if (!isGovernmentOrAdmin(req.user?.userType)) {
-      return res.status(403).json({ error: 'Government or admin access required' });
+      return void res.status(403).json({ error: 'Government or admin access required' });
     }
 
     const {
@@ -142,7 +142,7 @@ router.post('/opportunities', authenticate(), async (req, res) => {
     } = req.body || {};
 
     if (!title || !agencyId) {
-      return res.status(400).json({ error: 'title and agencyId are required' });
+      return void res.status(400).json({ error: 'title and agencyId are required' });
     }
 
     const opportunity = await prisma.procurementOpportunity.create({
@@ -184,10 +184,10 @@ router.post('/opportunities', authenticate(), async (req, res) => {
 /**
  * PATCH /procurement/opportunities/:id
  */
-router.patch('/opportunities/:id', authenticate(), async (req, res) => {
+router.patch('/opportunities/:id', authenticate, async (req, res) => {
   try {
     if (!isGovernmentOrAdmin(req.user?.userType)) {
-      return res.status(403).json({ error: 'Government or admin access required' });
+      return void res.status(403).json({ error: 'Government or admin access required' });
     }
 
     const { id } = req.params;
@@ -229,14 +229,14 @@ router.get('/agencies', async (req, res) => {
 /**
  * POST /procurement/agencies
  */
-router.post('/agencies', authenticate(), async (req, res) => {
+router.post('/agencies', authenticate, async (req, res) => {
   try {
     if (!isGovernmentOrAdmin(req.user?.userType)) {
-      return res.status(403).json({ error: 'Government or admin access required' });
+      return void res.status(403).json({ error: 'Government or admin access required' });
     }
 
     const { name, level, website, description, contactEmail } = req.body || {};
-    if (!name) return res.status(400).json({ error: 'name is required' });
+    if (!name) return void res.status(400).json({ error: 'name is required' });
 
     const agency = await prisma.procurementAgency.create({
       data: { name, level, website, description, contactEmail },
@@ -256,7 +256,7 @@ router.post('/agencies', authenticate(), async (req, res) => {
 /**
  * GET /procurement/alerts
  */
-router.get('/alerts', authenticate(), async (req, res) => {
+router.get('/alerts', authenticate, async (req, res) => {
   try {
     const alerts = await prisma.procurementAlert.findMany({
       where: { userId: req.user!.id },
@@ -272,7 +272,7 @@ router.get('/alerts', authenticate(), async (req, res) => {
 /**
  * POST /procurement/alerts
  */
-router.post('/alerts', authenticate(), async (req, res) => {
+router.post('/alerts', authenticate, async (req, res) => {
   try {
     const { keywords, categories = [], locations = [], minValue, maxValue, isActive = true } = req.body || {};
 
@@ -298,7 +298,7 @@ router.post('/alerts', authenticate(), async (req, res) => {
 /**
  * PATCH /procurement/alerts/:id
  */
-router.patch('/alerts/:id', authenticate(), async (req, res) => {
+router.patch('/alerts/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const alert = await prisma.procurementAlert.update({
@@ -320,7 +320,7 @@ router.patch('/alerts/:id', authenticate(), async (req, res) => {
 /**
  * POST /procurement/opportunities/:id/bids
  */
-router.post('/opportunities/:id/bids', authenticate(), async (req, res) => {
+router.post('/opportunities/:id/bids', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { proposalUrl, notes, partners } = req.body || {};
@@ -345,7 +345,7 @@ router.post('/opportunities/:id/bids', authenticate(), async (req, res) => {
 /**
  * PATCH /procurement/bids/:id
  */
-router.patch('/bids/:id', authenticate(), async (req, res) => {
+router.patch('/bids/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const data = { ...req.body };
@@ -353,7 +353,7 @@ router.patch('/bids/:id', authenticate(), async (req, res) => {
 
     const bid = await prisma.procurementBid.findUnique({ where: { id } });
     if (!bid || bid.userId !== req.user!.id) {
-      return res.status(403).json({ error: 'Not authorized to update this bid' });
+      return void res.status(403).json({ error: 'Not authorized to update this bid' });
     }
 
     const updated = await prisma.procurementBid.update({ where: { id }, data });
@@ -365,3 +365,5 @@ router.patch('/bids/:id', authenticate(), async (req, res) => {
 });
 
 export default router;
+
+

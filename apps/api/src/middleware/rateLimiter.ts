@@ -264,7 +264,7 @@ function slidingWindowLimiter(options: any = {}) {
       res.setHeader('X-RateLimit-Reset', Math.ceil((oldestRequest + windowMs) / 1000));
       res.setHeader('Retry-After', retryAfter);
       
-      return res.status(429).json({
+      return void res.status(429).json({
         error: 'Rate limit exceeded',
         retryAfter,
       });
@@ -318,7 +318,7 @@ function tokenBucketLimiter(options: any = {}) {
       res.setHeader('X-RateLimit-Remaining', 0);
       res.setHeader('Retry-After', waitTime);
       
-      return res.status(429).json({
+      return void res.status(429).json({
         error: 'Rate limit exceeded',
         retryAfter: waitTime,
       });
@@ -364,3 +364,4 @@ module.exports = {
 };
 
 export {};
+

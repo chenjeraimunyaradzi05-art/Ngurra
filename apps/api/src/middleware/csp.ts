@@ -233,7 +233,7 @@ function corsHeaders(allowedOrigins = []) {
 
     // Handle preflight
     if (req.method === 'OPTIONS') {
-      return res.status(204).end();
+      return void res.status(204).end();
     }
 
     next();
@@ -251,3 +251,4 @@ module.exports = {
 };
 
 export {};
+

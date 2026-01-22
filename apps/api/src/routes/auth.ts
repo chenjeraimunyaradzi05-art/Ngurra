@@ -55,7 +55,7 @@ function generateToken(user: { id: string; email: string; userType: string }): s
   return jwt.sign(
     { id: user.id, email: user.email, userType: user.userType },
     JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
+    { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
   );
 }
 
@@ -68,7 +68,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
   try {
     const validation = registerSchema.safeParse(req.body);
     if (!validation.success) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Validation failed',
         details: validation.error.flatten().fieldErrors,
       });
@@ -82,7 +82,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     });
 
     if (existingUser) {
-      return res.status(409).json({
+      return void res.status(409).json({
         error: 'User already exists',
         message: 'An account with this email already exists. Please sign in.',
       });
@@ -155,7 +155,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
   try {
     const validation = loginSchema.safeParse(req.body);
     if (!validation.success) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Validation failed',
         details: validation.error.flatten().fieldErrors,
       });
@@ -182,7 +182,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     });
 
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
       });
@@ -195,7 +195,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     const passwordHash = credentials[0]?.password || null;
 
     if (!passwordHash) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
       });
@@ -203,7 +203,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
 
     const isValidPassword = await bcrypt.compare(password, passwordHash);
     if (!isValidPassword) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
       });
@@ -248,7 +248,7 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+      return void res.status(401).json({ error: 'No token provided' });
     }
 
     const token = authHeader.split(' ')[1];
@@ -257,7 +257,7 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
     try {
       decoded = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
+      return void res.status(401).json({ error: 'Invalid or expired token' });
     }
 
     const user = await prisma.user.findUnique({
@@ -278,7 +278,7 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return void res.status(404).json({ error: 'User not found' });
     }
 
     const nameParts = (user.name || '').split(' ');
@@ -315,3 +315,4 @@ router.post('/logout', (_req: Request, res: Response) => {
 });
 
 export default router;
+

@@ -53,7 +53,7 @@ function isAdmin(req: any) {
 }
 
 function requireAdmin(req: any, res: any, next: any) {
-  if (!isAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+  if (!isAdmin(req)) return void res.status(403).json({ error: 'Admin access required' });
   return next();
 }
 
@@ -69,7 +69,7 @@ router.get('/categories', async (req, res) => {
     // Check if ForumCategory model exists
     if (!prisma.forumCategory) {
       // Return demo categories
-      return res.json({ 
+      return void res.json({ 
         categories: [
           { id: '1', name: 'General Discussion', slug: 'general', description: 'Open discussions', threadCount: 25, icon: '💬', color: 'blue' },
           { id: '2', name: 'Job Seeking Tips', slug: 'job-tips', description: 'Job hunting strategies', threadCount: 18, icon: '💼', color: 'green' },
@@ -175,7 +175,7 @@ router.get('/threads/:slug', async (req, res) => {
     });
 
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return void res.status(404).json({ error: 'Thread not found' });
     }
 
     // Increment view count
@@ -198,7 +198,7 @@ router.get('/threads/:threadId/replies', async (req, res) => {
   try {
     const { threadId } = req.params;
     const thread = await prisma.forumThread.findFirst({ where: { OR: [{ id: threadId }, { slug: threadId }] } });
-    if (!thread) return res.status(404).json({ error: 'Thread not found' });
+    if (!thread) return void res.status(404).json({ error: 'Thread not found' });
 
     const replies = await prisma.forumReply.findMany({
       where: { threadId: thread.id },
@@ -220,7 +220,7 @@ router.post('/threads/:threadId/upvote', authenticateJWT, async (req, res) => {
   try {
     const { threadId } = req.params;
     const thread = await prisma.forumThread.findFirst({ where: { OR: [{ id: threadId }, { slug: threadId }] } });
-    if (!thread) return res.status(404).json({ error: 'Thread not found' });
+    if (!thread) return void res.status(404).json({ error: 'Thread not found' });
     const result = toggleUpvote(threadUpvotes, thread.id, voteKey(req));
     res.json({ ok: true, ...result });
   } catch (err) {
@@ -236,7 +236,7 @@ router.post('/replies/:replyId/upvote', authenticateJWT, async (req, res) => {
   try {
     const { replyId } = req.params;
     const reply = await prisma.forumReply.findUnique({ where: { id: replyId } });
-    if (!reply) return res.status(404).json({ error: 'Reply not found' });
+    if (!reply) return void res.status(404).json({ error: 'Reply not found' });
     const result = toggleUpvote(replyUpvotes, reply.id, voteKey(req));
     res.json({ ok: true, ...result });
   } catch (err) {
@@ -254,7 +254,7 @@ router.post('/threads', authenticateJWT, async (req, res) => {
     const { categoryId, title, content } = req.body;
 
     if (!categoryId || !title || !content) {
-      return res.status(400).json({ error: 'categoryId, title, and content are required' });
+      return void res.status(400).json({ error: 'categoryId, title, and content are required' });
     }
 
     // Generate slug
@@ -321,16 +321,16 @@ router.post('/threads/:threadId/replies', authenticateJWT, async (req, res) => {
     const { content } = req.body;
 
     if (!content) {
-      return res.status(400).json({ error: 'content is required' });
+      return void res.status(400).json({ error: 'content is required' });
     }
 
     // Check thread exists and not locked
     const thread = await prisma.forumThread.findUnique({ where: { id: threadId } });
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return void res.status(404).json({ error: 'Thread not found' });
     }
     if (thread.isClosed) {
-      return res.status(403).json({ error: 'Thread is closed' });
+      return void res.status(403).json({ error: 'Thread is closed' });
     }
 
     const reply = await prisma.forumReply.create({
@@ -390,10 +390,10 @@ router.post('/flag', authenticateJWT, async (req, res) => {
     const { threadId, replyId, reason, details } = req.body;
 
     if (!threadId && !replyId) {
-      return res.status(400).json({ error: 'threadId or replyId is required' });
+      return void res.status(400).json({ error: 'threadId or replyId is required' });
     }
     if (!reason) {
-      return res.status(400).json({ error: 'reason is required' });
+      return void res.status(400).json({ error: 'reason is required' });
     }
 
     let flag;
@@ -462,11 +462,11 @@ router.put('/flags/:id', authenticateJWT, requireAdmin, async (req, res) => {
     const { status, action } = req.body;
 
     if (!['pending', 'resolved'].includes(String(status || 'pending'))) {
-      return res.status(400).json({ error: 'Invalid status' });
+      return void res.status(400).json({ error: 'Invalid status' });
     }
 
     if (action && !['none', 'deleted'].includes(String(action))) {
-      return res.status(400).json({ error: 'Invalid action' });
+      return void res.status(400).json({ error: 'Invalid action' });
     }
 
     let flag;
@@ -482,7 +482,7 @@ router.put('/flags/:id', authenticateJWT, requireAdmin, async (req, res) => {
       });
     } else {
       const idx = memoryFlags.findIndex((f) => f.id === id);
-      if (idx === -1) return res.status(404).json({ error: 'Flag not found' });
+      if (idx === -1) return void res.status(404).json({ error: 'Flag not found' });
       memoryFlags[idx] = {
         ...memoryFlags[idx],
         status: String(status || 'pending'),
@@ -510,4 +510,6 @@ router.put('/flags/:id', authenticateJWT, requireAdmin, async (req, res) => {
 });
 
 export default router;
+
+
 

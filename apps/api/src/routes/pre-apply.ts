@@ -18,7 +18,7 @@ const router = express.Router();
  * GET /pre-apply/matches
  * Get the current user's pre-apply job matches
  */
-router.get('/matches', authenticate(), async (req: any, res) => {
+router.get('/matches', authenticate, async (req: any, res) => {
   try {
     const userId = req.user.id;
     const limit = Math.min(parseInt(req.query.limit as string) || 10, 50);
@@ -39,7 +39,7 @@ router.get('/matches', authenticate(), async (req: any, res) => {
  * POST /pre-apply/:jobId/dismiss
  * Dismiss a job from the pre-apply queue
  */
-router.post('/:jobId/dismiss', authenticate(), async (req: any, res) => {
+router.post('/:jobId/dismiss', authenticate, async (req: any, res) => {
   try {
     const userId = req.user.id;
     const { jobId } = req.params;
@@ -57,7 +57,7 @@ router.post('/:jobId/dismiss', authenticate(), async (req: any, res) => {
  * POST /pre-apply/:jobId/applied
  * Mark that the user applied to a job from pre-apply
  */
-router.post('/:jobId/applied', authenticate(), async (req: any, res) => {
+router.post('/:jobId/applied', authenticate, async (req: any, res) => {
   try {
     const userId = req.user.id;
     const { jobId } = req.params;
@@ -84,7 +84,7 @@ router.post('/process-job/:jobId', async (req: Request, res: Response) => {
 
     // Allow if admin key matches or if called internally (no auth required for internal calls)
     if (expectedKey && adminKey !== expectedKey && !req.headers['x-internal-call']) {
-      return res.status(403).json({ error: 'Unauthorized' });
+      return void res.status(403).json({ error: 'Unauthorized' });
     }
 
     const { jobId } = req.params;
@@ -101,3 +101,5 @@ router.post('/process-job/:jobId', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+

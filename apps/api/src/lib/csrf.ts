@@ -124,7 +124,7 @@ export function csrfProtection() {
         ip: req.ip,
       });
 
-      return res.status(403).json({
+      return void res.status(403).json({
         success: false,
         error: {
           code: 'CSRF_TOKEN_MISSING',
@@ -140,7 +140,7 @@ export function csrfProtection() {
         ip: req.ip,
       });
 
-      return res.status(403).json({
+      return void res.status(403).json({
         success: false,
         error: {
           code: 'CSRF_TOKEN_INVALID',
@@ -204,3 +204,4 @@ export function getCsrfTokenRoute() {
 export default csrfProtection;
 
 export {};
+

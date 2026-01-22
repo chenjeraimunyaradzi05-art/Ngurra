@@ -64,7 +64,7 @@ router.delete('/sessions/:id', authenticate, async (req, res) => {
     const result = await sessionManager.invalidateSession(id, req.user.id, req);
     
     if (!result.success) {
-      return res.status(404).json({ error: result.message });
+      return void res.status(404).json({ error: result.message });
     }
     
     res.json({ message: 'Session terminated' });
@@ -128,7 +128,7 @@ router.post('/2fa/enable', authenticate, async (req, res) => {
     });
     
     if (user.twoFactorEnabled) {
-      return res.status(400).json({ error: '2FA is already enabled' });
+      return void res.status(400).json({ error: '2FA is already enabled' });
     }
     
     const result = await twoFactorAuth.enable2FA(req.user.id, user.email);
@@ -154,13 +154,13 @@ router.post('/2fa/verify', authenticate, async (req, res) => {
     const { token } = req.body;
     
     if (!token) {
-      return res.status(400).json({ error: 'Verification code required' });
+      return void res.status(400).json({ error: 'Verification code required' });
     }
     
     const result = await twoFactorAuth.verify2FA(req.user.id, token, req);
     
     if (!result.success) {
-      return res.status(400).json({ error: result.message });
+      return void res.status(400).json({ error: result.message });
     }
     
     res.json({ message: '2FA enabled successfully' });
@@ -179,13 +179,13 @@ router.post('/2fa/disable', authenticate, async (req, res) => {
     const { token } = req.body;
     
     if (!token) {
-      return res.status(400).json({ error: 'Verification code required' });
+      return void res.status(400).json({ error: 'Verification code required' });
     }
     
     const result = await twoFactorAuth.disable2FA(req.user.id, token, req);
     
     if (!result.success) {
-      return res.status(400).json({ error: result.message });
+      return void res.status(400).json({ error: result.message });
     }
     
     res.json({ message: '2FA disabled successfully' });
@@ -204,13 +204,13 @@ router.post('/2fa/backup-codes', authenticate, async (req, res) => {
     const { token } = req.body;
     
     if (!token) {
-      return res.status(400).json({ error: 'Verification code required' });
+      return void res.status(400).json({ error: 'Verification code required' });
     }
     
     const result = await twoFactorAuth.regenerateBackupCodes(req.user.id, token, req);
     
     if (!result.success) {
-      return res.status(400).json({ error: result.message });
+      return void res.status(400).json({ error: result.message });
     }
     
     res.json({
@@ -457,7 +457,7 @@ router.get('/admin/users-without-2fa', authenticate, authorize('admin'), async (
 router.get('/admin/alerts', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!securityAlerts) {
-      return res.status(501).json({ error: 'Security alerts not available' });
+      return void res.status(501).json({ error: 'Security alerts not available' });
     }
     
     const { type, severity, acknowledged } = req.query;
@@ -483,7 +483,7 @@ router.get('/admin/alerts', authenticate, authorize('admin'), async (req, res) =
 router.post('/admin/alerts/:id/acknowledge', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!securityAlerts) {
-      return res.status(501).json({ error: 'Security alerts not available' });
+      return void res.status(501).json({ error: 'Security alerts not available' });
     }
     
     const { id } = req.params;
@@ -515,7 +515,7 @@ router.post('/admin/alerts/:id/acknowledge', authenticate, authorize('admin'), a
 router.get('/admin/maintenance', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!maintenanceMode) {
-      return res.json({ active: false, config: { enabled: false } });
+      return void res.json({ active: false, config: { enabled: false } });
     }
     
     const status = await maintenanceMode.getMaintenanceStatus();
@@ -533,7 +533,7 @@ router.get('/admin/maintenance', authenticate, authorize('admin'), async (req, r
 router.post('/admin/maintenance/enable', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!maintenanceMode) {
-      return res.status(501).json({ error: 'Maintenance mode not available' });
+      return void res.status(501).json({ error: 'Maintenance mode not available' });
     }
     
     const { message, endTime, bypassToken } = req.body;
@@ -565,7 +565,7 @@ router.post('/admin/maintenance/enable', authenticate, authorize('admin'), async
 router.post('/admin/maintenance/disable', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!maintenanceMode) {
-      return res.status(501).json({ error: 'Maintenance mode not available' });
+      return void res.status(501).json({ error: 'Maintenance mode not available' });
     }
     
     await maintenanceMode.disableMaintenance();
@@ -589,13 +589,13 @@ router.post('/admin/maintenance/disable', authenticate, authorize('admin'), asyn
 router.post('/admin/maintenance/schedule', authenticate, authorize('admin'), async (req, res) => {
   try {
     if (!maintenanceMode) {
-      return res.status(501).json({ error: 'Maintenance mode not available' });
+      return void res.status(501).json({ error: 'Maintenance mode not available' });
     }
     
     const { startTime, endTime, message } = req.body;
     
     if (!startTime || !endTime) {
-      return res.status(400).json({ error: 'startTime and endTime are required' });
+      return void res.status(400).json({ error: 'startTime and endTime are required' });
     }
     
     await maintenanceMode.scheduleMaintenanceWindow(
@@ -628,7 +628,7 @@ router.post('/admin/maintenance/schedule', authenticate, authorize('admin'), asy
 router.post('/data-export', authenticate, async (req, res) => {
   try {
     if (!gdprService) {
-      return res.status(501).json({ error: 'Data export not available' });
+      return void res.status(501).json({ error: 'Data export not available' });
     }
     
     const exportData = await gdprService.exportUserData(req.user.id);
@@ -653,14 +653,14 @@ router.post('/data-export', authenticate, async (req, res) => {
 router.post('/delete-account', authenticate, async (req, res) => {
   try {
     if (!gdprService) {
-      return res.status(501).json({ error: 'Account deletion not available' });
+      return void res.status(501).json({ error: 'Account deletion not available' });
     }
     
     const { password, confirmPassword, reason } = req.body;
     const pwd = password || confirmPassword;
     
     if (!pwd) {
-      return res.status(400).json({ error: 'Password confirmation required' });
+      return void res.status(400).json({ error: 'Password confirmation required' });
     }
     
     // Verify password first
@@ -673,7 +673,7 @@ router.post('/delete-account', authenticate, async (req, res) => {
     const validPassword = await bcrypt.compare(pwd, user.password);
     
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid password' });
+      return void res.status(401).json({ error: 'Invalid password' });
     }
     
     // Soft delete (30 day recovery period)
@@ -720,4 +720,5 @@ router.post('/cancel-deletion', authenticate, async (req, res) => {
 });
 
 export default router;
+
 

@@ -48,7 +48,7 @@ router.get('/:imageId', async (req, res) => {
   try {
     // Validate preset
     if (preset && !IMAGE_PRESETS[preset]) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Invalid preset',
         valid_presets: Object.keys(IMAGE_PRESETS),
       });
@@ -70,7 +70,7 @@ router.get('/:imageId', async (req, res) => {
     }
 
     if (!OUTPUT_FORMATS.includes(outputFormat)) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Invalid format',
         valid_formats: OUTPUT_FORMATS,
       });
@@ -85,7 +85,7 @@ router.get('/:imageId', async (req, res) => {
       res.setHeader('X-Cache', 'HIT');
       res.setHeader('Content-Type', getContentType(outputFormat));
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      return res.send(Buffer.from(cached.buffer, 'base64'));
+      return void res.send(Buffer.from(cached.buffer, 'base64'));
     }
 
     // Fetch image from database storage (with Redis cache layer above)
@@ -98,7 +98,7 @@ router.get('/:imageId', async (req, res) => {
     });
 
     if (!image) {
-      return res.status(404).json({ error: 'Image not found' });
+      return void res.status(404).json({ error: 'Image not found' });
     }
 
     // Get the image buffer
@@ -111,7 +111,7 @@ router.get('/:imageId', async (req, res) => {
     // Validate image
     const validation = await validateImage(imageBuffer);
     if (!validation.valid) {
-      return res.status(400).json({ error: 'Invalid image', details: validation.errors });
+      return void res.status(400).json({ error: 'Invalid image', details: validation.errors });
     }
 
     // Optimize image
@@ -174,7 +174,7 @@ router.get('/:imageId/metadata', async (req, res) => {
     });
 
     if (!image) {
-      return res.status(404).json({ error: 'Image not found' });
+      return void res.status(404).json({ error: 'Image not found' });
     }
 
     // Generate srcset URLs
@@ -216,7 +216,7 @@ router.post('/optimize', async (req, res) => {
     // Expect multipart form data with 'image' field
     // This would use multer or similar middleware
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return void res.status(400).json({ error: 'No image file provided' });
     }
 
     const imageBuffer = req.file.buffer;
@@ -228,7 +228,7 @@ router.post('/optimize', async (req, res) => {
     });
 
     if (!validation.valid) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Invalid image',
         details: validation.errors,
       });
@@ -258,4 +258,5 @@ router.post('/optimize', async (req, res) => {
 });
 
 export default router;
+
 

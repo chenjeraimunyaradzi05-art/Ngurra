@@ -122,7 +122,7 @@ export function rateLimitMiddleware(config: Partial<RateLimitConfig> = {}) {
 
     if (!result.allowed) {
       res.setHeader('Retry-After', Math.ceil((result.resetTime - Date.now()) / 1000));
-      return res.status(finalConfig.statusCode || 429).json({
+      return void res.status(finalConfig.statusCode || 429).json({
         error: finalConfig.message,
         retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
       });
@@ -272,3 +272,4 @@ export default {
 };
 
 export {};
+

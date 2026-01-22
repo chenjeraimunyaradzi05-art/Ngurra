@@ -204,7 +204,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
     
     if (!course) {
-      return res.status(404).json({ error: 'Course not found' });
+      return void res.status(404).json({ error: 'Course not found' });
     }
     
     res.json({
@@ -230,7 +230,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // Alias for /my/enrolments - frontend calls /enrolments
-router.get('/enrolments', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/enrolments', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     
@@ -275,7 +275,7 @@ router.get('/enrolments', authenticateJWT(), async (req: Request, res: Response)
 });
 
 // Get granular progress for an enrolment
-router.get('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/enrolments/:enrolmentId/progress', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const enrolment = await prisma.courseEnrolment.findUnique({
@@ -284,7 +284,7 @@ router.get('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: R
     });
 
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to view this progress' });
+      return void res.status(403).json({ error: 'Not authorized to view this progress' });
     }
 
     const lessons = await getOrInitializeLessons(enrolment.id, enrolment.course);
@@ -306,7 +306,7 @@ router.get('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: R
 });
 
 // Mark lesson as completed for an enrolment
-router.post('/enrolments/:enrolmentId/lessons/:lessonId/complete', authenticateJWT(), async (req: Request, res: Response) => {
+router.post('/enrolments/:enrolmentId/lessons/:lessonId/complete', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const enrolment = await prisma.courseEnrolment.findUnique({
@@ -315,12 +315,12 @@ router.post('/enrolments/:enrolmentId/lessons/:lessonId/complete', authenticateJ
     });
 
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to update this progress' });
+      return void res.status(403).json({ error: 'Not authorized to update this progress' });
     }
 
     const lessons = await getOrInitializeLessons(enrolment.id, enrolment.course);
     const target = lessons.find((lesson) => lesson.id === req.params.lessonId);
-    if (!target) return res.status(404).json({ error: 'Lesson not found' });
+    if (!target) return void res.status(404).json({ error: 'Lesson not found' });
 
     if (!target.completedAt) {
       target.completedAt = new Date().toISOString();
@@ -357,7 +357,7 @@ router.post('/enrolments/:enrolmentId/lessons/:lessonId/complete', authenticateJ
 });
 
 // Get my enrolments
-router.get('/my/enrolments', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/my/enrolments', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     
@@ -404,7 +404,7 @@ router.get('/my/enrolments', authenticateJWT(), async (req: Request, res: Respon
 });
 
 // Get certificate for an enrolment
-router.get('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/enrolments/:enrolmentId/certificate', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const enrolment = await prisma.courseEnrolment.findUnique({
@@ -413,11 +413,11 @@ router.get('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (req
     });
 
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to access this certificate' });
+      return void res.status(403).json({ error: 'Not authorized to access this certificate' });
     }
 
     if (!enrolment.certificateUrl) {
-      return res.status(404).json({ error: 'Certificate not issued yet' });
+      return void res.status(404).json({ error: 'Certificate not issued yet' });
     }
 
     res.json({
@@ -432,7 +432,7 @@ router.get('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (req
 });
 
 // Issue or update certificate for an enrolment
-router.post('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (req: Request, res: Response) => {
+router.post('/enrolments/:enrolmentId/certificate', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const enrolment = await prisma.courseEnrolment.findUnique({
@@ -441,11 +441,11 @@ router.post('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (re
     });
 
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to update this certificate' });
+      return void res.status(403).json({ error: 'Not authorized to update this certificate' });
     }
 
     if (enrolment.status !== 'COMPLETED') {
-      return res.status(400).json({ error: 'Course must be completed before issuing certificate' });
+      return void res.status(400).json({ error: 'Course must be completed before issuing certificate' });
     }
 
     const providedUrl = req.body?.certificateUrl;
@@ -464,7 +464,7 @@ router.post('/enrolments/:enrolmentId/certificate', authenticateJWT(), async (re
 });
 
 // Enrol in a course
-router.post('/:id/enrol', authenticateJWT(), async (req: Request, res: Response) => {
+router.post('/:id/enrol', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const courseId = req.params.id;
     const userId = (req as any).user.id;
@@ -475,7 +475,7 @@ router.post('/:id/enrol', authenticateJWT(), async (req: Request, res: Response)
     });
     
     if (existing) {
-      return res.status(400).json({ error: 'Already enrolled in this course' });
+      return void res.status(400).json({ error: 'Already enrolled in this course' });
     }
     
     // Check if course exists and is active
@@ -484,7 +484,7 @@ router.post('/:id/enrol', authenticateJWT(), async (req: Request, res: Response)
     });
     
     if (!course || !course.isActive) {
-      return res.status(404).json({ error: 'Course not found or not available' });
+      return void res.status(404).json({ error: 'Course not found or not available' });
     }
     
     const enrolment = await prisma.courseEnrolment.create({
@@ -505,7 +505,7 @@ router.post('/:id/enrol', authenticateJWT(), async (req: Request, res: Response)
 });
 
 // Update enrolment status
-router.put('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request, res: Response) => {
+router.put('/enrolments/:enrolmentId', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { enrolmentId } = req.params;
     const { status, completedAt, progress, nextLesson, dueDate } = req.body;
@@ -516,7 +516,7 @@ router.put('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request, r
     });
     
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to update this enrolment' });
+      return void res.status(403).json({ error: 'Not authorized to update this enrolment' });
     }
     
     const updateData: UpdateData = {};
@@ -549,7 +549,7 @@ router.put('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request, r
 });
 
 // Update course progress (dedicated endpoint)
-router.put('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: Request, res: Response) => {
+router.put('/enrolments/:enrolmentId/progress', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { enrolmentId } = req.params;
     const { progress, lessonCompleted, nextLesson } = req.body;
@@ -561,7 +561,7 @@ router.put('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: R
     });
     
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to update this enrolment' });
+      return void res.status(403).json({ error: 'Not authorized to update this enrolment' });
     }
     
     const newProgress = Math.max(0, Math.min(100, parseInt(progress) || enrolment.progress));
@@ -606,7 +606,7 @@ router.put('/enrolments/:enrolmentId/progress', authenticateJWT(), async (req: R
 });
 
 // Withdraw from course
-router.delete('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request, res: Response) => {
+router.delete('/enrolments/:enrolmentId', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { enrolmentId } = req.params;
     const userId = (req as any).user.id;
@@ -616,7 +616,7 @@ router.delete('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request
     });
     
     if (!enrolment || enrolment.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to withdraw from this enrolment' });
+      return void res.status(403).json({ error: 'Not authorized to withdraw from this enrolment' });
     }
     
     // Instead of deleting, mark as withdrawn
@@ -633,13 +633,13 @@ router.delete('/enrolments/:enrolmentId', authenticateJWT(), async (req: Request
 });
 
 // TAFE/Institution: Create a course
-router.post('/', authenticateJWT(), async (req: Request, res: Response) => {
+router.post('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const institutionId = (req as any).user.id;
     const { title, description, duration, qualification, industry, location, isOnline, price } = req.body;
     
     if (!title || !description) {
-      return res.status(400).json({ error: 'Title and description are required' });
+      return void res.status(400).json({ error: 'Title and description are required' });
     }
     
     const course = await prisma.course.create({
@@ -665,7 +665,7 @@ router.post('/', authenticateJWT(), async (req: Request, res: Response) => {
 });
 
 // TAFE/Institution: Update a course
-router.put('/:id', authenticateJWT(), async (req: Request, res: Response) => {
+router.put('/:id', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const courseId = req.params.id;
     const institutionId = (req as any).user.id;
@@ -674,7 +674,7 @@ router.put('/:id', authenticateJWT(), async (req: Request, res: Response) => {
     // Check ownership
     const existing = await prisma.course.findUnique({ where: { id: courseId } });
     if (!existing || existing.institutionId !== institutionId) {
-      return res.status(403).json({ error: 'Not authorized to update this course' });
+      return void res.status(403).json({ error: 'Not authorized to update this course' });
     }
     
     const updateData: UpdateData = {};
@@ -701,7 +701,7 @@ router.put('/:id', authenticateJWT(), async (req: Request, res: Response) => {
 });
 
 // TAFE/Institution: Get my courses
-router.get('/my/courses', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/my/courses', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const institutionId = (req as any).user.id;
     
@@ -738,7 +738,7 @@ router.get('/my/courses', authenticateJWT(), async (req: Request, res: Response)
 });
 
 // TAFE/Institution: Get stats for dashboard
-router.get('/my/stats', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/my/stats', authenticateJWT, async (req: Request, res: Response) => {
   try {
     // For the new schema, we don't have institutionId on Course
     // Return demo stats for now - courses are provider-based not user-owned
@@ -790,7 +790,7 @@ router.get('/my/stats', authenticateJWT(), async (req: Request, res: Response) =
 });
 
 // Get course enrolments (for TAFE admin)
-router.get('/:id/enrolments', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/:id/enrolments', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const courseId = req.params.id;
     const institutionId = (req as any).user.id;
@@ -798,7 +798,7 @@ router.get('/:id/enrolments', authenticateJWT(), async (req: Request, res: Respo
     // Check ownership
     const course = await prisma.course.findUnique({ where: { id: courseId } });
     if (!course || course.institutionId !== institutionId) {
-      return res.status(403).json({ error: 'Not authorized to view enrolments for this course' });
+      return void res.status(403).json({ error: 'Not authorized to view enrolments for this course' });
     }
     
     const enrolments = await prisma.courseEnrolment.findMany({
@@ -861,7 +861,7 @@ router.get('/recommendations', async (req: Request, res: Response) => {
         take: limitNum,
         orderBy: { createdAt: 'desc' },
       });
-      return res.json({ courses });
+      return void res.json({ courses });
     }
 
     const jobIdStr = jobId as string;
@@ -874,7 +874,7 @@ router.get('/recommendations', async (req: Request, res: Response) => {
 
     if (!job) {
       // Return demo recommendations for any job slug
-      return res.json({
+      return void res.json({
         courses: [
           { id: '1', title: 'Certificate III in Information Technology', provider: 'TAFE NSW', duration: '12 months', format: 'Blended', isFree: true, price: 0, relevance: 95, skillsGained: ['Programming', 'Web development'], matchedRequirements: [] },
           { id: '2', title: 'Full Stack Web Development Bootcamp', provider: 'General Assembly', duration: '12 weeks', format: 'Online', isFree: false, price: 349900, relevance: 88, skillsGained: ['React', 'Node.js'], matchedRequirements: [] },
@@ -925,7 +925,7 @@ router.get('/recommendations/job/:jobId', async (req: Request, res: Response) =>
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     // Get job skills
@@ -937,7 +937,7 @@ router.get('/recommendations/job/:jobId', async (req: Request, res: Response) =>
     const skillIds = jobSkills.map((js) => js.skillId);
 
     // Find courses that teach these skills
-    let courses = [];
+    let courses: any[] = [];
     if (skillIds.length > 0) {
       const courseSkills = await prisma.courseSkill.findMany({
         where: { skillId: { in: skillIds } },
@@ -1018,7 +1018,7 @@ router.get('/recommendations/job/:jobId', async (req: Request, res: Response) =>
 });
 
 // Get personalized recommendations for member
-router.get('/recommendations/me', authenticateJWT(), async (req: Request, res: Response) => {
+router.get('/recommendations/me', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const { limit = 10 } = req.query;
@@ -1041,7 +1041,7 @@ router.get('/recommendations/me', authenticateJWT(), async (req: Request, res: R
     const beginnerSkills = userSkills.filter((us) => us.level === 'beginner');
     const skillsToImprove = beginnerSkills.map((us) => us.skillId);
 
-    let recommendedCourses = [];
+    let recommendedCourses: any[] = [];
 
     if (skillsToImprove.length > 0) {
       const courseSkills = await prisma.courseSkill.findMany({
@@ -1086,7 +1086,7 @@ router.get('/recommendations/me', authenticateJWT(), async (req: Request, res: R
 // COURSE SYNC (Admin)
 // =============================================================================
 
-router.post('/sync', authenticateJWT(), requireAdmin, async (req: Request, res: Response) => {
+router.post('/sync', authenticateJWT, requireAdmin, async (req: Request, res: Response) => {
   try {
     const result = await runCourseSync();
     res.json(result);
@@ -1097,3 +1097,6 @@ router.post('/sync', authenticateJWT(), requireAdmin, async (req: Request, res: 
 });
 
 export default router;
+
+
+

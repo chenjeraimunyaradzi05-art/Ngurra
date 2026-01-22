@@ -118,7 +118,7 @@ router.post('/resume/parse', authenticateJWT, async (req, res) => {
     const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Resume text is required' });
+      return void res.status(400).json({ error: 'Resume text is required' });
     }
 
     const parsed = await parseResumeText(text);
@@ -281,5 +281,6 @@ router.get('/sources', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 
 

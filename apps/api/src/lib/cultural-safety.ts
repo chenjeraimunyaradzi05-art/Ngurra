@@ -119,16 +119,13 @@ export async function getCulturalProfile(userId: string): Promise<CulturalProfil
             where: { id: userId },
             select: {
                 id: true,
-                language: true,
-                region: true,
-                preferences: true
             }
         });
         
         if (!user) return null;
         
         // Parse preferences if stored as JSON
-        const prefs = typeof user.preferences === 'object' ? user.preferences : {};
+        const prefs = typeof (user as any).preferences === 'object' ? (user as any).preferences : {};
         
         return {
             userId: user.id,
@@ -424,3 +421,4 @@ export default {
     getCommonPhrases,
     validateCulturalSafety
 };
+

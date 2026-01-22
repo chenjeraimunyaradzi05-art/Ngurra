@@ -70,7 +70,7 @@ router.post('/collections', (req, res) => {
 router.put('/collections/:id', (req, res) => {
   const { id } = req.params;
   const idx = collections.findIndex(c => c.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Collection not found' });
+  if (idx === -1) return void res.status(404).json({ error: 'Collection not found' });
   
   const updated = { ...collections[idx], ...req.body, updatedAt: new Date().toISOString() };
   collections[idx] = updated;
@@ -81,7 +81,7 @@ router.put('/collections/:id', (req, res) => {
 router.delete('/collections/:id', (req, res) => {
   const { id } = req.params;
   const idx = collections.findIndex(c => c.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Collection not found' });
+  if (idx === -1) return void res.status(404).json({ error: 'Collection not found' });
   
   collections.splice(idx, 1);
   // Also remove bookmarks in this collection or move them to default? 
@@ -154,7 +154,7 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
   const idx = bookmarks.findIndex(b => b.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Bookmark not found' });
+  if (idx === -1) return void res.status(404).json({ error: 'Bookmark not found' });
   
   const b = bookmarks[idx];
   const col = collections.find(c => c.id === b.collectionId);
@@ -169,7 +169,7 @@ router.put('/:id/move', (req, res) => {
   const { id } = req.params;
   const { collectionId } = req.body;
   const idx = bookmarks.findIndex(b => b.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Bookmark not found' });
+  if (idx === -1) return void res.status(404).json({ error: 'Bookmark not found' });
   
   const oldColId = bookmarks[idx].collectionId;
   bookmarks[idx].collectionId = collectionId;
@@ -189,10 +189,11 @@ router.put('/:id/note', (req, res) => {
   const { id } = req.params;
   const { note } = req.body;
   const idx = bookmarks.findIndex(b => b.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Bookmark not found' });
+  if (idx === -1) return void res.status(404).json({ error: 'Bookmark not found' });
   
   bookmarks[idx].note = note;
   res.json({ success: true });
 });
 
 export default router;
+

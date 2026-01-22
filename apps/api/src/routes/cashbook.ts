@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
     res.status(201).json({ cashbook });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[cashbook] create error', error);
     res.status(500).json({ error: 'Failed to create cashbook' });
@@ -76,7 +76,7 @@ router.get('/:cashbookId', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     res.json({ cashbook });
@@ -96,7 +96,7 @@ router.get('/:cashbookId/entries', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     const from = req.query.from ? new Date(String(req.query.from)) : undefined;
@@ -136,13 +136,13 @@ router.get('/:cashbookId/summary', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     const from = req.query.from ? new Date(String(req.query.from)) : undefined;
     const to = req.query.to ? new Date(String(req.query.to)) : undefined;
     if ((from && isNaN(from.getTime())) || (to && isNaN(to.getTime()))) {
-      return res.status(400).json({ error: 'Invalid date range' });
+      return void res.status(400).json({ error: 'Invalid date range' });
     }
 
     const entries = await prisma.businessCashbookEntry.findMany({
@@ -209,13 +209,13 @@ router.get('/:cashbookId/categories', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     const from = req.query.from ? new Date(String(req.query.from)) : undefined;
     const to = req.query.to ? new Date(String(req.query.to)) : undefined;
     if ((from && isNaN(from.getTime())) || (to && isNaN(to.getTime()))) {
-      return res.status(400).json({ error: 'Invalid date range' });
+      return void res.status(400).json({ error: 'Invalid date range' });
     }
 
     const grouped = await prisma.businessCashbookEntry.groupBy({
@@ -259,13 +259,13 @@ router.get('/:cashbookId/export/csv', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     const from = req.query.from ? new Date(String(req.query.from)) : undefined;
     const to = req.query.to ? new Date(String(req.query.to)) : undefined;
     if ((from && isNaN(from.getTime())) || (to && isNaN(to.getTime()))) {
-      return res.status(400).json({ error: 'Invalid date range' });
+      return void res.status(400).json({ error: 'Invalid date range' });
     }
 
     const entries = await prisma.businessCashbookEntry.findMany({
@@ -326,7 +326,7 @@ router.post('/:cashbookId/entries', async (req, res) => {
     });
 
     if (!cashbook) {
-      return res.status(404).json({ error: 'Cashbook not found' });
+      return void res.status(404).json({ error: 'Cashbook not found' });
     }
 
     const entry = await prisma.businessCashbookEntry.create({
@@ -345,7 +345,7 @@ router.post('/:cashbookId/entries', async (req, res) => {
     res.status(201).json({ entry });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[cashbook] create entry error', error);
     res.status(500).json({ error: 'Failed to create cashbook entry' });
@@ -360,7 +360,7 @@ router.delete('/entries/:entryId', async (req, res) => {
     });
 
     if (!entry) {
-      return res.status(404).json({ error: 'Cashbook entry not found' });
+      return void res.status(404).json({ error: 'Cashbook entry not found' });
     }
 
     await prisma.businessCashbookEntry.delete({ where: { id: req.params.entryId } });
@@ -372,3 +372,4 @@ router.delete('/entries/:entryId', async (req, res) => {
 });
 
 export default router;
+

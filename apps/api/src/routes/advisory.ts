@@ -43,7 +43,7 @@ async function isCouncilMember(req, res, next) {
     });
 
     if (!member) {
-      return res.status(403).json({ error: 'Council members only' });
+      return void res.status(403).json({ error: 'Council members only' });
     }
 
     req.councilMember = member;
@@ -58,7 +58,7 @@ async function isCouncilMember(req, res, next) {
  */
 function isAdmin(req, res, next) {
   if (req.user.userType !== 'ADMIN') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return void res.status(403).json({ error: 'Admin access required' });
   }
   next();
 }
@@ -243,7 +243,7 @@ router.get('/proposals/:id', async (req, res) => {
     });
 
     if (!proposal) {
-      return res.status(404).json({ error: 'Proposal not found' });
+      return void res.status(404).json({ error: 'Proposal not found' });
     }
 
     // Calculate vote tally
@@ -367,7 +367,7 @@ router.post('/proposals/:id/vote', authenticateJWT, isCouncilMember, async (req,
     const { vote, comment } = req.body;
 
     if (!['FOR', 'AGAINST', 'ABSTAIN'].includes(vote)) {
-      return res.status(400).json({ error: 'Invalid vote. Must be FOR, AGAINST, or ABSTAIN' });
+      return void res.status(400).json({ error: 'Invalid vote. Must be FOR, AGAINST, or ABSTAIN' });
     }
 
     // Check proposal exists and is open
@@ -376,15 +376,15 @@ router.post('/proposals/:id/vote', authenticateJWT, isCouncilMember, async (req,
     });
 
     if (!proposal) {
-      return res.status(404).json({ error: 'Proposal not found' });
+      return void res.status(404).json({ error: 'Proposal not found' });
     }
 
     if (proposal.status !== 'OPEN') {
-      return res.status(400).json({ error: 'Proposal is not open for voting' });
+      return void res.status(400).json({ error: 'Proposal is not open for voting' });
     }
 
     if (proposal.votingEnds && new Date(proposal.votingEnds) < new Date()) {
-      return res.status(400).json({ error: 'Voting period has ended' });
+      return void res.status(400).json({ error: 'Voting period has ended' });
     }
 
     // Upsert vote
@@ -434,7 +434,7 @@ router.post('/members', authenticateJWT, isAdmin, async (req, res) => {
     const { userId, role, region, bio, termEnd } = req.body;
 
     if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return void res.status(400).json({ error: 'User ID is required' });
     }
 
     const member = await prisma.advisoryCouncilMember.create({
@@ -491,7 +491,7 @@ router.post('/proposals', authenticateJWT, async (req, res) => {
     const { title, summary, fullText, category, votingEnds } = req.body;
 
     if (!title || !summary) {
-      return res.status(400).json({ error: 'Title and summary are required' });
+      return void res.status(400).json({ error: 'Title and summary are required' });
     }
 
     const proposal = await prisma.advisoryProposal.create({
@@ -579,4 +579,5 @@ router.post('/meetings', authenticateJWT, isAdmin, async (req, res) => {
 });
 
 export default router;
+
 

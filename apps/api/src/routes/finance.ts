@@ -195,11 +195,11 @@ router.get('/periods', async (req, res) => {
 router.post('/periods', async (req, res) => {
   try {
     const input = periodSchema.parse(req.body || {});
-    const period = await createPeriod((req as any).user.id, input);
+    const period = await createPeriod((req as any).user.id, input as any);
     res.status(201).json({ period });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] period create error', error);
     res.status(500).json({ error: 'Failed to create period' });
@@ -223,7 +223,7 @@ router.patch('/settings', async (req, res) => {
     res.json({ settings });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] settings update error', error);
     res.status(500).json({ error: 'Failed to update finance settings' });
@@ -244,11 +244,11 @@ router.post('/chart/seed', async (req, res) => {
 router.post('/chart', async (req, res) => {
   try {
     const input = accountSchema.parse(req.body || {});
-    const account = await upsertAccount((req as any).user.id, input);
+    const account = await upsertAccount((req as any).user.id, input as any);
     res.status(201).json({ account });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] chart upsert error', error);
     res.status(500).json({ error: 'Failed to save chart account' });
@@ -261,11 +261,11 @@ router.post('/journals', async (req, res) => {
     const result = await createJournalEntry((req as any).user.id, {
       ...input,
       postedBy: (req as any).user.id,
-    });
+    } as any);
     res.status(201).json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] journal create error', error);
     res.status(500).json({ error: 'Failed to create journal entry' });
@@ -275,12 +275,12 @@ router.post('/journals', async (req, res) => {
 router.post('/tax/calculate', async (req, res) => {
   try {
     const input = taxCalcSchema.parse(req.body || {});
-    const lines = calculateTaxLines(input.lines);
+    const lines = calculateTaxLines(input.lines as any);
     const summary = summarizeTax(lines);
     res.json({ lines, summary });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] tax calculate error', error);
     res.status(500).json({ error: 'Failed to calculate tax' });
@@ -300,11 +300,11 @@ router.get('/tax/profiles', async (req, res) => {
 router.post('/tax/profiles', async (req, res) => {
   try {
     const input = taxProfileSchema.parse(req.body || {});
-    const profile = await createTaxProfile((req as any).user.id, input);
+    const profile = await createTaxProfile((req as any).user.id, input as any);
     res.status(201).json({ profile });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] tax profile create error', error);
     res.status(500).json({ error: 'Failed to create tax profile' });
@@ -399,7 +399,7 @@ router.post('/close-period', async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] close period error', error);
     res.status(500).json({ error: 'Failed to create closing entry' });
@@ -419,11 +419,11 @@ router.get('/inventory/items', async (req, res) => {
 router.post('/inventory/items', async (req, res) => {
   try {
     const input = inventoryItemSchema.parse(req.body || {});
-    const item = await upsertInventoryItem((req as any).user.id, input);
+    const item = await upsertInventoryItem((req as any).user.id, input as any);
     res.status(201).json({ item });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] inventory create error', error);
     res.status(500).json({ error: 'Failed to save inventory item' });
@@ -433,11 +433,11 @@ router.post('/inventory/items', async (req, res) => {
 router.post('/inventory/transactions', async (req, res) => {
   try {
     const input = inventoryTransactionSchema.parse(req.body || {});
-    const result = await applyInventoryTransaction((req as any).user.id, input);
+    const result = await applyInventoryTransaction((req as any).user.id, input as any);
     res.status(201).json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] inventory transaction error', error);
     res.status(500).json({ error: 'Failed to apply inventory transaction' });
@@ -457,11 +457,11 @@ router.get('/budgets', async (req, res) => {
 router.post('/budgets', async (req, res) => {
   try {
     const input = budgetSchema.parse(req.body || {});
-    const budget = await createBudget((req as any).user.id, input);
+    const budget = await createBudget((req as any).user.id, input as any);
     res.status(201).json({ budget });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] budget create error', error);
     res.status(500).json({ error: 'Failed to create budget' });
@@ -475,7 +475,7 @@ router.patch('/budgets/:budgetId/actuals', async (req, res) => {
     res.json({ budget });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[finance] budget update error', error);
     res.status(500).json({ error: 'Failed to update budget actuals' });
@@ -486,7 +486,7 @@ router.get('/reports/:type', async (req, res) => {
   try {
     const type = String(req.params.type || '').toUpperCase();
     if (!['PL', 'BS', 'CF', 'TB'].includes(type)) {
-      return res.status(400).json({ error: 'Invalid report type' });
+      return void res.status(400).json({ error: 'Invalid report type' });
     }
     const report = await generateReport((req as any).user.id, type as any, String(req.query.currency || 'AUD'));
     res.json({ report });

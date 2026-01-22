@@ -38,7 +38,7 @@ export abstract class BaseController {
       data,
       message,
     };
-    return res.status(statusCode).json(response);
+    return void res.status(statusCode).json(response);
   }
 
   /**
@@ -59,7 +59,7 @@ export abstract class BaseController {
         totalPages: Math.ceil(meta.total / meta.pageSize),
       },
     };
-    return res.status(200).json(response);
+    return void res.status(200).json(response);
   }
 
   /**
@@ -71,7 +71,7 @@ export abstract class BaseController {
       error: message,
       ...(details && { details }),
     };
-    return res.status(statusCode).json(response);
+    return void res.status(statusCode).json(response);
   }
 
   /**
@@ -171,3 +171,4 @@ export function asyncHandler(fn: (req: Request, res: Response, next: NextFunctio
 }
 
 export default BaseController;
+

@@ -207,7 +207,7 @@ router.get('/catalog/:id', async (req: Request, res: Response) => {
   const certification = certificationCatalog.find(c => c.id === id);
 
   if (!certification) {
-    return res.status(404).json({ error: 'Certification not found' });
+    return void res.status(404).json({ error: 'Certification not found' });
   }
 
   // Find related certifications
@@ -314,11 +314,11 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       const saved = await prisma.userBadge.create({
         data: {
           userId,
-          badgeName: certification.badgeName,
-          issuer: certification.issuer,
+          name: certification.badgeName,
+          issuerName: certification.issuer,
           issuedAt: certification.issuedAt,
           expiresAt: certification.expiresAt,
-          credentialUrl: certification.credentialUrl,
+          verificationUrl: certification.credentialUrl,
           badgeJson: JSON.stringify({
             category: parsed.category,
             skills: parsed.skills,
@@ -352,11 +352,11 @@ router.patch('/:id', authenticate, async (req: Request, res: Response) => {
       const updated = await prisma.userBadge.update({
         where: { id },
         data: {
-          badgeName: parsed.name,
-          issuer: parsed.provider,
+          name: parsed.name,
+          issuerName: parsed.provider,
           issuedAt: parsed.issueDate ? new Date(parsed.issueDate) : undefined,
           expiresAt: parsed.expiryDate ? new Date(parsed.expiryDate) : undefined,
-          credentialUrl: parsed.credentialUrl,
+          verificationUrl: parsed.credentialUrl,
         },
       });
       res.json(updated);
@@ -365,7 +365,7 @@ router.patch('/:id', authenticate, async (req: Request, res: Response) => {
       const userCerts = getUserCertifications(userId);
       const index = userCerts.findIndex((c: any) => c.id === id);
       if (index === -1) {
-        return res.status(404).json({ error: 'Certification not found' });
+        return void res.status(404).json({ error: 'Certification not found' });
       }
       userCerts[index] = { ...userCerts[index], ...parsed };
       res.json(userCerts[index]);
@@ -392,7 +392,7 @@ router.delete('/:id', authenticate, async (req: Request, res: Response) => {
       const userCerts = getUserCertifications(userId);
       const index = userCerts.findIndex((c: any) => c.id === id);
       if (index === -1) {
-        return res.status(404).json({ error: 'Certification not found' });
+        return void res.status(404).json({ error: 'Certification not found' });
       }
       userCerts.splice(index, 1);
       res.status(204).send();
@@ -516,7 +516,7 @@ router.get('/roi/:id', async (req: Request, res: Response) => {
   const cert = certificationCatalog.find(c => c.id === id);
 
   if (!cert) {
-    return res.status(404).json({ error: 'Certification not found' });
+    return void res.status(404).json({ error: 'Certification not found' });
   }
 
   // Mock ROI data
@@ -605,3 +605,4 @@ router.get('/pathway', authenticate, async (req: Request, res: Response) => {
 });
 
 export default router;
+

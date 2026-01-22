@@ -31,14 +31,14 @@ const checkSchema = z.object({
  * POST /moderation/check
  * Runs automated moderation checks and returns the decision + sanitized content.
  */
-router.post('/check', authenticate(), async (req: any, res) => {
+router.post('/check', authenticate, async (req: any, res) => {
   const parsed = checkSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return void res.status(400).json({ error: parsed.error.flatten() });
   }
 
   const userId = String(req.user?.id || '').trim();
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
   try {
     const result = await contentModerationService.moderateContent(
@@ -47,11 +47,13 @@ router.post('/check', authenticate(), async (req: any, res) => {
       userId,
       parsed.data.context
     );
-    return res.json({ result });
+    return void res.json({ result });
   } catch (err: any) {
     console.error('[Moderation] check failed:', err);
-    return res.status(500).json({ error: 'Moderation check failed' });
+    return void res.status(500).json({ error: 'Moderation check failed' });
   }
 });
 
 export default router;
+
+

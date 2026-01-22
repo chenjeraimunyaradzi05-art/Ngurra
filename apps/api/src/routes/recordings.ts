@@ -71,7 +71,7 @@ router.get('/session/:sessionId', authenticateJWT, async (req, res) => {
     );
     
     if (!hasAccess && recordings.length > 0) {
-      return res.status(403).json({ error: 'Access denied to this session' });
+      return void res.status(403).json({ error: 'Access denied to this session' });
     }
     
     res.json({ recordings, total: recordings.length });
@@ -99,12 +99,12 @@ router.get('/:id', authenticateJWT, async (req, res) => {
     const recording = await getRecording(req.params.id);
     
     if (!recording) {
-      return res.status(404).json({ error: 'Recording not found' });
+      return void res.status(404).json({ error: 'Recording not found' });
     }
     
     // Verify access
     if (recording.mentorId !== req.user.id && recording.menteeId !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
     
     // Don't expose internal paths
@@ -129,35 +129,35 @@ router.get('/:id/play', async (req, res) => {
     // If signature provided, validate and redirect
     if (expires && sig) {
       if (!validatePlaybackUrl(id, parseInt(expires, 10), sig)) {
-        return res.status(403).json({ error: 'Invalid or expired playback URL' });
+        return void res.status(403).json({ error: 'Invalid or expired playback URL' });
       }
       
       const recording = await getRecording(id);
       if (!recording || recording.status !== RecordingStatus.READY) {
-        return res.status(404).json({ error: 'Recording not available' });
+        return void res.status(404).json({ error: 'Recording not available' });
       }
       
       // Redirect to actual video URL
-      return res.redirect(recording.videoUrl);
+      return void res.redirect(recording.videoUrl);
     }
     
     // Otherwise, require auth and generate URL
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
     
     const recording = await getRecording(id);
     
     if (!recording) {
-      return res.status(404).json({ error: 'Recording not found' });
+      return void res.status(404).json({ error: 'Recording not found' });
     }
     
     if (recording.mentorId !== req.user.id && recording.menteeId !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
     
     if (recording.status !== RecordingStatus.READY) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Recording not ready',
         status: recording.status,
       });
@@ -185,15 +185,15 @@ router.get('/:id/transcript', authenticateJWT, async (req, res) => {
     const recording = await getRecording(req.params.id);
     
     if (!recording) {
-      return res.status(404).json({ error: 'Recording not found' });
+      return void res.status(404).json({ error: 'Recording not found' });
     }
     
     if (recording.mentorId !== req.user.id && recording.menteeId !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
     
     if (recording.transcriptStatus !== 'READY' || !recording.transcript) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Transcript not available',
         status: recording.transcriptStatus,
       });
@@ -219,13 +219,13 @@ router.post('/', authenticateJWT, async (req, res) => {
     const { sessionId, mentorId, menteeId, roomName } = req.body;
     
     if (!sessionId || !roomName) {
-      return res.status(400).json({ error: 'sessionId and roomName required' });
+      return void res.status(400).json({ error: 'sessionId and roomName required' });
     }
     
     // Verify user is part of the session
     const userId = req.user.id;
     if (userId !== mentorId && userId !== menteeId) {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
     
     const recording = await createRecording({
@@ -259,13 +259,13 @@ router.post('/:id/complete', async (req, res) => {
     if (expectedSecret && webhookSecret !== expectedSecret) {
       // Fall back to auth check
       if (!req.user) {
-        return res.status(401).json({ error: 'Authentication required' });
+        return void res.status(401).json({ error: 'Authentication required' });
       }
     }
     
     const recording = await getRecording(id);
     if (!recording) {
-      return res.status(404).json({ error: 'Recording not found' });
+      return void res.status(404).json({ error: 'Recording not found' });
     }
     
     // Process the recording (upload, transcript, etc.)
@@ -294,12 +294,12 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
     const recording = await getRecording(req.params.id);
     
     if (!recording) {
-      return res.status(404).json({ error: 'Recording not found' });
+      return void res.status(404).json({ error: 'Recording not found' });
     }
     
     // Only mentor can delete
     if (recording.mentorId !== req.user.id) {
-      return res.status(403).json({ error: 'Only the mentor can delete recordings' });
+      return void res.status(403).json({ error: 'Only the mentor can delete recordings' });
     }
     
     await updateRecording(req.params.id, { 
@@ -316,5 +316,6 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 
 

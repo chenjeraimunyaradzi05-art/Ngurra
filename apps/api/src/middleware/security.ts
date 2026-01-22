@@ -113,7 +113,7 @@ function suspiciousActivityDetector(options: any = {}) {
         );
 
         // Block the request
-        return res.status(400).json({ 
+        return void res.status(400).json({ 
           error: 'Invalid request' 
         });
       }
@@ -200,7 +200,7 @@ function blockScanners(req, res, next) {
         path: req.path,
         ip: req.ip
       });
-      return res.status(404).send('Not Found');
+      return void res.status(404).send('Not Found');
     }
   }
 
@@ -250,7 +250,7 @@ function validateContentType(req, res, next) {
         return next();
       }
       
-      return res.status(415).json({
+      return void res.status(415).json({
         error: 'Unsupported Media Type',
         message: 'Content-Type must be application/json'
       });
@@ -290,7 +290,7 @@ function perUserRateLimit(maxRequests = 100, windowMs = 60000) {
     if (requests.length > maxRequests) {
       audit.rateLimitExceeded(userId, req.path, req);
       
-      return res.status(429).json({
+      return void res.status(429).json({
         error: 'Too many requests',
         retryAfter: Math.ceil(windowMs / 1000)
       });
@@ -310,4 +310,5 @@ export {
   validateContentType,
   perUserRateLimit
 };
+
 

@@ -10,11 +10,11 @@ const router = express.Router();
 router.get('/email-templates', authenticate, requireAdmin, async (req, res) => {
     try {
         const templates = await prisma.emailTemplate.findMany({ orderBy: { key: 'asc' } });
-        return res.json({ templates });
+        return void res.json({ templates });
     }
     catch (err) {
         console.error('list templates error', err);
-        return res.status(500).json({ error: 'Failed to fetch templates' });
+        return void res.status(500).json({ error: 'Failed to fetch templates' });
     }
 });
 
@@ -24,12 +24,12 @@ router.get('/email-templates/:key', authenticate, requireAdmin, async (req, res)
     try {
         const t = await prisma.emailTemplate.findUnique({ where: { key } });
         if (!t)
-            return res.status(404).json({ error: 'Not found' });
-        return res.json({ template: t });
+            return void res.status(404).json({ error: 'Not found' });
+        return void res.json({ template: t });
     }
     catch (err) {
         console.error('get template error', err);
-        return res.status(500).json({ error: 'Failed to fetch template' });
+        return void res.status(500).json({ error: 'Failed to fetch template' });
     }
 });
 
@@ -39,17 +39,18 @@ router.patch('/email-templates/:key', authenticate, requireAdmin, async (req, re
     const schema = z.object({ subject: z.string().min(1).optional(), text: z.string().optional(), html: z.string().optional() });
     const parse = schema.safeParse(req.body);
     if (!parse.success)
-        return res.status(400).json({ error: parse.error.flatten() });
+        return void res.status(400).json({ error: parse.error.flatten() });
     try {
         const existing = await prisma.emailTemplate.findUnique({ where: { key } });
         if (!existing)
-            return res.status(404).json({ error: 'Not found' });
+            return void res.status(404).json({ error: 'Not found' });
         const updated = await prisma.emailTemplate.update({ where: { key }, data: { ...parse.data } });
-        return res.json({ template: updated });
+        return void res.json({ template: updated });
     } catch (err) {
         console.error('update template error', err);
-        return res.status(500).json({ error: 'Failed to update template' });
+        return void res.status(500).json({ error: 'Failed to update template' });
     }
 });
 
 export default router;
+

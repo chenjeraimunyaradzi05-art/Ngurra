@@ -78,7 +78,7 @@ function mapResource(r: any, isBookmarked: boolean) {
   };
 }
 
-router.use(optionalAuth());
+router.use(optionalAuth);
 
 // GET /resources?category=&type=&q=&page=&limit=
 router.get('/', async (req, res, next) => {
@@ -160,13 +160,13 @@ router.get('/bookmarked', async (req, res, next) => {
     const userId = (req as any).user?.id as string | undefined;
 
     if (process.env.NODE_ENV === 'production' && !userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     if (!userId) {
       const ids = Array.from(anonBookmarks);
       const resources = await prisma.resource.findMany({ where: { id: { in: ids }, isPublished: true } });
-      return res.json(resources.map((r) => mapResource(r, true)));
+      return void res.json(resources.map((r) => mapResource(r, true)));
     }
 
     const bookmarks = await prisma.resourceBookmark.findMany({
@@ -190,7 +190,7 @@ router.get('/bookmarked', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const r = await prisma.resource.findUnique({ where: { id: req.params.id } });
-    if (!r || !r.isPublished) return res.status(404).json({ error: 'Not found' });
+    if (!r || !r.isPublished) return void res.status(404).json({ error: 'Not found' });
 
     const userId = (req as any).user?.id as string | undefined;
     const isBookmarked = userId
@@ -215,12 +215,12 @@ router.post('/:id/bookmark', async (req, res, next) => {
     const userId = (req as any).user?.id as string | undefined;
 
     if (process.env.NODE_ENV === 'production' && !userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     if (!userId) {
       anonBookmarks.add(resourceId);
-      return res.json({ ok: true, bookmarked: true });
+      return void res.json({ ok: true, bookmarked: true });
     }
 
     await prisma.resourceBookmark.upsert({
@@ -242,12 +242,12 @@ router.delete('/:id/bookmark', async (req, res, next) => {
     const userId = (req as any).user?.id as string | undefined;
 
     if (process.env.NODE_ENV === 'production' && !userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     if (!userId) {
       anonBookmarks.delete(resourceId);
-      return res.json({ ok: true, bookmarked: false });
+      return void res.json({ ok: true, bookmarked: false });
     }
 
     await prisma.resourceBookmark.delete({
@@ -265,17 +265,17 @@ router.post('/:id/rate', async (req, res, next) => {
   try {
     const resourceId = req.params.id;
     const rating = Math.max(1, Math.min(5, parseInt(String(req.body?.rating ?? '0'), 10) || 0));
-    if (!rating) return res.status(400).json({ error: 'Invalid rating' });
+    if (!rating) return void res.status(400).json({ error: 'Invalid rating' });
 
     const userId = (req as any).user?.id as string | undefined;
 
     if (process.env.NODE_ENV === 'production' && !userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     if (!userId) {
       anonRatings.set(resourceId, rating);
-      return res.json({ ok: true });
+      return void res.json({ ok: true });
     }
 
     await prisma.resourceRating.upsert({
@@ -409,3 +409,5 @@ router.get('/personalized/for-me', async (req, res, next) => {
 });
 
 export default router;
+
+

@@ -105,7 +105,7 @@ router.put('/:id/read', authenticateJWT, async (req, res) => {
     });
 
     if (!notification || notification.userId !== userId) {
-      return res.status(404).json({ error: 'Notification not found' });
+      return void res.status(404).json({ error: 'Notification not found' });
     }
 
     await prisma.socialNotification.update({
@@ -156,7 +156,7 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
     });
 
     if (!notification || notification.userId !== userId) {
-      return res.status(404).json({ error: 'Notification not found' });
+      return void res.status(404).json({ error: 'Notification not found' });
     }
 
     await prisma.socialNotification.delete({
@@ -265,4 +265,5 @@ async function createBulkNotifications(notifications) {
 export default router;
 
 export { createNotification, createBulkNotifications };
+
 

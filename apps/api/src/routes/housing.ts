@@ -153,7 +153,7 @@ router.get('/listings', async (req, res) => {
 router.get('/listings/:id', async (req, res) => {
   try {
     const listing = await getListingDetails(req.params.id, req.user?.id);
-    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    if (!listing) return void res.status(404).json({ error: 'Listing not found' });
     res.json({ listing });
   } catch (error) {
     console.error('[Housing] Listing details error:', error);
@@ -161,13 +161,13 @@ router.get('/listings/:id', async (req, res) => {
   }
 });
 
-router.post('/listings', authenticate(), async (req, res) => {
+router.post('/listings', authenticate, async (req, res) => {
   try {
     const parsed = listingSchema.parse(req.body);
     const listing = await createListing(req.user.id, {
       ...parsed,
       availableFrom: new Date(parsed.availableFrom),
-    });
+    } as any);
     res.status(201).json({ listing });
   } catch (error: any) {
     console.error('[Housing] Create listing error:', error);
@@ -175,7 +175,7 @@ router.post('/listings', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/listings/:id/publish', authenticate(), async (req, res) => {
+router.post('/listings/:id/publish', authenticate, async (req, res) => {
   try {
     const listing = await publishListing(req.params.id, req.user.id);
     res.json({ listing });
@@ -185,10 +185,10 @@ router.post('/listings/:id/publish', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/listings/:id/photos', authenticate(), async (req, res) => {
+router.post('/listings/:id/photos', authenticate, async (req, res) => {
   try {
     const photos = z.array(photoSchema).min(1).parse(req.body?.photos || []);
-    const result = await addListingPhotos(req.params.id, req.user.id, photos);
+    const result = await addListingPhotos(req.params.id, req.user.id, photos as any);
     res.status(201).json({ photos: result });
   } catch (error: any) {
     console.error('[Housing] Add photos error:', error);
@@ -196,13 +196,13 @@ router.post('/listings/:id/photos', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/listings/:id/analytics', authenticate(), async (req, res) => {
+router.get('/listings/:id/analytics', authenticate, async (req, res) => {
   try {
     const listing = await prisma.womenHousingPortal.findUnique({
       where: { id: req.params.id },
       select: { id: true, viewCount: true, inquiryCount: true, savedCount: true, createdAt: true },
     });
-    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    if (!listing) return void res.status(404).json({ error: 'Listing not found' });
     res.json({ analytics: listing });
   } catch (error) {
     console.error('[Housing] Listing analytics error:', error);
@@ -225,7 +225,7 @@ router.get('/listings/:id/insights', async (req, res) => {
 // Inquiries
 // =============================================================================
 
-router.post('/inquiries', authenticate(), async (req, res) => {
+router.post('/inquiries', authenticate, async (req, res) => {
   try {
     const parsed = inquirySchema.parse(req.body);
     const inquiry = await sendInquiry(req.user.id, {
@@ -243,7 +243,7 @@ router.post('/inquiries', authenticate(), async (req, res) => {
   }
 });
  
-router.get('/inquiries/mine', authenticate(), async (req, res) => {
+router.get('/inquiries/mine', authenticate, async (req, res) => {
   try {
     const inquiries = await getSeekerInquiries(req.user.id, req.query.status as string | undefined);
     res.json({ inquiries });
@@ -253,7 +253,7 @@ router.get('/inquiries/mine', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/inquiries/owner', authenticate(), async (req, res) => {
+router.get('/inquiries/owner', authenticate, async (req, res) => {
   try {
     const inquiries = await getOwnerInquiries(req.user.id, req.query.status as string | undefined);
     res.json({ inquiries });
@@ -263,7 +263,7 @@ router.get('/inquiries/owner', authenticate(), async (req, res) => {
   }
 });
 
-router.patch('/inquiries/:id', authenticate(), async (req, res) => {
+router.patch('/inquiries/:id', authenticate, async (req, res) => {
   try {
     const status = String(req.body?.status || 'responded') as 'responded' | 'accepted' | 'declined';
     const message = String(req.body?.message || '');
@@ -279,7 +279,7 @@ router.patch('/inquiries/:id', authenticate(), async (req, res) => {
 // Saved listings
 // =============================================================================
 
-router.post('/saved/:id', authenticate(), async (req, res) => {
+router.post('/saved/:id', authenticate, async (req, res) => {
   try {
     const save = await saveListing(req.user.id, req.params.id, req.body?.notes);
     res.json({ save });
@@ -289,7 +289,7 @@ router.post('/saved/:id', authenticate(), async (req, res) => {
   }
 });
 
-router.delete('/saved/:id', authenticate(), async (req, res) => {
+router.delete('/saved/:id', authenticate, async (req, res) => {
   try {
     await unsaveListing(req.user.id, req.params.id);
     res.json({ success: true });
@@ -299,7 +299,7 @@ router.delete('/saved/:id', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/saved', authenticate(), async (req, res) => {
+router.get('/saved', authenticate, async (req, res) => {
   try {
     const saves = await getSavedListings(req.user.id);
     res.json({ saves });
@@ -313,7 +313,7 @@ router.get('/saved', authenticate(), async (req, res) => {
 // Seeker profile
 // =============================================================================
 
-router.get('/profile', authenticate(), async (req, res) => {
+router.get('/profile', authenticate, async (req, res) => {
   try {
     const profile = await getSeekerProfile(req.user.id);
     res.json({ profile });
@@ -323,7 +323,7 @@ router.get('/profile', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/profile', authenticate(), async (req, res) => {
+router.post('/profile', authenticate, async (req, res) => {
   try {
     const parsed = seekerSchema.parse(req.body || {});
     const profile = await updateSeekerProfile(req.user.id, {
@@ -337,7 +337,7 @@ router.post('/profile', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/seekers', authenticate(), async (req, res) => {
+router.get('/seekers', authenticate, async (req, res) => {
   try {
     const profiles = await searchSeekers({
       preferredStates: req.query.preferredStates
@@ -371,7 +371,7 @@ router.get('/agents', async (_req, res) => {
   }
 });
 
-router.get('/agents/me', authenticate(), async (req, res) => {
+router.get('/agents/me', authenticate, async (req, res) => {
   try {
     const profile = await prisma.agentProfile.findUnique({ where: { userId: req.user.id } });
     res.json({ profile });
@@ -381,7 +381,7 @@ router.get('/agents/me', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/agents/me', authenticate(), async (req, res) => {
+router.post('/agents/me', authenticate, async (req, res) => {
   try {
     const parsed = agentSchema.parse(req.body || {});
     const profile = await prisma.agentProfile.upsert({
@@ -400,7 +400,7 @@ router.post('/agents/me', authenticate(), async (req, res) => {
 // Partnerships
 // =============================================================================
 
-router.post('/partnerships', authenticate(), async (req, res) => {
+router.post('/partnerships', authenticate, async (req, res) => {
   try {
     const parsed = partnershipSchema.parse(req.body || {});
     const intention = await prisma.listingPartnershipIntention.create({
@@ -418,7 +418,7 @@ router.post('/partnerships', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/partnerships', authenticate(), async (req, res) => {
+router.get('/partnerships', authenticate, async (req, res) => {
   try {
     const intentions = await prisma.listingPartnershipIntention.findMany({
       where: { userId: req.user.id },
@@ -431,7 +431,7 @@ router.get('/partnerships', authenticate(), async (req, res) => {
   }
 });
 
-router.patch('/partnerships/:id', authenticate(), async (req, res) => {
+router.patch('/partnerships/:id', authenticate, async (req, res) => {
   try {
     const status = String(req.body?.status || 'PENDING');
     const intention = await prisma.listingPartnershipIntention.update({
@@ -449,7 +449,7 @@ router.patch('/partnerships/:id', authenticate(), async (req, res) => {
 // Mortgage quotes
 // =============================================================================
 
-router.post('/mortgages/quote', authenticate(), async (req, res) => {
+router.post('/mortgages/quote', authenticate, async (req, res) => {
   try {
     const parsed = mortgageSchema.parse(req.body || {});
     const principal = Math.max(parsed.amount - parsed.deposit, 0);
@@ -479,7 +479,7 @@ router.post('/mortgages/quote', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/mortgages/quotes', authenticate(), async (req, res) => {
+router.get('/mortgages/quotes', authenticate, async (req, res) => {
   try {
     const quotes = await prisma.mortgageQuote.findMany({
       where: { userId: req.user.id },
@@ -504,7 +504,7 @@ router.post('/mortgages/calculate', async (req, res) => {
     const { principal, interestRate, termYears, frequency = 'monthly', extraPayment = 0 } = req.body || {};
     
     if (!principal || !interestRate || !termYears) {
-      return res.status(400).json({ error: 'principal, interestRate, and termYears are required' });
+      return void res.status(400).json({ error: 'principal, interestRate, and termYears are required' });
     }
 
     const monthlyRate = interestRate / 100 / 12;
@@ -589,7 +589,7 @@ router.post('/mortgages/borrowing-capacity', async (req, res) => {
     } = req.body || {};
 
     if (!annualIncome) {
-      return res.status(400).json({ error: 'annualIncome is required' });
+      return void res.status(400).json({ error: 'annualIncome is required' });
     }
 
     // Basic borrowing capacity calculation
@@ -638,7 +638,7 @@ router.post('/mortgages/stamp-duty', async (req, res) => {
     const { propertyValue, state, isFirstHomeBuyer = false, isInvestment = false } = req.body || {};
 
     if (!propertyValue || !state) {
-      return res.status(400).json({ error: 'propertyValue and state are required' });
+      return void res.status(400).json({ error: 'propertyValue and state are required' });
     }
 
     // Simplified stamp duty brackets (real values vary by state)
@@ -655,7 +655,7 @@ router.post('/mortgages/stamp-duty', async (req, res) => {
 
     const stateData = stampDutyRates[state.toUpperCase()];
     if (!stateData) {
-      return res.status(400).json({ error: `Unknown state: ${state}` });
+      return void res.status(400).json({ error: `Unknown state: ${state}` });
     }
 
     // Calculate base stamp duty
@@ -747,7 +747,7 @@ router.post('/mortgages/compare', async (req, res) => {
     const { scenarios } = req.body || {};
 
     if (!Array.isArray(scenarios) || scenarios.length === 0) {
-      return res.status(400).json({ error: 'scenarios array is required' });
+      return void res.status(400).json({ error: 'scenarios array is required' });
     }
 
     const results = scenarios.map((scenario: any, index: number) => {
@@ -798,3 +798,5 @@ router.post('/mortgages/compare', async (req, res) => {
 });
 
 export default router;
+
+

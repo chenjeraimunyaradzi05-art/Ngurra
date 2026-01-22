@@ -47,7 +47,7 @@ export function requireTier(minTier) {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(401).json({ error: 'Authentication required' });
+        return void res.status(401).json({ error: 'Authentication required' });
       }
 
       const subscription = await getSubscription(userId);
@@ -55,7 +55,7 @@ export function requireTier(minTier) {
       const requiredTierIndex = TIER_ORDER.indexOf(minTier);
 
       if (userTierIndex < requiredTierIndex) {
-        return res.status(403).json({
+        return void res.status(403).json({
           error: 'Upgrade required',
           requiredTier: minTier,
           currentTier: subscription.tier,
@@ -101,7 +101,7 @@ export async function checkJobLimit(req, res, next) {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     const subscription = await getSubscription(userId);
@@ -118,7 +118,7 @@ export async function checkJobLimit(req, res, next) {
     });
 
     if (activeJobs >= limits.maxJobs) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Job limit reached',
         limit: limits.maxJobs,
         activeJobs,
@@ -141,7 +141,7 @@ export async function checkFeaturedLimit(req, res, next) {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     const subscription = await getSubscription(userId);
@@ -159,7 +159,7 @@ export async function checkFeaturedLimit(req, res, next) {
     });
 
     if (featuredJobs >= limits.featuredJobs) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Featured job limit reached',
         limit: limits.featuredJobs,
         featured: featuredJobs,
@@ -191,3 +191,4 @@ export async function attachSubscription(req, res, next) {
     next(); // Don't block on error
   }
 }
+

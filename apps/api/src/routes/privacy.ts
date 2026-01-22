@@ -173,7 +173,7 @@ router.post('/consents', authenticateToken, async (req, res) => {
     const { consentType, granted } = req.body;
 
     if (!consentType || typeof granted !== 'boolean') {
-      return res.status(400).json({
+      return void res.status(400).json({
         success: false,
         error: 'consentType and granted (boolean) are required'
       });
@@ -191,7 +191,7 @@ router.post('/consents', authenticateToken, async (req, res) => {
     ];
 
     if (!validTypes.includes(consentType)) {
-      return res.status(400).json({
+      return void res.status(400).json({
         success: false,
         error: `Invalid consent type. Valid types: ${validTypes.join(', ')}`
       });
@@ -300,3 +300,4 @@ export default router;
 
 
 export {};
+

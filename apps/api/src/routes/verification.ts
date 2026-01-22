@@ -21,7 +21,7 @@ function isAdmin(req) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!isAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+  if (!isAdmin(req)) return void res.status(403).json({ error: 'Admin access required' });
   return next();
 }
 
@@ -53,7 +53,7 @@ router.post('/elder-request', authenticateJWT, async (req, res) => {
     const { name, community, region, contactEmail, notes } = req.body || {};
 
     if (!name || !contactEmail) {
-      return res.status(400).json({ error: 'name and contactEmail are required' });
+      return void res.status(400).json({ error: 'name and contactEmail are required' });
     }
 
     // If a Prisma model exists in some environments, use it.
@@ -69,14 +69,14 @@ router.post('/elder-request', authenticateJWT, async (req, res) => {
           status: 'pending',
         },
       });
-      return res.status(201).json({ request: created });
+      return void res.status(201).json({ request: created });
     }
 
     const created = createMemoryRequest({ userId, name, community, region, contactEmail, notes });
-    return res.status(201).json({ request: created });
+    return void res.status(201).json({ request: created });
   } catch (err) {
     console.error('Create elder verification request error:', err);
-    return res.status(500).json({ error: 'Failed to submit verification request' });
+    return void res.status(500).json({ error: 'Failed to submit verification request' });
   }
 });
 
@@ -89,14 +89,14 @@ router.get('/admin/elder-requests', authenticateJWT, requireAdmin, async (req, r
         orderBy: { createdAt: 'desc' },
         take: 100,
       });
-      return res.json({ requests });
+      return void res.json({ requests });
     }
 
     const requests = memoryRequests.filter((r) => r.status === 'pending').slice(0, 100);
-    return res.json({ requests });
+    return void res.json({ requests });
   } catch (err) {
     console.error('List elder verification requests error:', err);
-    return res.status(500).json({ error: 'Failed to fetch requests' });
+    return void res.status(500).json({ error: 'Failed to fetch requests' });
   }
 });
 
@@ -107,7 +107,7 @@ router.put('/admin/elder-requests/:id', authenticateJWT, requireAdmin, async (re
     const { status } = req.body || {};
 
     if (!['approved', 'rejected', 'pending'].includes(String(status))) {
-      return res.status(400).json({ error: 'Invalid status' });
+      return void res.status(400).json({ error: 'Invalid status' });
     }
 
     const reviewer = req.user?.id || null;
@@ -121,11 +121,11 @@ router.put('/admin/elder-requests/:id', authenticateJWT, requireAdmin, async (re
           reviewedBy: status === 'pending' ? null : reviewer,
         },
       });
-      return res.json({ request: updated });
+      return void res.json({ request: updated });
     }
 
     const idx = memoryRequests.findIndex((r) => r.id === id);
-    if (idx === -1) return res.status(404).json({ error: 'Request not found' });
+    if (idx === -1) return void res.status(404).json({ error: 'Request not found' });
 
     memoryRequests[idx] = {
       ...memoryRequests[idx],
@@ -134,13 +134,14 @@ router.put('/admin/elder-requests/:id', authenticateJWT, requireAdmin, async (re
       reviewedBy: status === 'pending' ? null : reviewer,
     };
 
-    return res.json({ request: memoryRequests[idx] });
+    return void res.json({ request: memoryRequests[idx] });
   } catch (err) {
     console.error('Review elder verification request error:', err);
-    return res.status(500).json({ error: 'Failed to review request' });
+    return void res.status(500).json({ error: 'Failed to review request' });
   }
 });
 
 export default router;
+
 
 

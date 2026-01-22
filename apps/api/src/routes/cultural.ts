@@ -55,7 +55,7 @@ router.post('/languages/request', authenticateJWT, async (req, res) => {
         const { languageCode, languageName, region } = req.body;
         
         if (!languageCode || !languageName) {
-            return res.status(400).json({ error: 'languageCode and languageName are required' });
+            return void res.status(400).json({ error: 'languageCode and languageName are required' });
         }
         
         const result = await requestLanguageSupport(userId, languageCode, languageName, region || 'Unknown');
@@ -79,7 +79,7 @@ router.get('/profile', authenticateJWT, async (req, res) => {
         const profile = await getCulturalProfile(userId);
         
         if (!profile) {
-            return res.status(404).json({ error: 'Cultural profile not found' });
+            return void res.status(404).json({ error: 'Cultural profile not found' });
         }
         
         res.json({
@@ -121,7 +121,7 @@ router.post('/check-sensitivity', (req, res) => {
         const { content } = req.body;
         
         if (!content) {
-            return res.status(400).json({ error: 'content is required' });
+            return void res.status(400).json({ error: 'content is required' });
         }
         
         const sorryCheck = checkSorryBusinessSensitivity(content);
@@ -146,7 +146,7 @@ router.post('/add-warning', (req, res) => {
         const { content, personName } = req.body;
         
         if (!content) {
-            return res.status(400).json({ error: 'content is required' });
+            return void res.status(400).json({ error: 'content is required' });
         }
         
         const warningContent = addDeceasedWarning(content, personName);
@@ -207,7 +207,7 @@ router.post('/translate', (req, res) => {
         const { text, targetLanguage } = req.body;
         
         if (!text || !targetLanguage) {
-            return res.status(400).json({ error: 'text and targetLanguage are required' });
+            return void res.status(400).json({ error: 'text and targetLanguage are required' });
         }
         
         const result = translateToIndigenousLanguage(text, targetLanguage);
@@ -260,7 +260,7 @@ router.post('/validate', (req, res) => {
         const { content } = req.body;
         
         if (!content) {
-            return res.status(400).json({ error: 'content is required' });
+            return void res.status(400).json({ error: 'content is required' });
         }
         
         const result = validateCulturalSafety(content);
@@ -276,3 +276,4 @@ router.post('/validate', (req, res) => {
 });
 
 export default router;
+

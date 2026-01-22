@@ -48,7 +48,7 @@ router.get('/achievements', optionalAuth, async (req: Request, res: Response) =>
         earned: earnedCodes.includes(achievement.code),
       }));
 
-      return res.json({
+      return void res.json({
         success: true,
         data: {
           achievements: achievementsWithProgress,
@@ -207,7 +207,7 @@ router.post('/points/award', authenticate, async (req: Request, res: Response) =
     const { action, metadata } = req.body;
 
     if (!action) {
-      return res.status(400).json({ success: false, error: 'Action is required' });
+      return void res.status(400).json({ success: false, error: 'Action is required' });
     }
 
     const userId = req.user!.id;
@@ -271,3 +271,4 @@ router.post('/check-achievements', authenticate, async (req: Request, res: Respo
 });
 
 export default router;
+

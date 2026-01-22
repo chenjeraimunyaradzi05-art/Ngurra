@@ -376,7 +376,7 @@ router.get('/check-name', async (req: Request, res: Response) => {
   const { name } = req.query;
 
   if (!name) {
-    return res.status(400).json({ error: 'name parameter is required' });
+    return void res.status(400).json({ error: 'name parameter is required' });
   }
 
   // Mock availability check
@@ -586,3 +586,4 @@ router.get('/grants', async (_req: Request, res: Response) => {
 });
 
 export default router;
+

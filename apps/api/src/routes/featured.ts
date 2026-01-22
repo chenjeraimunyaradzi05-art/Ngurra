@@ -53,7 +53,7 @@ router.get('/jobs', async (req, res) => {
       company: profileMap.get(job.userId) || null,
     }));
     
-    return res.json({ jobs: enrichedJobs });
+    return void res.json({ jobs: enrichedJobs });
   } catch (err) {
     console.error('Get featured jobs error:', err);
     res.status(500).json({ error: 'Failed to fetch featured jobs' });
@@ -91,18 +91,18 @@ router.post('/jobs', authenticate, checkFeaturedLimit, async (req, res) => {
     const { jobId, durationDays = 30 } = req.body;
 
     if (!jobId) {
-      return res.status(400).json({ error: 'jobId is required' });
+      return void res.status(400).json({ error: 'jobId is required' });
     }
 
     // Verify job exists and user owns it or is admin
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     // Check ownership (user must own the job or be admin)
     if (job.userId !== (req as any).user.id && (req as any).user.userType !== 'GOVERNMENT') {
-      return res.status(403).json({ error: 'Not authorized to feature this job' });
+      return void res.status(403).json({ error: 'Not authorized to feature this job' });
     }
 
     // Note: Featured jobs are included in subscription tier limits (checkFeaturedLimit middleware)
@@ -175,7 +175,7 @@ router.get('/partners/:slug', async (req, res) => {
     });
 
     if (!partner || !partner.isActive) {
-      return res.status(404).json({ error: 'Partner not found' });
+      return void res.status(404).json({ error: 'Partner not found' });
     }
 
     // Get featured jobs to display on partner page
@@ -208,7 +208,7 @@ router.post('/partners', authenticate, requireAdmin, async (req, res) => {
     const { name, description, logoUrl, website, tier, featuredJobs } = req.body;
 
     if (!name) {
-      return res.status(400).json({ error: 'name is required' });
+      return void res.status(400).json({ error: 'name is required' });
     }
 
     // Generate slug
@@ -229,7 +229,7 @@ router.post('/partners', authenticate, requireAdmin, async (req, res) => {
     res.status(201).json({ partner });
   } catch (err) {
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'Partner with this name already exists' });
+      return void res.status(409).json({ error: 'Partner with this name already exists' });
     }
     console.error('Create partner error:', err);
     res.status(500).json({ error: 'Failed to create partner' });
@@ -246,7 +246,7 @@ router.put('/partners/:slug', authenticate, requireAdmin, async (req, res) => {
 
     const existing = await prisma.partner.findUnique({ where: { slug } });
     if (!existing) {
-      return res.status(404).json({ error: 'Partner not found' });
+      return void res.status(404).json({ error: 'Partner not found' });
     }
 
     // Generate new slug if name changed
@@ -272,7 +272,7 @@ router.put('/partners/:slug', authenticate, requireAdmin, async (req, res) => {
     res.json({ partner });
   } catch (err) {
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'Partner with this name already exists' });
+      return void res.status(409).json({ error: 'Partner with this name already exists' });
     }
     console.error('Update partner error:', err);
     res.status(500).json({ error: 'Failed to update partner' });
@@ -288,7 +288,7 @@ router.delete('/partners/:slug', authenticate, requireAdmin, async (req, res) =>
 
     const existing = await prisma.partner.findUnique({ where: { slug } });
     if (!existing) {
-      return res.status(404).json({ error: 'Partner not found' });
+      return void res.status(404).json({ error: 'Partner not found' });
     }
 
     await prisma.partner.delete({ where: { slug } });
@@ -309,12 +309,12 @@ router.delete('/jobs/:jobId', authenticate, async (req, res) => {
 
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     // Check ownership
     if (job.userId !== (req as any).user.id && (req as any).user.userType !== 'GOVERNMENT') {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const updated = await prisma.job.update({
@@ -334,4 +334,5 @@ router.delete('/jobs/:jobId', authenticate, async (req, res) => {
 });
 
 export default router;
+
 

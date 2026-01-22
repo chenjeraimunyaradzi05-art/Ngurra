@@ -31,7 +31,7 @@ export function requirePermission(permission: Permission | Permission[]) {
     const user = req.user;
     
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Authentication required',
         code: 'UNAUTHORIZED',
       });
@@ -60,7 +60,7 @@ export function requirePermission(permission: Permission | Permission[]) {
         requestId: (req as any).requestId,
       });
       
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Insufficient permissions',
         code: 'FORBIDDEN',
         required: permissions,
@@ -95,7 +95,7 @@ export function requireOwnership(
     const user = req.user;
     
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Authentication required',
         code: 'UNAUTHORIZED',
       });
@@ -104,7 +104,7 @@ export function requireOwnership(
     const resourceId = req.params[paramName];
     
     if (!resourceId) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: `Missing resource identifier: ${paramName}`,
         code: 'BAD_REQUEST',
       });
@@ -138,7 +138,7 @@ export function requireOwnership(
           requestId: (req as any).requestId,
         });
         
-        return res.status(403).json({
+        return void res.status(403).json({
           error: 'You do not have access to this resource',
           code: 'FORBIDDEN',
         });
@@ -247,7 +247,7 @@ export function requireSudo(options: { maxAge?: number } = {}) {
     const user = req.user;
     
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Authentication required',
         code: 'UNAUTHORIZED',
       });
@@ -258,7 +258,7 @@ export function requireSudo(options: { maxAge?: number } = {}) {
     const sudoTimestamp = req.headers['x-sudo-timestamp'];
     
     if (!sudoToken || !sudoTimestamp) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'This action requires re-authentication',
         code: 'SUDO_REQUIRED',
         message: 'Please confirm your password to continue',
@@ -268,7 +268,7 @@ export function requireSudo(options: { maxAge?: number } = {}) {
     // Validate sudo timestamp is recent
     const timestamp = parseInt(sudoTimestamp as string, 10);
     if (isNaN(timestamp) || Date.now() - timestamp > maxAge) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Sudo session expired',
         code: 'SUDO_EXPIRED',
         message: 'Please re-authenticate to continue',
@@ -310,7 +310,7 @@ export function requireApiKeyPermission(permission: Permission) {
       });
       
       if (!apiKeyRecord) {
-        return res.status(401).json({
+        return void res.status(401).json({
           error: 'Invalid API key',
           code: 'INVALID_API_KEY',
         });
@@ -325,7 +325,7 @@ export function requireApiKeyPermission(permission: Permission) {
       // Check if API key has the required permission
       const keyPermissions = apiKeyRecord.permissions || [];
       if (!keyPermissions.includes(permission)) {
-        return res.status(403).json({
+        return void res.status(403).json({
           error: 'API key lacks required permission',
           code: 'INSUFFICIENT_API_KEY_PERMISSIONS',
           required: permission,
@@ -355,3 +355,4 @@ export default {
 };
 
 export {};
+

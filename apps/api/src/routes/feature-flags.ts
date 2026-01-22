@@ -50,7 +50,7 @@ router.get('/:key', optionalAuth, async (req, res) => {
     const flag = featureFlags.getFlag(key);
     
     if (!flag) {
-      return res.status(404).json({ error: 'Flag not found' });
+      return void res.status(404).json({ error: 'Flag not found' });
     }
     
     const value = featureFlags.evaluate(key, context);
@@ -63,4 +63,5 @@ router.get('/:key', optionalAuth, async (req, res) => {
 });
 
 export default router;
+
 

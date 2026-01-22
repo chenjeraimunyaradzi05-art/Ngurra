@@ -8,7 +8,7 @@ import { checkJobLimit } from './subscriptions-v2';
 
 const router = express.Router();
 
-router.use(authenticate());
+router.use(authenticate);
 
 router.get('/', async (req, res, next) => {
   try {
@@ -78,3 +78,4 @@ router.patch('/:id', async (req, res, next) => {
 });
 
 export default router;
+

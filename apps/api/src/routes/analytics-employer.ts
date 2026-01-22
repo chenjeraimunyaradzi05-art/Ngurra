@@ -27,12 +27,12 @@ router.post('/events', async (req, res) => {
     const { jobId, userId, eventType, source, referrer, metadata } = req.body;
 
     if (!jobId || !eventType) {
-      return res.status(400).json({ error: 'jobId and eventType are required' });
+      return void res.status(400).json({ error: 'jobId and eventType are required' });
     }
 
     const validEvents = ['view', 'apply', 'save', 'share'];
     if (!validEvents.includes(eventType)) {
-      return res.status(400).json({ error: 'Invalid eventType' });
+      return void res.status(400).json({ error: 'Invalid eventType' });
     }
 
     // Get user agent and IP (hashed for privacy)
@@ -41,7 +41,7 @@ router.post('/events', async (req, res) => {
 
     if (!prisma.jobEvent) {
       // Model not in schema – gracefully accept tracking request without persisting
-      return res.json({ tracked: false, reason: 'job_event_model_unavailable' });
+      return void res.json({ tracked: false, reason: 'job_event_model_unavailable' });
     }
 
     const event = await prisma.jobEvent.create({
@@ -81,23 +81,23 @@ router.post('/events', async (req, res) => {
  * POST /analytics/track - General analytics for company (CTAs, feature usage)
  * Requires authentication (company user)
  */
-router.post('/track', authenticateJWT(), async (req, res) => {
+router.post('/track', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
     const { eventType, metadata } = req.body;
 
     if (!eventType) {
-      return res.status(400).json({ error: 'eventType is required' });
+      return void res.status(400).json({ error: 'eventType is required' });
     }
 
     // Find company profile for this user
     const company = await prisma.companyProfile.findUnique({ where: { userId } });
     if (!company) {
-      return res.status(404).json({ error: 'Company profile not found' });
+      return void res.status(404).json({ error: 'Company profile not found' });
     }
 
     if (!prisma.analyticsEvent) {
-      return res.json({ tracked: false, reason: 'analytics_event_model_unavailable' });
+      return void res.json({ tracked: false, reason: 'analytics_event_model_unavailable' });
     }
 
     const record = await prisma.analyticsEvent.create({
@@ -181,7 +181,7 @@ async function updateJobAnalytics(jobId, eventType, ipHash) {
 /**
  * GET /analytics/employer/overview - Get employer analytics overview
  */
-router.get('/employer/overview', authenticateJWT(), checkAnalyticsAccess, async (req, res) => {
+router.get('/employer/overview', authenticateJWT, checkAnalyticsAccess, async (req, res) => {
   try {
     const userId = req.user?.id;
     const { period = '30d' } = req.query;
@@ -205,7 +205,7 @@ router.get('/employer/overview', authenticateJWT(), checkAnalyticsAccess, async 
     const jobIds = jobs.map((j) => j.id);
 
     if (jobIds.length === 0) {
-      return res.json({
+      return void res.json({
         overview: {
           totalJobs: 0,
           activeJobs: 0,
@@ -350,14 +350,14 @@ function forwardToEmployerRoute(path: string) {
 }
 
 // Frontend-compatible aliases (mounted at /analytics/employer)
-router.get('/overview', authenticateJWT(), checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
-router.get('/dashboard', authenticateJWT(), checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
-router.get('/employer/dashboard', authenticateJWT(), checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
+router.get('/overview', authenticateJWT, checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
+router.get('/dashboard', authenticateJWT, checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
+router.get('/employer/dashboard', authenticateJWT, checkAnalyticsAccess, forwardToEmployerRoute('/employer/overview'));
 
 /**
  * GET /analytics/employer/jobs - List jobs with performance summary
  */
-router.get('/jobs', authenticateJWT(), checkAnalyticsAccess, async (req, res) => {
+router.get('/jobs', authenticateJWT, checkAnalyticsAccess, async (req, res) => {
   try {
     const userId = req.user?.id;
     const { period = '30d' } = req.query;
@@ -378,7 +378,7 @@ router.get('/jobs', authenticateJWT(), checkAnalyticsAccess, async (req, res) =>
 
     const jobIds = jobs.map((j) => j.id);
     if (jobIds.length === 0) {
-      return res.json({ jobs: [] });
+      return void res.json({ jobs: [] });
     }
 
     const performance = await prisma.jobPerformance.groupBy({
@@ -418,7 +418,7 @@ router.get('/jobs', authenticateJWT(), checkAnalyticsAccess, async (req, res) =>
 /**
  * GET /analytics/employer/job/:jobId - Get detailed job analytics
  */
-router.get('/employer/job/:jobId', authenticateJWT(), checkAnalyticsAccess, async (req, res) => {
+router.get('/employer/job/:jobId', authenticateJWT, checkAnalyticsAccess, async (req, res) => {
   try {
     const userId = req.user?.id;
     const { jobId } = req.params;
@@ -427,7 +427,7 @@ router.get('/employer/job/:jobId', authenticateJWT(), checkAnalyticsAccess, asyn
     // Verify ownership
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job || job.userId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     // Calculate date range
@@ -506,7 +506,7 @@ router.get('/employer/job/:jobId', authenticateJWT(), checkAnalyticsAccess, asyn
 });
 
 // Alias for frontend compatibility
-router.get('/job/:jobId', authenticateJWT(), checkAnalyticsAccess, forwardToEmployerRoute('/employer/job/:jobId'));
+router.get('/job/:jobId', authenticateJWT, checkAnalyticsAccess, forwardToEmployerRoute('/employer/job/:jobId'));
 
 // =============================================================================
 // ADMIN: CTA METRICS
@@ -520,7 +520,7 @@ router.get('/job/:jobId', authenticateJWT(), checkAnalyticsAccess, forwardToEmpl
 router.get('/admin/cta-summary', async (req, res) => {
   try {
     // Admin check using centralized middleware helper
-    if (!checkIsAdmin(req)) return res.status(403).json({ error: 'Not authorized' });
+    if (!checkIsAdmin(req)) return void res.status(403).json({ error: 'Not authorized' });
 
     const days = Math.max(1, Math.min(365, Number(req.query.days || 30)));
     const start = new Date();
@@ -577,7 +577,7 @@ router.get('/admin/cta-summary', async (req, res) => {
  */
 router.get('/admin/cta-export', async (req, res) => {
   try {
-    if (!checkIsAdmin(req)) return res.status(403).json({ error: 'Not authorized' });
+    if (!checkIsAdmin(req)) return void res.status(403).json({ error: 'Not authorized' });
 
     const days = Math.max(1, Math.min(365, Number(req.query.days || 30)));
     const start = new Date();
@@ -605,13 +605,13 @@ router.get('/admin/cta-export', async (req, res) => {
 });
 
 // Company-scoped CTA export (authenticated)
-router.get('/company/cta-export', authenticateJWT(), async (req, res) => {
+router.get('/company/cta-export', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const company = await prisma.companyProfile.findUnique({ where: { userId } });
-    if (!company) return res.status(404).json({ error: 'Company profile not found' });
+    if (!company) return void res.status(404).json({ error: 'Company profile not found' });
 
     // Rate limiting: max exports per day per company
     const MAX_EXPORTS = Number(process.env.MAX_CSV_EXPORTS_PER_DAY || 5);
@@ -623,7 +623,7 @@ router.get('/company/cta-export', authenticateJWT(), async (req, res) => {
     if (todaysCount >= MAX_EXPORTS) {
       // Too many exports today
       res.setHeader('Retry-After', String(24 * 60 * 60));
-      return res.status(429).json({ error: 'Export limit reached for today', limit: MAX_EXPORTS, used: todaysCount });
+      return void res.status(429).json({ error: 'Export limit reached for today', limit: MAX_EXPORTS, used: todaysCount });
     }
 
     const days = Math.max(1, Math.min(365, Number(req.query.days || 30)));
@@ -662,7 +662,7 @@ router.get('/company/cta-export', authenticateJWT(), async (req, res) => {
 /**
  * GET /analytics/employer/export - Export analytics data
  */
-router.get('/employer/export', authenticateJWT(), checkAnalyticsAccess, async (req, res) => {
+router.get('/employer/export', authenticateJWT, checkAnalyticsAccess, async (req, res) => {
   try {
     const userId = req.user?.id;
     const { format = 'csv', period = '30d' } = req.query;
@@ -731,7 +731,9 @@ router.get('/employer/export', authenticateJWT(), checkAnalyticsAccess, async (r
 });
 
 // Alias for frontend compatibility
-router.get('/export', authenticateJWT(), checkAnalyticsAccess, forwardToEmployerRoute('/employer/export'));
+router.get('/export', authenticateJWT, checkAnalyticsAccess, forwardToEmployerRoute('/employer/export'));
 
 export default router;
+
+
 

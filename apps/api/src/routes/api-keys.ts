@@ -41,16 +41,15 @@ router.get('/', requireAuth, async (req: any, res) => {
     const userId = req.user?.id;
     
     // Get company profile
-    const company = await prisma.companyProfile.findFirst({
-      where: { userId }
+    const company = await prisma.companyProfile.findFirst({ where: { userId }
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
-    const keys = await prisma.apiKey.findMany({
-      where: { userId },
+    const keys = await prisma.companyApiKey.findMany({
+      where: { company: { userId } },
       select: {
         id: true,
         name: true,
@@ -81,25 +80,24 @@ router.post('/', requireAuth, async (req: any, res: any) => {
     const { name, permissions = ['read'], expiresInDays = 365 } = req.body;
     
     if (!name || name.length < 3) {
-      return res.status(400).json({ error: 'Name must be at least 3 characters' });
+      return void res.status(400).json({ error: 'Name must be at least 3 characters' });
     }
     
     // Get company profile
-    const company = await prisma.companyProfile.findFirst({
-      where: { userId }
+    const company = await prisma.companyProfile.findFirst({ where: { userId }
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Check key limit (max 10 per company)
-    const existingCount = await prisma.apiKey.count({
-      where: { userId, isActive: true }
+    const existingCount = await prisma.companyApiKey.count({
+      where: { company: { userId }, isActive: true }
     });
     
     if (existingCount >= 10) {
-      return res.status(400).json({ error: 'Maximum 10 active API keys per company' });
+      return void res.status(400).json({ error: 'Maximum 10 active API keys per company' });
     }
     
     // Generate key
@@ -110,9 +108,8 @@ router.post('/', requireAuth, async (req: any, res: any) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + expiresInDays);
     
-    const apiKey = await prisma.apiKey.create({
-      data: {
-        userId,
+    const apiKey = await prisma.companyApiKey.create({
+      data: { company: { connect: { userId } },
         name,
         keyHash: hashedKey,
         keyPrefix,
@@ -152,25 +149,24 @@ router.delete('/:id', requireAuth, async (req: any, res: any) => {
     const { id } = req.params;
     
     // Get company profile
-    const company = await prisma.companyProfile.findFirst({
-      where: { userId }
+    const company = await prisma.companyProfile.findFirst({ where: { userId }
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Verify ownership
-    const apiKey = await prisma.apiKey.findFirst({
-      where: { id, userId }
+    const apiKey = await prisma.companyApiKey.findFirst({
+      where: { id, company: { userId } }
     });
     
     if (!apiKey) {
-      return res.status(404).json({ error: 'API key not found' });
+      return void res.status(404).json({ error: 'API key not found' });
     }
     
     // Soft delete - mark as inactive
-    await prisma.apiKey.update({
+    await prisma.companyApiKey.update({
       where: { id },
       data: { isActive: false, revokedAt: new Date() }
     });
@@ -192,21 +188,20 @@ router.post('/:id/rotate', requireAuth, async (req: any, res: any) => {
     const { id } = req.params;
     
     // Get company profile
-    const company = await prisma.companyProfile.findFirst({
-      where: { userId }
+    const company = await prisma.companyProfile.findFirst({ where: { userId }
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Get existing key
-    const oldKey = await prisma.apiKey.findFirst({
-      where: { id, userId, isActive: true }
+    const oldKey = await prisma.companyApiKey.findFirst({
+      where: { id, company: { userId }, isActive: true }
     });
     
     if (!oldKey) {
-      return res.status(404).json({ error: 'API key not found' });
+      return void res.status(404).json({ error: 'API key not found' });
     }
     
     // Generate new key
@@ -215,9 +210,8 @@ router.post('/:id/rotate', requireAuth, async (req: any, res: any) => {
     const keyPrefix = rawKey.substring(0, 12);
     
     // Create new key with same settings
-    const newKey = await prisma.apiKey.create({
-      data: {
-        userId,
+    const newKey = await prisma.companyApiKey.create({
+      data: { company: { connect: { userId } },
         name: oldKey.name,
         keyHash: hashedKey,
         keyPrefix,
@@ -228,7 +222,7 @@ router.post('/:id/rotate', requireAuth, async (req: any, res: any) => {
     });
     
     // Revoke old key
-    await prisma.apiKey.update({
+    await prisma.companyApiKey.update({
       where: { id },
       data: { isActive: false, revokedAt: new Date() }
     });
@@ -258,27 +252,26 @@ router.get('/usage', requireAuth, async (req: any, res: any) => {
   try {
     const userId = req.user?.id;
     
-    const company = await prisma.companyProfile.findFirst({
-      where: { userId }
+    const company = await prisma.companyProfile.findFirst({ where: { userId }
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
-    const keys = await prisma.apiKey.findMany({
-      where: { userId },
+    const keys = await prisma.companyApiKey.findMany({
+      where: { company: { userId } },
       select: {
         id: true,
         name: true,
         keyPrefix: true,
-        usageCount: true,
+        requestCount: true,
         lastUsedAt: true,
         isActive: true
       }
     });
     
-    const totalRequests = keys.reduce((sum, k) => sum + (k.usageCount || 0), 0);
+    const totalRequests = keys.reduce((sum, k) => sum + (k.requestCount || 0), 0);
     
     res.json({
       totalKeys: keys.length,
@@ -288,7 +281,7 @@ router.get('/usage', requireAuth, async (req: any, res: any) => {
         id: k.id,
         name: k.name,
         keyPrefix: k.keyPrefix,
-        requestCount: k.usageCount || 0,
+        requestCount: k.requestCount || 0,
         lastUsedAt: k.lastUsedAt,
         isActive: k.isActive
       }))
@@ -314,33 +307,31 @@ async function apiKeyAuth(req: any, res: any, next: any) {
   const hashedKey = hashApiKey(key);
   
   try {
-    const apiKey = await prisma.apiKey.findFirst({
+    const apiKey = await prisma.companyApiKey.findFirst({
       where: {
         keyHash: hashedKey,
         isActive: true,
         expiresAt: { gt: new Date() }
       },
-      include: {
-        user: true
-      }
+      include: { company: true }
     });
     
     if (!apiKey) {
-      return res.status(401).json({ error: 'Invalid or expired API key' });
+      return void res.status(401).json({ error: 'Invalid or expired API key' });
     }
     
     // Update usage stats
-    await prisma.apiKey.update({
+    await prisma.companyApiKey.update({
       where: { id: apiKey.id },
       data: {
         lastUsedAt: new Date(),
-        usageCount: { increment: 1 }
+        requestCount: { increment: 1 }
       }
     });
     
     // Attach API key info to request
     req.apiKey = apiKey;
-    req.user = { id: apiKey.userId, type: 'api_key' };
+    req.user = { id: apiKey.company.userId, type: 'api_key' };
     
     next();
   } catch (err) {
@@ -352,3 +343,8 @@ async function apiKeyAuth(req: any, res: any, next: any) {
 export default router;
 
 export { apiKeyAuth, hashApiKey };
+
+
+
+
+

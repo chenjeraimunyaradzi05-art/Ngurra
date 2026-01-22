@@ -162,11 +162,11 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     const { code, state, error } = req.query;
 
     if (error) {
-      return res.redirect('/settings/calendar?error=access_denied');
+      return void res.redirect('/settings/calendar?error=access_denied');
     }
 
     if (!code || !state) {
-      return res.redirect('/settings/calendar?error=invalid_request');
+      return void res.redirect('/settings/calendar?error=invalid_request');
     }
 
     // Verify state
@@ -179,7 +179,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     });
 
     if (!storedState) {
-      return res.redirect('/settings/calendar?error=invalid_state');
+      return void res.redirect('/settings/calendar?error=invalid_state');
     }
 
     // Exchange code for tokens
@@ -198,7 +198,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     const tokens: TokenResponse = await tokenResponse.json();
 
     if (!tokens.access_token) {
-      return res.redirect('/settings/calendar?error=token_exchange_failed');
+      return void res.redirect('/settings/calendar?error=token_exchange_failed');
     }
 
     // Get user's email from Google
@@ -286,11 +286,11 @@ router.get('/outlook/callback', async (req: Request, res: Response) => {
     const { code, state, error } = req.query;
 
     if (error) {
-      return res.redirect('/settings/calendar?error=access_denied');
+      return void res.redirect('/settings/calendar?error=access_denied');
     }
 
     if (!code || !state) {
-      return res.redirect('/settings/calendar?error=invalid_request');
+      return void res.redirect('/settings/calendar?error=invalid_request');
     }
 
     const storedState = await prisma.oAuthState.findFirst({
@@ -302,7 +302,7 @@ router.get('/outlook/callback', async (req: Request, res: Response) => {
     });
 
     if (!storedState) {
-      return res.redirect('/settings/calendar?error=invalid_state');
+      return void res.redirect('/settings/calendar?error=invalid_state');
     }
 
     // Exchange code for tokens
@@ -322,7 +322,7 @@ router.get('/outlook/callback', async (req: Request, res: Response) => {
     const tokens: TokenResponse = await tokenResponse.json();
 
     if (!tokens.access_token) {
-      return res.redirect('/settings/calendar?error=token_exchange_failed');
+      return void res.redirect('/settings/calendar?error=token_exchange_failed');
     }
 
     // Get user's email from Microsoft Graph
@@ -376,7 +376,7 @@ router.delete('/:provider/disconnect', authenticateToken, async (req: Request, r
     const { provider } = req.params;
 
     if (!['google', 'outlook'].includes(provider)) {
-      return res.status(400).json({ error: 'Invalid provider' });
+      return void res.status(400).json({ error: 'Invalid provider' });
     }
 
     await prisma.calendarIntegration.delete({
@@ -497,7 +497,7 @@ router.get('/availability', authenticateToken, async (req: Request, res: Respons
 
     // Check if target date is a working day
     if (!workingDays.includes(targetDate.getDay())) {
-      return res.json({ slots: [], message: 'Not a working day' });
+      return void res.json({ slots: [], message: 'Not a working day' });
     }
 
     // Get all events for the day
@@ -602,3 +602,4 @@ router.put('/settings', authenticateToken, async (req: Request, res: Response) =
 });
 
 export default router;
+

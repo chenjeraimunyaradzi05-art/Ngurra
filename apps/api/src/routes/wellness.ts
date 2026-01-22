@@ -96,7 +96,7 @@ router.post('/check-in', authenticateJWT, async (req, res) => {
 
     // Validate input
     if (!mood || !stressLevel || !hopefulness) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'mood, stressLevel, and hopefulness are required (1-5 scale)' 
       });
     }
@@ -107,7 +107,7 @@ router.post('/check-in', authenticateJWT, async (req, res) => {
     };
 
     if (!validate(mood) || !validate(stressLevel) || !validate(hopefulness)) {
-      return res.status(400).json({ error: 'Values must be between 1 and 5' });
+      return void res.status(400).json({ error: 'Values must be between 1 and 5' });
     }
 
     const result = await recordWellnessCheckIn(req.user.id, {
@@ -189,7 +189,7 @@ router.post('/activity', authenticateJWT, async (req, res) => {
     const { activityType, metadata, duration } = req.body;
 
     if (!activityType) {
-      return res.status(400).json({ error: 'activityType is required' });
+      return void res.status(400).json({ error: 'activityType is required' });
     }
 
     // Allowed activity types
@@ -200,7 +200,7 @@ router.post('/activity', authenticateJWT, async (req, res) => {
     ];
 
     if (!allowedTypes.includes(activityType)) {
-      return res.status(400).json({ error: 'Invalid activity type' });
+      return void res.status(400).json({ error: 'Invalid activity type' });
     }
 
     await logActivity(req.user.id, activityType, metadata || {}, duration);
@@ -213,5 +213,6 @@ router.post('/activity', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 
 

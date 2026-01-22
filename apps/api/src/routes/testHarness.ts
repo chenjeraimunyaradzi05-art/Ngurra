@@ -25,10 +25,11 @@ router.post('/ses-clear', (req, res) => {
 // Test-only: fetch audit logs (non-production only)
 router.get('/audit-logs', async (req, res) => {
     const nodeEnv = String(process.env.NODE_ENV || 'development').toLowerCase();
-    if (nodeEnv === 'production') return res.status(404).json({ error: 'Not found' });
+    if (nodeEnv === 'production') return void res.status(404).json({ error: 'Not found' });
     const { companyId } = req.query;
     const logs = await prisma.auditLog.findMany({ where: companyId ? { companyId: String(companyId) } : {}, orderBy: { createdAt: 'desc' }, take: 100 });
     res.json({ logs });
 });
 
 export default router;
+

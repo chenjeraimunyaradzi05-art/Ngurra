@@ -29,7 +29,7 @@ let requestsPerMinute = 0;
  * GET /api/admin/health
  * Get comprehensive system health status
  */
-router.get('/health', authenticate(), authorize('ADMIN'), async (req: Request, res: Response) => {
+router.get('/health', authenticate, authorize('ADMIN'), async (req: Request, res: Response) => {
   try {
     const health = await getSystemHealth();
     res.json(health);
@@ -271,4 +271,5 @@ export function userDisconnected() {
 }
 
 export default router;
+
 

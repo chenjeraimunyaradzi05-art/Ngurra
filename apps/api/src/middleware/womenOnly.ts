@@ -60,7 +60,7 @@ export function requireWomenAccess() {
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Authentication required',
         code: 'UNAUTHORIZED',
       });
@@ -84,7 +84,7 @@ export function requireWomenAccess() {
         requestId: (req as any).requestId,
       });
 
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Women-only space access required',
         code: 'WOMEN_VERIFICATION_REQUIRED',
         message: 'Please complete your profile verification to access this space.',
@@ -107,7 +107,7 @@ export function requireWomenAccess() {
         requestId: (req as any).requestId,
       });
 
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Access not approved',
         code: 'WOMEN_ACCESS_NOT_APPROVED',
         message: 'Your access to women-only spaces is pending approval.',
@@ -132,7 +132,7 @@ export function requireFirstNationsAccess() {
     const user = req.user;
 
     if (!user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Authentication required',
         code: 'UNAUTHORIZED',
       });
@@ -156,7 +156,7 @@ export function requireFirstNationsAccess() {
         requestId: (req as any).requestId,
       });
 
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'First Nations space access required',
         code: 'FIRST_NATIONS_VERIFICATION_REQUIRED',
         message: 'This space is reserved for First Nations community members.',
@@ -202,14 +202,14 @@ export function requireTrustScore(minScore: number) {
     const verification = req.womenVerification;
 
     if (!verification) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Verification required',
         code: 'VERIFICATION_REQUIRED',
       });
     }
 
     if (verification.trustScore < minScore) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Insufficient trust score',
         code: 'INSUFFICIENT_TRUST_SCORE',
         required: minScore,
@@ -228,4 +228,5 @@ export default {
   attachWomenVerification,
   requireTrustScore,
 };
+
 

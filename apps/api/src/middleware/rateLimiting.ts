@@ -167,7 +167,7 @@ class RateLimiter {
             return limitConfig.handler(req, res);
           }
 
-          return res.status(429).json({
+          return void res.status(429).json({
             error: 'Too Many Requests',
             message: 'Rate limit exceeded. Please try again later.',
             retryAfter: result.retryAfter,
@@ -526,7 +526,7 @@ export const blockedIPMiddleware = async (
   try {
     const ip = req.ip || req.socket.remoteAddress || '';
     if (await rateLimiter.isIPBlocked(ip)) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Forbidden',
         message: 'Your IP has been blocked. Please contact support.',
       });
@@ -536,3 +536,4 @@ export const blockedIPMiddleware = async (
     next();
   }
 };
+

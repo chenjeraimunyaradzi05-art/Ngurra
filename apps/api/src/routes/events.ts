@@ -36,7 +36,7 @@ router.get('/categories', async (req, res) => {
         }))
         .sort((a, b) => b.count - a.count);
 
-      return res.json(categories);
+      return void res.json(categories);
     } catch {
       // fall back
     }
@@ -54,10 +54,10 @@ router.get('/categories', async (req, res) => {
       icon: '📅',
       count,
     }));
-    return res.json(categories);
+    return void res.json(categories);
   } catch (error) {
     console.error('Error listing event categories:', error);
-    return res.status(500).json({ error: 'Failed to list categories' });
+    return void res.status(500).json({ error: 'Failed to list categories' });
   }
 });
 
@@ -237,15 +237,15 @@ router.get('/my-events', authenticateJWT, async (req, res) => {
           _count: { select: { registrations: true } },
         },
       });
-      return res.json({ events });
+      return void res.json({ events });
     } catch {
       // ignore if tables absent
     }
 
-    return res.json({ events: [] });
+    return void res.json({ events: [] });
   } catch (error) {
     console.error('Error listing my events:', error);
-    return res.status(500).json({ error: 'Failed to list my events' });
+    return void res.status(500).json({ error: 'Failed to list my events' });
   }
 });
 
@@ -283,7 +283,7 @@ router.get('/:id', async (req, res) => {
     }
 
     if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+      return void res.status(404).json({ error: 'Event not found' });
     }
 
     // Check if user is registered
@@ -334,7 +334,7 @@ router.post('/', authenticateJWT, async (req, res) => {
     } = req.body;
 
     if (!title || !description || !eventDate) {
-      return res.status(400).json({ error: 'Title, description, and date are required' });
+      return void res.status(400).json({ error: 'Title, description, and date are required' });
     }
 
     let event = null;
@@ -422,11 +422,11 @@ router.patch('/:id', authenticateJWT, async (req, res) => {
       });
 
       if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+        return void res.status(404).json({ error: 'Event not found' });
       }
 
       if (event.organizerId !== userId) {
-        return res.status(403).json({ error: 'Not authorized to update this event' });
+        return void res.status(403).json({ error: 'Not authorized to update this event' });
       }
 
       // Update event
@@ -468,11 +468,11 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
       });
 
       if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+        return void res.status(404).json({ error: 'Event not found' });
       }
 
       if (event.organizerId !== userId) {
-        return res.status(403).json({ error: 'Not authorized to delete this event' });
+        return void res.status(403).json({ error: 'Not authorized to delete this event' });
       }
 
       await prisma.event.update({
@@ -511,7 +511,7 @@ router.post('/:id/register', authenticateJWT, async (req, res) => {
       });
 
       if (existing) {
-        return res.status(400).json({ error: 'Already registered for this event' });
+        return void res.status(400).json({ error: 'Already registered for this event' });
       }
 
       // Check capacity
@@ -523,11 +523,11 @@ router.post('/:id/register', authenticateJWT, async (req, res) => {
       });
 
       if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+        return void res.status(404).json({ error: 'Event not found' });
       }
 
       if (event.capacity && event._count.registrations >= event.capacity) {
-        return res.status(400).json({ error: 'Event is at full capacity' });
+        return void res.status(400).json({ error: 'Event is at full capacity' });
       }
 
       registration = await prisma.eventRegistration.create({
@@ -600,9 +600,9 @@ router.post('/:id/waitlist', authenticateJWT, async (req, res) => {
         where: { id: parseInt(id) },
         include: { _count: { select: { registrations: true } } }
       });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
       if (!event.capacity || event._count.registrations < event.capacity) {
-        return res.status(400).json({ error: 'Event has capacity. Please register directly.' });
+        return void res.status(400).json({ error: 'Event has capacity. Please register directly.' });
       }
     } catch {
       // ignore if table doesn't exist
@@ -610,7 +610,7 @@ router.post('/:id/waitlist', authenticateJWT, async (req, res) => {
 
     const list = eventWaitlists.get(id) || [];
     if (list.find((entry) => entry.userId === userId)) {
-      return res.status(400).json({ error: 'Already on waitlist' });
+      return void res.status(400).json({ error: 'Already on waitlist' });
     }
     const entry = { id: `${Date.now()}`, userId, joinedAt: new Date().toISOString() };
     list.push(entry);
@@ -632,8 +632,8 @@ router.get('/:id/waitlist', authenticateJWT, async (req, res) => {
 
     try {
       const event = await prisma.event.findUnique({ where: { id: parseInt(id) } });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
-      if (event.organizerId !== userId) return res.status(403).json({ error: 'Not authorized' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
+      if (event.organizerId !== userId) return void res.status(403).json({ error: 'Not authorized' });
     } catch {
       // ignore if table doesn't exist
     }
@@ -655,12 +655,12 @@ router.post('/:id/check-in', authenticateJWT, async (req, res) => {
     const userId = req.user.id;
     const { attendeeId } = req.body || {};
 
-    if (!attendeeId) return res.status(400).json({ error: 'attendeeId is required' });
+    if (!attendeeId) return void res.status(400).json({ error: 'attendeeId is required' });
 
     try {
       const event = await prisma.event.findUnique({ where: { id: parseInt(id) } });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
-      if (event.organizerId !== userId) return res.status(403).json({ error: 'Not authorized' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
+      if (event.organizerId !== userId) return void res.status(403).json({ error: 'Not authorized' });
 
       await prisma.eventRegistration.updateMany({
         where: { eventId: parseInt(id), userId: attendeeId },
@@ -689,7 +689,7 @@ router.post('/:id/feedback', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { rating, comment } = req.body || {};
-    if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
+    if (!rating || rating < 1 || rating > 5) return void res.status(400).json({ error: 'Rating must be 1-5' });
 
     const list = eventFeedback.get(id) || [];
     const entry = { id: `${Date.now()}`, userId, rating, comment: comment || null, createdAt: new Date().toISOString() };
@@ -714,8 +714,8 @@ router.get('/:id/feedback', authenticateJWT, async (req, res) => {
 
     try {
       const event = await prisma.event.findUnique({ where: { id: parseInt(id) } });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
-      if (event.organizerId !== userId) return res.status(403).json({ error: 'Not authorized' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
+      if (event.organizerId !== userId) return void res.status(403).json({ error: 'Not authorized' });
     } catch {
       // ignore if table doesn't exist
     }
@@ -740,7 +740,7 @@ router.get('/:id/certificate', authenticateJWT, async (req, res) => {
     let eventTitle = 'Community Event';
     try {
       const event = await prisma.event.findUnique({ where: { id: parseInt(id) } });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
       eventTitle = event.title;
     } catch {
       // ignore if table doesn't exist
@@ -748,7 +748,7 @@ router.get('/:id/certificate', authenticateJWT, async (req, res) => {
 
     const checkins = eventCheckins.get(id);
     if (checkins && !checkins.has(userId)) {
-      return res.status(403).json({ error: 'Certificate available after check-in' });
+      return void res.status(403).json({ error: 'Certificate available after check-in' });
     }
 
     res.json({
@@ -776,8 +776,8 @@ router.get('/:id/analytics', authenticateJWT, async (req, res) => {
 
     try {
       const event = await prisma.event.findUnique({ where: { id: parseInt(id) } });
-      if (!event) return res.status(404).json({ error: 'Event not found' });
-      if (event.organizerId !== userId) return res.status(403).json({ error: 'Not authorized' });
+      if (!event) return void res.status(404).json({ error: 'Event not found' });
+      if (event.organizerId !== userId) return void res.status(403).json({ error: 'Not authorized' });
     } catch {
       // ignore if table doesn't exist
     }
@@ -813,7 +813,7 @@ router.get('/:id/calendar', async (req, res) => {
       event = getMockEvent(parseInt(id));
     }
 
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return void res.status(404).json({ error: 'Event not found' });
 
     const startDate = new Date(event.eventDate || event.startDate || new Date());
     const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
@@ -996,3 +996,4 @@ export default router;
 
 
 export {};
+

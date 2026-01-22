@@ -67,7 +67,7 @@ router.get('/opportunities', async (req, res) => {
 /**
  * POST /civic/opportunities
  */
-router.post('/opportunities', authenticate(), async (req, res) => {
+router.post('/opportunities', authenticate, async (req, res) => {
   try {
     const {
       title,
@@ -81,7 +81,7 @@ router.post('/opportunities', authenticate(), async (req, res) => {
       tags = [],
     } = req.body || {};
 
-    if (!title) return res.status(400).json({ error: 'title is required' });
+    if (!title) return void res.status(400).json({ error: 'title is required' });
 
     const opportunity = await prisma.civicOpportunity.create({
       data: {
@@ -108,7 +108,7 @@ router.post('/opportunities', authenticate(), async (req, res) => {
 /**
  * PATCH /civic/opportunities/:id
  */
-router.patch('/opportunities/:id', authenticate(), async (req, res) => {
+router.patch('/opportunities/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const data = { ...req.body };
@@ -135,7 +135,7 @@ router.patch('/opportunities/:id', authenticate(), async (req, res) => {
 /**
  * POST /civic/opportunities/:id/submissions
  */
-router.post('/opportunities/:id/submissions', authenticate(), async (req, res) => {
+router.post('/opportunities/:id/submissions', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { type = 'SUBMISSION', content } = req.body || {};
@@ -163,7 +163,7 @@ router.post('/opportunities/:id/submissions', authenticate(), async (req, res) =
 /**
  * GET /civic/alerts
  */
-router.get('/alerts', authenticate(), async (req, res) => {
+router.get('/alerts', authenticate, async (req, res) => {
   try {
     const alerts = await prisma.civicAlert.findMany({
       where: { userId: req.user!.id },
@@ -179,7 +179,7 @@ router.get('/alerts', authenticate(), async (req, res) => {
 /**
  * POST /civic/alerts
  */
-router.post('/alerts', authenticate(), async (req, res) => {
+router.post('/alerts', authenticate, async (req, res) => {
   try {
     const { types = [], locations = [], isActive = true } = req.body || {};
 
@@ -222,10 +222,10 @@ router.get('/petitions', async (req, res) => {
 /**
  * POST /civic/petitions
  */
-router.post('/petitions', authenticate(), async (req, res) => {
+router.post('/petitions', authenticate, async (req, res) => {
   try {
     const { title, description, url } = req.body || {};
-    if (!title) return res.status(400).json({ error: 'title is required' });
+    if (!title) return void res.status(400).json({ error: 'title is required' });
 
     const petition = await prisma.civicPetition.create({
       data: { title, description, url },
@@ -241,7 +241,7 @@ router.post('/petitions', authenticate(), async (req, res) => {
 /**
  * POST /civic/petitions/:id/sign
  */
-router.post('/petitions/:id/sign', authenticate(), async (req, res) => {
+router.post('/petitions/:id/sign', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -260,7 +260,7 @@ router.post('/petitions/:id/sign', authenticate(), async (req, res) => {
     res.status(201).json({ success: true });
   } catch (err: any) {
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'Already signed' });
+      return void res.status(409).json({ error: 'Already signed' });
     }
     console.error('Sign petition error:', err);
     res.status(500).json({ error: 'Failed to sign petition' });
@@ -268,3 +268,5 @@ router.post('/petitions/:id/sign', authenticate(), async (req, res) => {
 });
 
 export default router;
+
+

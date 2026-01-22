@@ -4,9 +4,10 @@
  */
 
 import { z } from 'zod';
+import { registerSchema, loginSchema } from '../lib/validation';
 
 // Re-export auth schemas from validation.ts
-export { registerSchema, loginSchema } from '../lib/validation';
+export { registerSchema, loginSchema };
 
 // ============================================
 // Common Schemas

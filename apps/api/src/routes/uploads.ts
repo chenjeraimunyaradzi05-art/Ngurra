@@ -10,7 +10,7 @@ import { circuitBreakers } from '../lib/circuitBreaker';
 import { logSecurityEvent, logSuspiciousActivity, SecurityEventType, Severity } from '../lib/securityAudit';
 
 const router = express.Router();
-const authenticateJWT = auth.authenticate();
+const authenticateJWT = auth.authenticate;
 
 // Schemas
 const fileSchema = z.object({
@@ -58,7 +58,7 @@ const ALLOWED_TYPES: Record<string, string[]> = {
 router.post('/s3-url', authenticateJWT, async (req: Request, res: Response) => {
   const parse = signSchema.safeParse(req.body);
   if (!parse.success) {
-    return res.status(400).json({ error: parse.error.flatten() });
+    return void res.status(400).json({ error: parse.error.flatten() });
   }
 
   const { filename, mimeType, category = 'OTHER' } = parse.data;
@@ -67,32 +67,32 @@ router.post('/s3-url', authenticateJWT, async (req: Request, res: Response) => {
   // Validate MIME type is allowed
   if (!FILE_LIMITS[mimeType]) {
     await logSuspiciousActivity(userId, req, `Attempted upload of disallowed file type: ${mimeType}`);
-    return res.status(400).json({ error: `File type not allowed: ${mimeType}` });
+    return void res.status(400).json({ error: `File type not allowed: ${mimeType}` });
   }
 
   // Validate MIME type matches category
   const allowedForCategory = ALLOWED_TYPES[category] || ALLOWED_TYPES.OTHER;
   if (!allowedForCategory.includes(mimeType)) {
-    return res.status(400).json({ error: `File type ${mimeType} not allowed for category ${category}` });
+    return void res.status(400).json({ error: `File type ${mimeType} not allowed for category ${category}` });
   }
 
   // Validate file extension
   const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
   const limits = FILE_LIMITS[mimeType];
   if (!limits.extensions.includes(ext)) {
-    return res.status(400).json({ 
+    return void res.status(400).json({ 
       error: `File extension ${ext} does not match type ${mimeType}. Allowed: ${limits.extensions.join(', ')}` 
     });
   }
 
   const s3 = getS3Client();
   if (!s3) {
-    return res.status(500).json({ error: 'S3 not configured on server' });
+    return void res.status(500).json({ error: 'S3 not configured on server' });
   }
 
   const bucket = process.env.AWS_S3_BUCKET;
   if (!bucket) {
-    return res.status(500).json({ error: 'S3 bucket not configured' });
+    return void res.status(500).json({ error: 'S3 bucket not configured' });
   }
 
   // Generate secure filename to prevent path traversal and other attacks
@@ -117,7 +117,7 @@ router.post('/s3-url', authenticateJWT, async (req: Request, res: Response) => {
     const region = process.env.AWS_REGION || 'ap-southeast-2';
     const publicUrl = `https://${bucket}.s3.${region}.amazonaws.com/${encodeURIComponent(key)}`;
 
-    return res.json({ 
+    return void res.json({ 
       url, 
       key, 
       bucket, 
@@ -132,10 +132,10 @@ router.post('/s3-url', authenticateJWT, async (req: Request, res: Response) => {
     console.error('s3 presign error:', err);
     
     if (err.message?.includes('Circuit breaker is OPEN')) {
-      return res.status(503).json({ error: 'S3 service temporarily unavailable, please try again later' });
+      return void res.status(503).json({ error: 'S3 service temporarily unavailable, please try again later' });
     }
     
-    return res.status(500).json({ error: 'Failed to create signed url' });
+    return void res.status(500).json({ error: 'Failed to create signed url' });
   }
 });
 
@@ -147,7 +147,7 @@ router.post('/s3-url', authenticateJWT, async (req: Request, res: Response) => {
 router.post('/metadata', authenticateJWT, async (req: Request, res: Response) => {
   const parse = metadataSchema.safeParse(req.body);
   if (!parse.success) {
-    return res.status(400).json({ error: parse.error.flatten() });
+    return void res.status(400).json({ error: parse.error.flatten() });
   }
 
   const { key, filename, url, mimeType = 'application/octet-stream', size, category = 'OTHER' } = parse.data;
@@ -158,7 +158,7 @@ router.post('/metadata', authenticateJWT, async (req: Request, res: Response) =>
     const maxSize = FILE_LIMITS[mimeType].maxSize;
     if (size > maxSize) {
       await logSuspiciousActivity(userId, req, `Upload exceeded size limit: ${size} bytes for ${mimeType} (max: ${maxSize})`);
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: `File too large. Maximum size for ${mimeType} is ${(maxSize / (1024 * 1024)).toFixed(1)}MB` 
       });
     }
@@ -188,7 +188,7 @@ router.post('/metadata', authenticateJWT, async (req: Request, res: Response) =>
         if (headResult.ContentLength > maxSize) {
           // Delete the oversized file
           await logSuspiciousActivity(userId, req, `Uploaded file exceeded size limit: ${headResult.ContentLength} bytes (max: ${maxSize})`);
-          return res.status(400).json({ error: 'Uploaded file exceeds size limit' });
+          return void res.status(400).json({ error: 'Uploaded file exceeds size limit' });
         }
       }
     } catch (err: any) {
@@ -218,10 +218,10 @@ router.post('/metadata', authenticateJWT, async (req: Request, res: Response) =>
       ipAddress: req.ip || req.socket.remoteAddress,
     });
 
-    return res.json({ file });
+    return void res.json({ file });
   } catch (err) {
     console.error('save metadata error:', err);
-    return res.status(500).json({ error: 'Failed to store metadata' });
+    return void res.status(500).json({ error: 'Failed to store metadata' });
   }
 });
 
@@ -233,7 +233,7 @@ router.post('/validate', authenticateJWT, async (req: Request, res: Response) =>
   const { filename, mimeType, buffer } = req.body;
 
   if (!filename || !mimeType || !buffer) {
-    return res.status(400).json({ error: 'filename, mimeType, and buffer are required' });
+    return void res.status(400).json({ error: 'filename, mimeType, and buffer are required' });
   }
 
   try {
@@ -244,10 +244,10 @@ router.post('/validate', authenticateJWT, async (req: Request, res: Response) =>
       await logSuspiciousActivity((req as any).user?.id, req, `File validation failed: ${result.errors.join(', ')}`);
     }
 
-    return res.json(result);
+    return void res.json(result);
   } catch (err) {
     console.error('validate error:', err);
-    return res.status(500).json({ error: 'Validation failed' });
+    return void res.status(500).json({ error: 'Validation failed' });
   }
 });
 
@@ -257,10 +257,10 @@ router.post('/validate', authenticateJWT, async (req: Request, res: Response) =>
 router.post('/resume', authenticateJWT, async (req: Request, res: Response) => {
   const parse = fileSchema.safeParse(req.body);
   if (!parse.success) {
-    return res.status(400).json({ error: parse.error.flatten() });
+    return void res.status(400).json({ error: parse.error.flatten() });
   }
   const id = `resume_${Date.now()}`;
-  return res.json({ id, url: parse.data.url });
+  return void res.json({ id, url: parse.data.url });
 });
 
 /**
@@ -269,10 +269,10 @@ router.post('/resume', authenticateJWT, async (req: Request, res: Response) => {
 router.post('/photo', authenticateJWT, async (req: Request, res: Response) => {
   const parse = fileSchema.safeParse(req.body);
   if (!parse.success) {
-    return res.status(400).json({ error: parse.error.flatten() });
+    return void res.status(400).json({ error: parse.error.flatten() });
   }
   const id = `photo_${Date.now()}`;
-  return res.json({ id, url: parse.data.url });
+  return void res.json({ id, url: parse.data.url });
 });
 
 /**
@@ -281,10 +281,10 @@ router.post('/photo', authenticateJWT, async (req: Request, res: Response) => {
 router.post('/video', authenticateJWT, async (req: Request, res: Response) => {
   const parse = fileSchema.safeParse(req.body);
   if (!parse.success) {
-    return res.status(400).json({ error: parse.error.flatten() });
+    return void res.status(400).json({ error: parse.error.flatten() });
   }
   const id = `video_${Date.now()}`;
-  return res.json({ id, url: parse.data.url });
+  return void res.json({ id, url: parse.data.url });
 });
 
 /**
@@ -298,10 +298,10 @@ router.get('/me', authenticateJWT, async (req: Request, res: Response) => {
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
-    return res.json({ files });
+    return void res.json({ files });
   } catch (err) {
     console.error('list files error', err);
-    return res.status(500).json({ error: 'Failed to fetch files' });
+    return void res.status(500).json({ error: 'Failed to fetch files' });
   }
 });
 
@@ -316,7 +316,7 @@ router.get('/:id/download', authenticateJWT, async (req: Request, res: Response)
   try {
     const file = await prisma.uploadedFile.findUnique({ where: { id } });
     if (!file) {
-      return res.status(404).json({ error: 'Not found' });
+      return void res.status(404).json({ error: 'Not found' });
     }
 
     // Ownership check
@@ -335,7 +335,7 @@ router.get('/:id/download', authenticateJWT, async (req: Request, res: Response)
             severity: Severity.WARNING,
             ipAddress: req.ip || req.socket.remoteAddress,
           });
-          return res.status(403).json({ error: 'Forbidden' });
+          return void res.status(403).json({ error: 'Forbidden' });
         }
       } else {
         await logSecurityEvent({
@@ -345,7 +345,7 @@ router.get('/:id/download', authenticateJWT, async (req: Request, res: Response)
           severity: Severity.WARNING,
           ipAddress: req.ip || req.socket.remoteAddress,
         });
-        return res.status(403).json({ error: 'Forbidden' });
+        return void res.status(403).json({ error: 'Forbidden' });
       }
     }
 
@@ -371,17 +371,17 @@ router.get('/:id/download', authenticateJWT, async (req: Request, res: Response)
           ipAddress: req.ip || req.socket.remoteAddress,
         });
 
-        return res.json({ url, filename: file.filename, mimeType: file.mimeType });
+        return void res.json({ url, filename: file.filename, mimeType: file.mimeType });
       } catch (err) {
         console.error('presign get failed', err);
         // Fall through to return stored URL
       }
     }
 
-    return res.json({ url: file.url, filename: file.filename, mimeType: file.mimeType });
+    return void res.json({ url: file.url, filename: file.filename, mimeType: file.mimeType });
   } catch (err) {
     console.error('download file error', err);
-    return res.status(500).json({ error: 'Failed to get download url' });
+    return void res.status(500).json({ error: 'Failed to get download url' });
   }
 });
 
@@ -395,7 +395,7 @@ router.delete('/:id', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const file = await prisma.uploadedFile.findUnique({ where: { id } });
     if (!file) {
-      return res.status(404).json({ error: 'Not found' });
+      return void res.status(404).json({ error: 'Not found' });
     }
 
     if (file.userId !== userId) {
@@ -406,7 +406,7 @@ router.delete('/:id', authenticateJWT, async (req: Request, res: Response) => {
         severity: Severity.WARNING,
         ipAddress: req.ip || req.socket.remoteAddress,
       });
-      return res.status(403).json({ error: 'Forbidden' });
+      return void res.status(403).json({ error: 'Forbidden' });
     }
 
     // Delete from database
@@ -437,10 +437,10 @@ router.delete('/:id', authenticateJWT, async (req: Request, res: Response) => {
       ipAddress: req.ip || req.socket.remoteAddress,
     });
 
-    return res.json({ success: true });
+    return void res.json({ success: true });
   } catch (err) {
     console.error('delete file error', err);
-    return res.status(500).json({ error: 'Failed to delete file' });
+    return void res.status(500).json({ error: 'Failed to delete file' });
   }
 });
 
@@ -454,12 +454,12 @@ router.post('/process-image', authenticateJWT, async (req: Request, res: Respons
   const userId = (req as any).user?.id;
 
   if (!base64Data || !filename || !mimeType) {
-    return res.status(400).json({ error: 'base64Data, filename, and mimeType are required' });
+    return void res.status(400).json({ error: 'base64Data, filename, and mimeType are required' });
   }
 
   // Validate MIME type
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(mimeType)) {
-    return res.status(400).json({ error: 'Only JPEG, PNG, and WebP images are allowed' });
+    return void res.status(400).json({ error: 'Only JPEG, PNG, and WebP images are allowed' });
   }
 
   try {
@@ -468,14 +468,14 @@ router.post('/process-image', authenticateJWT, async (req: Request, res: Respons
     // Check for web shell or malicious content
     if (checkForWebShell(buffer)) {
       await logSuspiciousActivity(userId, req, 'Attempted to upload file containing malicious patterns');
-      return res.status(400).json({ error: 'File contains potentially malicious content' });
+      return void res.status(400).json({ error: 'File contains potentially malicious content' });
     }
 
     // Validate file
     const validation = validateFile(buffer, filename, mimeType);
     if (!validation.valid) {
       await logSuspiciousActivity(userId, req, `Image validation failed: ${validation.errors.join(', ')}`);
-      return res.status(400).json({ error: validation.errors.join(', ') });
+      return void res.status(400).json({ error: validation.errors.join(', ') });
     }
 
     // Strip EXIF metadata for privacy
@@ -483,12 +483,12 @@ router.post('/process-image', authenticateJWT, async (req: Request, res: Respons
 
     const s3 = getS3Client();
     if (!s3) {
-      return res.status(500).json({ error: 'S3 not configured on server' });
+      return void res.status(500).json({ error: 'S3 not configured on server' });
     }
 
     const bucket = process.env.AWS_S3_BUCKET;
     if (!bucket) {
-      return res.status(500).json({ error: 'S3 bucket not configured' });
+      return void res.status(500).json({ error: 'S3 bucket not configured' });
     }
 
     const secureFilename = generateSecureFilename(filename);
@@ -531,7 +531,7 @@ router.post('/process-image', authenticateJWT, async (req: Request, res: Respons
       ipAddress: req.ip || req.socket.remoteAddress,
     });
 
-    return res.json({
+    return void res.json({
       file,
       url: publicUrl,
       key,
@@ -539,11 +539,13 @@ router.post('/process-image', authenticateJWT, async (req: Request, res: Respons
     });
   } catch (err: any) {
     console.error('process-image error:', err);
-    return res.status(500).json({ error: 'Failed to process image' });
+    return void res.status(500).json({ error: 'Failed to process image' });
   }
 });
 
 export default router;
+
+
 
 
 

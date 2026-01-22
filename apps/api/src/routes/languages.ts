@@ -41,7 +41,7 @@ router.get('/search', async (req: Request, res: Response) => {
     const { q } = req.query;
     
     if (!q) {
-      return res.status(400).json({ success: false, message: 'Search query required' });
+      return void res.status(400).json({ success: false, message: 'Search query required' });
     }
     
     const languages = await indigenousLanguageService.searchLanguages(q as string);
@@ -130,7 +130,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     const language = await indigenousLanguageService.getLanguageById(id);
     
     if (!language) {
-      return res.status(404).json({ success: false, message: 'Language not found' });
+      return void res.status(404).json({ success: false, message: 'Language not found' });
     }
     
     res.json({
@@ -195,7 +195,7 @@ router.get('/:id/resources', async (req: Request, res: Response) => {
  * @desc Add a language resource (requires approval)
  * @access Private
  */
-router.post('/:id/resources', authenticate(), async (req: Request, res: Response) => {
+router.post('/:id/resources', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -303,7 +303,7 @@ router.get('/phrases/:key', async (req: Request, res: Response) => {
     );
     
     if (!phrase) {
-      return res.status(404).json({ success: false, message: 'Phrase not found' });
+      return void res.status(404).json({ success: false, message: 'Phrase not found' });
     }
     
     res.json({
@@ -347,7 +347,7 @@ router.get('/greeting/localized', async (req: Request, res: Response) => {
  * @desc Register as a language learner
  * @access Private
  */
-router.post('/learner/register', authenticate(), async (req: Request, res: Response) => {
+router.post('/learner/register', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const preferences = req.body;
@@ -370,7 +370,7 @@ router.post('/learner/register', authenticate(), async (req: Request, res: Respo
  * @desc Get learner's progress
  * @access Private
  */
-router.get('/learner/progress', authenticate(), async (req: Request, res: Response) => {
+router.get('/learner/progress', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     
@@ -387,3 +387,5 @@ router.get('/learner/progress', authenticate(), async (req: Request, res: Respon
 });
 
 export default router;
+
+

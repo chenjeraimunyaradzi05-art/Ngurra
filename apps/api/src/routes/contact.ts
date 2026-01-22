@@ -20,7 +20,7 @@ const contactSchema = z.object({
 router.post('/', async (req, res) => {
     const parse = contactSchema.safeParse(req.body);
     if (!parse.success) {
-        return res.status(400).json({ error: parse.error.flatten() });
+        return void res.status(400).json({ error: parse.error.flatten() });
     }
 
     const { name, email, department, subject, message } = parse.data;
@@ -83,19 +83,19 @@ router.post('/', async (req, res) => {
             console.error('Failed to send contact confirmation:', emailErr);
         }
 
-        return res.status(201).json({
+        return void res.status(201).json({
             success: true,
             message: 'Your message has been received. We will respond within 24-48 hours.',
             id: submission.id,
         });
     } catch (err) {
         console.error('Contact form error:', err);
-        return res.status(500).json({ error: 'Failed to submit contact form' });
+        return void res.status(500).json({ error: 'Failed to submit contact form' });
     }
 });
 
 // GET /contact - List contact submissions (admin only)
-router.get('/', authenticate(), requireAdmin, async (req, res) => {
+router.get('/', authenticate, requireAdmin, async (req, res) => {
     try {
         const { status, department, limit = 50, offset = 0 } = req.query;
 
@@ -113,7 +113,7 @@ router.get('/', authenticate(), requireAdmin, async (req, res) => {
             prisma.contactSubmission.count({ where }),
         ]);
 
-        return res.json({
+        return void res.json({
             submissions,
             total,
             limit: Number(limit),
@@ -121,12 +121,12 @@ router.get('/', authenticate(), requireAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('List contact submissions error:', err);
-        return res.status(500).json({ error: 'Failed to fetch submissions' });
+        return void res.status(500).json({ error: 'Failed to fetch submissions' });
     }
 });
 
 // PUT /contact/:id - Update contact submission status
-router.put('/:id', authenticate(), requireAdmin, async (req, res) => {
+router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { status, notes, assignedTo } = req.body;
 
@@ -141,11 +141,13 @@ router.put('/:id', authenticate(), requireAdmin, async (req, res) => {
             },
         });
 
-        return res.json({ success: true, submission });
+        return void res.json({ success: true, submission });
     } catch (err) {
         console.error('Update contact submission error:', err);
-        return res.status(500).json({ error: 'Failed to update submission' });
+        return void res.status(500).json({ error: 'Failed to update submission' });
     }
 });
 
 export default router;
+
+

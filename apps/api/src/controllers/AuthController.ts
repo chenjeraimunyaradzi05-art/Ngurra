@@ -89,14 +89,12 @@ class AuthController extends BaseController {
         userType: userType as any,
         passwordHash: hashedPassword,
         memberProfile: userType === 'MEMBER' ? {
-          create: {
-            firstName,
-            lastName,
-          },
+          create: {},
         } : undefined,
         companyProfile: userType === 'COMPANY' ? {
           create: {
-            name: `${firstName} ${lastName}'s Company`,
+            companyName: `${firstName} ${lastName}'s Company`,
+            industry: 'Other',
           },
         } : undefined,
       },

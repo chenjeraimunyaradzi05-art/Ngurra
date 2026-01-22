@@ -123,7 +123,7 @@ router.get('/directory', async (req, res) => {
 });
 
 // Public business details (published; owner can see drafts)
-router.get('/:businessId', optionalAuth(), async (req, res) => {
+router.get('/:businessId', optionalAuth, async (req, res) => {
   try {
     const businessId = req.params.businessId;
     const viewerId = (req as any).user?.id as string | undefined;
@@ -154,11 +154,11 @@ router.get('/:businessId', optionalAuth(), async (req, res) => {
     });
 
     if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
+      return void res.status(404).json({ error: 'Business not found' });
     }
 
     if (!business.isPublished && business.ownerId !== viewerId) {
-      return res.status(404).json({ error: 'Business not found' });
+      return void res.status(404).json({ error: 'Business not found' });
     }
 
     res.json({ business });
@@ -184,11 +184,11 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const input = createBusinessSchema.parse(req.body || {});
-    const business = await createBusiness((req as any).user.id, input);
+    const business = await createBusiness((req as any).user.id, input as any);
     res.status(201).json({ business });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[women-business] create error', error);
     res.status(500).json({ error: 'Failed to create business' });
@@ -203,7 +203,7 @@ router.patch('/:businessId', async (req, res) => {
     res.json({ business });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to update business';
     res.status(message === 'Business not found' ? 404 : 500).json({ error: message });
@@ -236,13 +236,13 @@ router.post('/:businessId/products', async (req, res) => {
 
     const product = await addProduct((req as any).user.id, {
       businessId,
-      ...input,
+      ...(input as any),
     });
 
     res.status(201).json({ product });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to add product';
     res.status(message === 'Business not found' ? 404 : 500).json({ error: message });
@@ -256,13 +256,13 @@ router.post('/:businessId/services', async (req, res) => {
 
     const service = await addService((req as any).user.id, {
       businessId,
-      ...input,
+      ...(input as any),
     });
 
     res.status(201).json({ service });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to add service';
     res.status(message === 'Business not found' ? 404 : 500).json({ error: message });
@@ -281,7 +281,7 @@ router.get('/:businessId/goals', async (req, res) => {
     });
 
     if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
+      return void res.status(404).json({ error: 'Business not found' });
     }
 
     const goals = await getGoals(businessId, status);
@@ -299,14 +299,14 @@ router.post('/:businessId/goals', async (req, res) => {
 
     const goal = await createGoal((req as any).user.id, {
       businessId,
-      ...input,
+      ...(input as any),
       targetDate: input.targetDate ? new Date(input.targetDate) : undefined,
     });
 
     res.status(201).json({ goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to create goal';
     res.status(message === 'Business not found' ? 404 : 400).json({ error: message });
@@ -322,7 +322,7 @@ router.patch('/goals/:goalId/progress', async (req, res) => {
     res.json({ goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to update goal';
     res.status(message === 'Goal not found' ? 404 : 400).json({ error: message });
@@ -340,7 +340,7 @@ router.get('/:businessId/milestones', async (req, res) => {
     });
 
     if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
+      return void res.status(404).json({ error: 'Business not found' });
     }
 
     const milestones = await getMilestones(businessId);
@@ -360,7 +360,7 @@ router.post('/:businessId/milestones', async (req, res) => {
     res.status(201).json({ milestone });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to add milestone';
     res.status(message === 'Business not found' ? 404 : 500).json({ error: message });
@@ -388,3 +388,5 @@ router.get('/:businessId/stats', async (req, res) => {
 });
 
 export default router;
+
+

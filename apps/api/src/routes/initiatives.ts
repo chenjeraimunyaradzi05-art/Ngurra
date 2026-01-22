@@ -212,7 +212,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     const initiative = await communityInitiativesService.getInitiativeById(id);
     
     if (!initiative) {
-      return res.status(404).json({ success: false, message: 'Initiative not found' });
+      return void res.status(404).json({ success: false, message: 'Initiative not found' });
     }
     
     res.json({
@@ -232,7 +232,7 @@ router.get('/:id', async (req: Request, res: Response) => {
  * @desc Create a new initiative
  * @access Private
  */
-router.post('/', authenticate(), async (req: Request, res: Response) => {
+router.post('/', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     const initiativeData = req.body;
@@ -255,7 +255,7 @@ router.post('/', authenticate(), async (req: Request, res: Response) => {
  * @desc Update an initiative
  * @access Private (owner only)
  */
-router.put('/:id', authenticate(), async (req: Request, res: Response) => {
+router.put('/:id', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -264,7 +264,7 @@ router.put('/:id', authenticate(), async (req: Request, res: Response) => {
     const initiative = await communityInitiativesService.updateInitiative(id, userId, updates);
     
     if (!initiative) {
-      return res.status(404).json({ success: false, message: 'Initiative not found or unauthorized' });
+      return void res.status(404).json({ success: false, message: 'Initiative not found or unauthorized' });
     }
     
     res.json({
@@ -283,7 +283,7 @@ router.put('/:id', authenticate(), async (req: Request, res: Response) => {
  * @desc Join an initiative as volunteer
  * @access Private
  */
-router.post('/:id/join', authenticate(), async (req: Request, res: Response) => {
+router.post('/:id/join', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -307,14 +307,14 @@ router.post('/:id/join', authenticate(), async (req: Request, res: Response) => 
  * @desc Log volunteer hours
  * @access Private
  */
-router.post('/:id/log-hours', authenticate(), async (req: Request, res: Response) => {
+router.post('/:id/log-hours', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
     const { hours, description } = req.body;
     
     if (!hours || hours <= 0) {
-      return res.status(400).json({ success: false, message: 'Valid hours required' });
+      return void res.status(400).json({ success: false, message: 'Valid hours required' });
     }
     
     await communityInitiativesService.logVolunteerHours(id, userId, hours, description);
@@ -334,7 +334,7 @@ router.post('/:id/log-hours', authenticate(), async (req: Request, res: Response
  * @desc Add a milestone to an initiative
  * @access Private (owner only)
  */
-router.post('/:id/milestones', authenticate(), async (req: Request, res: Response) => {
+router.post('/:id/milestones', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -358,7 +358,7 @@ router.post('/:id/milestones', authenticate(), async (req: Request, res: Respons
  * @desc Update milestone status
  * @access Private (owner only)
  */
-router.put('/milestones/:milestoneId', authenticate(), async (req: Request, res: Response) => {
+router.put('/milestones/:milestoneId', authenticate, async (req: Request, res: Response) => {
   try {
     const { milestoneId } = req.params;
     const userId = (req as any).user.id;
@@ -381,7 +381,7 @@ router.put('/milestones/:milestoneId', authenticate(), async (req: Request, res:
  * @desc Record impact metric
  * @access Private (owner only)
  */
-router.post('/:id/impact', authenticate(), async (req: Request, res: Response) => {
+router.post('/:id/impact', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const metric = req.body;
@@ -403,7 +403,7 @@ router.post('/:id/impact', authenticate(), async (req: Request, res: Response) =
  * @desc Get user's volunteer history
  * @access Private
  */
-router.get('/user/volunteer-history', authenticate(), async (req: Request, res: Response) => {
+router.get('/user/volunteer-history', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     
@@ -426,7 +426,7 @@ router.get('/user/volunteer-history', authenticate(), async (req: Request, res: 
  * @desc Add a grant opportunity (admin only)
  * @access Private (Admin)
  */
-router.post('/grants', authenticate(), authorize('ADMIN'), async (req: Request, res: Response) => {
+router.post('/grants', authenticate, authorize(['ADMIN']), async (req: Request, res: Response) => {
   try {
     const grantData = req.body;
     
@@ -444,3 +444,5 @@ router.post('/grants', authenticate(), authorize('ADMIN'), async (req: Request, 
 });
 
 export default router;
+
+

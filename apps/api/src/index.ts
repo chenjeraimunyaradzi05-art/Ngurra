@@ -62,7 +62,10 @@ async function startServer() {
 let serverPromise: Promise<any> | undefined; // Using any to avoid type complexity with http types
 
 if (process.env.NODE_ENV !== 'test') {
-    serverPromise = startServer();
+    serverPromise = startServer().catch((err) => {
+        console.error('❌ Failed to start server:', err);
+        process.exit(1);
+    });
 }
 
 export { serverPromise as server, getIO };

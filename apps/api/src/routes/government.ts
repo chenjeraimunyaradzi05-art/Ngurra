@@ -37,7 +37,7 @@ async function isGovernmentOrAdmin(req, res, next) {
     });
 
     if (!user || (user.userType !== 'GOVERNMENT' && user.userType !== 'ADMIN')) {
-      return res.status(403).json({ error: 'Government or admin access required' });
+      return void res.status(403).json({ error: 'Government or admin access required' });
     }
     
     req.user.userType = user.userType;
@@ -67,10 +67,10 @@ router.get('/dashboard', authenticateJWT, isGovernmentOrAdmin, async (req, res) 
     
     // Validate date inputs
     if (startDate && !isValidDate(startDate)) {
-      return res.status(400).json({ success: false, error: 'Invalid startDate format' });
+      return void res.status(400).json({ success: false, error: 'Invalid startDate format' });
     }
     if (endDate && !isValidDate(endDate)) {
-      return res.status(400).json({ success: false, error: 'Invalid endDate format' });
+      return void res.status(400).json({ success: false, error: 'Invalid endDate format' });
     }
     
     const metrics = await getClosingTheGapMetrics({ 
@@ -372,5 +372,6 @@ router.get('/priorities', authenticateJWT, isGovernmentOrAdmin, async (req, res)
 });
 
 export default router;
+
 
 

@@ -147,7 +147,7 @@ router.post('/streams', authenticateJWT, async (req, res) => {
     } = req.body;
 
     if (!title || title.length < 3) {
-      return res.status(400).json({ error: 'Title is required (min 3 characters)' });
+      return void res.status(400).json({ error: 'Title is required (min 3 characters)' });
     }
 
     // Women-only verification
@@ -156,7 +156,7 @@ router.post('/streams', authenticateJWT, async (req, res) => {
         where: { userId },
       });
       if (!verification?.isVerified) {
-        return res.status(403).json({ error: 'Women verification required for women-only streams' });
+        return void res.status(403).json({ error: 'Women verification required for women-only streams' });
       }
     }
 
@@ -207,14 +207,14 @@ router.get('/streams/:id', async (req, res) => {
     });
 
     if (!stream) {
-      return res.status(404).json({ error: 'Stream not found' });
+      return void res.status(404).json({ error: 'Stream not found' });
     }
 
     // Check visibility
     if (stream.visibility !== 'public' && stream.hostId !== userId) {
       const isCoHost = stream.coHosts.some(ch => ch.userId === userId);
       if (!isCoHost) {
-        return res.status(404).json({ error: 'Stream not found' });
+        return void res.status(404).json({ error: 'Stream not found' });
       }
     }
 
@@ -255,19 +255,19 @@ router.post('/streams/:id/go-live', authenticateJWT, async (req, res) => {
     });
 
     if (!stream) {
-      return res.status(404).json({ error: 'Stream not found' });
+      return void res.status(404).json({ error: 'Stream not found' });
     }
 
     if (stream.hostId !== userId) {
-      return res.status(403).json({ error: 'Only the host can start the stream' });
+      return void res.status(403).json({ error: 'Only the host can start the stream' });
     }
 
     if (stream.status === 'live') {
-      return res.status(400).json({ error: 'Stream is already live' });
+      return void res.status(400).json({ error: 'Stream is already live' });
     }
 
     if (stream.status === 'ended') {
-      return res.status(400).json({ error: 'Stream has already ended' });
+      return void res.status(400).json({ error: 'Stream has already ended' });
     }
 
     // Generate LiveKit token for host
@@ -302,7 +302,7 @@ router.post('/streams/:id/end', authenticateJWT, async (req, res) => {
     });
 
     if (!stream || stream.hostId !== userId) {
-      return res.status(404).json({ error: 'Stream not found' });
+      return void res.status(404).json({ error: 'Stream not found' });
     }
 
     const updatedStream = await prisma.liveStream.update({
@@ -334,7 +334,7 @@ router.post('/streams/:id/join', async (req, res) => {
     });
 
     if (!stream || stream.status !== 'live') {
-      return res.status(404).json({ error: 'Stream not found or not live' });
+      return void res.status(404).json({ error: 'Stream not found or not live' });
     }
 
     // Check women-only
@@ -343,7 +343,7 @@ router.post('/streams/:id/join', async (req, res) => {
         where: { userId },
       });
       if (!verification?.isVerified) {
-        return res.status(403).json({ error: 'This is a women-only stream' });
+        return void res.status(403).json({ error: 'This is a women-only stream' });
       }
     }
 
@@ -412,7 +412,7 @@ router.post('/streams/:id/chat', authenticateJWT, async (req, res) => {
     const { content } = req.body;
 
     if (!content || content.length > 500) {
-      return res.status(400).json({ error: 'Content required (max 500 chars)' });
+      return void res.status(400).json({ error: 'Content required (max 500 chars)' });
     }
 
     const stream = await prisma.liveStream.findUnique({
@@ -420,7 +420,7 @@ router.post('/streams/:id/chat', authenticateJWT, async (req, res) => {
     });
 
     if (!stream || stream.status !== 'live' || !stream.allowChat) {
-      return res.status(400).json({ error: 'Chat not available' });
+      return void res.status(400).json({ error: 'Chat not available' });
     }
 
     const message = await prisma.streamChatMessage.create({
@@ -500,7 +500,7 @@ router.post('/streams/:id/questions', authenticateJWT, async (req, res) => {
     const { question } = req.body;
 
     if (!question || question.length > 500) {
-      return res.status(400).json({ error: 'Question required (max 500 chars)' });
+      return void res.status(400).json({ error: 'Question required (max 500 chars)' });
     }
 
     const stream = await prisma.liveStream.findUnique({
@@ -508,7 +508,7 @@ router.post('/streams/:id/questions', authenticateJWT, async (req, res) => {
     });
 
     if (!stream || stream.status !== 'live' || !stream.allowQuestions) {
-      return res.status(400).json({ error: 'Q&A not available' });
+      return void res.status(400).json({ error: 'Q&A not available' });
     }
 
     const q = await prisma.streamQuestion.create({
@@ -676,7 +676,7 @@ router.post('/rooms', authenticateJWT, async (req, res) => {
     } = req.body;
 
     if (!title || title.length < 3) {
-      return res.status(400).json({ error: 'Title is required (min 3 characters)' });
+      return void res.status(400).json({ error: 'Title is required (min 3 characters)' });
     }
 
     // Women-only verification
@@ -685,7 +685,7 @@ router.post('/rooms', authenticateJWT, async (req, res) => {
         where: { userId },
       });
       if (!verification?.isVerified) {
-        return res.status(403).json({ error: 'Women verification required for women-only rooms' });
+        return void res.status(403).json({ error: 'Women verification required for women-only rooms' });
       }
     }
 
@@ -735,7 +735,7 @@ router.get('/rooms/:id', async (req, res) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      return void res.status(404).json({ error: 'Room not found' });
     }
 
     // Get speaker info
@@ -778,11 +778,11 @@ router.post('/rooms/:id/start', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.hostId !== userId) {
-      return res.status(404).json({ error: 'Room not found' });
+      return void res.status(404).json({ error: 'Room not found' });
     }
 
     if (room.status === 'live') {
-      return res.status(400).json({ error: 'Room is already live' });
+      return void res.status(400).json({ error: 'Room is already live' });
     }
 
     const token = await generateLiveKitToken(room.roomName!, userId, true);
@@ -816,7 +816,7 @@ router.post('/rooms/:id/end', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.hostId !== userId) {
-      return res.status(404).json({ error: 'Room not found' });
+      return void res.status(404).json({ error: 'Room not found' });
     }
 
     const updatedRoom = await prisma.audioRoom.update({
@@ -848,12 +848,12 @@ router.post('/rooms/:id/join', async (req, res) => {
     });
 
     if (!room || room.status !== 'live') {
-      return res.status(404).json({ error: 'Room not found or not live' });
+      return void res.status(404).json({ error: 'Room not found or not live' });
     }
 
     // Check max listeners
     if (room.maxListeners && room.listenerCount >= room.maxListeners) {
-      return res.status(400).json({ error: 'Room is full' });
+      return void res.status(400).json({ error: 'Room is full' });
     }
 
     // Check women-only
@@ -862,7 +862,7 @@ router.post('/rooms/:id/join', async (req, res) => {
         where: { userId },
       });
       if (!verification?.isVerified) {
-        return res.status(403).json({ error: 'This is a women-only room' });
+        return void res.status(403).json({ error: 'This is a women-only room' });
       }
     }
 
@@ -940,7 +940,7 @@ router.post('/rooms/:id/raise-hand', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.status !== 'live' || !room.allowHandRaise) {
-      return res.status(400).json({ error: 'Cannot raise hand' });
+      return void res.status(400).json({ error: 'Cannot raise hand' });
     }
 
     // Check if already a speaker
@@ -949,7 +949,7 @@ router.post('/rooms/:id/raise-hand', authenticateJWT, async (req, res) => {
     });
 
     if (existingSpeaker) {
-      return res.status(400).json({ error: 'Already a speaker' });
+      return void res.status(400).json({ error: 'Already a speaker' });
     }
 
     // Update participant to have handRaised
@@ -998,7 +998,7 @@ router.get('/rooms/:id/hand-raises', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.hostId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const handRaises = await prisma.audioRoomParticipant.findMany({
@@ -1038,11 +1038,11 @@ router.post('/rooms/:id/invite-speaker', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.hostId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     if (room.participants.length >= room.maxSpeakers) {
-      return res.status(400).json({ error: 'Max speakers reached' });
+      return void res.status(400).json({ error: 'Max speakers reached' });
     }
 
     // Update participant to speaker role
@@ -1081,11 +1081,11 @@ router.post('/rooms/:id/remove-speaker', authenticateJWT, async (req, res) => {
     });
 
     if (!room || room.hostId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     if (speakerId === room.hostId) {
-      return res.status(400).json({ error: 'Cannot remove host' });
+      return void res.status(400).json({ error: 'Cannot remove host' });
     }
 
     // Demote to listener
@@ -1107,3 +1107,4 @@ router.post('/rooms/:id/remove-speaker', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+

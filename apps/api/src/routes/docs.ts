@@ -40,21 +40,21 @@ router.get('/openapi.yaml', (req, res) => {
     const specPath = getSpecPath();
     const raw = fs.readFileSync(specPath, 'utf8');
     res.setHeader('Content-Type', 'text/yaml; charset=utf-8');
-    return res.send(raw);
+    return void res.send(raw);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to serve openapi.yaml', err);
-    return res.status(500).json({ error: 'Failed to load OpenAPI spec' });
+    return void res.status(500).json({ error: 'Failed to load OpenAPI spec' });
   }
 });
 
 router.get('/openapi.json', (req, res) => {
   try {
-    return res.json(getSpec());
+    return void res.json(getSpec());
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to serve openapi.json', err);
-    return res.status(500).json({ error: 'Failed to load OpenAPI spec' });
+    return void res.status(500).json({ error: 'Failed to load OpenAPI spec' });
   }
 });
 
@@ -69,9 +69,10 @@ router.get('/', (req, res, next) => {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to render Swagger UI', err);
-    return res.status(500).json({ error: 'Failed to render API docs' });
+    return void res.status(500).json({ error: 'Failed to render API docs' });
   }
 });
 
 export default router;
+
 

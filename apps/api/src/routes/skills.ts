@@ -92,7 +92,7 @@ router.post('/user', authenticate, async (req, res) => {
     const { skillId, level, yearsExp } = req.body;
 
     if (!skillId) {
-      return res.status(400).json({ error: 'skillId is required' });
+      return void res.status(400).json({ error: 'skillId is required' });
     }
 
     const userSkill = await prisma.userSkill.upsert({
@@ -188,7 +188,7 @@ router.post('/gap-analysis/target-role', authenticate, async (req, res) => {
     const { targetRole, targetSkills } = req.body || {};
 
     if (!targetRole) {
-      return res.status(400).json({ error: 'targetRole is required' });
+      return void res.status(400).json({ error: 'targetRole is required' });
     }
 
     // Get user's current skills
@@ -214,7 +214,7 @@ router.post('/gap-analysis/target-role', authenticate, async (req, res) => {
       const similarJobs = await prisma.job.findMany({
         where: {
           title: { contains: targetRole, mode: 'insensitive' },
-          status: 'ACTIVE',
+          isActive: true,
         },
         take: 10,
         select: { id: true },
@@ -357,7 +357,7 @@ router.get('/demand', async (req, res) => {
       where: {
         job: {
           createdAt: { gte: thirtyDaysAgo },
-          status: 'ACTIVE',
+          isActive: true,
         },
       },
       _count: true,
@@ -399,19 +399,19 @@ router.get('/salary-impact', async (req, res) => {
     // Get jobs with and without the skill to compare salaries
     const jobsWithSkill = await prisma.job.findMany({
       where: {
-        status: 'ACTIVE',
+        isActive: true,
         ...(skillId ? {
-          skills: { some: { skillId: String(skillId) } },
+          jobSkills: { some: { skillId: String(skillId) } },
         } : {}),
-        salaryMin: { not: null },
+        salaryLow: { not: null },
       },
-      select: { salaryMin: true, salaryMax: true },
+      select: { salaryLow: true, salaryHigh: true },
       take: 100,
     });
 
     const salaries = jobsWithSkill.map(j => ({
-      min: j.salaryMin || 0,
-      max: j.salaryMax || j.salaryMin || 0,
+      min: j.salaryLow || 0,
+      max: j.salaryHigh || j.salaryLow || 0,
     }));
 
     const avgMin = salaries.length > 0
@@ -449,7 +449,7 @@ router.post('/endorsements', authenticate, async (req, res) => {
     const { skillId, endorserId, message } = req.body || {};
 
     if (!skillId || !endorserId) {
-      return res.status(400).json({ error: 'skillId and endorserId are required' });
+      return void res.status(400).json({ error: 'skillId and endorserId are required' });
     }
 
     // Check if user has the skill
@@ -458,7 +458,7 @@ router.post('/endorsements', authenticate, async (req, res) => {
     });
 
     if (!userSkill) {
-      return res.status(400).json({ error: 'You must add this skill before requesting endorsements' });
+      return void res.status(400).json({ error: 'You must add this skill before requesting endorsements' });
     }
 
     // In a full implementation, would send notification to endorser
@@ -585,4 +585,5 @@ router.get('/recommendations', authenticate, async (req, res) => {
 });
 
 export default router;
+
 

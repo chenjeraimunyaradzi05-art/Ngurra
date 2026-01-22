@@ -125,7 +125,7 @@ router.get('/:slug', async (req: any, res: any) => {
     });
 
     if (!org || !org.isActive) {
-      return res.status(404).json({ error: 'Organization not found' });
+      return void res.status(404).json({ error: 'Organization not found' });
     }
 
     // Check if current user is following
@@ -147,7 +147,7 @@ router.get('/:slug', async (req: any, res: any) => {
 /**
  * POST /organizations - Create organization page
  */
-router.post('/', auth.authenticate(), async (req: any, res: any) => {
+router.post('/', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const {
@@ -173,12 +173,12 @@ router.post('/', auth.authenticate(), async (req: any, res: any) => {
     } = req.body;
 
     if (!type || !name) {
-      return res.status(400).json({ error: 'Type and name are required' });
+      return void res.status(400).json({ error: 'Type and name are required' });
     }
 
     const validTypes = ['COMPANY', 'UNIVERSITY', 'TAFE_RTO', 'GOVERNMENT', 'INDUSTRY_ASSOCIATION', 'NON_PROFIT'];
     if (!validTypes.includes(type)) {
-      return res.status(400).json({ error: 'Invalid organization type' });
+      return void res.status(400).json({ error: 'Invalid organization type' });
     }
 
     // Generate slug
@@ -233,7 +233,7 @@ router.post('/', auth.authenticate(), async (req: any, res: any) => {
 /**
  * PUT /organizations/:id - Update organization page
  */
-router.put('/:id', auth.authenticate(), async (req: any, res: any) => {
+router.put('/:id', auth.authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -244,7 +244,7 @@ router.put('/:id', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (!admin || !['owner', 'admin', 'editor'].includes(admin.role)) {
-      return res.status(403).json({ error: 'Not authorized to edit this organization' });
+      return void res.status(403).json({ error: 'Not authorized to edit this organization' });
     }
 
     const updateData = { ...req.body };
@@ -271,7 +271,7 @@ router.put('/:id', auth.authenticate(), async (req: any, res: any) => {
 /**
  * POST /organizations/:id/follow - Follow an organization
  */
-router.post('/:id/follow', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/follow', auth.authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -282,7 +282,7 @@ router.post('/:id/follow', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'Already following' });
+      return void res.status(400).json({ error: 'Already following' });
     }
 
     await prisma.$transaction([
@@ -305,7 +305,7 @@ router.post('/:id/follow', auth.authenticate(), async (req: any, res: any) => {
 /**
  * DELETE /organizations/:id/follow - Unfollow an organization
  */
-router.delete('/:id/follow', auth.authenticate(), async (req: any, res: any) => {
+router.delete('/:id/follow', auth.authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -315,7 +315,7 @@ router.delete('/:id/follow', auth.authenticate(), async (req: any, res: any) => 
     });
 
     if (!existing) {
-      return res.status(400).json({ error: 'Not following' });
+      return void res.status(400).json({ error: 'Not following' });
     }
 
     await prisma.$transaction([
@@ -370,7 +370,7 @@ router.get('/:id/stories', async (req: any, res: any) => {
 /**
  * POST /organizations/:id/stories - Create a story
  */
-router.post('/:id/stories', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/stories', auth.authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -381,7 +381,7 @@ router.post('/:id/stories', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (!admin) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const { title, description, category, videoUrl, thumbnailUrl, duration } = req.body;
@@ -453,7 +453,7 @@ router.get('/:id/reviews', async (req: any, res: any) => {
 /**
  * POST /organizations/:id/reviews - Submit a review
  */
-router.post('/:id/reviews', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/reviews', auth.authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
@@ -464,7 +464,7 @@ router.post('/:id/reviews', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'You have already reviewed this organization' });
+      return void res.status(400).json({ error: 'You have already reviewed this organization' });
     }
 
     const {
@@ -487,7 +487,7 @@ router.post('/:id/reviews', auth.authenticate(), async (req: any, res: any) => {
     } = req.body;
 
     if (!overallRating || overallRating < 1 || overallRating > 5) {
-      return res.status(400).json({ error: 'Overall rating (1-5) is required' });
+      return void res.status(400).json({ error: 'Overall rating (1-5) is required' });
     }
 
     const review = await prisma.orgReview.create({
@@ -561,7 +561,7 @@ router.get('/:id/events', async (req: any, res: any) => {
 /**
  * POST /organizations/:id/events/:eventId/register - Register for an event
  */
-router.post('/:id/events/:eventId/register', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/events/:eventId/register', auth.authenticate, async (req: any, res: any) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
@@ -572,11 +572,11 @@ router.post('/:id/events/:eventId/register', auth.authenticate(), async (req: an
     });
 
     if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+      return void res.status(404).json({ error: 'Event not found' });
     }
 
     if (event.maxAttendees && event._count.attendees >= event.maxAttendees) {
-      return res.status(400).json({ error: 'Event is full' });
+      return void res.status(400).json({ error: 'Event is full' });
     }
 
     // Check if already registered
@@ -585,7 +585,7 @@ router.post('/:id/events/:eventId/register', auth.authenticate(), async (req: an
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'Already registered' });
+      return void res.status(400).json({ error: 'Already registered' });
     }
 
     await prisma.$transaction([
@@ -610,3 +610,5 @@ router.post('/:id/events/:eventId/register', auth.authenticate(), async (req: an
 });
 
 export default router;
+
+

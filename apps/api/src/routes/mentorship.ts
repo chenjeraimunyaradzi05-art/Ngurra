@@ -1141,7 +1141,7 @@ router.post('/reverse/request', authenticate, async (req, res) => {
   try {
     const { matchId } = req.body || {};
     if (!matchId) {
-      return res.status(400).json({ error: 'matchId is required' });
+      return void res.status(400).json({ error: 'matchId is required' });
     }
     res.json({ success: true, matchId, status: 'REQUESTED' });
   } catch (error) {
@@ -1151,3 +1151,4 @@ router.post('/reverse/request', authenticate, async (req, res) => {
 });
 
 export default router;
+

@@ -7,9 +7,10 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../db';
 import { authenticate } from '../middleware/auth';
 
-interface AuthRequest extends Request {
-  user?: { id: string; userType: string; email?: string };
-}
+// Request replaced by global Express.Request extension
+// interface Request extends Request {
+//   user?: { id: string; userType: string; email?: string };
+// }
 
 const router = express.Router();
 
@@ -73,7 +74,7 @@ function calculateVideoScore(
 /**
  * GET /pulse - Get For You feed
  */
-router.get('/', async (req: AuthRequest, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     const page = parseInt(req.query.page as string) || 1;
@@ -194,7 +195,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
 /**
  * GET /pulse/following - Get Following feed
  */
-router.get('/following', authenticate(), async (req: AuthRequest, res: Response) => {
+router.get('/following', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const page = parseInt(req.query.page as string) || 1;
@@ -208,7 +209,7 @@ router.get('/following', authenticate(), async (req: AuthRequest, res: Response)
     const following = follows.map(f => f.followingId);
     
     if (following.length === 0) {
-      return res.json({ videos: [], hasMore: false });
+      return void res.json({ videos: [], hasMore: false });
     }
     
     const videos = await prisma.shortVideo.findMany({
@@ -253,7 +254,7 @@ router.get('/following', authenticate(), async (req: AuthRequest, res: Response)
 /**
  * POST /pulse/videos - Upload a new video
  */
-router.post('/videos', authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/videos', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const {
@@ -272,11 +273,11 @@ router.post('/videos', authenticate(), async (req: AuthRequest, res: Response) =
     } = req.body;
     
     if (!videoUrl) {
-      return res.status(400).json({ error: 'Video URL is required' });
+      return void res.status(400).json({ error: 'Video URL is required' });
     }
     
     if (duration && duration > 60) {
-      return res.status(400).json({ error: 'Video must be 60 seconds or less' });
+      return void res.status(400).json({ error: 'Video must be 60 seconds or less' });
     }
     
     // Extract hashtags from caption
@@ -324,7 +325,7 @@ router.post('/videos', authenticate(), async (req: AuthRequest, res: Response) =
 /**
  * GET /pulse/videos/:id - Get video details
  */
-router.get('/videos/:id', async (req: AuthRequest, res: Response) => {
+router.get('/videos/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -351,7 +352,7 @@ router.get('/videos/:id', async (req: AuthRequest, res: Response) => {
     });
     
     if (!video || !video.isActive) {
-      return res.status(404).json({ error: 'Video not found' });
+      return void res.status(404).json({ error: 'Video not found' });
     }
     
     // Check if user liked/saved
@@ -402,7 +403,7 @@ router.get('/videos/:id', async (req: AuthRequest, res: Response) => {
 /**
  * DELETE /pulse/videos/:id - Delete own video
  */
-router.delete('/videos/:id', authenticate(), async (req: AuthRequest, res: Response) => {
+router.delete('/videos/:id', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -413,11 +414,11 @@ router.delete('/videos/:id', authenticate(), async (req: AuthRequest, res: Respo
     });
     
     if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+      return void res.status(404).json({ error: 'Video not found' });
     }
     
     if (video.authorId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to delete this video' });
+      return void res.status(403).json({ error: 'Not authorized to delete this video' });
     }
     
     await prisma.shortVideo.update({
@@ -439,7 +440,7 @@ router.delete('/videos/:id', authenticate(), async (req: AuthRequest, res: Respo
 /**
  * POST /pulse/videos/:id/like - Like a video
  */
-router.post('/videos/:id/like', authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/videos/:id/like', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -457,7 +458,7 @@ router.post('/videos/:id/like', authenticate(), async (req: AuthRequest, res: Re
         where: { id },
         data: { likeCount: { decrement: 1 } }
       });
-      return res.json({ liked: false });
+      return void res.json({ liked: false });
     }
     
     // Like
@@ -479,7 +480,7 @@ router.post('/videos/:id/like', authenticate(), async (req: AuthRequest, res: Re
 /**
  * POST /pulse/videos/:id/save - Save/bookmark a video
  */
-router.post('/videos/:id/save', authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/videos/:id/save', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -497,7 +498,7 @@ router.post('/videos/:id/save', authenticate(), async (req: AuthRequest, res: Re
         where: { id },
         data: { saveCount: { decrement: 1 } }
       });
-      return res.json({ saved: false });
+      return void res.json({ saved: false });
     }
     
     // Save
@@ -519,7 +520,7 @@ router.post('/videos/:id/save', authenticate(), async (req: AuthRequest, res: Re
 /**
  * POST /pulse/videos/:id/share - Track share
  */
-router.post('/videos/:id/share', async (req: AuthRequest, res: Response) => {
+router.post('/videos/:id/share', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -542,7 +543,7 @@ router.post('/videos/:id/share', async (req: AuthRequest, res: Response) => {
 /**
  * GET /pulse/videos/:id/comments - Get video comments
  */
-router.get('/videos/:id/comments', async (req: AuthRequest, res: Response) => {
+router.get('/videos/:id/comments', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page as string) || 1;
@@ -576,18 +577,18 @@ router.get('/videos/:id/comments', async (req: AuthRequest, res: Response) => {
 /**
  * POST /pulse/videos/:id/comments - Add comment
  */
-router.post('/videos/:id/comments', authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/videos/:id/comments', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
     const { content, parentId } = req.body;
     
     if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: 'Comment content is required' });
+      return void res.status(400).json({ error: 'Comment content is required' });
     }
     
     if (content.length > 500) {
-      return res.status(400).json({ error: 'Comment is too long (max 500 characters)' });
+      return void res.status(400).json({ error: 'Comment is too long (max 500 characters)' });
     }
     
     // Check video allows comments
@@ -597,11 +598,11 @@ router.post('/videos/:id/comments', authenticate(), async (req: AuthRequest, res
     });
     
     if (!video || !video.isActive) {
-      return res.status(404).json({ error: 'Video not found' });
+      return void res.status(404).json({ error: 'Video not found' });
     }
     
     if (!video.allowComments) {
-      return res.status(403).json({ error: 'Comments are disabled for this video' });
+      return void res.status(403).json({ error: 'Comments are disabled for this video' });
     }
     
     const comment = await prisma.shortVideoComment.create({
@@ -755,7 +756,7 @@ router.get('/challenges/:id', async (req: Request, res: Response) => {
     });
     
     if (!challenge) {
-      return res.status(404).json({ error: 'Challenge not found' });
+      return void res.status(404).json({ error: 'Challenge not found' });
     }
     
     res.json({ challenge });
@@ -768,14 +769,14 @@ router.get('/challenges/:id', async (req: Request, res: Response) => {
 /**
  * POST /pulse/challenges/:id/enter - Enter a challenge
  */
-router.post('/challenges/:id/enter', authenticate(), async (req: AuthRequest, res: Response) => {
+router.post('/challenges/:id/enter', authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
     const { videoId } = req.body;
     
     if (!videoId) {
-      return res.status(400).json({ error: 'Video ID is required' });
+      return void res.status(400).json({ error: 'Video ID is required' });
     }
     
     // Verify video belongs to user
@@ -785,7 +786,7 @@ router.post('/challenges/:id/enter', authenticate(), async (req: AuthRequest, re
     });
     
     if (!video || video.authorId !== userId) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
     
     // Check challenge is active
@@ -795,11 +796,11 @@ router.post('/challenges/:id/enter', authenticate(), async (req: AuthRequest, re
     });
     
     if (!challenge || !challenge.isActive) {
-      return res.status(400).json({ error: 'Challenge is not active' });
+      return void res.status(400).json({ error: 'Challenge is not active' });
     }
     
     if (challenge.endDate && challenge.endDate < new Date()) {
-      return res.status(400).json({ error: 'Challenge has ended' });
+      return void res.status(400).json({ error: 'Challenge has ended' });
     }
     
     const entry = await prisma.challengeEntry.create({
@@ -819,7 +820,7 @@ router.post('/challenges/:id/enter', authenticate(), async (req: AuthRequest, re
     res.status(201).json({ entry });
   } catch (err: any) {
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'Already entered this challenge' });
+      return void res.status(409).json({ error: 'Already entered this challenge' });
     }
     console.error('Enter challenge error:', err);
     res.status(500).json({ error: 'Failed to enter challenge' });
@@ -833,7 +834,7 @@ router.post('/challenges/:id/enter', authenticate(), async (req: AuthRequest, re
 /**
  * GET /pulse/creators/:id - Get creator profile
  */
-router.get('/creators/:id', async (req: AuthRequest, res: Response) => {
+router.get('/creators/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -852,7 +853,7 @@ router.get('/creators/:id', async (req: AuthRequest, res: Response) => {
     });
     
     if (!user) {
-      return res.status(404).json({ error: 'Creator not found' });
+      return void res.status(404).json({ error: 'Creator not found' });
     }
     
     // Get follower/following counts
@@ -924,7 +925,7 @@ router.get('/creators/:id/videos', async (req: Request, res: Response) => {
 /**
  * GET /pulse/me/saved - Get saved videos
  */
-router.get('/me/saved', authenticate(), async (req: AuthRequest, res: Response) => {
+router.get('/me/saved', authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const page = parseInt(req.query.page as string) || 1;
@@ -954,3 +955,5 @@ router.get('/me/saved', authenticate(), async (req: AuthRequest, res: Response) 
 });
 
 export default router;
+
+

@@ -78,17 +78,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', authenticate(), async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const parsed = listingSchema.safeParse(req.body || {});
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid listing data', details: parsed.error.errors });
+      return void res.status(400).json({ error: 'Invalid listing data', details: parsed.error.errors });
     }
 
     const listing = await createRentalListing(req.user.id, {
       ...parsed.data,
       availableFrom: parsed.data.availableFrom ? new Date(parsed.data.availableFrom) : undefined,
-    });
+    } as any);
 
     res.status(201).json({ listing });
   } catch (error) {
@@ -97,7 +97,7 @@ router.post('/', authenticate(), async (req, res) => {
   }
 });
 
-router.patch('/:id/publish', authenticate(), async (req, res) => {
+router.patch('/:id/publish', authenticate, async (req, res) => {
   try {
     const listing = await publishRentalListing(req.params.id, req.user.id);
     res.json({ listing });
@@ -107,14 +107,14 @@ router.patch('/:id/publish', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/inquiries', authenticate(), async (req, res) => {
+router.post('/inquiries', authenticate, async (req, res) => {
   try {
     const parsed = inquirySchema.safeParse(req.body || {});
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid inquiry', details: parsed.error.errors });
+      return void res.status(400).json({ error: 'Invalid inquiry', details: parsed.error.errors });
     }
 
-    const inquiry = await sendRentalInquiry(req.user.id, parsed.data);
+    const inquiry = await sendRentalInquiry(req.user.id, parsed.data as any);
     res.status(201).json({ inquiry });
   } catch (error) {
     console.error('[Rentals] Send inquiry error:', error);
@@ -122,7 +122,7 @@ router.post('/inquiries', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/inquiries/owner', authenticate(), async (req, res) => {
+router.get('/inquiries/owner', authenticate, async (req, res) => {
   try {
     const status = req.query.status as any;
     const inquiries = await getOwnerRentalInquiries(req.user.id, status);
@@ -133,7 +133,7 @@ router.get('/inquiries/owner', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/owner', authenticate(), async (req, res) => {
+router.get('/owner', authenticate, async (req, res) => {
   try {
     const status = req.query.status as any;
     const listings = await getOwnerRentalListings(req.user.id, status);
@@ -144,10 +144,10 @@ router.get('/owner', authenticate(), async (req, res) => {
   }
 });
 
-router.patch('/inquiries/:id', authenticate(), async (req, res) => {
+router.patch('/inquiries/:id', authenticate, async (req, res) => {
   try {
     const status = req.body?.status as any;
-    if (!status) return res.status(400).json({ error: 'status is required' });
+    if (!status) return void res.status(400).json({ error: 'status is required' });
 
     const inquiry = await respondToRentalInquiry(req.params.id, req.user.id, status);
     res.json({ inquiry });
@@ -157,7 +157,7 @@ router.patch('/inquiries/:id', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/seekers/profile', authenticate(), async (req, res) => {
+router.get('/seekers/profile', authenticate, async (req, res) => {
   try {
     const profile = await getSeekerProfile(req.user.id);
     res.json({ profile });
@@ -167,11 +167,11 @@ router.get('/seekers/profile', authenticate(), async (req, res) => {
   }
 });
 
-router.post('/seekers/profile', authenticate(), async (req, res) => {
+router.post('/seekers/profile', authenticate, async (req, res) => {
   try {
     const parsed = seekerProfileSchema.safeParse(req.body || {});
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid profile data', details: parsed.error.errors });
+      return void res.status(400).json({ error: 'Invalid profile data', details: parsed.error.errors });
     }
 
     const profile = await upsertSeekerProfile(req.user.id, parsed.data);
@@ -182,7 +182,7 @@ router.post('/seekers/profile', authenticate(), async (req, res) => {
   }
 });
 
-router.get('/seekers', authenticate(), async (req, res) => {
+router.get('/seekers', authenticate, async (req, res) => {
   try {
     const result = await searchSeekers({
       preferredStates: req.query.preferredStates ? String(req.query.preferredStates).split(',') : undefined,
@@ -201,7 +201,7 @@ router.get('/seekers', authenticate(), async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const listing = await getRentalListing(req.params.id);
-    if (!listing) return res.status(404).json({ error: 'Listing not found' });
+    if (!listing) return void res.status(404).json({ error: 'Listing not found' });
     res.json({ listing });
   } catch (error) {
     console.error('[Rentals] Get listing error:', error);
@@ -210,3 +210,5 @@ router.get('/:id', async (req, res) => {
 });
 
 export default router;
+
+

@@ -6,7 +6,7 @@ import { authenticate } from '../middleware/auth';
 
 const router = express.Router();
 
-router.use(authenticate());
+router.use(authenticate);
 
 router.get('/profile', async (req, res, next) => {
   try {
@@ -43,3 +43,4 @@ router.patch('/profile', validateRequest(companyProfileSchema), async (req, res,
 });
 
 export default router;
+

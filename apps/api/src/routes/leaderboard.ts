@@ -224,7 +224,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
 
     if (!company) {
-      return res.status(404).json({ error: 'Company not found' });
+      return void res.status(404).json({ error: 'Company not found' });
     }
 
     // Calculate score
@@ -274,11 +274,11 @@ router.get('/:id', async (req: Request, res: Response) => {
  * POST /leaderboard/recalculate
  * Admin: Recalculate reputation scores for all companies
  */
-router.post('/recalculate', authenticate(), async (req: Request, res: Response) => {
+router.post('/recalculate', authenticate, async (req: Request, res: Response) => {
   try {
     // Check admin permission
     if ((req as any).user?.userType !== 'GOVERNMENT' && (req as any).user?.userType !== 'ADMIN') {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
 
     // Get all companies
@@ -307,4 +307,6 @@ router.post('/recalculate', authenticate(), async (req: Request, res: Response) 
 
 export default router;
 export { calculateReputationScore };
+
+
 

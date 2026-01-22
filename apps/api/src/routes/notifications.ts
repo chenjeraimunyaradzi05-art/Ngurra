@@ -17,13 +17,13 @@ function isAdmin(req: any) {
  * POST /notifications/register
  * Register a device token for push notifications
  */
-router.post('/register', auth.authenticate(), async (req: any, res: any) => {
+router.post('/register', auth.authenticate, async (req: any, res: any) => {
   try {
     const { token, platform, deviceId } = req.body;
     const userId = req.user.id;
     
     if (!token) {
-      return res.status(400).json({ error: 'Token is required' });
+      return void res.status(400).json({ error: 'Token is required' });
     }
     
     // Upsert device token
@@ -90,13 +90,13 @@ router.post('/register', auth.authenticate(), async (req: any, res: any) => {
  * POST /notifications/unregister
  * Unregister a device token
  */
-router.post('/unregister', auth.authenticate(), async (req: any, res: any) => {
+router.post('/unregister', auth.authenticate, async (req: any, res: any) => {
   try {
     const { token, deviceId } = req.body;
     const userId = req.user.id;
     
     if (!token && !deviceId) {
-      return res.status(400).json({ error: 'Token or deviceId is required' });
+      return void res.status(400).json({ error: 'Token or deviceId is required' });
     }
     
     // Mark device as inactive
@@ -132,18 +132,18 @@ router.post('/unregister', auth.authenticate(), async (req: any, res: any) => {
  * POST /notifications/subscribe
  * Subscribe to a notification topic
  */
-router.post('/subscribe', auth.authenticate(), async (req: any, res: any) => {
+router.post('/subscribe', auth.authenticate, async (req: any, res: any) => {
   try {
     const { topic } = req.body;
     const userId = req.user.id;
     
     if (!topic) {
-      return res.status(400).json({ error: 'Topic is required' });
+      return void res.status(400).json({ error: 'Topic is required' });
     }
     
     // Validate topic
     if (!Object.values(push.NOTIFICATION_TOPICS).includes(topic)) {
-      return res.status(400).json({ error: 'Invalid topic' });
+      return void res.status(400).json({ error: 'Invalid topic' });
     }
     
     // Get user's active devices
@@ -171,13 +171,13 @@ router.post('/subscribe', auth.authenticate(), async (req: any, res: any) => {
  * POST /notifications/unsubscribe
  * Unsubscribe from a notification topic
  */
-router.post('/unsubscribe', auth.authenticate(), async (req: any, res: any) => {
+router.post('/unsubscribe', auth.authenticate, async (req: any, res: any) => {
   try {
     const { topic } = req.body;
     const userId = req.user.id;
     
     if (!topic) {
-      return res.status(400).json({ error: 'Topic is required' });
+      return void res.status(400).json({ error: 'Topic is required' });
     }
     
     // Get user's active devices
@@ -205,7 +205,7 @@ router.post('/unsubscribe', auth.authenticate(), async (req: any, res: any) => {
  * GET /notifications/preferences
  * Get user notification preferences
  */
-router.get('/preferences', auth.authenticate(), async (req: any, res: any) => {
+router.get('/preferences', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     
@@ -243,7 +243,7 @@ router.get('/preferences', auth.authenticate(), async (req: any, res: any) => {
  * PUT /notifications/preferences
  * Update user notification preferences
  */
-router.put('/preferences', auth.authenticate(), async (req: any, res: any) => {
+router.put('/preferences', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const updates = req.body;
@@ -282,16 +282,16 @@ router.put('/preferences', auth.authenticate(), async (req: any, res: any) => {
  * POST /notifications/send
  * Send a notification (admin only)
  */
-router.post('/send', auth.authenticate(), async (req: any, res: any) => {
+router.post('/send', auth.authenticate, async (req: any, res: any) => {
   try {
     if (!isAdmin(req)) {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
     
     const { type, targetUserId, targetTopic, title, body, data } = req.body;
     
     if (!title || !body) {
-      return res.status(400).json({ error: 'Title and body are required' });
+      return void res.status(400).json({ error: 'Title and body are required' });
     }
     
     // Send to specific user
@@ -301,7 +301,7 @@ router.post('/send', auth.authenticate(), async (req: any, res: any) => {
       });
       
       if (devices.length === 0) {
-        return res.status(404).json({ error: 'No active devices for user' });
+        return void res.status(404).json({ error: 'No active devices for user' });
       }
       
       const result = await push.sendToDevices(
@@ -310,7 +310,7 @@ router.post('/send', auth.authenticate(), async (req: any, res: any) => {
         { type: type || 'admin_message', ...data }
       );
       
-      return res.json({ success: true, result });
+      return void res.json({ success: true, result });
     }
     
     // Send to topic
@@ -321,10 +321,10 @@ router.post('/send', auth.authenticate(), async (req: any, res: any) => {
         { type: type || 'admin_message', ...data }
       );
       
-      return res.json({ success: true, result });
+      return void res.json({ success: true, result });
     }
     
-    return res.status(400).json({ error: 'targetUserId or targetTopic is required' });
+    return void res.status(400).json({ error: 'targetUserId or targetTopic is required' });
   } catch (error) {
     console.error('[Notifications] Send error:', error);
     res.status(500).json({ error: 'Failed to send notification' });
@@ -344,3 +344,5 @@ router.get('/status', (req: any, res: any) => {
 });
 
 export default router;
+
+

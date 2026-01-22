@@ -78,7 +78,7 @@ router.put('/settings', authenticateJWT, async (req, res) => {
     if (updates.safetyLevel) {
       const validLevels = ['standard', 'enhanced', 'maximum'];
       if (!validLevels.includes(updates.safetyLevel)) {
-        return res.status(400).json({ error: 'Invalid safety level' });
+        return void res.status(400).json({ error: 'Invalid safety level' });
       }
 
       // Apply preset settings based on safety level
@@ -104,14 +104,14 @@ router.put('/settings', authenticateJWT, async (req, res) => {
     if (updates.dmPolicy) {
       const validPolicies = ['everyone', 'connections', 'verified_only', 'nobody'];
       if (!validPolicies.includes(updates.dmPolicy)) {
-        return res.status(400).json({ error: 'Invalid DM policy' });
+        return void res.status(400).json({ error: 'Invalid DM policy' });
       }
     }
 
     if (updates.locationVisibility) {
       const validVisibility = ['exact', 'region', 'country', 'hidden'];
       if (!validVisibility.includes(updates.locationVisibility)) {
-        return res.status(400).json({ error: 'Invalid location visibility' });
+        return void res.status(400).json({ error: 'Invalid location visibility' });
       }
     }
 
@@ -341,11 +341,11 @@ router.post('/blocks', authenticateJWT, async (req, res) => {
     const { blockedId, reason } = req.body;
 
     if (!blockedId) {
-      return res.status(400).json({ error: 'User ID to block is required' });
+      return void res.status(400).json({ error: 'User ID to block is required' });
     }
 
     if (blockedId === userId) {
-      return res.status(400).json({ error: 'Cannot block yourself' });
+      return void res.status(400).json({ error: 'Cannot block yourself' });
     }
 
     // Check if already blocked
@@ -354,7 +354,7 @@ router.post('/blocks', authenticateJWT, async (req, res) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'User already blocked' });
+      return void res.status(400).json({ error: 'User already blocked' });
     }
 
     // Create block
@@ -446,12 +446,12 @@ router.post('/mutes', authenticateJWT, async (req, res) => {
     const { mutedId, scope = 'all', duration } = req.body;
 
     if (!mutedId) {
-      return res.status(400).json({ error: 'User ID to mute is required' });
+      return void res.status(400).json({ error: 'User ID to mute is required' });
     }
 
     const validScopes = ['all', 'posts', 'comments', 'stories'];
     if (!validScopes.includes(scope)) {
-      return res.status(400).json({ error: 'Invalid scope' });
+      return void res.status(400).json({ error: 'Invalid scope' });
     }
 
     let expiresAt = null;
@@ -507,12 +507,12 @@ router.post('/report', authenticateJWT, async (req, res) => {
 
     const validTypes = ['post', 'comment', 'message', 'user', 'group', 'organization', 'reel'];
     if (!validTypes.includes(targetType)) {
-      return res.status(400).json({ error: 'Invalid target type' });
+      return void res.status(400).json({ error: 'Invalid target type' });
     }
 
     const validReasons = ['harassment', 'spam', 'inappropriate', 'impersonation', 'privacy_violation', 'threats', 'other'];
     if (!validReasons.includes(reason)) {
-      return res.status(400).json({ error: 'Invalid reason' });
+      return void res.status(400).json({ error: 'Invalid reason' });
     }
 
     // Determine priority
@@ -570,7 +570,7 @@ router.post('/incident', authenticateJWT, async (req, res) => {
 
     const validTypes = ['harassment', 'unwanted_contact', 'threatening', 'stalking', 'other'];
     if (!validTypes.includes(incidentType)) {
-      return res.status(400).json({ error: 'Invalid incident type' });
+      return void res.status(400).json({ error: 'Invalid incident type' });
     }
 
     const incident = await prisma.safetyIncident.create({
@@ -638,7 +638,7 @@ router.put('/community-support', authenticateJWT, async (req, res) => {
 
     // This data is sensitive - require explicit consent
     if (!updates.dataConsent) {
-      return res.status(400).json({ error: 'Data consent is required to store this information' });
+      return void res.status(400).json({ error: 'Data consent is required to store this information' });
     }
 
     updates.consentedAt = new Date();
@@ -711,7 +711,7 @@ router.put('/accessibility', authenticateJWT, async (req, res) => {
 function requireAdmin(req, res, next) {
   const role = String(req.user?.role || req.user?.userType || '').toLowerCase();
   if (role !== 'admin' && role !== 'super_admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return void res.status(403).json({ error: 'Admin access required' });
   }
   next();
 }
@@ -787,7 +787,7 @@ router.get('/admin/reports/:id', authenticateJWT, requireAdmin, async (req, res)
     });
 
     if (!report) {
-      return res.status(404).json({ error: 'Report not found' });
+      return void res.status(404).json({ error: 'Report not found' });
     }
 
     // Fetch the target content
@@ -838,17 +838,17 @@ router.patch('/admin/reports/:id', authenticateJWT, requireAdmin, async (req, re
 
     const validStatuses = ['UNDER_REVIEW', 'RESOLVED', 'DISMISSED'];
     if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status' });
+      return void res.status(400).json({ error: 'Invalid status' });
     }
 
     const validActions = ['warn', 'hide_content', 'suspend_user', 'ban_user', 'none'];
     if (action && !validActions.includes(action)) {
-      return res.status(400).json({ error: 'Invalid action' });
+      return void res.status(400).json({ error: 'Invalid action' });
     }
 
     const report = await prisma.contentReport.findUnique({ where: { id } });
     if (!report) {
-      return res.status(404).json({ error: 'Report not found' });
+      return void res.status(404).json({ error: 'Report not found' });
     }
 
     const updateData: any = {};
@@ -970,7 +970,7 @@ router.patch('/admin/incidents/:id', authenticateJWT, requireAdmin, async (req, 
 
     const incident = await prisma.safetyIncident.findUnique({ where: { id } });
     if (!incident) {
-      return res.status(404).json({ error: 'Incident not found' });
+      return void res.status(404).json({ error: 'Incident not found' });
     }
 
     const updated = await prisma.safetyIncident.update({
@@ -1118,12 +1118,12 @@ router.post('/dv/evidence', authenticateJWT, async (req, res) => {
         const { type, content, source, notes } = req.body;
         
         if (!type || !content) {
-            return res.status(400).json({ error: 'type and content are required' });
+            return void res.status(400).json({ error: 'type and content are required' });
         }
         
         const validTypes = ['screenshot', 'message', 'document', 'audio', 'note'];
         if (!validTypes.includes(type)) {
-            return res.status(400).json({ error: 'Invalid evidence type' });
+            return void res.status(400).json({ error: 'Invalid evidence type' });
         }
         
         const evidence = await preserveEvidence(userId, type, content, { source, notes });
@@ -1152,11 +1152,11 @@ router.post('/dv/evidence/export', authenticateJWT, async (req, res) => {
         const { evidenceIds, exportPassword } = req.body;
         
         if (!evidenceIds || !exportPassword) {
-            return res.status(400).json({ error: 'evidenceIds and exportPassword are required' });
+            return void res.status(400).json({ error: 'evidenceIds and exportPassword are required' });
         }
         
         if (exportPassword.length < 8) {
-            return res.status(400).json({ error: 'Export password must be at least 8 characters' });
+            return void res.status(400).json({ error: 'Export password must be at least 8 characters' });
         }
         
         const bundle = await exportEvidenceBundle(userId, evidenceIds, exportPassword);
@@ -1185,11 +1185,11 @@ router.post('/dv/hidden-room', authenticateJWT, async (req, res) => {
         const { name, accessCode, invitedUserIds, autoDeleteAfterHours } = req.body;
         
         if (!name || !accessCode) {
-            return res.status(400).json({ error: 'name and accessCode are required' });
+            return void res.status(400).json({ error: 'name and accessCode are required' });
         }
         
         if (accessCode.length < 6) {
-            return res.status(400).json({ error: 'Access code must be at least 6 characters' });
+            return void res.status(400).json({ error: 'Access code must be at least 6 characters' });
         }
         
         const room = await createHiddenRoom(userId, {
@@ -1223,7 +1223,7 @@ router.post('/dv/hidden-room/verify', async (req, res) => {
         const { accessCode, storedHashedCode } = req.body;
         
         if (!accessCode || !storedHashedCode) {
-            return res.status(400).json({ error: 'accessCode and storedHashedCode are required' });
+            return void res.status(400).json({ error: 'accessCode and storedHashedCode are required' });
         }
         
         const hasAccess = verifyHiddenRoomAccess(accessCode, storedHashedCode);
@@ -1284,7 +1284,7 @@ router.post('/dv/emergency-notify', authenticateJWT, async (req, res) => {
         const { contacts, reason } = req.body;
         
         if (!contacts || !Array.isArray(contacts)) {
-            return res.status(400).json({ error: 'contacts array is required' });
+            return void res.status(400).json({ error: 'contacts array is required' });
         }
         
         const validReasons = ['safe_word', 'quick_exit', 'manual'];
@@ -1303,5 +1303,6 @@ router.post('/dv/emergency-notify', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 
 

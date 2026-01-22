@@ -122,13 +122,17 @@ export async function getUserContext(userId: string): Promise<UserContext | null
       take: 5,
       include: {
         job: {
-          include: { company: true }
+          include: {
+            user: {
+              include: { companyProfile: true }
+            }
+          }
         }
       }
     });
 
     // Get mentorship sessions
-    const mentorships = await prisma.mentorshipSession.findMany({
+    const mentorships = await prisma.mentorSession.findMany({
       where: { 
         OR: [
           { menteeId: userId },
@@ -145,7 +149,7 @@ export async function getUserContext(userId: string): Promise<UserContext | null
     });
 
     // Get certifications
-    const certifications = await prisma.certification.findMany({
+    const certifications = await prisma.userBadge.findMany({
       where: { userId },
       orderBy: { issuedAt: 'desc' },
       take: 10
@@ -166,23 +170,21 @@ export async function getUserContext(userId: string): Promise<UserContext | null
     let profile: ProfileData | null = null;
     if (user.memberProfile) {
       profile = {
-        name: user.memberProfile.firstName 
-          ? `${user.memberProfile.firstName} ${user.memberProfile.lastName || ''}`.trim()
-          : user.email.split('@')[0],
+        name: user.name || user.email.split('@')[0],
         bio: user.memberProfile.bio,
-        location: user.memberProfile.location,
-        yearsExperience: user.memberProfile.yearsExperience,
+        location: 'Unknown',
+        yearsExperience: 0,
         industries: [],
-        isVerified: user.memberProfile.isVerified || false
+        isVerified: false
       };
     } else if (user.mentorProfile) {
       profile = {
         name: user.mentorProfile.name || user.email.split('@')[0],
         bio: user.mentorProfile.bio,
-        location: user.mentorProfile.location,
-        yearsExperience: user.mentorProfile.yearsOfExperience,
-        industries: user.mentorProfile.industries || [],
-        isVerified: user.mentorProfile.isVerified || false
+        location: user.mentorProfile.location || 'Unknown',
+        yearsExperience: 0,
+        industries: user.mentorProfile.industry ? [user.mentorProfile.industry] : [],
+        isVerified: false
       };
     }
 
@@ -196,20 +198,20 @@ export async function getUserContext(userId: string): Promise<UserContext | null
       skills: user.userSkills.map(us => us.skill.name),
       applications: applications.map(app => ({
         jobTitle: app.job.title,
-        company: app.job.company?.companyName || 'Unknown',
+        company: app.job.user.companyProfile?.companyName || 'Unknown',
         status: app.status,
         appliedAt: app.createdAt
       })),
       mentorships: mentorships.map(m => ({
-        mentorName: m.mentor?.mentorProfile?.name || 'Unknown',
-        specialty: m.mentor?.mentorProfile?.specialty || 'General',
+        mentorName: m.mentor.name || 'Unknown',
+        specialty: m.mentor.mentorProfile?.title || 'General',
         status: m.status,
         sessionsCompleted: 1 // Simplified
       })),
       certifications: certifications.map(c => ({
         name: c.name,
-        issuer: c.issuer || 'Unknown',
-        isVerified: c.isVerified || false,
+        issuer: c.issuerName || 'Unknown',
+        isVerified: !!c.verificationUrl,
         expiresAt: c.expiresAt
       })),
       trustLevel,
@@ -232,15 +234,7 @@ function calculateTrustLevel(
 ): string {
   let score = 0;
   
-  // Profile verification
-  if (user.memberProfile?.isVerified || user.mentorProfile?.isVerified) {
-    score += 30;
-  }
-  
-  // Email verified
-  if (user.emailVerifiedAt) {
-    score += 10;
-  }
+  // Profile verification skipped (fields missing)
   
   // Connections
   if (connections >= 50) score += 20;
@@ -280,7 +274,9 @@ export async function getRelevantJobs(
         orderBy: { postedAt: 'desc' },
         take: limit,
         include: {
-          company: true,
+          user: {
+            include: { companyProfile: true }
+          },
           jobSkills: { include: { skill: true } }
         }
       });
@@ -288,7 +284,7 @@ export async function getRelevantJobs(
       return jobs.map(job => ({
         id: job.id,
         title: job.title,
-        company: job.company?.companyName || 'Unknown',
+        company: job.user.companyProfile?.companyName || 'Unknown',
         location: job.location || 'Remote',
         matchScore: 50,
         keySkills: job.jobSkills.map(js => js.skill.name).slice(0, 5)
@@ -310,7 +306,9 @@ export async function getRelevantJobs(
       orderBy: { postedAt: 'desc' },
       take: limit * 2, // Get more for filtering
       include: {
-        company: true,
+        user: {
+          include: { companyProfile: true }
+        },
         jobSkills: { include: { skill: true } }
       }
     });
@@ -324,7 +322,7 @@ export async function getRelevantJobs(
       return {
         id: job.id,
         title: job.title,
-        company: job.company?.companyName || 'Unknown',
+        company: job.user.companyProfile?.companyName || 'Unknown',
         location: job.location || 'Remote',
         matchScore,
         keySkills: jobSkills.slice(0, 5)

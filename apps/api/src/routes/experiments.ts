@@ -33,7 +33,7 @@ router.post('/variant', async (req, res) => {
     const { experimentName, anonymousId, userType, location } = req.body;
 
     if (!experimentName) {
-      return res.status(400).json({ error: 'experimentName is required' });
+      return void res.status(400).json({ error: 'experimentName is required' });
     }
 
     // Get user ID from token if available, otherwise use anonymous ID
@@ -73,7 +73,7 @@ router.post('/convert', async (req, res) => {
     const { experimentName, eventName, anonymousId, metadata } = req.body;
 
     if (!experimentName || !eventName) {
-      return res.status(400).json({ error: 'experimentName and eventName are required' });
+      return void res.status(400).json({ error: 'experimentName and eventName are required' });
     }
 
     // Get user ID
@@ -102,7 +102,7 @@ router.post('/convert', async (req, res) => {
 // Admin routes require authentication
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return void res.status(403).json({ error: 'Admin access required' });
   }
   next();
 };
@@ -153,7 +153,7 @@ router.post('/admin', authenticateJWT, requireAdmin, async (req, res) => {
     const { name, description, variants, targetingRules, endDate } = req.body;
 
     if (!name || !variants || variants.length < 2) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'name and at least 2 variants are required' 
       });
     }
@@ -183,7 +183,7 @@ router.patch('/admin/:id', authenticateJWT, requireAdmin, async (req, res) => {
     const { isActive } = req.body;
 
     if (typeof isActive !== 'boolean') {
-      return res.status(400).json({ error: 'isActive boolean is required' });
+      return void res.status(400).json({ error: 'isActive boolean is required' });
     }
 
     const experiment = await updateExperimentStatus(id, isActive);
@@ -205,7 +205,7 @@ router.get('/admin/:id/results', authenticateJWT, requireAdmin, async (req, res)
     const results = await getExperimentResults(id);
 
     if (!results) {
-      return res.status(404).json({ error: 'Experiment not found' });
+      return void res.status(404).json({ error: 'Experiment not found' });
     }
 
     res.json(results);
@@ -216,5 +216,6 @@ router.get('/admin/:id/results', authenticateJWT, requireAdmin, async (req, res)
 });
 
 export default router;
+
 
 

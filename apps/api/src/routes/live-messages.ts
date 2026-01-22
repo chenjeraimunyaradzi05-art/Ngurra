@@ -44,7 +44,7 @@ async function verifyConversationAccess(req, res, next) {
     });
 
     if (!participant) {
-      return res.status(403).json({ error: 'Not a participant of this conversation' });
+      return void res.status(403).json({ error: 'Not a participant of this conversation' });
     }
 
     req.participant = participant;
@@ -97,7 +97,7 @@ router.get('/presence', authenticateJWT, async (req, res) => {
     const { userIds } = req.query;
     
     if (!userIds) {
-      return res.status(400).json({ error: 'userIds query parameter required' });
+      return void res.status(400).json({ error: 'userIds query parameter required' });
     }
 
     const ids = Array.isArray(userIds) ? userIds : userIds.split(',');
@@ -251,7 +251,7 @@ router.post(
       const userId = req.user.id;
 
       if (!content || content.trim().length === 0) {
-        return res.status(400).json({ error: 'Message content required' });
+        return void res.status(400).json({ error: 'Message content required' });
       }
 
       // Import createMessage
@@ -327,5 +327,6 @@ router.get('/stats', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 
 

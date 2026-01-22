@@ -35,7 +35,7 @@ const TIER_PRICES: Record<string, number> = {
 };
 
 // GET /subscriptions/me - get current subscription
-router.get('/me', authenticate(), async (req: any, res) => {
+router.get('/me', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         let subscription = await prisma.companySubscription.findUnique({
@@ -72,7 +72,7 @@ router.get('/me', authenticate(), async (req: any, res) => {
 });
 
 // GET /subscriptions - legacy billing portal expects this shape
-router.get('/', authenticate(), async (req: any, res) => {
+router.get('/', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
@@ -97,7 +97,7 @@ router.get('/', authenticate(), async (req: any, res) => {
 });
 
 // GET /subscriptions/current - used by SubscriptionBadge
-router.get('/current', authenticate(), async (req: any, res) => {
+router.get('/current', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
@@ -113,7 +113,7 @@ router.get('/current', authenticate(), async (req: any, res) => {
 });
 
 // GET /subscriptions/payment-status - used by PaymentFailure hook
-router.get('/payment-status', authenticate(), async (req: any, res) => {
+router.get('/payment-status', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const failed = await prisma.invoice.findFirst({
@@ -122,10 +122,10 @@ router.get('/payment-status', authenticate(), async (req: any, res) => {
         });
 
         if (!failed) {
-            return res.json({ failure: null });
+            return void res.json({ failure: null });
         }
 
-        return res.json({
+        return void res.json({
             failure: {
                 id: failed.id,
                 invoiceId: failed.stripeInvoiceId || failed.id,
@@ -184,13 +184,13 @@ router.get('/tiers', async (_req, res) => {
 });
 
 // POST /subscriptions/upgrade - upgrade subscription (placeholder for Stripe integration)
-router.post('/upgrade', authenticate(), async (req: any, res) => {
+router.post('/upgrade', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const { tier } = req.body;
 
         if (!tier || !['FREE', 'STARTER', 'PROFESSIONAL', 'ENTERPRISE'].includes(tier)) {
-            return res.status(400).json({ error: 'Invalid tier' });
+            return void res.status(400).json({ error: 'Invalid tier' });
         }
 
         const subscription = await prisma.companySubscription.upsert({
@@ -212,13 +212,13 @@ router.post('/upgrade', authenticate(), async (req: any, res) => {
 });
 
 // POST /subscriptions/checkout - legacy alias for Stripe checkout (web component expects `checkoutUrl`)
-router.post('/checkout', authenticate(), async (req: any, res) => {
+router.post('/checkout', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const { tier } = req.body;
 
         if (!tier || !['STARTER', 'PROFESSIONAL', 'ENTERPRISE', 'RAP'].includes(tier)) {
-            return res.status(400).json({ error: 'Invalid tier' });
+            return void res.status(400).json({ error: 'Invalid tier' });
         }
 
         if (!stripeLib.stripe) {
@@ -227,7 +227,7 @@ router.post('/checkout', authenticate(), async (req: any, res) => {
                 create: { userId, tier },
                 update: { tier },
             });
-            return res.json({
+            return void res.json({
                 subscription,
                 message: 'Stripe not configured. Subscription updated directly.',
             });
@@ -239,7 +239,7 @@ router.post('/checkout', authenticate(), async (req: any, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return void res.status(404).json({ error: 'User not found' });
         }
 
         const customerId = await stripeLib.getOrCreateCustomer(
@@ -276,16 +276,16 @@ router.post('/checkout', authenticate(), async (req: any, res) => {
 });
 
 // POST /subscriptions/portal - legacy alias for Stripe billing portal (web component expects `portalUrl`)
-router.post('/portal', authenticate(), async (req: any, res) => {
+router.post('/portal', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
 
         if (!subscription?.stripeCustomerId) {
-            return res.status(400).json({ error: 'No billing account found' });
+            return void res.status(400).json({ error: 'No billing account found' });
         }
         if (!stripeLib.stripe) {
-            return res.status(400).json({ error: 'Stripe not configured' });
+            return void res.status(400).json({ error: 'Stripe not configured' });
         }
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -302,16 +302,16 @@ router.post('/portal', authenticate(), async (req: any, res) => {
 });
 
 // POST /subscriptions/billing-portal - used by PaymentFailure
-router.post('/billing-portal', authenticate(), async (req: any, res) => {
+router.post('/billing-portal', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
 
         if (!subscription?.stripeCustomerId) {
-            return res.status(400).json({ error: 'No billing account found' });
+            return void res.status(400).json({ error: 'No billing account found' });
         }
         if (!stripeLib.stripe) {
-            return res.status(400).json({ error: 'Stripe not configured' });
+            return void res.status(400).json({ error: 'Stripe not configured' });
         }
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -328,16 +328,16 @@ router.post('/billing-portal', authenticate(), async (req: any, res) => {
 });
 
 // POST /subscriptions/retry-payment - attempt to pay an invoice
-router.post('/retry-payment', authenticate(), async (req: any, res) => {
+router.post('/retry-payment', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const { invoiceId } = req.body || {};
 
         if (!invoiceId || typeof invoiceId !== 'string') {
-            return res.status(400).json({ success: false, error: 'invoiceId is required' });
+            return void res.status(400).json({ success: false, error: 'invoiceId is required' });
         }
         if (!stripeLib.stripe) {
-            return res.status(400).json({ success: false, error: 'Stripe not configured' });
+            return void res.status(400).json({ success: false, error: 'Stripe not configured' });
         }
 
         // invoiceId can be either Stripe invoice ID or our local Invoice.id
@@ -355,21 +355,21 @@ router.post('/retry-payment', authenticate(), async (req: any, res) => {
             data: { status: paidInvoice.status === 'paid' ? 'paid' : 'open' },
         });
 
-        return res.json({ success: paidInvoice.status === 'paid' });
+        return void res.json({ success: paidInvoice.status === 'paid' });
     } catch (err) {
         console.error('retry payment error', err);
-        return res.status(500).json({ success: false });
+        return void res.status(500).json({ success: false });
     }
 });
 
 // POST /subscriptions/cancel - legacy alias
-router.post('/cancel', authenticate(), async (req: any, res) => {
+router.post('/cancel', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
 
         if (!subscription?.stripeSubscriptionId) {
-            return res.status(400).json({ error: 'No active subscription found' });
+            return void res.status(400).json({ error: 'No active subscription found' });
         }
 
         if (stripeLib.stripe) {
@@ -389,13 +389,13 @@ router.post('/cancel', authenticate(), async (req: any, res) => {
 });
 
 // POST /subscriptions/reactivate - legacy alias
-router.post('/reactivate', authenticate(), async (req: any, res) => {
+router.post('/reactivate', authenticate, async (req: any, res) => {
     try {
         const userId = req.user?.id;
         const subscription = await ensureSubscriptionForUser(userId);
 
         if (!subscription?.stripeSubscriptionId) {
-            return res.status(400).json({ error: 'No active subscription found' });
+            return void res.status(400).json({ error: 'No active subscription found' });
         }
 
         if (stripeLib.stripe) {
@@ -419,7 +419,7 @@ export async function checkJobLimit(req: any, res: any, next: any) {
     try {
         const userId = req.user?.id;
         if (!userId)
-            return res.status(401).json({ error: 'Unauthorized' });
+            return void res.status(401).json({ error: 'Unauthorized' });
 
         let subscription = await prisma.companySubscription.findUnique({
             where: { userId: userId },
@@ -441,7 +441,7 @@ export async function checkJobLimit(req: any, res: any, next: any) {
         });
 
         if (activeJobs >= limits.maxJobs) {
-            return res.status(403).json({
+            return void res.status(403).json({
                 error: 'Job limit reached',
                 message: `Your ${subscription.tier} plan allows ${limits.maxJobs} active job(s). Upgrade to post more.`,
                 currentTier: subscription.tier,
@@ -457,3 +457,5 @@ export async function checkJobLimit(req: any, res: any, next: any) {
 }
 
 export default router;
+
+

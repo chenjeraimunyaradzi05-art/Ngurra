@@ -122,7 +122,7 @@ function cacheMiddleware(cacheType = 'default', options: any = {}) {
     if (cachedData) {
       res.set('X-Cache', 'HIT');
       res.set('X-Cache-TTL', ttl.toString());
-      return res.json(cachedData);
+      return void res.json(cachedData);
     }
     
     // Store original json method
@@ -202,4 +202,5 @@ export {
   getCacheStats,
   CACHE_CONFIG
 };
+
 

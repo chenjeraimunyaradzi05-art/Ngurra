@@ -22,7 +22,7 @@ router.post('/enrol', authenticate, async (req, res) => {
         const { courseId, paymentMethod } = req.body;
         
         if (!courseId) {
-            return res.status(400).json({ error: 'courseId is required' });
+            return void res.status(400).json({ error: 'courseId is required' });
         }
         
         // Get course details
@@ -31,11 +31,11 @@ router.post('/enrol', authenticate, async (req, res) => {
         });
         
         if (!course) {
-            return res.status(404).json({ error: 'Course not found' });
+            return void res.status(404).json({ error: 'Course not found' });
         }
         
         if (!course.isActive) {
-            return res.status(400).json({ error: 'Course is not currently available' });
+            return void res.status(400).json({ error: 'Course is not currently available' });
         }
         
         // Check if user is already enrolled
@@ -48,7 +48,7 @@ router.post('/enrol', authenticate, async (req, res) => {
         });
         
         if (existingEnrolment) {
-            return res.status(400).json({ 
+            return void res.status(400).json({ 
                 error: 'Already enrolled or enrolment pending',
                 enrolment: existingEnrolment,
             });
@@ -75,7 +75,7 @@ router.post('/enrol', authenticate, async (req, res) => {
             
             // Create course enrolment record if table exists
             // For now just return success
-            return res.json({
+            return void res.json({
                 success: true,
                 message: 'Enrolled successfully (free course)',
                 payment,
@@ -145,18 +145,18 @@ router.post('/confirm', authenticate, async (req, res) => {
         const { sessionId } = req.body;
         
         if (!sessionId) {
-            return res.status(400).json({ error: 'sessionId is required' });
+            return void res.status(400).json({ error: 'sessionId is required' });
         }
         
         // Verify session with Stripe
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         
         if (!session) {
-            return res.status(404).json({ error: 'Session not found' });
+            return void res.status(404).json({ error: 'Session not found' });
         }
         
         if (session.payment_status !== 'paid') {
-            return res.status(400).json({ error: 'Payment not completed' });
+            return void res.status(400).json({ error: 'Payment not completed' });
         }
         
         // Update payment record
@@ -235,7 +235,7 @@ router.get('/:paymentId', authenticate, async (req, res) => {
         });
         
         if (!payment) {
-            return res.status(404).json({ error: 'Payment not found' });
+            return void res.status(404).json({ error: 'Payment not found' });
         }
         
         res.json({ payment });
@@ -265,7 +265,7 @@ router.post('/:paymentId/refund', authenticate, async (req, res) => {
         });
         
         if (!payment) {
-            return res.status(404).json({ error: 'Payment not found or not eligible for refund' });
+            return void res.status(404).json({ error: 'Payment not found or not eligible for refund' });
         }
         
         // Check refund window (e.g., 14 days)
@@ -275,7 +275,7 @@ router.post('/:paymentId/refund', authenticate, async (req, res) => {
         const daysSincePaid = (now.getTime() - paidDate.getTime()) / (1000 * 60 * 60 * 24);
         
         if (daysSincePaid > refundWindowDays) {
-            return res.status(400).json({
+            return void res.status(400).json({
                 error: `Refund window expired (${refundWindowDays} days)`,
             });
         }
@@ -340,3 +340,4 @@ export default router;
 
 
 export {};
+

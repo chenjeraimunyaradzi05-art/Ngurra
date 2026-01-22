@@ -112,7 +112,7 @@ router.get('/company', authenticate, async (req, res) => {
         const jobIds = jobs.map((j) => j.id);
 
         if (jobIds.length === 0) {
-            return res.json({
+            return void res.json({
                 totalJobs: 0,
                 activeJobs: 0,
                 totalApplications: 0,
@@ -194,7 +194,7 @@ router.get('/impact', authenticate, async (req, res) => {
         const limit = Math.min(Number(req.query.limit || 20), 50);
 
         if (!prisma.impactMetric) {
-            return res.json({ metrics: [] });
+            return void res.json({ metrics: [] });
         }
 
         const metrics = await prisma.impactMetric.findMany({
@@ -221,7 +221,7 @@ router.post('/outcomes/:appId', authenticate, async (req, res) => {
     ];
 
     if (!milestone || !validMilestones.includes(milestone)) {
-        return res.status(400).json({ error: 'Invalid milestone' });
+        return void res.status(400).json({ error: 'Invalid milestone' });
     }
 
     try {
@@ -231,12 +231,12 @@ router.post('/outcomes/:appId', authenticate, async (req, res) => {
         });
 
         if (!application) {
-            return res.status(404).json({ error: 'Application not found' });
+            return void res.status(404).json({ error: 'Application not found' });
         }
 
         // Only the company owner can record outcomes
         if (application.job.userId !== userId) {
-            return res.status(403).json({ error: 'Not authorized' });
+            return void res.status(403).json({ error: 'Not authorized' });
         }
 
         const existingOutcome = await prisma.placementOutcome.findFirst({
@@ -276,7 +276,7 @@ router.get('/admin/cohorts', authenticate, async (req, res) => {
         (process.env.ADMIN_API_KEY && req.headers['x-admin-key'] === process.env.ADMIN_API_KEY);
 
     if (!isAdmin) {
-        return res.status(403).json({ error: 'Not authorized' });
+        return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const countBy = (rows: any[], keyFn: (r: any) => any, unknownLabel: string) => {
@@ -321,7 +321,7 @@ router.post('/events', authenticate, async (req, res) => {
         const userId = (req as any).user?.id;
 
         if (!eventName || !eventType || !sessionId) {
-            return res.status(400).json({ error: 'Missing required fields: eventName, eventType, sessionId' });
+            return void res.status(400).json({ error: 'Missing required fields: eventName, eventType, sessionId' });
         }
 
         const analyticsService = AnalyticsService.getInstance();
@@ -345,4 +345,5 @@ router.post('/events', authenticate, async (req, res) => {
 });
 
 export default router;
+
 

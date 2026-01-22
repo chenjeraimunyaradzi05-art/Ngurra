@@ -26,7 +26,7 @@ function getUserDetails(user: any) {
  * GET /messages/conversations
  * Get all conversations for the authenticated user
  */
-router.get('/conversations', auth.authenticate(), async (req: any, res: any) => {
+router.get('/conversations', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         
@@ -125,13 +125,13 @@ router.get('/conversations', auth.authenticate(), async (req: any, res: any) => 
  * POST /messages/conversations
  * Start a new conversation
  */
-router.post('/conversations', auth.authenticate(), async (req: any, res: any) => {
+router.post('/conversations', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { participantIds, name, type = 'direct', initialMessage } = req.body;
 
         if (!participantIds || !Array.isArray(participantIds) || participantIds.length === 0) {
-            return res.status(400).json({ error: 'participantIds is required' });
+            return void res.status(400).json({ error: 'participantIds is required' });
         }
 
         // For direct messages, check if conversation already exists
@@ -151,7 +151,7 @@ router.post('/conversations', auth.authenticate(), async (req: any, res: any) =>
             });
 
             if (existingConv && existingConv.participants.length === 2) {
-                return res.json({ 
+                return void res.json({ 
                     conversation: { id: existingConv.id },
                     isExisting: true 
                 });
@@ -219,7 +219,7 @@ router.post('/conversations', auth.authenticate(), async (req: any, res: any) =>
  * GET /messages/conversations/:id
  * Get a specific conversation with messages
  */
-router.get('/conversations/:id', auth.authenticate(), async (req: any, res: any) => {
+router.get('/conversations/:id', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -236,7 +236,7 @@ router.get('/conversations/:id', auth.authenticate(), async (req: any, res: any)
         });
 
         if (!participation || participation.hasLeft) {
-            return res.status(404).json({ error: 'Conversation not found' });
+            return void res.status(404).json({ error: 'Conversation not found' });
         }
 
         // Get conversation with messages
@@ -260,7 +260,7 @@ router.get('/conversations/:id', auth.authenticate(), async (req: any, res: any)
         ]);
 
         if (!conversation) {
-            return res.status(404).json({ error: 'Conversation not found' });
+            return void res.status(404).json({ error: 'Conversation not found' });
         }
 
         // Get user details for participants
@@ -341,14 +341,14 @@ router.get('/conversations/:id', auth.authenticate(), async (req: any, res: any)
  * POST /messages/conversations/:id/messages
  * Send a message in a conversation
  */
-router.post('/conversations/:id/messages', auth.authenticate(), async (req: any, res: any) => {
+router.post('/conversations/:id/messages', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
         const { content, messageType = 'text', mediaUrl, mediaType, fileName, fileSize } = req.body;
 
         if (!content && !mediaUrl) {
-            return res.status(400).json({ error: 'content or mediaUrl is required' });
+            return void res.status(400).json({ error: 'content or mediaUrl is required' });
         }
 
         // Verify user is participant
@@ -362,7 +362,7 @@ router.post('/conversations/:id/messages', auth.authenticate(), async (req: any,
         });
 
         if (!participation || participation.hasLeft) {
-            return res.status(404).json({ error: 'Conversation not found' });
+            return void res.status(404).json({ error: 'Conversation not found' });
         }
 
         // Create message
@@ -435,7 +435,7 @@ router.post('/conversations/:id/messages', auth.authenticate(), async (req: any,
  * DELETE /messages/conversations/:id/messages/:messageId
  * Delete (soft) a message
  */
-router.delete('/conversations/:id/messages/:messageId', auth.authenticate(), async (req: any, res: any) => {
+router.delete('/conversations/:id/messages/:messageId', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id, messageId } = req.params;
@@ -450,7 +450,7 @@ router.delete('/conversations/:id/messages/:messageId', auth.authenticate(), asy
         });
 
         if (!message) {
-            return res.status(404).json({ error: 'Message not found' });
+            return void res.status(404).json({ error: 'Message not found' });
         }
 
         // Soft delete
@@ -474,7 +474,7 @@ router.delete('/conversations/:id/messages/:messageId', auth.authenticate(), asy
  * POST /messages/conversations/:id/read
  * Mark conversation as read
  */
-router.post('/conversations/:id/read', auth.authenticate(), async (req: any, res: any) => {
+router.post('/conversations/:id/read', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -503,7 +503,7 @@ router.post('/conversations/:id/read', auth.authenticate(), async (req: any, res
  * POST /messages/conversations/:id/mute
  * Mute a conversation
  */
-router.post('/conversations/:id/mute', auth.authenticate(), async (req: any, res: any) => {
+router.post('/conversations/:id/mute', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -537,7 +537,7 @@ router.post('/conversations/:id/mute', auth.authenticate(), async (req: any, res
  * DELETE /messages/conversations/:id/mute
  * Unmute a conversation
  */
-router.delete('/conversations/:id/mute', auth.authenticate(), async (req: any, res: any) => {
+router.delete('/conversations/:id/mute', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -566,7 +566,7 @@ router.delete('/conversations/:id/mute', auth.authenticate(), async (req: any, r
  * DELETE /messages/conversations/:id
  * Leave a conversation
  */
-router.delete('/conversations/:id', auth.authenticate(), async (req: any, res: any) => {
+router.delete('/conversations/:id', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -595,7 +595,7 @@ router.delete('/conversations/:id', auth.authenticate(), async (req: any, res: a
  * GET /messages/unread-count
  * Get total unread message count
  */
-router.get('/unread-count', auth.authenticate(), async (req: any, res: any) => {
+router.get('/unread-count', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user.id;
 
@@ -618,3 +618,5 @@ router.get('/unread-count', auth.authenticate(), async (req: any, res: any) => {
 });
 
 export default router;
+
+

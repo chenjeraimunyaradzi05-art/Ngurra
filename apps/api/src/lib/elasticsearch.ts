@@ -160,7 +160,7 @@ const INDICES = {
 };
 
 // Singleton client
-let client = null;
+let client: any = null;
 let isConnected = false;
 
 /**
@@ -173,7 +173,7 @@ async function initClient() {
     client = new Client(ES_CONFIG);
     
     // Test connection
-    const health = await client.cluster.health();
+    const health = await client.cluster.health() as any;
     isConnected = health.status !== 'red';
     
     logger.info('Elasticsearch connected', { 
@@ -887,3 +887,5 @@ module.exports = {
 };
 
 export {};
+
+

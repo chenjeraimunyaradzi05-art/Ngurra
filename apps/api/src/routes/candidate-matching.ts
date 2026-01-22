@@ -40,7 +40,7 @@ async function verifyJobOwner(req, res, next) {
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     // Check if user owns the job or is admin of the company
@@ -57,7 +57,7 @@ async function verifyJobOwner(req, res, next) {
       });
 
       if (!company) {
-        return res.status(403).json({ error: 'Not authorized to view applicants for this job' });
+        return void res.status(403).json({ error: 'Not authorized to view applicants for this job' });
       }
     }
 
@@ -132,7 +132,7 @@ router.get('/jobs/:jobId/compare', authenticateJWT, verifyJobOwner, async (req, 
     const { candidate1, candidate2 } = req.query;
 
     if (!candidate1 || !candidate2) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Missing required query parameters: candidate1 and candidate2' 
       });
     }
@@ -147,7 +147,7 @@ router.get('/jobs/:jobId/compare', authenticateJWT, verifyJobOwner, async (req, 
   } catch (err) {
     console.error('Compare candidates error:', err);
     if (err.message.includes('not found')) {
-      return res.status(404).json({ error: err.message });
+      return void res.status(404).json({ error: err.message });
     }
     res.status(500).json({ error: 'Failed to compare candidates' });
   }
@@ -184,7 +184,7 @@ router.get('/jobs/:jobId/applicants/:userId/score', authenticateJWT, verifyJobOw
     });
 
     if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
+      return void res.status(404).json({ error: 'Application not found' });
     }
 
     const candidate = {
@@ -241,7 +241,7 @@ router.post('/jobs/:jobId/shortlist', authenticateJWT, verifyJobOwner, async (re
     });
 
     if (ranked.length === 0) {
-      return res.json({
+      return void res.json({
         jobId,
         shortlisted: 0,
         message: 'No candidates meet the criteria'
@@ -372,4 +372,5 @@ router.get('/jobs/:jobId/insights', authenticateJWT, verifyJobOwner, async (req,
 });
 
 export default router;
+
 

@@ -330,7 +330,7 @@ router.post('/budgets/:id/share', authenticateJWT, async (req, res) => {
   try {
     const { id } = req.params;
     const { memberId, role } = req.body || {};
-    if (!memberId) return res.status(400).json({ error: 'memberId is required' });
+    if (!memberId) return void res.status(400).json({ error: 'memberId is required' });
 
     const share = await prisma.budgetShare.create({
       data: {
@@ -434,7 +434,7 @@ router.get('/transactions', authenticateJWT, async (req, res) => {
 router.get('/transactions/search', authenticateJWT, async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) return res.json({ transactions: [] });
+    if (!q) return void res.json({ transactions: [] });
     const query = String(q);
     const transactions = await prisma.bankTransaction.findMany({
       where: {
@@ -480,13 +480,13 @@ router.post('/transactions/:id/split', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const { budgetId, splits } = req.body || {};
     if (!budgetId || !Array.isArray(splits) || splits.length === 0) {
-      return res.status(400).json({ error: 'budgetId and splits are required' });
+      return void res.status(400).json({ error: 'budgetId and splits are required' });
     }
 
     const transaction = await prisma.bankTransaction.findFirst({
       where: { id, userId: req.user.id },
     });
-    if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
+    if (!transaction) return void res.status(404).json({ error: 'Transaction not found' });
 
     const entries = await Promise.all(
       splits.map((split: any) => prisma.budgetEntry.create({
@@ -516,7 +516,7 @@ router.post('/transactions/import', authenticateJWT, async (req, res) => {
   try {
     const { budgetId, categoryId, transactionIds } = req.body || {};
     if (!budgetId || !transactionIds?.length) {
-      return res.status(400).json({ error: 'budgetId and transactionIds are required' });
+      return void res.status(400).json({ error: 'budgetId and transactionIds are required' });
     }
 
     const transactions = await prisma.bankTransaction.findMany({
@@ -532,7 +532,7 @@ router.post('/transactions/import', authenticateJWT, async (req, res) => {
           userId: req.user.id,
           budgetId,
           categoryId: categoryId || null,
-          type: tx.amount >= 0 ? 'EXPENSE' : 'INCOME',
+          type: Number(tx.amount) >= 0 ? 'EXPENSE' : 'INCOME',
           source: 'BANK',
           amount: Math.abs(Number(tx.amount)),
           occurredAt: tx.postedAt || new Date(),
@@ -794,7 +794,7 @@ router.post('/debts/payoff-calculator', authenticateJWT, async (req, res) => {
     });
 
     if (debts.length === 0) {
-      return res.json({ message: 'No debts found', timeline: [], summary: null });
+      return void res.json({ message: 'No debts found', timeline: [], summary: null });
     }
 
     // Sort based on strategy
@@ -928,7 +928,7 @@ router.get('/debts/consolidation-analysis', authenticateJWT, async (req, res) =>
     });
 
     if (debts.length === 0) {
-      return res.json({ eligible: false, reason: 'No debts to consolidate' });
+      return void res.json({ eligible: false, reason: 'No debts to consolidate' });
     }
 
     const totalBalance = debts.reduce((sum, d) => sum + toNumber(d.balance), 0);
@@ -1059,7 +1059,7 @@ router.post('/debts/:id/extra-payment-impact', authenticateJWT, async (req, res)
     });
 
     if (!debt) {
-      return res.status(404).json({ error: 'Debt not found' });
+      return void res.status(404).json({ error: 'Debt not found' });
     }
 
     const balance = toNumber(debt.balance);
@@ -1372,7 +1372,7 @@ router.get('/grants/writing-tips', authenticateJWT, async (_req, res) => {
 router.get('/grants/:id/checklist', authenticateJWT, async (req, res) => {
   try {
     const grant = await prisma.grantProgram.findUnique({ where: { id: req.params.id } });
-    if (!grant) return res.status(404).json({ error: 'Grant not found' });
+    if (!grant) return void res.status(404).json({ error: 'Grant not found' });
 
     const tags = buildOpportunityTags(grant);
     const checklist = [
@@ -1417,7 +1417,7 @@ router.get('/grants/:id/autofill', authenticateJWT, async (req, res) => {
 router.post('/grants/:id/eligibility', authenticateJWT, async (req, res) => {
   try {
     const grant = await prisma.grantProgram.findUnique({ where: { id: req.params.id } });
-    if (!grant) return res.status(404).json({ error: 'Grant not found' });
+    if (!grant) return void res.status(404).json({ error: 'Grant not found' });
 
     const tags = buildOpportunityTags(grant);
     const profile = await prisma.memberProfile.findUnique({ where: { userId: req.user.id } });
@@ -1455,7 +1455,7 @@ router.post('/grants/:id/eligibility', authenticateJWT, async (req, res) => {
 router.post('/grants/applications', authenticateJWT, async (req, res) => {
   try {
     const { grantId, status, submissionData } = req.body || {};
-    if (!grantId) return res.status(400).json({ error: 'grantId is required' });
+    if (!grantId) return void res.status(400).json({ error: 'grantId is required' });
 
     const application = await prisma.grantApplication.create({
       data: {
@@ -1504,7 +1504,7 @@ router.patch('/grants/applications/:id', authenticateJWT, async (req, res) => {
       where: { id: req.params.id },
       include: { grant: true },
     });
-    if (!existing) return res.status(404).json({ error: 'Application not found' });
+    if (!existing) return void res.status(404).json({ error: 'Application not found' });
 
     const application = await prisma.grantApplication.update({
       where: { id: req.params.id },
@@ -1672,7 +1672,7 @@ router.get('/scholarships/mentorship-match', authenticateJWT, async (_req, res) 
 router.get('/scholarships/:id/checklist', authenticateJWT, async (req, res) => {
   try {
     const scholarship = await prisma.scholarship.findUnique({ where: { id: req.params.id } });
-    if (!scholarship) return res.status(404).json({ error: 'Scholarship not found' });
+    if (!scholarship) return void res.status(404).json({ error: 'Scholarship not found' });
 
     const checklist = [
       { id: 'transcript', label: 'Academic transcript', required: true },
@@ -1711,7 +1711,7 @@ router.get('/scholarships/:id/autofill', authenticateJWT, async (_req, res) => {
 router.post('/scholarships/applications', authenticateJWT, async (req, res) => {
   try {
     const { scholarshipId, status } = req.body || {};
-    if (!scholarshipId) return res.status(400).json({ error: 'scholarshipId is required' });
+    if (!scholarshipId) return void res.status(400).json({ error: 'scholarshipId is required' });
 
     const application = await prisma.scholarshipApplication.create({
       data: {
@@ -1759,7 +1759,7 @@ router.patch('/scholarships/applications/:id', authenticateJWT, async (req, res)
       where: { id: req.params.id },
       include: { scholarship: true },
     });
-    if (!existing) return res.status(404).json({ error: 'Application not found' });
+    if (!existing) return void res.status(404).json({ error: 'Application not found' });
 
     const application = await prisma.scholarshipApplication.update({
       where: { id: req.params.id },
@@ -1845,7 +1845,7 @@ router.get('/export', authenticateJWT, async (req, res) => {
       ));
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="transactions.csv"');
-      return res.send(header + rows.join('\n'));
+      return void res.send(header + rows.join('\n'));
     }
 
     if (type === 'debts') {
@@ -1856,7 +1856,7 @@ router.get('/export', authenticateJWT, async (req, res) => {
       ));
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="debts.csv"');
-      return res.send(header + rows.join('\n'));
+      return void res.send(header + rows.join('\n'));
     }
 
     const entries = await prisma.budgetEntry.findMany({ where: { userId }, orderBy: { occurredAt: 'desc' } });
@@ -1866,7 +1866,7 @@ router.get('/export', authenticateJWT, async (req, res) => {
     ));
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="budget-entries.csv"');
-    return res.send(header + rows.join('\n'));
+    return void res.send(header + rows.join('\n'));
   } catch (error) {
     console.error('[Financial] Export error:', error);
     res.status(500).json({ error: 'Failed to export data' });
@@ -1891,7 +1891,7 @@ router.get('/budgets/:id/comparison', authenticateJWT, async (req, res) => {
     });
 
     if (!budget) {
-      return res.status(404).json({ error: 'Budget not found' });
+      return void res.status(404).json({ error: 'Budget not found' });
     }
 
     const now = new Date();
@@ -1975,7 +1975,7 @@ router.post('/envelopes', authenticateJWT, async (req, res) => {
   try {
     const { budgetId, name, amount } = req.body || {};
     if (!budgetId || !name) {
-      return res.status(400).json({ error: 'budgetId and name are required' });
+      return void res.status(400).json({ error: 'budgetId and name are required' });
     }
 
     const envelope = await prisma.budgetEnvelope.create({
@@ -2028,7 +2028,7 @@ router.post('/envelopes/:id/spend', authenticateJWT, async (req, res) => {
     const { amount } = req.body || {};
 
     if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Positive amount is required' });
+      return void res.status(400).json({ error: 'Positive amount is required' });
     }
 
     const envelope = await prisma.budgetEnvelope.update({
@@ -2142,7 +2142,7 @@ router.post('/accounts/:id/reconnect', authenticateJWT, async (req, res) => {
     });
 
     if (!connection) {
-      return res.status(404).json({ error: 'Connection not found' });
+      return void res.status(404).json({ error: 'Connection not found' });
     }
 
     // In production, this would trigger Plaid/Basiq update mode
@@ -2561,7 +2561,7 @@ router.post('/scholarships/applications/:id/documents', authenticateJWT, async (
     });
 
     if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
+      return void res.status(404).json({ error: 'Application not found' });
     }
 
     // Store document reference (in production, integrate with file storage)
@@ -2604,7 +2604,7 @@ router.get('/scholarships/applications/:id/offer', authenticateJWT, async (req, 
     });
 
     if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
+      return void res.status(404).json({ error: 'Application not found' });
     }
 
     const hasOffer = application.status === 'OFFERED' || application.status === 'ACCEPTED';
@@ -2638,7 +2638,7 @@ router.post('/scholarships/applications/:id/respond', authenticateJWT, async (re
     const { action, deferralReason } = req.body || {};
 
     if (!action || !['ACCEPT', 'DECLINE', 'DEFER'].includes(action)) {
-      return res.status(400).json({ error: 'Invalid action. Must be ACCEPT, DECLINE, or DEFER.' });
+      return void res.status(400).json({ error: 'Invalid action. Must be ACCEPT, DECLINE, or DEFER.' });
     }
 
     const statusMap: Record<string, string> = {
@@ -2686,7 +2686,7 @@ router.post('/import/csv', authenticateJWT, async (req, res) => {
     const { budgetId, data } = req.body || {};
 
     if (!budgetId || !data || !Array.isArray(data)) {
-      return res.status(400).json({ error: 'budgetId and data array are required' });
+      return void res.status(400).json({ error: 'budgetId and data array are required' });
     }
 
     const entries = await Promise.all(
@@ -2716,3 +2716,4 @@ router.post('/import/csv', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+

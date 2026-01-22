@@ -11,7 +11,7 @@
  */
 
 import { prisma } from '../db';
-import { encryptField, decryptField } from './encryption';
+import { encrypt as encryptField, decrypt as decryptField } from './encryption';
 import crypto from 'crypto';
 
 // Types

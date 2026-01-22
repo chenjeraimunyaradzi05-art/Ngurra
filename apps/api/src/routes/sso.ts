@@ -44,7 +44,7 @@ router.get('/config', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const ssoConfig = await prisma.ssoConfig.findUnique({
@@ -105,19 +105,19 @@ router.post('/config', requireAuth, async (req, res) => {
     
     // Validate provider
     if (!provider || !['SAML', 'OIDC'].includes(provider)) {
-      return res.status(400).json({ error: 'Provider must be SAML or OIDC' });
+      return void res.status(400).json({ error: 'Provider must be SAML or OIDC' });
     }
     
     // Validate required fields based on provider
     if (provider === 'SAML') {
       if (!issuer || !ssoUrl || !certificate) {
-        return res.status(400).json({ 
+        return void res.status(400).json({ 
           error: 'SAML requires issuer, ssoUrl, and certificate' 
         });
       }
     } else if (provider === 'OIDC') {
       if (!issuer || !clientId || !clientSecret) {
-        return res.status(400).json({ 
+        return void res.status(400).json({ 
           error: 'OIDC requires issuer, clientId, and clientSecret' 
         });
       }
@@ -128,7 +128,7 @@ router.post('/config', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Check for existing config
@@ -193,7 +193,7 @@ router.post('/config/activate', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const ssoConfig = await prisma.ssoConfig.findUnique({
@@ -201,7 +201,7 @@ router.post('/config/activate', requireAuth, async (req, res) => {
     });
     
     if (!ssoConfig) {
-      return res.status(404).json({ error: 'SSO not configured' });
+      return void res.status(404).json({ error: 'SSO not configured' });
     }
     
     await prisma.ssoConfig.update({
@@ -233,7 +233,7 @@ router.delete('/config', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const ssoConfig = await prisma.ssoConfig.findUnique({
@@ -241,7 +241,7 @@ router.delete('/config', requireAuth, async (req, res) => {
     });
     
     if (!ssoConfig) {
-      return res.status(404).json({ error: 'SSO not configured' });
+      return void res.status(404).json({ error: 'SSO not configured' });
     }
     
     await prisma.ssoConfig.delete({ where: { id: ssoConfig.id } });
@@ -268,7 +268,7 @@ router.get('/initiate/:companyId', async (req, res) => {
     });
     
     if (!ssoConfig) {
-      return res.status(404).json({ error: 'SSO not configured for this company' });
+      return void res.status(404).json({ error: 'SSO not configured for this company' });
     }
     
     // Generate state token for CSRF protection
@@ -317,7 +317,7 @@ router.post('/callback/saml', express.urlencoded({ extended: true }), async (req
     const { SAMLResponse, RelayState } = req.body;
     
     if (!SAMLResponse || !RelayState) {
-      return res.status(400).json({ error: 'Missing SAML response or state' });
+      return void res.status(400).json({ error: 'Missing SAML response or state' });
     }
     
     // Verify state token
@@ -325,7 +325,7 @@ router.post('/callback/saml', express.urlencoded({ extended: true }), async (req
     try {
       stateData = jwt.verify(RelayState, JWT_SECRET);
     } catch (e) {
-      return res.status(400).json({ error: 'Invalid or expired state token' });
+      return void res.status(400).json({ error: 'Invalid or expired state token' });
     }
     
     // Decode and validate SAML response
@@ -333,7 +333,7 @@ router.post('/callback/saml', express.urlencoded({ extended: true }), async (req
     const assertion = decodeSAMLResponse(SAMLResponse);
     
     if (!assertion) {
-      return res.status(400).json({ error: 'Invalid SAML response' });
+      return void res.status(400).json({ error: 'Invalid SAML response' });
     }
     
     // Look up or create user
@@ -371,11 +371,11 @@ router.get('/callback/oidc', async (req, res) => {
     
     if (error) {
       console.error('OIDC error:', error, error_description);
-      return res.redirect(`${process.env.WEB_URL || ''}/auth/error?message=${encodeURIComponent(error_description || error)}`);
+      return void res.redirect(`${process.env.WEB_URL || ''}/auth/error?message=${encodeURIComponent(error_description || error)}`);
     }
     
     if (!code || !state) {
-      return res.status(400).json({ error: 'Missing code or state' });
+      return void res.status(400).json({ error: 'Missing code or state' });
     }
     
     // Verify state token
@@ -383,7 +383,7 @@ router.get('/callback/oidc', async (req, res) => {
     try {
       stateData = jwt.verify(state, JWT_SECRET);
     } catch (e) {
-      return res.status(400).json({ error: 'Invalid or expired state token' });
+      return void res.status(400).json({ error: 'Invalid or expired state token' });
     }
     
     // Get SSO config
@@ -392,7 +392,7 @@ router.get('/callback/oidc', async (req, res) => {
     });
     
     if (!ssoConfig) {
-      return res.status(404).json({ error: 'SSO configuration not found' });
+      return void res.status(404).json({ error: 'SSO configuration not found' });
     }
     
     // Exchange code for tokens
@@ -411,7 +411,7 @@ router.get('/callback/oidc', async (req, res) => {
     
     if (!tokenResponse.ok) {
       console.error('Token exchange failed:', await tokenResponse.text());
-      return res.status(400).json({ error: 'Token exchange failed' });
+      return void res.status(400).json({ error: 'Token exchange failed' });
     }
     
     const tokens: any = await tokenResponse.json();
@@ -422,7 +422,7 @@ router.get('/callback/oidc', async (req, res) => {
     });
     
     if (!userInfoResponse.ok) {
-      return res.status(400).json({ error: 'Failed to get user info' });
+      return void res.status(400).json({ error: 'Failed to get user info' });
     }
     
     const userInfo: any = await userInfoResponse.json();
@@ -531,4 +531,5 @@ export default router;
 
 
 export {};
+
 

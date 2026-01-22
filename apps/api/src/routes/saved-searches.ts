@@ -29,7 +29,7 @@ const updateSavedSearchSchema = z.object({
 // ============================================
 // GET /saved-searches - List user's saved searches
 // ============================================
-router.get('/', auth.authenticate(), async (req: any, res: any) => {
+router.get('/', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
 
@@ -54,7 +54,7 @@ router.get('/', auth.authenticate(), async (req: any, res: any) => {
 // ============================================
 // GET /saved-searches/:id - Get a specific saved search
 // ============================================
-router.get('/:id', auth.authenticate(), async (req: any, res: any) => {
+router.get('/:id', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -64,7 +64,7 @@ router.get('/:id', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (!savedSearch) {
-      return res.status(404).json({ error: 'Saved search not found' });
+      return void res.status(404).json({ error: 'Saved search not found' });
     }
 
     res.json({
@@ -80,7 +80,7 @@ router.get('/:id', auth.authenticate(), async (req: any, res: any) => {
 // ============================================
 // POST /saved-searches - Create a new saved search
 // ============================================
-router.post('/', auth.authenticate(), validateRequest(createSavedSearchSchema), async (req: any, res: any) => {
+router.post('/', auth.authenticate, validateRequest(createSavedSearchSchema), async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { name, searchType, query, alertEnabled, alertFrequency } = req.body;
@@ -91,7 +91,7 @@ router.post('/', auth.authenticate(), validateRequest(createSavedSearchSchema), 
     });
 
     if (existingCount >= 10) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Maximum saved searches reached',
         message: 'You can have up to 10 saved searches. Please delete one to create a new one.',
       });
@@ -121,7 +121,7 @@ router.post('/', auth.authenticate(), validateRequest(createSavedSearchSchema), 
 // ============================================
 // PUT /saved-searches/:id - Update a saved search
 // ============================================
-router.put('/:id', auth.authenticate(), validateRequest(updateSavedSearchSchema), async (req: any, res: any) => {
+router.put('/:id', auth.authenticate, validateRequest(updateSavedSearchSchema), async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -133,7 +133,7 @@ router.put('/:id', auth.authenticate(), validateRequest(updateSavedSearchSchema)
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Saved search not found' });
+      return void res.status(404).json({ error: 'Saved search not found' });
     }
 
     const updateData: any = {};
@@ -160,7 +160,7 @@ router.put('/:id', auth.authenticate(), validateRequest(updateSavedSearchSchema)
 // ============================================
 // DELETE /saved-searches/:id - Delete a saved search
 // ============================================
-router.delete('/:id', auth.authenticate(), async (req: any, res: any) => {
+router.delete('/:id', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -171,7 +171,7 @@ router.delete('/:id', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Saved search not found' });
+      return void res.status(404).json({ error: 'Saved search not found' });
     }
 
     await prisma.savedSearch.delete({
@@ -188,7 +188,7 @@ router.delete('/:id', auth.authenticate(), async (req: any, res: any) => {
 // ============================================
 // POST /saved-searches/:id/run - Run a saved search
 // ============================================
-router.post('/:id/run', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/run', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -198,7 +198,7 @@ router.post('/:id/run', auth.authenticate(), async (req: any, res: any) => {
     });
 
     if (!savedSearch) {
-      return res.status(404).json({ error: 'Saved search not found' });
+      return void res.status(404).json({ error: 'Saved search not found' });
     }
 
     const query = JSON.parse(savedSearch.query || '{}');
@@ -329,7 +329,7 @@ router.post('/:id/run', auth.authenticate(), async (req: any, res: any) => {
 // ============================================
 // POST /saved-searches/:id/toggle-alert - Toggle alerts
 // ============================================
-router.post('/:id/toggle-alert', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/toggle-alert', auth.authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -339,7 +339,7 @@ router.post('/:id/toggle-alert', auth.authenticate(), async (req: any, res: any)
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Saved search not found' });
+      return void res.status(404).json({ error: 'Saved search not found' });
     }
 
     const savedSearch = await prisma.savedSearch.update({
@@ -496,3 +496,5 @@ export async function processJobAlerts(frequency = 'daily') {
 }
 
 export default router;
+
+

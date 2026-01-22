@@ -33,7 +33,7 @@ router.post('/request', authenticateJWT, async (req, res) => {
     });
 
     if (existingExport) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Export already in progress',
         exportId: existingExport.id,
         status: existingExport.status,
@@ -101,7 +101,7 @@ router.get('/status/:exportId', authenticateJWT, async (req, res) => {
     });
 
     if (!exportRequest) {
-      return res.status(404).json({ error: 'Export not found' });
+      return void res.status(404).json({ error: 'Export not found' });
     }
 
     res.json({
@@ -142,12 +142,12 @@ router.get('/download/:exportId', authenticateJWT, async (req, res) => {
     });
 
     if (!exportRequest) {
-      return res.status(404).json({ error: 'Export not found or not ready' });
+      return void res.status(404).json({ error: 'Export not found or not ready' });
     }
 
     // Check expiry
     if (exportRequest.expiresAt && new Date() > exportRequest.expiresAt) {
-      return res.status(410).json({ error: 'Export has expired. Please request a new one.' });
+      return void res.status(410).json({ error: 'Export has expired. Please request a new one.' });
     }
 
     // Audit log
@@ -483,3 +483,4 @@ export default router;
 
 
 export {};
+

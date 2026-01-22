@@ -95,7 +95,7 @@ export function authenticate(arg1?: any, arg2?: any, arg3?: any) {
     const token = extractToken(req);
     
     if (!token) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Unauthorized',
         message: 'Authentication required. Please provide a valid token.',
       });
@@ -104,7 +104,7 @@ export function authenticate(arg1?: any, arg2?: any, arg3?: any) {
     const payload = verifyToken(token);
     
     if (!payload) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Unauthorized',
         message: 'Invalid or expired token. Please sign in again.',
       });
@@ -174,7 +174,7 @@ export function optionalAuth() {
 export function authorize(allowedRoles?: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({
+      return void res.status(401).json({
         error: 'Unauthorized',
         message: 'Authentication required.',
       });
@@ -187,7 +187,7 @@ export function authorize(allowedRoles?: string[]) {
     const userRole = req.user.userType || req.user.role;
     
     if (!userRole || !allowedRoles.includes(userRole)) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Forbidden',
         message: 'You do not have permission to access this resource.',
       });
@@ -202,7 +202,7 @@ export function authorize(allowedRoles?: string[]) {
  */
 export function selfOrAdmin(req: Request, res: Response, next: NextFunction) {
   if (!req.user) {
-    return res.status(401).json({
+    return void res.status(401).json({
       error: 'Unauthorized',
       message: 'Authentication required.',
     });
@@ -213,7 +213,7 @@ export function selfOrAdmin(req: Request, res: Response, next: NextFunction) {
   const isSelf = req.user.id === requestedUserId;
   
   if (!isAdmin && !isSelf) {
-    return res.status(403).json({
+    return void res.status(403).json({
       error: 'Forbidden',
       message: 'You can only access your own resources.',
     });
@@ -227,7 +227,7 @@ export function selfOrAdmin(req: Request, res: Response, next: NextFunction) {
  */
 export function refreshToken(req: Request, res: Response, next: NextFunction) {
   if (!req.user) {
-    return res.status(401).json({
+    return void res.status(401).json({
       error: 'Unauthorized',
       message: 'Authentication required to refresh token.',
     });
@@ -237,7 +237,7 @@ export function refreshToken(req: Request, res: Response, next: NextFunction) {
   const newToken = jwt.sign(
     { id: req.user.id, email: req.user.email, userType: req.user.userType },
     JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
   );
   
   res.json({
@@ -272,4 +272,5 @@ defaultExport.selfOrAdmin = selfOrAdmin;
 defaultExport.refreshToken = refreshToken;
 
 export default defaultExport;
+
 

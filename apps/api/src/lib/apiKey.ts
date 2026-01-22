@@ -231,7 +231,7 @@ export function apiKeyAuthMiddleware(requiredPermissions: string[] = []) {
     const keyInfo = await validateApiKey(apiKey);
 
     if (!keyInfo) {
-      return res.status(401).json({
+      return void res.status(401).json({
         success: false,
         error: {
           code: 'INVALID_API_KEY',
@@ -247,7 +247,7 @@ export function apiKeyAuthMiddleware(requiredPermissions: string[] = []) {
       );
 
       if (!hasPermission) {
-        return res.status(403).json({
+        return void res.status(403).json({
           success: false,
           error: {
             code: 'INSUFFICIENT_PERMISSIONS',
@@ -266,3 +266,4 @@ export function apiKeyAuthMiddleware(requiredPermissions: string[] = []) {
 }
 
 export {};
+

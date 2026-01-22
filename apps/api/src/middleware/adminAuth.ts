@@ -40,7 +40,7 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
 
         // Must have authenticated user
         if (!(req as any).user || !(req as any).user.id) {
-            return res.status(401).json({ error: 'Authentication required' });
+            return void res.status(401).json({ error: 'Authentication required' });
         }
 
         // Fetch full user from database to get userType
@@ -54,13 +54,13 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
         });
 
         if (!user) {
-            return res.status(401).json({ error: 'User not found' });
+            return void res.status(401).json({ error: 'User not found' });
         }
 
         // Check for admin privileges
         const adminTypes = ['ADMIN', 'GOVERNMENT'];
         if (!adminTypes.includes(user.userType)) {
-            return res.status(403).json({ error: 'Admin access required' });
+            return void res.status(403).json({ error: 'Admin access required' });
         }
 
         // Attach full user info to request
@@ -74,7 +74,7 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
         return next();
     } catch (err) {
         console.error('Admin auth middleware error:', err);
-        return res.status(500).json({ error: 'Server error during authorization' });
+        return void res.status(500).json({ error: 'Server error during authorization' });
     }
 }
 
@@ -95,7 +95,7 @@ export async function requireSuperAdmin(req: Request, res: Response, next: NextF
 
         // Must have authenticated user
         if (!(req as any).user || !(req as any).user.id) {
-            return res.status(401).json({ error: 'Authentication required' });
+            return void res.status(401).json({ error: 'Authentication required' });
         }
 
         // Fetch full user from database
@@ -109,12 +109,12 @@ export async function requireSuperAdmin(req: Request, res: Response, next: NextF
         });
 
         if (!user) {
-            return res.status(401).json({ error: 'User not found' });
+            return void res.status(401).json({ error: 'User not found' });
         }
 
         // Only ADMIN userType is super admin
         if (user.userType !== 'ADMIN') {
-            return res.status(403).json({ error: 'Super admin access required' });
+            return void res.status(403).json({ error: 'Super admin access required' });
         }
 
         // Attach full user info to request
@@ -128,7 +128,7 @@ export async function requireSuperAdmin(req: Request, res: Response, next: NextF
         return next();
     } catch (err) {
         console.error('Super admin auth middleware error:', err);
-        return res.status(500).json({ error: 'Server error during authorization' });
+        return void res.status(500).json({ error: 'Server error during authorization' });
     }
 }
 
@@ -149,7 +149,7 @@ export function requireAdminOrOwner(getResourceOwnerId: (req: Request) => Promis
 
             // Must have authenticated user
             if (!(req as any).user || !(req as any).user.id) {
-                return res.status(401).json({ error: 'Authentication required' });
+                return void res.status(401).json({ error: 'Authentication required' });
             }
 
             // Get resource owner ID
@@ -167,7 +167,7 @@ export function requireAdminOrOwner(getResourceOwnerId: (req: Request) => Promis
             });
 
             if (!user) {
-                return res.status(403).json({ error: 'Access denied' });
+                return void res.status(403).json({ error: 'Access denied' });
             }
 
             const adminTypes = ['ADMIN', 'GOVERNMENT'];
@@ -176,10 +176,10 @@ export function requireAdminOrOwner(getResourceOwnerId: (req: Request) => Promis
                 return next();
             }
 
-            return res.status(403).json({ error: 'Access denied' });
+            return void res.status(403).json({ error: 'Access denied' });
         } catch (err) {
             console.error('Admin or owner auth middleware error:', err);
-            return res.status(500).json({ error: 'Server error during authorization' });
+            return void res.status(500).json({ error: 'Server error during authorization' });
         }
     };
 }
@@ -204,3 +204,4 @@ export function isSuperAdmin(req: Request) {
     }
     return (req as any).user && (req as any).user.userType === 'ADMIN';
 }
+

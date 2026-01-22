@@ -40,7 +40,7 @@ function isAdmin(req) {
 router.post('/setup', authenticateJWT, async (req, res) => {
   try {
     if (!isMentor(req)) {
-      return res.status(403).json({ error: 'Only mentors can set up payouts' });
+      return void res.status(403).json({ error: 'Only mentors can set up payouts' });
     }
     
     const userId = req.user.id;
@@ -53,7 +53,7 @@ router.post('/setup', authenticateJWT, async (req, res) => {
     });
     
     if (!mentor) {
-      return res.status(404).json({ error: 'Mentor profile not found' });
+      return void res.status(404).json({ error: 'Mentor profile not found' });
     }
     
     // Check if already has a Stripe account
@@ -102,7 +102,7 @@ router.post('/setup', authenticateJWT, async (req, res) => {
 router.get('/status', authenticateJWT, async (req, res) => {
   try {
     if (!isMentor(req)) {
-      return res.status(403).json({ error: 'Only mentors can view payout status' });
+      return void res.status(403).json({ error: 'Only mentors can view payout status' });
     }
     
     const userId = req.user.id;
@@ -113,7 +113,7 @@ router.get('/status', authenticateJWT, async (req, res) => {
     });
     
     if (!mentor || !mentor.stripeAccountId) {
-      return res.json({
+      return void res.json({
         connected: false,
         message: 'Payout account not set up',
       });
@@ -143,7 +143,7 @@ router.get('/status', authenticateJWT, async (req, res) => {
 router.get('/dashboard', authenticateJWT, async (req, res) => {
   try {
     if (!isMentor(req)) {
-      return res.status(403).json({ error: 'Only mentors can access payout dashboard' });
+      return void res.status(403).json({ error: 'Only mentors can access payout dashboard' });
     }
     
     const userId = req.user.id;
@@ -154,7 +154,7 @@ router.get('/dashboard', authenticateJWT, async (req, res) => {
     });
     
     if (!mentor || !mentor.stripeAccountId) {
-      return res.status(400).json({ error: 'Payout account not set up' });
+      return void res.status(400).json({ error: 'Payout account not set up' });
     }
     
     // Generate dashboard link
@@ -177,7 +177,7 @@ router.get('/dashboard', authenticateJWT, async (req, res) => {
 router.get('/balance', authenticateJWT, async (req, res) => {
   try {
     if (!isMentor(req)) {
-      return res.status(403).json({ error: 'Only mentors can view balance' });
+      return void res.status(403).json({ error: 'Only mentors can view balance' });
     }
     
     const userId = req.user.id;
@@ -188,7 +188,7 @@ router.get('/balance', authenticateJWT, async (req, res) => {
     });
     
     if (!mentor || !mentor.stripeAccountId) {
-      return res.json({
+      return void res.json({
         available: 0,
         pending: 0,
         currency: 'aud',
@@ -226,7 +226,7 @@ router.get('/balance', authenticateJWT, async (req, res) => {
 router.get('/history', authenticateJWT, async (req, res) => {
   try {
     if (!isMentor(req)) {
-      return res.status(403).json({ error: 'Only mentors can view history' });
+      return void res.status(403).json({ error: 'Only mentors can view history' });
     }
     
     const userId = req.user.id;
@@ -281,13 +281,13 @@ router.get('/history', authenticateJWT, async (req, res) => {
 router.post('/process-session', authenticateJWT, async (req, res) => {
   try {
     if (!isAdmin(req)) {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
     
     const { sessionId, customRateCents } = req.body;
     
     if (!sessionId) {
-      return res.status(400).json({ error: 'Session ID is required' });
+      return void res.status(400).json({ error: 'Session ID is required' });
     }
     
     // Get session details
@@ -301,16 +301,16 @@ router.post('/process-session', authenticateJWT, async (req, res) => {
     });
     
     if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
+      return void res.status(404).json({ error: 'Session not found' });
     }
     
     if (session.status !== 'COMPLETED') {
-      return res.status(400).json({ error: 'Session must be completed before payment' });
+      return void res.status(400).json({ error: 'Session must be completed before payment' });
     }
     
     const mentorProfile = session.mentor.mentorProfile;
     if (!mentorProfile?.stripeAccountId) {
-      return res.status(400).json({ error: 'Mentor has not set up payout account' });
+      return void res.status(400).json({ error: 'Mentor has not set up payout account' });
     }
     
     // Process payment
@@ -365,4 +365,5 @@ export default router;
 
 
 export {};
+
 

@@ -41,7 +41,7 @@ function userKey(req: any): string {
   return req.user?.id || (req.headers['x-forwarded-for'] as string) || req.ip || 'anon';
 }
 
-router.use(optionalAuth());
+router.use(optionalAuth);
 
 function isAdmin(req: any) {
   return req.user?.userType === 'GOVERNMENT' ||
@@ -49,7 +49,7 @@ function isAdmin(req: any) {
 }
 
 function requireAdmin(req: any, res: any, next: any) {
-  if (!isAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+  if (!isAdmin(req)) return void res.status(403).json({ error: 'Admin access required' });
   return next();
 }
 
@@ -136,7 +136,7 @@ router.get('/', async (req: any, res: any) => {
 /**
  * GET /stories/user/me - Get current user's stories
  */
-router.get('/user/me', authenticate(), async (req: any, res: any) => {
+router.get('/user/me', authenticate, async (req: any, res: any) => {
   try {
     const userId = req.user?.id;
     const stories = await prisma.successStory.findMany({
@@ -158,7 +158,7 @@ router.get('/user/me', authenticate(), async (req: any, res: any) => {
 /**
  * POST /stories - Submit a new success story
  */
-router.post('/', optionalAuth(), async (req: any, res: any) => {
+router.post('/', optionalAuth, async (req: any, res: any) => {
   try {
     const userId = req.user?.id;
     const {
@@ -176,15 +176,15 @@ router.post('/', optionalAuth(), async (req: any, res: any) => {
 
     const finalStoryContent = storyContent || content;
     if (!title || !finalStoryContent) {
-      return res.status(400).json({ error: 'title and story/content are required' });
+      return void res.status(400).json({ error: 'title and story/content are required' });
     }
 
     if (process.env.NODE_ENV === 'production' && !userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     if (consentGiven !== true) {
-      return res.status(400).json({ error: 'Consent must be given to submit a story' });
+      return void res.status(400).json({ error: 'Consent must be given to submit a story' });
     }
 
     // Try to persist if member profile exists; otherwise fall back to in-memory demo.
@@ -210,7 +210,7 @@ router.post('/', optionalAuth(), async (req: any, res: any) => {
           },
         });
 
-        return res.status(201).json({
+        return void res.status(201).json({
           story: newStory,
           message: 'Story submitted for review. Thank you for sharing!',
         });
@@ -239,7 +239,7 @@ router.post('/', optionalAuth(), async (req: any, res: any) => {
     memoryStories.unshift(demoStory);
     if (memoryStories.length > 100) memoryStories.pop();
 
-    return res.status(201).json({
+    return void res.status(201).json({
       story: demoStory,
       message: 'Story submitted (demo).',
     });
@@ -252,7 +252,7 @@ router.post('/', optionalAuth(), async (req: any, res: any) => {
 /**
  * POST /stories/:id/like - Toggle like on a story
  */
-router.post('/:id/like', optionalAuth(), async (req: any, res: any) => {
+router.post('/:id/like', optionalAuth, async (req: any, res: any) => {
   try {
     const storyId = req.params.id;
     const key = userKey(req);
@@ -261,17 +261,17 @@ router.post('/:id/like', optionalAuth(), async (req: any, res: any) => {
     set.add(key);
     memoryLikes.set(storyId, set);
 
-    return res.json({ ok: true, liked: true, likes: set.size });
+    return void res.json({ ok: true, liked: true, likes: set.size });
   } catch (err) {
     console.error('Like story error:', err);
-    return res.status(500).json({ error: 'Failed to like story' });
+    return void res.status(500).json({ error: 'Failed to like story' });
   }
 });
 
 /**
  * DELETE /stories/:id/like - Remove like on a story
  */
-router.delete('/:id/like', optionalAuth(), async (req: any, res: any) => {
+router.delete('/:id/like', optionalAuth, async (req: any, res: any) => {
   try {
     const storyId = req.params.id;
     const key = userKey(req);
@@ -280,10 +280,10 @@ router.delete('/:id/like', optionalAuth(), async (req: any, res: any) => {
     set.delete(key);
     memoryLikes.set(storyId, set);
 
-    return res.json({ ok: true, liked: false, likes: set.size });
+    return void res.json({ ok: true, liked: false, likes: set.size });
   } catch (err) {
     console.error('Unlike story error:', err);
-    return res.status(500).json({ error: 'Failed to unlike story' });
+    return void res.status(500).json({ error: 'Failed to unlike story' });
   }
 });
 
@@ -294,22 +294,22 @@ router.get('/:id/comments', async (req: any, res: any) => {
   try {
     const storyId = req.params.id;
     const comments = memoryComments.get(storyId) || [];
-    return res.json({ comments });
+    return void res.json({ comments });
   } catch (err) {
     console.error('List comments error:', err);
-    return res.status(500).json({ error: 'Failed to fetch comments' });
+    return void res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
 
 /**
  * POST /stories/:id/comments - Add story comment (demo)
  */
-router.post('/:id/comments', optionalAuth(), async (req: any, res: any) => {
+router.post('/:id/comments', optionalAuth, async (req: any, res: any) => {
   try {
     const storyId = req.params.id;
     const { content } = req.body;
     if (!content || typeof content !== 'string' || !content.trim()) {
-      return res.status(400).json({ error: 'content is required' });
+      return void res.status(400).json({ error: 'content is required' });
     }
 
     const now = new Date();
@@ -327,10 +327,10 @@ router.post('/:id/comments', optionalAuth(), async (req: any, res: any) => {
     list.push(comment);
     memoryComments.set(storyId, list);
 
-    return res.status(201).json({ comment });
+    return void res.status(201).json({ comment });
   } catch (err) {
     console.error('Post comment error:', err);
-    return res.status(500).json({ error: 'Failed to post comment' });
+    return void res.status(500).json({ error: 'Failed to post comment' });
   }
 });
 
@@ -341,9 +341,9 @@ router.post('/:id/comments', optionalAuth(), async (req: any, res: any) => {
 /**
  * GET /stories/admin/pending - List pending stories for review
  */
-router.get('/admin/pending', authenticate(), async (req: any, res: any) => {
+router.get('/admin/pending', authenticate, async (req: any, res: any) => {
   try {
-    if (!isAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+    if (!isAdmin(req)) return void res.status(403).json({ error: 'Admin access required' });
     const stories = await prisma.successStory.findMany({
       where: { status: 'pending' },
       orderBy: { createdAt: 'asc' },
@@ -359,14 +359,14 @@ router.get('/admin/pending', authenticate(), async (req: any, res: any) => {
 /**
  * PUT /stories/admin/:id/review - Review a story
  */
-router.put('/admin/:id/review', authenticate(), async (req: any, res: any) => {
+router.put('/admin/:id/review', authenticate, async (req: any, res: any) => {
   try {
-    if (!isAdmin(req)) return res.status(403).json({ error: 'Admin access required' });
+    if (!isAdmin(req)) return void res.status(403).json({ error: 'Admin access required' });
     const { id } = req.params;
     const { status } = req.body; // approved, rejected, featured
 
     if (!['approved', 'rejected', 'featured'].includes(status)) {
-      return res.status(400).json({ error: 'Invalid status' });
+      return void res.status(400).json({ error: 'Invalid status' });
     }
 
     const story = await prisma.successStory.update({
@@ -396,7 +396,7 @@ router.get('/:id', async (req: any, res: any) => {
     const mem = memoryStories.find((s) => s.id === id);
     if (mem) {
       mem.viewCount += 1;
-      return res.json({ story: { ...mem, story: mem.story || mem.content, authorName: mem.isAnonymous ? 'Community Member' : (mem.authorName || 'Community Member') } });
+      return void res.json({ story: { ...mem, story: mem.story || mem.content, authorName: mem.isAnonymous ? 'Community Member' : (mem.authorName || 'Community Member') } });
     }
 
     const story = await prisma.successStory.findUnique({
@@ -420,7 +420,7 @@ router.get('/:id', async (req: any, res: any) => {
     });
 
     if (!story || story.isPublished !== true) {
-      return res.status(404).json({ error: 'Story not found' });
+      return void res.status(404).json({ error: 'Story not found' });
     }
 
     await prisma.successStory.update({
@@ -442,3 +442,6 @@ router.get('/:id', async (req: any, res: any) => {
 });
 
 export default router;
+
+
+

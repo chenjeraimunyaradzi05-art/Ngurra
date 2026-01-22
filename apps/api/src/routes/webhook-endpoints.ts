@@ -38,7 +38,7 @@ router.get('/', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const webhooks = await prisma.webhook.findMany({
@@ -87,22 +87,22 @@ router.post('/', requireAuth, async (req, res) => {
     const { name, url, events = [] } = req.body;
     
     if (!name || name.length < 3) {
-      return res.status(400).json({ error: 'Name must be at least 3 characters' });
+      return void res.status(400).json({ error: 'Name must be at least 3 characters' });
     }
     
     if (!url || !url.startsWith('https://')) {
-      return res.status(400).json({ error: 'URL must be a valid HTTPS URL' });
+      return void res.status(400).json({ error: 'URL must be a valid HTTPS URL' });
     }
     
     if (!Array.isArray(events) || events.length === 0) {
-      return res.status(400).json({ error: 'At least one event type is required' });
+      return void res.status(400).json({ error: 'At least one event type is required' });
     }
     
     // Validate event types
     const validEvents = Object.keys(WEBHOOK_EVENTS);
     const invalidEvents = events.filter(e => e !== '*' && !validEvents.includes(e));
     if (invalidEvents.length > 0) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Invalid event types', 
         invalid: invalidEvents,
         valid: validEvents 
@@ -114,7 +114,7 @@ router.post('/', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Check webhook limit (max 10 per company)
@@ -123,7 +123,7 @@ router.post('/', requireAuth, async (req, res) => {
     });
     
     if (existingCount >= 10) {
-      return res.status(400).json({ error: 'Maximum 10 webhooks per company' });
+      return void res.status(400).json({ error: 'Maximum 10 webhooks per company' });
     }
     
     const secret = generateSecret();
@@ -173,7 +173,7 @@ router.patch('/:id', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Verify ownership
@@ -182,21 +182,21 @@ router.patch('/:id', requireAuth, async (req, res) => {
     });
     
     if (!webhook) {
-      return res.status(404).json({ error: 'Webhook not found' });
+      return void res.status(404).json({ error: 'Webhook not found' });
     }
     
     const updateData: any = {};
     
     if (name !== undefined) {
       if (name.length < 3) {
-        return res.status(400).json({ error: 'Name must be at least 3 characters' });
+        return void res.status(400).json({ error: 'Name must be at least 3 characters' });
       }
       updateData.name = name;
     }
     
     if (url !== undefined) {
       if (!url.startsWith('https://')) {
-        return res.status(400).json({ error: 'URL must be a valid HTTPS URL' });
+        return void res.status(400).json({ error: 'URL must be a valid HTTPS URL' });
       }
       updateData.url = url;
     }
@@ -205,7 +205,7 @@ router.patch('/:id', requireAuth, async (req, res) => {
       const validEvents = Object.keys(WEBHOOK_EVENTS);
       const invalidEvents = events.filter(e => e !== '*' && !validEvents.includes(e));
       if (invalidEvents.length > 0) {
-        return res.status(400).json({ error: 'Invalid event types', invalid: invalidEvents });
+        return void res.status(400).json({ error: 'Invalid event types', invalid: invalidEvents });
       }
       updateData.events = JSON.stringify(events);
     }
@@ -251,7 +251,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     // Verify ownership
@@ -260,7 +260,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
     });
     
     if (!webhook) {
-      return res.status(404).json({ error: 'Webhook not found' });
+      return void res.status(404).json({ error: 'Webhook not found' });
     }
     
     await prisma.webhook.delete({ where: { id } });
@@ -286,7 +286,7 @@ router.post('/:id/rotate-secret', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const webhook = await prisma.webhook.findFirst({
@@ -294,7 +294,7 @@ router.post('/:id/rotate-secret', requireAuth, async (req, res) => {
     });
     
     if (!webhook) {
-      return res.status(404).json({ error: 'Webhook not found' });
+      return void res.status(404).json({ error: 'Webhook not found' });
     }
     
     const newSecret = generateSecret();
@@ -328,7 +328,7 @@ router.post('/:id/test', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const webhook = await prisma.webhook.findFirst({
@@ -336,7 +336,7 @@ router.post('/:id/test', requireAuth, async (req, res) => {
     });
     
     if (!webhook) {
-      return res.status(404).json({ error: 'Webhook not found' });
+      return void res.status(404).json({ error: 'Webhook not found' });
     }
     
     // Create test payload
@@ -374,7 +374,7 @@ router.get('/:id/deliveries', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const webhook = await prisma.webhook.findFirst({
@@ -382,7 +382,7 @@ router.get('/:id/deliveries', requireAuth, async (req, res) => {
     });
     
     if (!webhook) {
-      return res.status(404).json({ error: 'Webhook not found' });
+      return void res.status(404).json({ error: 'Webhook not found' });
     }
     
     const where: any = { webhookId: id };
@@ -425,7 +425,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     });
     
     if (!company) {
-      return res.status(403).json({ error: 'Company profile required' });
+      return void res.status(403).json({ error: 'Company profile required' });
     }
     
     const stats = await getDeliveryStats(company.id, parseInt(days));
@@ -438,4 +438,5 @@ router.get('/stats', requireAuth, async (req, res) => {
 });
 
 export default router;
+
 

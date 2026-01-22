@@ -14,7 +14,7 @@ const router = Router();
  * @desc Get current user profile
  * @access Private
  */
-router.get('/me', auth.authenticate(), async (req, res, next) => {
+router.get('/me', auth.authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.id;
 
@@ -61,7 +61,7 @@ router.get('/me', auth.authenticate(), async (req, res, next) => {
  * @desc Update current user profile
  * @access Private
  */
-router.patch('/me', auth.authenticate(), validateRequest(updateProfileSchema), async (req, res, next) => {
+router.patch('/me', auth.authenticate, validateRequest(updateProfileSchema), async (req, res, next) => {
   try {
     const userId = req.user!.id;
 
@@ -98,7 +98,7 @@ router.patch('/me', auth.authenticate(), validateRequest(updateProfileSchema), a
  * @desc Get user by ID (public profile)
  * @access Public (limited data) / Private (full data for self/admin)
  */
-router.get('/:id', auth.optionalAuth(), async (req, res, next) => {
+router.get('/:id', auth.optionalAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
     const isOwnProfile = req.user?.id === id;
@@ -147,7 +147,7 @@ router.get('/:id', auth.optionalAuth(), async (req, res, next) => {
  * @desc List users (admin only)
  * @access Private (Admin)
  */
-router.get('/', auth.authenticate(), auth.authorize('admin'), async (req, res, next) => {
+router.get('/', auth.authenticate, auth.authorize('admin'), async (req, res, next) => {
   try {
     const { 
       page = '1', 
@@ -226,7 +226,7 @@ router.get('/', auth.authenticate(), auth.authorize('admin'), async (req, res, n
  * @desc Update user (self or admin)
  * @access Private (Self or Admin)
  */
-router.patch('/:id', auth.authenticate(), auth.selfOrAdmin(), async (req, res, next) => {
+router.patch('/:id', auth.authenticate, auth.selfOrAdmin(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const isAdmin = req.user!.role === 'admin';
@@ -272,7 +272,7 @@ router.patch('/:id', auth.authenticate(), auth.selfOrAdmin(), async (req, res, n
  * @desc Delete user (admin only)
  * @access Private (Admin)
  */
-router.delete('/:id', auth.authenticate(), auth.authorize('admin'), async (req, res, next) => {
+router.delete('/:id', auth.authenticate, auth.authorize('admin'), async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -293,7 +293,7 @@ router.delete('/:id', auth.authenticate(), auth.authorize('admin'), async (req, 
  * @desc Verify user email (admin only)
  * @access Private (Admin)
  */
-router.post('/:id/verify-email', auth.authenticate(), auth.authorize('admin'), async (req, res, next) => {
+router.post('/:id/verify-email', auth.authenticate, auth.authorize('admin'), async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -318,7 +318,7 @@ router.post('/:id/verify-email', auth.authenticate(), auth.authorize('admin'), a
  * @desc Get user's applications (self or admin)
  * @access Private (Self or Admin)
  */
-router.get('/:id/applications', auth.authenticate(), auth.selfOrAdmin(), async (req, res, next) => {
+router.get('/:id/applications', auth.authenticate, auth.selfOrAdmin(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status, page = '1', limit = '10' } = req.query;
@@ -372,7 +372,7 @@ router.get('/:id/applications', auth.authenticate(), auth.selfOrAdmin(), async (
  * @desc Get user's saved jobs (self or admin)
  * @access Private (Self or Admin)
  */
-router.get('/:id/saved-jobs', auth.authenticate(), auth.selfOrAdmin(), async (req, res, next) => {
+router.get('/:id/saved-jobs', auth.authenticate, auth.selfOrAdmin(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { page = '1', limit = '10' } = req.query;
@@ -421,4 +421,5 @@ router.get('/:id/saved-jobs', auth.authenticate(), auth.selfOrAdmin(), async (re
 });
 
 export default router;
+
 

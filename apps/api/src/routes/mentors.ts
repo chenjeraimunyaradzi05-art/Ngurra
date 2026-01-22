@@ -53,59 +53,59 @@ function computeMatchScore(mentor: any, preferences: any) {
 }
 
 // POST /mentor/profile - create or update mentor profile
-router.post('/profile', auth.authenticate(), async (req: any, res: any) => {
+router.post('/profile', auth.authenticate, async (req: any, res: any) => {
     const parse = mentorSchema.safeParse(req.body);
     if (!parse.success)
-        return res.status(400).json({ error: parse.error.flatten() });
+        return void res.status(400).json({ error: parse.error.flatten() });
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
     try {
         const profile = await prisma.mentorProfile.upsert({ where: { userId }, create: { userId, ...parse.data }, update: { ...parse.data } });
-        return res.json({ profile });
+        return void res.json({ profile });
     }
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Mentor profile error:', err);
-        return res.status(500).json({ error: 'Profile save failed' });
+        return void res.status(500).json({ error: 'Profile save failed' });
     }
 });
 
 // GET /mentor/profile - fetch mentor profile
-router.get('/profile', auth.authenticate(), async (req: any, res: any) => {
+router.get('/profile', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
     try {
         const profile = await prisma.mentorProfile.findUnique({ where: { userId } });
-        return res.json({ profile });
+        return void res.json({ profile });
     }
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Fetch mentor profile error:', err);
-        return res.status(500).json({ error: 'Fetch failed' });
+        return void res.status(500).json({ error: 'Fetch failed' });
     }
 });
 
 // PATCH /mentor/profile - partial update
-router.patch('/profile', auth.authenticate(), async (req: any, res: any) => {
+router.patch('/profile', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
     const partial = mentorSchema.partial().safeParse(req.body);
     if (!partial.success)
-        return res.status(400).json({ error: partial.error.flatten() });
+        return void res.status(400).json({ error: partial.error.flatten() });
     try {
         const existing = await prisma.mentorProfile.findUnique({ where: { userId } });
         if (!existing)
-            return res.status(404).json({ error: 'Profile not found' });
+            return void res.status(404).json({ error: 'Profile not found' });
         const updated = await prisma.mentorProfile.update({ where: { userId }, data: partial.data });
-        return res.json({ profile: updated });
+        return void res.json({ profile: updated });
     }
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Patch mentor profile error:', err);
-        return res.status(500).json({ error: 'Update failed' });
+        return void res.status(500).json({ error: 'Update failed' });
     }
 });
 
@@ -121,33 +121,36 @@ router.get('/search', async (req: any, res: any) => {
     const skip = (pageNum - 1) * limitNum;
 
     try {
-        const where: any = { role: 'mentor', isActive: true };
-        if (skills) where.skills = { hasSome: String(skills).split(',') };
+        const where: any = { active: true };
+        if (skills) where.skills = { contains: String(skills), mode: 'insensitive' };
         if (location) where.location = { contains: String(location), mode: 'insensitive' };
-        if (industry) where.industry = { equals: String(industry), mode: 'insensitive' };
-        if (experienceLevel) where.experienceLevel = String(experienceLevel);
-        if (language) where.language = String(language);
-        if (timezone) where.timezone = String(timezone);
+        if (industry) where.industry = { contains: String(industry), mode: 'insensitive' };
+        
+        // Note: experienceLevel, language, timezone are not in Schema currently, ignored or handled via bio search?
+        // if (experienceLevel) where.bio = { contains: String(experienceLevel) };
 
-        const [mentors, total] = await Promise.all([
-            prisma.user.findMany({
+        const [profiles, total] = await Promise.all([
+            prisma.mentorProfile.findMany({
                 where,
                 skip,
                 take: limitNum,
-                select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    avatar: true,
-                    bio: true,
-                    skills: true,
-                    location: true,
-                },
+                include: { user: true },
             }),
-            prisma.user.count({ where }),
+            prisma.mentorProfile.count({ where }),
         ]);
 
-        return res.json({
+        const mentors = profiles.map((p) => ({
+            id: p.userId,
+            name: p.name || p.user.name,
+            avatar: p.avatar || p.avatarUrl || p.user.avatarUrl,
+            bio: p.bio,
+            skills: p.skills ? p.skills.split(',').map(s => s.trim()) : [],
+            location: p.location,
+            title: p.title,
+            industry: p.industry,
+        }));
+
+        return void res.json({
             mentors,
             pagination: {
                 page: pageNum,
@@ -157,53 +160,37 @@ router.get('/search', async (req: any, res: any) => {
             },
         });
     } catch (err) {
-        try {
-            const profiles = await prisma.mentorProfile.findMany({
-                skip,
-                take: limitNum,
-                include: { user: true },
-            });
-            const mentors = profiles.map((p: any) => ({
-                id: p.userId,
-                firstName: p.user?.firstName || p.user?.name || null,
-                lastName: p.user?.lastName || null,
-                avatar: p.user?.avatar || p.user?.avatarUrl || null,
-                bio: p.bio || p.expertise || null,
-                skills: p.user?.skills || [],
-                location: p.user?.location || null,
-            }));
-            return res.json({ mentors, pagination: { page: pageNum, limit: limitNum, total: mentors.length, totalPages: 1 } });
-        } catch (fallbackError) {
-            console.error('Mentor search error:', fallbackError);
-            return res.status(500).json({ error: 'Failed to search mentors' });
-        }
+        console.error('Mentor search error:', err);
+        return void res.status(500).json({ error: 'Failed to search mentors' });
     }
 });
 
 // POST /mentor/match - Match mentors based on preferences
-router.post('/match', auth.authenticate(), async (req: any, res: any) => {
+router.post('/match', auth.authenticate, async (req: any, res: any) => {
     const parse = mentorMatchSchema.safeParse(req.body || {});
-    if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+    if (!parse.success) return void res.status(400).json({ error: parse.error.flatten() });
 
     try {
-        const mentors = await prisma.user.findMany({
-            where: { role: 'mentor', isActive: true },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                bio: true,
-                skills: true,
-                location: true,
-                industry: true,
-                experienceLevel: true,
-                language: true,
-                timezone: true,
-                communicationStyle: true,
-            },
+        const profiles = await prisma.mentorProfile.findMany({
+            where: { active: true },
+            include: { user: true },
             take: 100,
         });
+
+        const mentors = profiles.map(p => ({
+            id: p.userId,
+            name: p.name || p.user.name,
+            avatar: p.avatar || p.avatarUrl || p.user.avatarUrl,
+            bio: p.bio,
+            skills: p.skills ? p.skills.split(',').map(s => s.trim()) : [],
+            location: p.location,
+            industry: p.industry,
+            // Mapping missing fields to null or bio check
+            experienceLevel: null,
+            language: null,
+            timezone: null,
+            communicationStyle: null
+        }));
 
         const scored = mentors.map((mentor: any) => ({
             mentor,
@@ -218,33 +205,37 @@ router.post('/match', auth.authenticate(), async (req: any, res: any) => {
 });
 
 // GET /mentor/recommendations - Personalized mentor recommendations
-router.get('/recommendations', auth.authenticate(), async (req: any, res: any) => {
+router.get('/recommendations', auth.authenticate, async (req: any, res: any) => {
     try {
         const userId = req.user?.id;
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { skills: true, interests: true, location: true },
+            include: { 
+                userSkills: { include: { skill: true } },
+                memberProfile: true
+            },
         });
 
         const preferences = {
-            skills: user?.skills || [],
-            goals: user?.interests || [],
-            location: user?.location || undefined,
+            skills: user?.userSkills.map(s => s.skill.name) || [],
+            goals: user?.memberProfile?.careerInterest ? [user.memberProfile.careerInterest] : [],
+            location: undefined, // Location not reliably available on User
         };
 
-        const mentors = await prisma.user.findMany({
-            where: { role: 'mentor', isActive: true },
+        const profiles = await prisma.mentorProfile.findMany({
+            where: { active: true },
             take: 80,
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                bio: true,
-                skills: true,
-                location: true,
-            },
+            include: { user: true }
         });
+
+        const mentors = profiles.map(p => ({
+            id: p.userId,
+            name: p.name || p.user.name,
+            avatar: p.avatar || p.avatarUrl || p.user.avatarUrl,
+            bio: p.bio,
+            skills: p.skills ? p.skills.split(',').map(s => s.trim()) : [],
+            location: p.location,
+        }));
 
         const scored = mentors.map((mentor: any) => ({
             mentor,
@@ -265,26 +256,28 @@ router.get('/compare', async (req: any, res: any) => {
         .map((id) => id.trim())
         .filter(Boolean);
 
-    if (ids.length < 2) return res.status(400).json({ error: 'Provide at least two mentor ids to compare' });
+    if (ids.length < 2) return void res.status(400).json({ error: 'Provide at least two mentor ids to compare' });
 
     try {
-        const mentors = await prisma.user.findMany({
-            where: { id: { in: ids } },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                bio: true,
-                skills: true,
-                location: true,
-                industry: true,
-                experienceLevel: true,
-                language: true,
-                timezone: true,
-                communicationStyle: true,
-            },
+        const profiles = await prisma.mentorProfile.findMany({
+            where: { userId: { in: ids } },
+            include: { user: true }
         });
+
+        const mentors = profiles.map(p => ({
+            id: p.userId,
+            name: p.name || p.user.name,
+            avatar: p.avatar || p.avatarUrl || p.user.avatarUrl,
+            bio: p.bio,
+            skills: p.skills ? p.skills.split(',').map(s => s.trim()) : [],
+            location: p.location,
+            industry: p.industry,
+            // Mapping missing fields
+            experienceLevel: null,
+            language: null,
+            timezone: null,
+            communicationStyle: null
+        }));
 
         res.json({ mentors });
     } catch (err) {
@@ -301,9 +294,9 @@ router.get('/:id/portfolio', async (req: any, res: any) => {
 });
 
 // POST /mentor/portfolio - Update own portfolio
-router.post('/portfolio', auth.authenticate(), async (req: any, res: any) => {
+router.post('/portfolio', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const { headline, achievements, introVideoUrl } = req.body || {};
     const existing = mentorPortfolios.get(userId) || { achievements: [], testimonials: [] };
@@ -327,10 +320,10 @@ router.get('/:id/testimonials', async (req: any, res: any) => {
 });
 
 // POST /mentor/:id/testimonials - Add a testimonial
-router.post('/:id/testimonials', auth.authenticate(), async (req: any, res: any) => {
+router.post('/:id/testimonials', auth.authenticate, async (req: any, res: any) => {
     const { id } = req.params;
     const { rating, feedback, menteeName } = req.body || {};
-    if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
+    if (!rating || rating < 1 || rating > 5) return void res.status(400).json({ error: 'Rating must be 1-5' });
 
     const testimonials = mentorTestimonials.get(id) || [];
     const entry = {
@@ -354,9 +347,9 @@ router.get('/:id/badges', async (req: any, res: any) => {
 });
 
 // POST /mentor/badges - Update own badges
-router.post('/badges', auth.authenticate(), async (req: any, res: any) => {
+router.post('/badges', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
     const { badges } = req.body || {};
     const sanitized = Array.isArray(badges) ? badges.map((b) => String(b)) : [];
     mentorBadges.set(userId, sanitized);
@@ -368,23 +361,23 @@ router.post('/badges', auth.authenticate(), async (req: any, res: any) => {
 // =============================================================================
 
 // POST /mentor/connect - Create connected Stripe account for mentor (if not present)
-router.post('/connect', auth.authenticate(), async (req: any, res: any) => {
+router.post('/connect', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
 
     try {
         const profile = await prisma.mentorProfile.findUnique({ where: { userId } });
         if (!profile)
-            return res.status(404).json({ error: 'Mentor profile not found' });
+            return void res.status(404).json({ error: 'Mentor profile not found' });
 
         if (profile.stripeAccountId) {
-            return res.json({ message: 'Connected account already exists', accountId: profile.stripeAccountId });
+            return void res.json({ message: 'Connected account already exists', accountId: profile.stripeAccountId });
         }
 
         // Create connected account in Stripe
         if (!stripe) {
-            return res.status(400).json({ error: 'Stripe not configured' });
+            return void res.status(400).json({ error: 'Stripe not configured' });
         }
 
         const account = await createConnectedAccount({ email: req.user.email });
@@ -397,22 +390,22 @@ router.post('/connect', auth.authenticate(), async (req: any, res: any) => {
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Create connect account error:', err);
-        return res.status(500).json({ error: 'Failed to create connected account' });
+        return void res.status(500).json({ error: 'Failed to create connected account' });
     }
 });
 
 // GET /mentor/connect/link - Get account onboarding link
-router.get('/connect/link', auth.authenticate(), async (req: any, res: any) => {
+router.get('/connect/link', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
 
     try {
         const profile = await prisma.mentorProfile.findUnique({ where: { userId } });
         if (!profile || !profile.stripeAccountId)
-            return res.status(404).json({ error: 'Connected account not found' });
+            return void res.status(404).json({ error: 'Connected account not found' });
 
-        if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+        if (!stripe) return void res.status(400).json({ error: 'Stripe not configured' });
 
         const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
         const refreshUrl = `${frontend}/mentor/billing?refresh=1`;
@@ -425,26 +418,26 @@ router.get('/connect/link', auth.authenticate(), async (req: any, res: any) => {
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Get connect link error:', err);
-        return res.status(500).json({ error: 'Failed to create onboarding link' });
+        return void res.status(500).json({ error: 'Failed to create onboarding link' });
     }
 });
 
 // POST /mentor/payouts - Request a payout transfer to connected account (amount in cents)
-router.post('/payouts', auth.authenticate(), async (req: any, res: any) => {
+router.post('/payouts', auth.authenticate, async (req: any, res: any) => {
     const userId = req.user?.id;
     if (!userId)
-        return res.status(401).json({ error: 'Unauthorized' });
+        return void res.status(401).json({ error: 'Unauthorized' });
 
     const { amount } = req.body;
     if (!amount || typeof amount !== 'number' || amount <= 0)
-        return res.status(400).json({ error: 'Invalid amount' });
+        return void res.status(400).json({ error: 'Invalid amount' });
 
     try {
         const profile = await prisma.mentorProfile.findUnique({ where: { userId } });
         if (!profile || !profile.stripeAccountId)
-            return res.status(404).json({ error: 'Connected account not found' });
+            return void res.status(404).json({ error: 'Connected account not found' });
 
-        if (!stripe) return res.status(400).json({ error: 'Stripe not configured' });
+        if (!stripe) return void res.status(400).json({ error: 'Stripe not configured' });
 
         // Create transfer to connected account
         const transfer = await createTransfer({ amount, currency: 'aud', destinationAccountId: profile.stripeAccountId, metadata: { userId } });
@@ -457,8 +450,10 @@ router.post('/payouts', auth.authenticate(), async (req: any, res: any) => {
     catch (err) {
         // eslint-disable-next-line no-console
         console.error('Payout error:', err);
-        return res.status(500).json({ error: 'Failed to create payout' });
+        return void res.status(500).json({ error: 'Failed to create payout' });
     }
 });
 
 export default router;
+
+

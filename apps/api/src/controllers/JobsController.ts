@@ -63,7 +63,7 @@ class JobsController extends BaseController {
     // Try cache first
     const cached = await cache.get(cacheKey);
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
     
     const result = await JobService.findAll({
@@ -83,7 +83,7 @@ class JobsController extends BaseController {
     // Cache the result
     await cache.set(cacheKey, result, JOBS_CACHE_TTL);
 
-    return res.json(result);
+    return void res.json(result);
   });
 
   /**
@@ -102,8 +102,12 @@ class JobsController extends BaseController {
     // Track job view if user is authenticated
     const user = this.getUser(req);
     if (user) {
-      await jobPerformanceService.trackJobView(id, user.id).catch(err => {
-        logger.debug('Failed to track job view', { error: err.message });
+      await jobPerformanceService.trackEvent({
+        jobId: id,
+        eventType: 'view',
+        userId: user.id
+      }).catch(err => {
+        console.error('Failed to track job view', err);
       });
     }
 
@@ -382,3 +386,4 @@ class JobsController extends BaseController {
 
 export const jobsController = new JobsController();
 export default jobsController;
+

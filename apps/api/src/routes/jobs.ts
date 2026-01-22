@@ -58,7 +58,7 @@ router.get('/', validateRequest(z.object({ query: jobQuerySchema })), async (req
     // Try to get from cache first
     const cached = await cache.get(cacheKey);
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
     
     const result = await JobService.findAll({
@@ -90,7 +90,7 @@ router.get('/', validateRequest(z.object({ query: jobQuerySchema })), async (req
 });
 
 // GET /jobs/matches - AI-style job matching for authenticated users
-router.get('/matches', authenticate(), async (req, res) => {
+router.get('/matches', authenticate, async (req, res) => {
   try {
     const userId = (req as any).user.id;
     const { limit = '20', location, employment, skills, minSalary, maxSalary } = req.query;
@@ -188,7 +188,7 @@ router.get('/:id', async (req, res) => {
   try {
     const job = await JobService.findById(req.params.id);
     if (!job) {
-      return res.status(404).json({ message: 'Job not found' });
+      return void res.status(404).json({ message: 'Job not found' });
     }
 
     // Track job view asynchronously (don't block response)
@@ -213,7 +213,7 @@ router.get('/:id', async (req, res) => {
 // POST /jobs - Create job (Protected - Company or Admin only)
 router.post(
   '/',
-  authenticate(),
+  authenticate,
   requirePermission('job:create'),
   validateRequest(z.object({ body: createJobSchema })),
   async (req, res) => {
@@ -252,7 +252,7 @@ router.post(
 // PUT /jobs/:id - Update job (Owner or Admin only)
 router.put(
   '/:id',
-  authenticate(),
+  authenticate,
   requirePermission('job:update'),
   requireOwnership('job', 'id'),
   validateRequest(z.object({ body: updateJobSchema })),
@@ -263,7 +263,7 @@ router.put(
       const job = await JobService.update(req.params.id, req.body, userId);
 
       if (!job) {
-        return res.status(404).json({ message: 'Job not found' });
+        return void res.status(404).json({ message: 'Job not found' });
       }
 
       // Invalidate jobs list cache
@@ -287,7 +287,7 @@ router.put(
 // DELETE /jobs/:id - Delete job (Owner or Admin only)
 router.delete(
   '/:id',
-  authenticate(),
+  authenticate,
   requirePermission('job:delete'),
   requireOwnership('job', 'id'),
   async (req, res) => {
@@ -297,7 +297,7 @@ router.delete(
       const success = await JobService.delete(req.params.id, userId);
 
       if (!success) {
-        return res.status(404).json({ message: 'Job not found' });
+        return void res.status(404).json({ message: 'Job not found' });
       }
 
       // Invalidate jobs list cache
@@ -319,7 +319,7 @@ router.delete(
 );
 
 // GET /jobs/me - Get jobs owned by current user
-router.get('/me', authenticate(), async (req, res) => {
+router.get('/me', authenticate, async (req, res) => {
   try {
     // @ts-ignore - user is attached by auth middleware
     const userId = req.user.id;
@@ -331,3 +331,5 @@ router.get('/me', authenticate(), async (req, res) => {
 });
 
 export default router;
+
+

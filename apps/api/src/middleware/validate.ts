@@ -12,7 +12,7 @@ export const validateRequest = (schema: AnyZodObject) =>
       return next();
     } catch (error) {
       if (error instanceof ZodError) {
-        return res.status(400).json({
+        return void res.status(400).json({
           status: 'error',
           message: 'Validation failed',
           errors: error.errors.map((e) => ({
@@ -21,6 +21,7 @@ export const validateRequest = (schema: AnyZodObject) =>
           })),
         });
       }
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return void res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
   };
+

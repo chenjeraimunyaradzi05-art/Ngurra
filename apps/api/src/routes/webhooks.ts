@@ -29,12 +29,12 @@ router.post('/stripe', async (req, res) => {
   // In test/development mode without Stripe, just acknowledge
   if (!stripeLib.stripe) {
     console.log('[Webhook] Stripe not configured, skipping webhook processing');
-    return res.json({ received: true, mode: 'mock' });
+    return void res.json({ received: true, mode: 'mock' });
   }
 
   if (!signature) {
     console.error('[Webhook] Missing stripe-signature header');
-    return res.status(400).json({ error: 'Missing signature' });
+    return void res.status(400).json({ error: 'Missing signature' });
   }
 
   let event;
@@ -42,7 +42,7 @@ router.post('/stripe', async (req, res) => {
     event = stripeLib.constructWebhookEvent(req.body, signature);
   } catch (err) {
     console.error('[Webhook] Signature verification failed:', err.message);
-    return res.status(400).json({ error: `Webhook signature verification failed: ${err.message}` });
+    return void res.status(400).json({ error: `Webhook signature verification failed: ${err.message}` });
   }
 
   console.log(`[Webhook] Received event: ${event.type}`);
@@ -321,7 +321,7 @@ async function handleSubscriptionDeleted(subscription) {
 router.post('/stripe/test', async (req, res) => {
   const nodeEnv = String(process.env.NODE_ENV || 'development').toLowerCase();
   if (nodeEnv === 'production') {
-    return res.status(404).json({ error: 'Not found' });
+    return void res.status(404).json({ error: 'Not found' });
   }
 
   const { eventType, data } = req.body;
@@ -343,7 +343,7 @@ router.post('/stripe/test', async (req, res) => {
         await handleSubscriptionDeleted(data);
         break;
       default:
-        return res.json({ received: true, message: 'Unknown event type' });
+        return void res.json({ received: true, message: 'Unknown event type' });
     }
 
     res.json({ received: true, eventType });
@@ -354,4 +354,5 @@ router.post('/stripe/test', async (req, res) => {
 });
 
 export default router;
+
 

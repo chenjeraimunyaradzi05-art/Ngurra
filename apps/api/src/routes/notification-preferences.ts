@@ -252,7 +252,7 @@ router.patch('/', authenticateJWT, validate(preferencesSchema), async (req, res)
     
     // Security alerts cannot be disabled
     if (category === NotificationCategory.SECURITY_ALERTS && !enabled) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Security alerts cannot be disabled' 
       });
     }
@@ -325,7 +325,7 @@ router.put('/bulk', authenticateJWT, validate(bulkPreferencesSchema), async (req
     );
     
     if (hasDisabledSecurity) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Security alerts cannot be disabled' 
       });
     }
@@ -430,7 +430,7 @@ router.put('/email-digest', authenticateJWT, async (req, res) => {
     
     const validFrequencies = ['instant', 'daily', 'weekly', 'never'];
     if (!validFrequencies.includes(frequency)) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Invalid frequency. Must be: instant, daily, weekly, or never' 
       });
     }
@@ -565,3 +565,4 @@ module.exports.NotificationCategory = NotificationCategory;
 module.exports.DEFAULT_PREFERENCES = DEFAULT_PREFERENCES;
 
 export {};
+

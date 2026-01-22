@@ -74,7 +74,7 @@ router.get('/featured', async (req, res) => {
  * GET /alumni-mentors/matching
  * Get personalized alumni mentor matches for authenticated user
  */
-router.get('/matching', authenticate(), async (req: any, res) => {
+router.get('/matching', authenticate, async (req: any, res) => {
   try {
     const userId = req.user.id;
     const {
@@ -192,7 +192,7 @@ router.get('/:id', async (req, res) => {
     });
     
     if (!mentor || mentor.userType !== 'MENTOR') {
-      return res.status(404).json({
+      return void res.status(404).json({
         success: false,
         error: 'Alumni mentor not found',
       });
@@ -287,7 +287,7 @@ router.get('/:id', async (req, res) => {
  * POST /alumni-mentors/:id/request
  * Request to be matched with an alumni mentor
  */
-router.post('/:id/request', authenticate(), async (req: any, res) => {
+router.post('/:id/request', authenticate, async (req: any, res) => {
   try {
     const mentorId = req.params.id;
     const menteeId = req.user.id;
@@ -300,7 +300,7 @@ router.post('/:id/request', authenticate(), async (req: any, res) => {
     });
     
     if (!mentor || mentor.userType !== 'MENTOR') {
-      return res.status(404).json({
+      return void res.status(404).json({
         success: false,
         error: 'Mentor not found',
       });
@@ -315,7 +315,7 @@ router.post('/:id/request', authenticate(), async (req: any, res) => {
     });
     
     if (currentSessions >= 5) {
-      return res.status(400).json({
+      return void res.status(400).json({
         success: false,
         error: 'This mentor is currently at capacity. Please try again later.',
       });
@@ -331,7 +331,7 @@ router.post('/:id/request', authenticate(), async (req: any, res) => {
     });
     
     if (existingRequest) {
-      return res.status(400).json({
+      return void res.status(400).json({
         success: false,
         error: 'You already have a pending or active session with this mentor',
       });
@@ -384,3 +384,5 @@ router.post('/:id/request', authenticate(), async (req: any, res) => {
 });
 
 export default router;
+
+

@@ -156,7 +156,7 @@ router.post('/validate', async (req, res) => {
     const { code } = req.body;
 
     if (!code) {
-      return res.status(400).json({ error: 'Referral code required' });
+      return void res.status(400).json({ error: 'Referral code required' });
     }
 
     const referralCode = await prisma.referralCode.findUnique({
@@ -175,7 +175,7 @@ router.post('/validate', async (req, res) => {
     });
 
     if (!referralCode) {
-      return res.status(404).json({ valid: false, error: 'Invalid referral code' });
+      return void res.status(404).json({ valid: false, error: 'Invalid referral code' });
     }
 
     res.json({
@@ -198,7 +198,7 @@ router.post('/apply', authenticateJWT, async (req, res) => {
     const refereeId = req.user.id;
 
     if (!code) {
-      return res.status(400).json({ error: 'Referral code required' });
+      return void res.status(400).json({ error: 'Referral code required' });
     }
 
     // Check if user already has a referrer
@@ -207,7 +207,7 @@ router.post('/apply', authenticateJWT, async (req, res) => {
     });
 
     if (existingReferral) {
-      return res.status(400).json({ error: 'Referral code already applied' });
+      return void res.status(400).json({ error: 'Referral code already applied' });
     }
 
     // Find the referral code
@@ -216,12 +216,12 @@ router.post('/apply', authenticateJWT, async (req, res) => {
     });
 
     if (!referralCode) {
-      return res.status(404).json({ error: 'Invalid referral code' });
+      return void res.status(404).json({ error: 'Invalid referral code' });
     }
 
     // Can't refer yourself
     if (referralCode.userId === refereeId) {
-      return res.status(400).json({ error: 'Cannot use your own referral code' });
+      return void res.status(400).json({ error: 'Cannot use your own referral code' });
     }
 
     // Create the referral record
@@ -341,4 +341,5 @@ async function awardHireBonus(userId) {
 export default router;
 
 export { awardHireBonus, CREDITS };
+
 

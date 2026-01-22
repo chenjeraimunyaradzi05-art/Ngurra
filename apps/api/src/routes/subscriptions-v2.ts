@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/auth';
 import * as stripeLib from '../lib/stripe';
 
 const router = express.Router();
-const authenticateJWT = authenticate();
+const authenticateJWT = authenticate;
 
 // Tier configuration
 const TIER_LIMITS = {
@@ -143,7 +143,7 @@ router.post('/checkout', authenticateJWT, async (req, res) => {
     const { tier } = req.body;
 
     if (!tier || !['STARTER', 'PROFESSIONAL', 'ENTERPRISE'].includes(tier)) {
-      return res.status(400).json({ error: 'Invalid tier' });
+      return void res.status(400).json({ error: 'Invalid tier' });
     }
 
     if (!stripeLib.stripe) {
@@ -153,7 +153,7 @@ router.post('/checkout', authenticateJWT, async (req, res) => {
         create: { userId, tier },
         update: { tier },
       });
-      return res.json({
+      return void res.json({
         subscription,
         message: 'Stripe not configured. Subscription updated directly.',
       });
@@ -213,11 +213,11 @@ router.post('/portal', authenticateJWT, async (req, res) => {
     });
 
     if (!subscription?.stripeCustomerId) {
-      return res.status(400).json({ error: 'No billing account found' });
+      return void res.status(400).json({ error: 'No billing account found' });
     }
 
     if (!stripeLib.stripe) {
-      return res.status(400).json({ error: 'Stripe not configured' });
+      return void res.status(400).json({ error: 'Stripe not configured' });
     }
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -249,7 +249,7 @@ router.post('/cancel', authenticateJWT, async (req, res) => {
     });
 
     if (!subscription?.stripeSubscriptionId) {
-      return res.status(400).json({ error: 'No active subscription found' });
+      return void res.status(400).json({ error: 'No active subscription found' });
     }
 
     if (stripeLib.stripe) {
@@ -283,7 +283,7 @@ router.post('/reactivate', authenticateJWT, async (req, res) => {
     });
 
     if (!subscription?.stripeSubscriptionId) {
-      return res.status(400).json({ error: 'No subscription found' });
+      return void res.status(400).json({ error: 'No subscription found' });
     }
 
     if (stripeLib.stripe) {
@@ -320,7 +320,7 @@ router.get('/invoices', authenticateJWT, async (req, res) => {
     });
 
     if (subscriptions.length === 0) {
-      return res.json({ invoices: [] });
+      return void res.json({ invoices: [] });
     }
 
     const subscriptionIds = subscriptions.map((s) => s.id);
@@ -351,7 +351,7 @@ router.get('/stripe-invoices', authenticateJWT, async (req, res) => {
     });
 
     if (!(company as any)?.stripeCustomerId) {
-      return res.json({ invoices: [] });
+      return void res.json({ invoices: [] });
     }
 
     // Fetch invoices from Stripe
@@ -392,7 +392,7 @@ router.get('/invoices/:invoiceId/pdf', authenticateJWT, async (req, res) => {
     });
 
     if (!(company as any)?.stripeCustomerId) {
-      return res.status(404).json({ error: 'No billing account found' });
+      return void res.status(404).json({ error: 'No billing account found' });
     }
 
     // Get invoice from Stripe
@@ -400,11 +400,11 @@ router.get('/invoices/:invoiceId/pdf', authenticateJWT, async (req, res) => {
 
     // Verify the invoice belongs to this customer
     if (invoice.customer !== (company as any).stripeCustomerId) {
-      return res.status(403).json({ error: 'Access denied' });
+      return void res.status(403).json({ error: 'Access denied' });
     }
 
     if (!invoice.invoice_pdf) {
-      return res.status(404).json({ error: 'Invoice PDF not available' });
+      return void res.status(404).json({ error: 'Invoice PDF not available' });
     }
 
     // Redirect to the Stripe-hosted PDF
@@ -424,7 +424,7 @@ router.get('/invoices/:invoiceId/pdf', authenticateJWT, async (req, res) => {
  */
 async function checkJobLimit(req, res, next) {
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
   try {
     let subscription = await prisma.companySubscription.findUnique({
@@ -447,7 +447,7 @@ async function checkJobLimit(req, res, next) {
     });
 
     if (activeJobs >= limits.maxJobs) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Job limit reached',
         message: `Your ${subscription.tier} plan allows ${limits.maxJobs} active job(s). Upgrade to post more.`,
         currentTier: subscription.tier,
@@ -468,7 +468,7 @@ async function checkJobLimit(req, res, next) {
  */
 async function checkAnalyticsAccess(req, res, next) {
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
   try {
     const subscription = await prisma.companySubscription.findUnique({
@@ -479,7 +479,7 @@ async function checkAnalyticsAccess(req, res, next) {
     const limits = TIER_LIMITS[tier];
 
     if (!limits.analytics) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'Analytics access requires a paid plan',
         currentTier: tier,
       });
@@ -497,7 +497,7 @@ async function checkAnalyticsAccess(req, res, next) {
  */
 async function checkApiAccess(req, res, next) {
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
   try {
     const subscription = await prisma.companySubscription.findUnique({
@@ -508,7 +508,7 @@ async function checkApiAccess(req, res, next) {
     const limits = TIER_LIMITS[tier];
 
     if (!limits.apiAccess) {
-      return res.status(403).json({
+      return void res.status(403).json({
         error: 'API access requires Enterprise plan',
         currentTier: tier,
       });
@@ -527,13 +527,13 @@ router.post('/upgrade', authenticateJWT, async (req, res) => {
   const { tier } = req.body;
 
   if (!tier || !['FREE', 'STARTER', 'PROFESSIONAL', 'ENTERPRISE'].includes(tier)) {
-    return res.status(400).json({ error: 'Invalid tier' });
+    return void res.status(400).json({ error: 'Invalid tier' });
   }
 
   try {
     // For non-free tiers, redirect to checkout
     if (tier !== 'FREE' && stripeLib.stripe) {
-      return res.status(400).json({
+      return void res.status(400).json({
         error: 'Use /subscriptions/checkout for paid tiers',
         redirectTo: '/subscriptions/checkout',
       });
@@ -563,3 +563,5 @@ module.exports.checkApiAccess = checkApiAccess;
 module.exports.TIER_LIMITS = TIER_LIMITS;
 
 export {};
+
+

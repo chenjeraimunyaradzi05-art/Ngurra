@@ -35,7 +35,7 @@ async function checkTenantAccess(req, res, next) {
     }
 
     if (!userId) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return void res.status(401).json({ error: 'Authentication required' });
     }
 
     // Check if user owns this tenant
@@ -44,11 +44,11 @@ async function checkTenantAccess(req, res, next) {
     });
 
     if (!tenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+      return void res.status(404).json({ error: 'Tenant not found' });
     }
 
     if (tenant.ownerId !== userId) {
-      return res.status(403).json({ error: 'Not authorized to manage this tenant' });
+      return void res.status(403).json({ error: 'Not authorized to manage this tenant' });
     }
 
     req.tenant = tenant;
@@ -87,7 +87,7 @@ router.get('/config', async (req, res) => {
 
     // Return default config if no tenant found
     if (!tenant) {
-      return res.json({
+      return void res.json({
         isDefault: true,
         name: 'Ngurra Pathways',
         logoUrl: '/brand/ngurra-logo.svg',
@@ -129,7 +129,7 @@ router.get('/tenants', async (req, res) => {
   try {
     const adminKey = req.headers['x-admin-key'];
     if (!adminKey || adminKey !== process.env.ADMIN_API_KEY) {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
 
     const tenants = await prisma.whiteLabelTenant.findMany({
@@ -160,7 +160,7 @@ router.post('/tenants', async (req, res) => {
   try {
     const adminKey = req.headers['x-admin-key'];
     if (!adminKey || adminKey !== process.env.ADMIN_API_KEY) {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
 
     const {
@@ -183,12 +183,12 @@ router.post('/tenants', async (req, res) => {
     } = req.body;
 
     if (!slug || !name || !ownerId) {
-      return res.status(400).json({ error: 'slug, name, and ownerId are required' });
+      return void res.status(400).json({ error: 'slug, name, and ownerId are required' });
     }
 
     // Validate slug format
     if (!/^[a-z0-9-]+$/.test(slug)) {
-      return res.status(400).json({ error: 'slug must be lowercase alphanumeric with dashes only' });
+      return void res.status(400).json({ error: 'slug must be lowercase alphanumeric with dashes only' });
     }
 
     // Check if slug or domain already exists
@@ -202,7 +202,7 @@ router.post('/tenants', async (req, res) => {
     });
 
     if (existing) {
-      return res.status(409).json({ error: 'Tenant with this slug or domain already exists' });
+      return void res.status(409).json({ error: 'Tenant with this slug or domain already exists' });
     }
 
     const tenant = await prisma.whiteLabelTenant.create({
@@ -291,7 +291,7 @@ router.put('/tenants/:slug', authenticateJWT, checkTenantAccess, async (req, res
         }
       });
       if (existing) {
-        return res.status(409).json({ error: 'Domain already in use by another tenant' });
+        return void res.status(409).json({ error: 'Domain already in use by another tenant' });
       }
     }
 
@@ -342,7 +342,7 @@ router.delete('/tenants/:slug', async (req, res) => {
   try {
     const adminKey = req.headers['x-admin-key'];
     if (!adminKey || adminKey !== process.env.ADMIN_API_KEY) {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
 
     const { slug } = req.params;
@@ -403,7 +403,7 @@ router.get('/css/:slug', async (req, res) => {
     });
 
     if (!tenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+      return void res.status(404).json({ error: 'Tenant not found' });
     }
 
     // Generate CSS custom properties
@@ -442,4 +442,5 @@ export default router;
 
 
 export {};
+
 

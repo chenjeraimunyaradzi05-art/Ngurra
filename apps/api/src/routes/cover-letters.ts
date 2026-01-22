@@ -296,7 +296,7 @@ router.get('/:id', authenticate, async (req: Request, res: Response) => {
     }
 
     if (!letter) {
-      return res.status(404).json({ error: 'Cover letter not found' });
+      return void res.status(404).json({ error: 'Cover letter not found' });
     }
 
     res.json(letter);
@@ -323,7 +323,7 @@ router.patch('/:id', authenticate, async (req: Request, res: Response) => {
       });
 
       if (!existing) {
-        return res.status(404).json({ error: 'Cover letter not found' });
+        return void res.status(404).json({ error: 'Cover letter not found' });
       }
 
       // If setting as default, unset other defaults first
@@ -339,7 +339,7 @@ router.patch('/:id', authenticate, async (req: Request, res: Response) => {
         data: parsed,
       });
     } catch {
-      return res.status(404).json({ error: 'Cover letter not found' });
+      return void res.status(404).json({ error: 'Cover letter not found' });
     }
 
     res.json(letter);
@@ -363,14 +363,14 @@ router.delete('/:id', authenticate, async (req: Request, res: Response) => {
       });
 
       if (!existing) {
-        return res.status(404).json({ error: 'Cover letter not found' });
+        return void res.status(404).json({ error: 'Cover letter not found' });
       }
 
       await (prisma as any).coverLetter.delete({
         where: { id },
       });
     } catch {
-      return res.status(404).json({ error: 'Cover letter not found' });
+      return void res.status(404).json({ error: 'Cover letter not found' });
     }
 
     res.status(204).send();
@@ -395,7 +395,7 @@ router.post('/:id/duplicate', authenticate, async (req: Request, res: Response) 
       });
 
       if (!existing) {
-        return res.status(404).json({ error: 'Cover letter not found' });
+        return void res.status(404).json({ error: 'Cover letter not found' });
       }
 
       letter = await (prisma as any).coverLetter.create({
@@ -410,7 +410,7 @@ router.post('/:id/duplicate', authenticate, async (req: Request, res: Response) 
         },
       });
     } catch {
-      return res.status(404).json({ error: 'Cover letter not found' });
+      return void res.status(404).json({ error: 'Cover letter not found' });
     }
 
     res.status(201).json(letter);
@@ -432,24 +432,33 @@ router.post('/for-job/:jobId', authenticate, async (req: Request, res: Response)
     const job = await prisma.job.findUnique({
       where: { id: jobId },
       include: {
-        company: true,
+        user: {
+          include: { companyProfile: true }
+        },
+        jobSkills: {
+          include: { skill: true }
+        }
       },
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     const template = templates.find(t => t.id === templateId) || templates[0];
+    
+    const companyName = job.user.companyProfile?.companyName || 'your company';
+    const industry = job.user.companyProfile?.industry || 'this industry';
+    const skillsList = job.jobSkills.map(js => js.skill.name).join(', ') || 'relevant skills';
 
     // Generate tailored content
     const replacePlaceholders = (text: string) => {
       return text
         .replace(/{jobTitle}/g, job.title)
-        .replace(/{companyName}/g, job.company?.name || 'your company')
-        .replace(/{skills}/g, job.requiredSkills || 'relevant skills')
+        .replace(/{companyName}/g, companyName)
+        .replace(/{skills}/g, skillsList)
         .replace(/{experience}/g, 'my professional experience')
-        .replace(/{industry}/g, job.industry || 'this industry')
+        .replace(/{industry}/g, industry)
         .replace(/{companyValue}/g, 'your organisational values')
         .replace(/{uniqueAspect}/g, 'the opportunity for growth')
         .replace(/{achievement}/g, 'meaningful contributions');
@@ -464,12 +473,12 @@ router.post('/for-job/:jobId', authenticate, async (req: Request, res: Response)
     res.json({
       jobId,
       jobTitle: job.title,
-      companyName: job.company?.name,
+      companyName,
       templateId,
       content,
       suggestions: {
-        skills: job.requiredSkills?.split(',').map((s: string) => s.trim()).filter(Boolean) || [],
-        qualifications: job.educationRequirement || null,
+        skills: job.jobSkills.map(js => js.skill.name),
+        qualifications: null,
       },
     });
   } catch (error) {
@@ -479,3 +488,4 @@ router.post('/for-job/:jobId', authenticate, async (req: Request, res: Response)
 });
 
 export default router;
+

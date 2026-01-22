@@ -47,7 +47,7 @@ const upload = multer({
 router.post('/parse', optionalAuth, upload.single('resume'), async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return void res.status(400).json({ error: 'No file uploaded' });
     }
 
     const userId = (req as any).user?.id;
@@ -83,7 +83,7 @@ router.post('/analyze-fit', authenticate, async (req: Request, res: Response) =>
     const { resume, jobId } = req.body;
 
     if (!resume || !jobId) {
-      return res.status(400).json({ error: 'Resume data and job ID are required' });
+      return void res.status(400).json({ error: 'Resume data and job ID are required' });
     }
 
     // Get job requirements
@@ -101,7 +101,7 @@ router.post('/analyze-fit', authenticate, async (req: Request, res: Response) =>
     });
 
     if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
+      return void res.status(404).json({ error: 'Job not found' });
     }
 
     const analysis = await analyzeJobFit(resume as ParsedResume, {
@@ -132,7 +132,7 @@ router.post('/import-profile', authenticate, async (req: Request, res: Response)
     const { parsedResume, sections } = req.body;
 
     if (!parsedResume) {
-      return res.status(400).json({ error: 'Parsed resume data is required' });
+      return void res.status(400).json({ error: 'Parsed resume data is required' });
     }
 
     // Sections to import (default all)
@@ -281,4 +281,5 @@ router.get('/parse-history', authenticate, async (req: Request, res: Response) =
 });
 
 export default router;
+
 

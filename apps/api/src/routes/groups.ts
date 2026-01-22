@@ -146,19 +146,19 @@ router.get('/:slug', async (req, res) => {
     });
 
     if (!group || !group.isActive) {
-      return res.status(404).json({ error: 'Group not found' });
+      return void res.status(404).json({ error: 'Group not found' });
     }
 
     // Check if secret group and user is not a member
     if (group.visibility === 'secret') {
       if (!userId) {
-        return res.status(404).json({ error: 'Group not found' });
+        return void res.status(404).json({ error: 'Group not found' });
       }
       const membership = await prisma.groupMember.findUnique({
         where: { groupId_userId: { groupId: group.id, userId } }
       });
       if (!membership || membership.status !== 'active') {
-        return res.status(404).json({ error: 'Group not found' });
+        return void res.status(404).json({ error: 'Group not found' });
       }
     }
 
@@ -205,12 +205,12 @@ router.post('/', authenticateJWT, async (req, res) => {
     } = req.body;
 
     if (!name || !groupType) {
-      return res.status(400).json({ error: 'Name and group type are required' });
+      return void res.status(400).json({ error: 'Name and group type are required' });
     }
 
     const validTypes = ['industry', 'role', 'life_stage', 'location', 'interest'];
     if (!validTypes.includes(groupType)) {
-      return res.status(400).json({ error: 'Invalid group type' });
+      return void res.status(400).json({ error: 'Invalid group type' });
     }
 
     // Generate slug
@@ -275,7 +275,7 @@ router.post('/:id/join', authenticateJWT, async (req, res) => {
     });
 
     if (!group || !group.isActive) {
-      return res.status(404).json({ error: 'Group not found' });
+      return void res.status(404).json({ error: 'Group not found' });
     }
 
     // Check if already a member
@@ -285,19 +285,19 @@ router.post('/:id/join', authenticateJWT, async (req, res) => {
 
     if (existing) {
       if (existing.status === 'active') {
-        return res.status(400).json({ error: 'Already a member' });
+        return void res.status(400).json({ error: 'Already a member' });
       }
       if (existing.status === 'pending') {
-        return res.status(400).json({ error: 'Join request pending' });
+        return void res.status(400).json({ error: 'Join request pending' });
       }
       if (existing.status === 'banned') {
-        return res.status(403).json({ error: 'You are banned from this group' });
+        return void res.status(403).json({ error: 'You are banned from this group' });
       }
     }
 
     // Check membership type
     if (group.membershipType === 'invite_only') {
-      return res.status(403).json({ error: 'This group is invite-only' });
+      return void res.status(403).json({ error: 'This group is invite-only' });
     }
 
     const status = group.membershipType === 'approval' ? 'pending' : 'active';
@@ -349,11 +349,11 @@ router.delete('/:id/leave', authenticateJWT, async (req, res) => {
     });
 
     if (!membership || membership.status !== 'active') {
-      return res.status(400).json({ error: 'Not a member' });
+      return void res.status(400).json({ error: 'Not a member' });
     }
 
     if (membership.role === 'owner') {
-      return res.status(400).json({ error: 'Owner cannot leave. Transfer ownership first.' });
+      return void res.status(400).json({ error: 'Owner cannot leave. Transfer ownership first.' });
     }
 
     await prisma.$transaction([
@@ -423,18 +423,18 @@ router.get('/:id/posts', async (req, res) => {
     });
 
     if (!group) {
-      return res.status(404).json({ error: 'Group not found' });
+      return void res.status(404).json({ error: 'Group not found' });
     }
 
     if (group.visibility !== 'public') {
       if (!userId) {
-        return res.status(403).json({ error: 'Must be logged in to view posts' });
+        return void res.status(403).json({ error: 'Must be logged in to view posts' });
       }
       const membership = await prisma.groupMember.findUnique({
         where: { groupId_userId: { groupId: id, userId } }
       });
       if (!membership || membership.status !== 'active') {
-        return res.status(403).json({ error: 'Must be a member to view posts' });
+        return void res.status(403).json({ error: 'Must be a member to view posts' });
       }
     }
 
@@ -485,22 +485,22 @@ router.post('/:id/posts', authenticateJWT, async (req, res) => {
     });
 
     if (!membership || membership.status !== 'active') {
-      return res.status(403).json({ error: 'Must be a member to post' });
+      return void res.status(403).json({ error: 'Must be a member to post' });
     }
 
     if (membership.status === 'muted') {
-      return res.status(403).json({ error: 'You are muted in this group' });
+      return void res.status(403).json({ error: 'You are muted in this group' });
     }
 
     const { type = 'text', title, content, mediaUrls, pollOptions, pollEndsAt, isAnonymous = false } = req.body;
 
     if (!content) {
-      return res.status(400).json({ error: 'Content is required' });
+      return void res.status(400).json({ error: 'Content is required' });
     }
 
     // Check content length
     if (content.length > 2000) {
-      return res.status(400).json({ error: 'Content exceeds 2000 character limit' });
+      return void res.status(400).json({ error: 'Content exceeds 2000 character limit' });
     }
 
     const post = await prisma.groupPost.create({
@@ -547,7 +547,7 @@ router.post('/:id/posts/:postId/react', authenticateJWT, async (req, res) => {
 
     const validReactions = ['like', 'love', 'support', 'celebrate', 'insightful', 'curious'];
     if (!validReactions.includes(type)) {
-      return res.status(400).json({ error: 'Invalid reaction type' });
+      return void res.status(400).json({ error: 'Invalid reaction type' });
     }
 
     // Check if already reacted
@@ -567,14 +567,14 @@ router.post('/:id/posts/:postId/react', authenticateJWT, async (req, res) => {
             data: { likeCount: { decrement: 1 } }
           })
         ]);
-        return res.json({ success: true, reaction: null });
+        return void res.json({ success: true, reaction: null });
       } else {
         // Update reaction type
         await prisma.groupPostReaction.update({
           where: { postId_userId: { postId, userId } },
           data: { type }
         });
-        return res.json({ success: true, reaction: type });
+        return void res.json({ success: true, reaction: type });
       }
     }
 
@@ -611,11 +611,11 @@ router.post('/:id/posts/:postId/comments', authenticateJWT, async (req, res) => 
     });
 
     if (!membership || membership.status !== 'active') {
-      return res.status(403).json({ error: 'Must be a member to comment' });
+      return void res.status(403).json({ error: 'Must be a member to comment' });
     }
 
     if (content.length > 1000) {
-      return res.status(400).json({ error: 'Comment exceeds 1000 character limit' });
+      return void res.status(400).json({ error: 'Comment exceeds 1000 character limit' });
     }
 
     const comment = await prisma.groupPostComment.create({
@@ -682,7 +682,7 @@ router.post('/:id/events', authenticateJWT, async (req, res) => {
     });
 
     if (!membership || !['owner', 'admin', 'moderator'].includes(membership.role)) {
-      return res.status(403).json({ error: 'Not authorized to create events' });
+      return void res.status(403).json({ error: 'Not authorized to create events' });
     }
 
     const { title, description, startDate, endDate, isOnline, location, meetingUrl, maxAttendees } = req.body;
@@ -729,10 +729,10 @@ router.post('/:id/announcements', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, body, pinned = false } = req.body;
-    if (!title || !body) return res.status(400).json({ error: 'Title and body are required' });
+    if (!title || !body) return void res.status(400).json({ error: 'Title and body are required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupAnnouncements.get(id) || [];
     const announcement = { id: `${Date.now()}`, title, body, pinned, createdAt: new Date().toISOString() };
@@ -765,10 +765,10 @@ router.post('/:id/resources', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, url, type = 'link', description } = req.body;
-    if (!title || !url) return res.status(400).json({ error: 'Title and url are required' });
+    if (!title || !url) return void res.status(400).json({ error: 'Title and url are required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupResources.get(id) || [];
     const resource = { id: `${Date.now()}`, title, url, type, description: description || null, createdAt: new Date().toISOString() };
@@ -820,7 +820,7 @@ router.get('/:id/analytics', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     let members = 0;
     let posts = 0;
@@ -862,10 +862,10 @@ router.post('/:id/challenges', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, description, points = 10 } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
+    if (!title) return void res.status(400).json({ error: 'Title is required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupChallenges.get(id) || [];
     const challenge = { id: `${Date.now()}`, title, description: description || null, points, participants: [] };
@@ -884,7 +884,7 @@ router.post('/:id/challenges/:challengeId/join', authenticateJWT, async (req, re
     const userId = req.user.id;
     const list = groupChallenges.get(id) || [];
     const challenge = list.find((c) => c.id === challengeId);
-    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+    if (!challenge) return void res.status(404).json({ error: 'Challenge not found' });
 
     challenge.participants = challenge.participants || [];
     if (!challenge.participants.includes(userId)) {
@@ -919,10 +919,10 @@ router.post('/:id/live-rooms', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, description } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
+    if (!title) return void res.status(400).json({ error: 'Title is required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupLiveRooms.get(id) || [];
     const room = { id: `${Date.now()}`, title, description: description || null, createdAt: new Date().toISOString() };
@@ -951,10 +951,10 @@ router.post('/:id/cohorts', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, description } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
+    if (!title) return void res.status(400).json({ error: 'Title is required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupCohorts.get(id) || [];
     const cohort = { id: `${Date.now()}`, title, description: description || null, createdAt: new Date().toISOString() };
@@ -987,10 +987,10 @@ router.post('/:id/badges', authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { name, description } = req.body;
-    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (!name) return void res.status(400).json({ error: 'Name is required' });
 
     const allowed = await isGroupModerator(id, userId);
-    if (!allowed) return res.status(403).json({ error: 'Not authorized' });
+    if (!allowed) return void res.status(403).json({ error: 'Not authorized' });
 
     const list = groupBadges.get(id) || [];
     const badge = { id: `${Date.now()}`, name, description: description || null };
@@ -1022,12 +1022,12 @@ router.put('/:id/members/:memberId/role', authenticateJWT, async (req, res) => {
     });
 
     if (!adminMembership || !['owner', 'admin'].includes(adminMembership.role)) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     // Only owner can make someone admin
     if (role === 'admin' && adminMembership.role !== 'owner') {
-      return res.status(403).json({ error: 'Only owner can assign admin role' });
+      return void res.status(403).json({ error: 'Only owner can assign admin role' });
     }
 
     // Cannot change owner role
@@ -1036,7 +1036,7 @@ router.put('/:id/members/:memberId/role', authenticateJWT, async (req, res) => {
     });
 
     if (targetMembership?.role === 'owner') {
-      return res.status(400).json({ error: 'Cannot change owner role' });
+      return void res.status(400).json({ error: 'Cannot change owner role' });
     }
 
     await prisma.groupMember.update({
@@ -1066,7 +1066,7 @@ router.post('/:id/members/:memberId/ban', authenticateJWT, async (req, res) => {
     });
 
     if (!adminMembership || !['owner', 'admin', 'moderator'].includes(adminMembership.role)) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     // Cannot ban owner/admin if you're not owner
@@ -1075,11 +1075,11 @@ router.post('/:id/members/:memberId/ban', authenticateJWT, async (req, res) => {
     });
 
     if (targetMembership?.role === 'owner') {
-      return res.status(400).json({ error: 'Cannot ban owner' });
+      return void res.status(400).json({ error: 'Cannot ban owner' });
     }
 
     if (targetMembership?.role === 'admin' && adminMembership.role !== 'owner') {
-      return res.status(403).json({ error: 'Only owner can ban admins' });
+      return void res.status(403).json({ error: 'Only owner can ban admins' });
     }
 
     await prisma.$transaction([
@@ -1105,4 +1105,5 @@ router.post('/:id/members/:memberId/ban', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 

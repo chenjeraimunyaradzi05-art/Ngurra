@@ -23,21 +23,21 @@ router.get('/health', (_req, res) => {
 // POST /video-sessions/mentor-sessions/:id/token
 // Issues a LiveKit token scoped to a specific MentorSession.
 // Access: mentor, mentee (or admin)
-router.post('/mentor-sessions/:id/token', authenticate(), async (req: any, res) => {
+router.post('/mentor-sessions/:id/token', authenticate, async (req: any, res) => {
   const { url, apiKey, apiSecret } = getLiveKitConfig();
 
   if (!url || !apiKey || !apiSecret) {
-    return res.status(501).json({ error: 'LiveKit is not configured' });
+    return void res.status(501).json({ error: 'LiveKit is not configured' });
   }
 
   const sessionId = String(req.params?.id || '').trim();
   if (!sessionId) {
-    return res.status(400).json({ error: 'session id is required' });
+    return void res.status(400).json({ error: 'session id is required' });
   }
 
   const prisma = req.app?.locals?.prisma;
   if (!prisma) {
-    return res.status(500).json({ error: 'Prisma client not available' });
+    return void res.status(500).json({ error: 'Prisma client not available' });
   }
 
   const session = await prisma.mentorSession.findUnique({
@@ -51,19 +51,19 @@ router.post('/mentor-sessions/:id/token', authenticate(), async (req: any, res) 
   });
 
   if (!session) {
-    return res.status(404).json({ error: 'Mentor session not found' });
+    return void res.status(404).json({ error: 'Mentor session not found' });
   }
 
   const userId = String(req.user?.id || '').trim();
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return void res.status(401).json({ error: 'Authentication required' });
   }
 
   const role = String(req.user?.role || '').toLowerCase();
   const isAdmin = role === 'admin';
   const isParticipant = session.mentorId === userId || session.menteeId === userId;
   if (!isParticipant && !isAdmin) {
-    return res.status(403).json({ error: 'You do not have access to this mentor session' });
+    return void res.status(403).json({ error: 'You do not have access to this mentor session' });
   }
 
   // Deterministic room name: both parties join the same room.
@@ -115,7 +115,7 @@ router.post('/mentor-sessions/:id/token', authenticate(), async (req: any, res) 
 
   const token = await at.toJwt();
 
-  return res.json({
+  return void res.json({
     url,
     token,
     roomName,
@@ -126,21 +126,21 @@ router.post('/mentor-sessions/:id/token', authenticate(), async (req: any, res) 
 
 // POST /video-sessions/token
 // Body: { roomName: string, identity?: string, name?: string }
-router.post('/token', authenticate(), async (req: any, res) => {
+router.post('/token', authenticate, async (req: any, res) => {
   const { url, apiKey, apiSecret } = getLiveKitConfig();
 
   if (!url || !apiKey || !apiSecret) {
-    return res.status(501).json({ error: 'LiveKit is not configured' });
+    return void res.status(501).json({ error: 'LiveKit is not configured' });
   }
 
   const roomName = String(req.body?.roomName || '').trim();
   if (!roomName) {
-    return res.status(400).json({ error: 'roomName is required' });
+    return void res.status(400).json({ error: 'roomName is required' });
   }
 
   const identity = String(req.body?.identity || req.user?.id || '').trim();
   if (!identity) {
-    return res.status(400).json({ error: 'identity is required' });
+    return void res.status(400).json({ error: 'identity is required' });
   }
 
   const name = req.body?.name ? String(req.body.name) : undefined;
@@ -160,7 +160,7 @@ router.post('/token', authenticate(), async (req: any, res) => {
 
   const token = await at.toJwt();
 
-  return res.json({
+  return void res.json({
     url,
     token,
     roomName,
@@ -185,14 +185,14 @@ router.post('/webhooks/livekit', express.raw({ type: 'application/webhook+json' 
   
   // If no webhook secret configured, accept all events in dev mode
   if (!webhookSecret && process.env.NODE_ENV === 'production') {
-    return res.status(401).json({ error: 'Webhook secret not configured' });
+    return void res.status(401).json({ error: 'Webhook secret not configured' });
   }
 
   // Verify webhook signature if secret is configured
   if (webhookSecret) {
     const signature = req.headers['authorization'];
     if (!signature) {
-      return res.status(401).json({ error: 'Missing webhook signature' });
+      return void res.status(401).json({ error: 'Missing webhook signature' });
     }
     // In production, verify the signature using livekit-server-sdk
     // For now, we trust the Authorization header format: "Bearer <token>"
@@ -203,13 +203,13 @@ router.post('/webhooks/livekit', express.raw({ type: 'application/webhook+json' 
     const body = typeof req.body === 'string' ? req.body : req.body.toString('utf8');
     event = JSON.parse(body);
   } catch (err) {
-    return res.status(400).json({ error: 'Invalid JSON payload' });
+    return void res.status(400).json({ error: 'Invalid JSON payload' });
   }
 
   const prisma = req.app?.locals?.prisma;
   if (!prisma) {
     console.warn('[LiveKit Webhook] Prisma not available, skipping DB update');
-    return res.status(200).json({ received: true });
+    return void res.status(200).json({ received: true });
   }
 
   const eventType = event.event;
@@ -303,7 +303,7 @@ router.post('/webhooks/livekit', express.raw({ type: 'application/webhook+json' 
     // Don't fail the webhook; LiveKit will retry
   }
 
-  return res.status(200).json({ received: true, event: eventType });
+  return void res.status(200).json({ received: true, event: eventType });
 });
 
 // Keep a simple index route for discoverability
@@ -319,3 +319,5 @@ router.get('/', (_req, res) => {
 });
 
 export default router;
+
+

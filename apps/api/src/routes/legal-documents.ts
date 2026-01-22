@@ -65,7 +65,7 @@ router.post('/templates/render', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to render template';
     res.status(message === 'Template not found' ? 404 : 500).json({ error: message });
@@ -93,7 +93,7 @@ router.post('/from-template', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     const message = error instanceof Error ? error.message : 'Failed to create from template';
     res.status(message === 'Template not found' ? 404 : 500).json({ error: message });
@@ -132,7 +132,7 @@ router.post('/', async (req, res) => {
     res.status(201).json({ document });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[legal-documents] create error', error);
     res.status(500).json({ error: 'Failed to create legal document' });
@@ -146,7 +146,7 @@ router.get('/:documentId', async (req, res) => {
     });
 
     if (!document) {
-      return res.status(404).json({ error: 'Legal document not found' });
+      return void res.status(404).json({ error: 'Legal document not found' });
     }
 
     res.json({ document });
@@ -165,7 +165,7 @@ router.post('/:documentId/render', async (req, res) => {
     });
 
     if (!document) {
-      return res.status(404).json({ error: 'Legal document not found' });
+      return void res.status(404).json({ error: 'Legal document not found' });
     }
 
     const { content, missingVariables } = renderTemplateContent(String(document.content || ''), input.variables || {});
@@ -177,7 +177,7 @@ router.post('/:documentId/render', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[legal-documents] render error', error);
     res.status(500).json({ error: 'Failed to render legal document' });
@@ -191,7 +191,7 @@ router.get('/:documentId/export/pdf', async (req, res) => {
     });
 
     if (!document) {
-      return res.status(404).json({ error: 'Legal document not found' });
+      return void res.status(404).json({ error: 'Legal document not found' });
     }
 
     const title = document.title || 'Legal Document';
@@ -240,7 +240,7 @@ router.patch('/:documentId', async (req, res) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Legal document not found' });
+      return void res.status(404).json({ error: 'Legal document not found' });
     }
 
     const document = await prisma.legalDocument.update({
@@ -251,7 +251,7 @@ router.patch('/:documentId', async (req, res) => {
     res.json({ document });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.issues });
+      return void res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('[legal-documents] update error', error);
     res.status(500).json({ error: 'Failed to update legal document' });
@@ -266,7 +266,7 @@ router.delete('/:documentId', async (req, res) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: 'Legal document not found' });
+      return void res.status(404).json({ error: 'Legal document not found' });
     }
 
     await prisma.legalDocument.delete({ where: { id: req.params.documentId } });
@@ -278,3 +278,4 @@ router.delete('/:documentId', async (req, res) => {
 });
 
 export default router;
+

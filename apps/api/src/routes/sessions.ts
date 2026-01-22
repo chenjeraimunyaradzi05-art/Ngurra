@@ -171,7 +171,7 @@ router.post('/heartbeat', authenticateJWT, async (req, res) => {
     const sessionId = req.sessionId;
     
     if (!sessionId) {
-      return res.json({ success: true }); // No session tracking
+      return void res.json({ success: true }); // No session tracking
     }
 
     await prisma.userSession.update({
@@ -202,12 +202,12 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
     });
 
     if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
+      return void res.status(404).json({ error: 'Session not found' });
     }
 
     // Prevent revoking current session through this endpoint
     if (id === currentSessionId) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Cannot revoke current session',
         message: 'Use /auth/logout to end your current session',
       });
@@ -411,3 +411,4 @@ module.exports.parseUserAgent = parseUserAgent;
 module.exports.getClientIp = getClientIp;
 
 export {};
+

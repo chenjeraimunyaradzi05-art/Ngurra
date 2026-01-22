@@ -25,7 +25,7 @@ const advertisingInquirySchema = z.object({
 router.post('/', async (req, res) => {
     const parse = advertisingInquirySchema.safeParse(req.body);
     if (!parse.success) {
-        return res.status(400).json({ error: parse.error.flatten() });
+        return void res.status(400).json({ error: parse.error.flatten() });
     }
 
     const { companyName, contactName, email, phone, website, budget, goals, selectedPlan, message } = parse.data;
@@ -107,14 +107,14 @@ router.post('/', async (req, res) => {
             console.error('Failed to send advertising confirmation:', emailErr);
         }
 
-        return res.status(201).json({
+        return void res.status(201).json({
             success: true,
             message: 'Your advertising inquiry has been received. Our partnerships team will contact you within 24-48 hours.',
             id: inquiry.id,
         });
     } catch (err) {
         console.error('Advertising inquiry error:', err);
-        return res.status(500).json({ error: 'Failed to submit advertising inquiry' });
+        return void res.status(500).json({ error: 'Failed to submit advertising inquiry' });
     }
 });
 
@@ -136,7 +136,7 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
             prisma.advertisingInquiry.count({ where }),
         ]);
 
-        return res.json({
+        return void res.json({
             inquiries: inquiries.map(inq => ({
                 ...inq,
                 goals: inq.goals ? JSON.parse(inq.goals) : [],
@@ -147,7 +147,7 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('List advertising inquiries error:', err);
-        return res.status(500).json({ error: 'Failed to list inquiries' });
+        return void res.status(500).json({ error: 'Failed to list inquiries' });
     }
 });
 
@@ -159,16 +159,16 @@ router.get('/:id', authenticate, requireAdmin, async (req, res) => {
         });
 
         if (!inquiry) {
-            return res.status(404).json({ error: 'Inquiry not found' });
+            return void res.status(404).json({ error: 'Inquiry not found' });
         }
 
-        return res.json({
+        return void res.json({
             ...inquiry,
             goals: inquiry.goals ? JSON.parse(inquiry.goals) : [],
         });
     } catch (err) {
         console.error('Get advertising inquiry error:', err);
-        return res.status(500).json({ error: 'Failed to get inquiry' });
+        return void res.status(500).json({ error: 'Failed to get inquiry' });
     }
 });
 
@@ -186,7 +186,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
             },
         });
 
-        return res.json({
+        return void res.json({
             success: true,
             inquiry: {
                 ...inquiry,
@@ -195,8 +195,9 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
         });
     } catch (err) {
         console.error('Update advertising inquiry error:', err);
-        return res.status(500).json({ error: 'Failed to update inquiry' });
+        return void res.status(500).json({ error: 'Failed to update inquiry' });
     }
 });
 
 export default router;
+

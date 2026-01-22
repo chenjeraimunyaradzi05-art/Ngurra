@@ -20,17 +20,17 @@ function isAdmin(req) {
 router.get('/company/overview', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const company = await prisma.companyProfile.findUnique({ where: { userId } });
-    if (!company) return res.status(404).json({ error: 'Company profile not found' });
+    if (!company) return void res.status(404).json({ error: 'Company profile not found' });
 
     const days = Math.max(1, Math.min(365, Number(req.query.days || 90)));
     const start = new Date();
     start.setDate(start.getDate() - days + 1);
 
     if (!prisma?.placementOutcome || typeof prisma.placementOutcome.count !== 'function') {
-      return res.json({ periodDays: days, placements: 0, month1RetentionPercent: 0 });
+      return void res.json({ periodDays: days, placements: 0, month1RetentionPercent: 0 });
     }
 
     // Count HIRED placements (placement outcomes where application.job.userId == company.userId)
@@ -51,7 +51,7 @@ router.get('/company/overview', authenticateJWT, async (req, res) => {
 // Admin summary: placements per company and timeseries
 router.get('/admin/placements-summary', async (req, res) => {
   try {
-    if (!isAdmin(req)) return res.status(403).json({ error: 'Not authorized' });
+    if (!isAdmin(req)) return void res.status(403).json({ error: 'Not authorized' });
 
     const days = Math.max(1, Math.min(365, Number(req.query.days || 90)));
     const start = new Date();
@@ -66,7 +66,7 @@ router.get('/admin/placements-summary', async (req, res) => {
         dayMap[key] = 0;
       }
       const timeseries = Object.entries(dayMap).map(([date, count]) => ({ date, count }));
-      return res.json({ total: 0, byCompany: {}, timeseries });
+      return void res.json({ total: 0, byCompany: {}, timeseries });
     }
 
     // Fetch outcomes HIRED in timeframe (limit to reasonable size)
@@ -103,7 +103,7 @@ router.get('/admin/placements-summary', async (req, res) => {
 router.get('/certification', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const status = await getCertificationStatus(userId);
     res.json(status);
@@ -117,7 +117,7 @@ router.get('/certification', authenticateJWT, async (req, res) => {
 router.get('/certification/eligibility', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const eligibility = await checkCertificationEligibility(userId);
     res.json(eligibility);
@@ -131,7 +131,7 @@ router.get('/certification/eligibility', authenticateJWT, async (req, res) => {
 router.post('/certification/update', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
 
     const result = await updateCertificationBadge(userId);
     res.json(result);
@@ -142,4 +142,5 @@ router.post('/certification/update', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
 

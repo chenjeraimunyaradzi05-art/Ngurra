@@ -226,7 +226,7 @@ function createRateLimiter(type = 'api', overrides = {}) {
 
       if (!result.allowed) {
         res.set('Retry-After', Math.ceil(config.windowMs / 1000));
-        return res.status(429).json({
+        return void res.status(429).json({
           error: 'rate_limited',
           message: config.message,
           retryAfter: Math.ceil(config.windowMs / 1000),
@@ -285,7 +285,7 @@ function rateLimitByKey(keyFn, type = 'api', overrides = {}) {
 
       if (!result.allowed) {
         res.set('Retry-After', Math.ceil(config.windowMs / 1000));
-        return res.status(429).json({
+        return void res.status(429).json({
           error: 'rate_limited',
           message: config.message,
           retryAfter: Math.ceil(config.windowMs / 1000),
@@ -385,3 +385,4 @@ module.exports = {
 };
 
 export {};
+

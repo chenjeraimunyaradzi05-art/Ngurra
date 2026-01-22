@@ -94,15 +94,15 @@ router.post('/', authenticateJWT, async (req, res) => {
         } = req.body;
         
         if (!type || !['image', 'video', 'text'].includes(type)) {
-            return res.status(400).json({ error: 'Valid type (image, video, text) is required' });
+            return void res.status(400).json({ error: 'Valid type (image, video, text) is required' });
         }
         
         if (type === 'text' && !text) {
-            return res.status(400).json({ error: 'Text is required for text stories' });
+            return void res.status(400).json({ error: 'Text is required for text stories' });
         }
         
         if ((type === 'image' || type === 'video') && !mediaUrl) {
-            return res.status(400).json({ error: 'mediaUrl is required for image/video stories' });
+            return void res.status(400).json({ error: 'mediaUrl is required for image/video stories' });
         }
         
         // Get user info
@@ -112,7 +112,7 @@ router.post('/', authenticateJWT, async (req, res) => {
         });
         
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return void res.status(404).json({ error: 'User not found' });
         }
         
         const storyId = crypto.randomUUID();
@@ -173,7 +173,7 @@ router.get('/feed', authenticateJWT, async (req, res) => {
         const now = new Date();
         
         // Get user's connections
-        const connections = await prisma.connection.findMany({
+        const connections = await prisma.userConnection.findMany({
             where: {
                 OR: [
                     { requesterId: userId, status: 'ACCEPTED' },
@@ -297,7 +297,7 @@ router.get('/user/:userId', authenticateJWT, async (req, res) => {
         
         // Check if viewer can see target's stories
         if (viewerId !== targetUserId) {
-            const connection = await prisma.connection.findFirst({
+            const connection = await prisma.userConnection.findFirst({
                 where: {
                     OR: [
                         { requesterId: viewerId, addresseeId: targetUserId, status: 'ACCEPTED' },
@@ -326,7 +326,7 @@ router.get('/user/:userId', authenticateJWT, async (req, res) => {
                     }
                 }
                 
-                return res.json({
+                return void res.json({
                     ok: true,
                     stories: publicStories,
                     isConnection: false
@@ -389,12 +389,12 @@ router.post('/:storyId/view', authenticateJWT, async (req, res) => {
         const story = storiesStore.get(storyId);
         
         if (!story) {
-            return res.status(404).json({ error: 'Story not found' });
+            return void res.status(404).json({ error: 'Story not found' });
         }
         
         // Check if already expired
         if (story.expiresAt < new Date() && !story.isHighlight) {
-            return res.status(410).json({ error: 'Story has expired' });
+            return void res.status(410).json({ error: 'Story has expired' });
         }
         
         // Mark as viewed (don't count author's own views)
@@ -425,17 +425,17 @@ router.post('/:storyId/react', authenticateJWT, async (req, res) => {
         const story = storiesStore.get(storyId);
         
         if (!story) {
-            return res.status(404).json({ error: 'Story not found' });
+            return void res.status(404).json({ error: 'Story not found' });
         }
         
         if (story.expiresAt < new Date() && !story.isHighlight) {
-            return res.status(410).json({ error: 'Story has expired' });
+            return void res.status(410).json({ error: 'Story has expired' });
         }
         
         // Valid reactions
         const validReactions = ['❤️', '😂', '😮', '😢', '👏', '🔥', '💯'];
         if (!validReactions.includes(reaction)) {
-            return res.status(400).json({ error: 'Invalid reaction' });
+            return void res.status(400).json({ error: 'Invalid reaction' });
         }
         
         // Toggle reaction
@@ -467,11 +467,11 @@ router.delete('/:storyId', authenticateJWT, async (req, res) => {
         const story = storiesStore.get(storyId);
         
         if (!story) {
-            return res.status(404).json({ error: 'Story not found' });
+            return void res.status(404).json({ error: 'Story not found' });
         }
         
         if (story.authorId !== userId) {
-            return res.status(403).json({ error: 'Not authorized to delete this story' });
+            return void res.status(403).json({ error: 'Not authorized to delete this story' });
         }
         
         // Remove from user's stories list
@@ -505,11 +505,11 @@ router.post('/:storyId/highlight', authenticateJWT, async (req, res) => {
         const story = storiesStore.get(storyId);
         
         if (!story) {
-            return res.status(404).json({ error: 'Story not found' });
+            return void res.status(404).json({ error: 'Story not found' });
         }
         
         if (story.authorId !== userId) {
-            return res.status(403).json({ error: 'Not authorized to highlight this story' });
+            return void res.status(403).json({ error: 'Not authorized to highlight this story' });
         }
         
         // Mark as highlight (won't expire)
@@ -538,11 +538,11 @@ router.get('/:storyId/viewers', authenticateJWT, async (req, res) => {
         const story = storiesStore.get(storyId);
         
         if (!story) {
-            return res.status(404).json({ error: 'Story not found' });
+            return void res.status(404).json({ error: 'Story not found' });
         }
         
         if (story.authorId !== userId) {
-            return res.status(403).json({ error: 'Only the author can view story analytics' });
+            return void res.status(403).json({ error: 'Only the author can view story analytics' });
         }
         
         // Get viewer details
@@ -623,3 +623,4 @@ router.get('/highlights/:userId', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+

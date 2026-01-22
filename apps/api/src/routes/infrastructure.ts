@@ -189,7 +189,7 @@ router.post('/cdn/purge', async (req, res) => {
     const { paths } = req.body;
     
     if (!paths || !Array.isArray(paths)) {
-      return res.status(400).json({ error: 'paths array required' });
+      return void res.status(400).json({ error: 'paths array required' });
     }
 
     const result = await cdn.purgeCache(paths);
@@ -342,4 +342,5 @@ export default router;
 
 
 export {};
+
 

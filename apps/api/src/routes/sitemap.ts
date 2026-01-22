@@ -30,13 +30,13 @@ router.get('/jobs', async (req: Request, res: Response) => {
     // Try cache first
     const cached = await cache.get('sitemap:jobs');
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
 
     const jobs = await prisma.job.findMany({
       where: { 
-        status: 'PUBLISHED',
-        deadline: {
+        isActive: true,
+        expiresAt: {
           gte: new Date()
         }
       },
@@ -80,12 +80,12 @@ router.get('/courses', async (req: Request, res: Response) => {
     // Try cache first
     const cached = await cache.get('sitemap:courses');
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
 
     const courses = await prisma.course.findMany({
       where: { 
-        isPublished: true 
+        isActive: true 
       },
       select: {
         id: true,
@@ -126,12 +126,12 @@ router.get('/events', async (req: Request, res: Response) => {
     // Try cache first
     const cached = await cache.get('sitemap:events');
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
 
     const events = await prisma.culturalEvent.findMany({
       where: { 
-        isPublished: true,
+        isPublic: true,
         startDate: {
           gte: new Date()
         }
@@ -175,12 +175,12 @@ router.get('/mentors', async (req: Request, res: Response) => {
     // Try cache first
     const cached = await cache.get('sitemap:mentors');
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
 
     const mentors = await prisma.mentorProfile.findMany({
       where: { 
-        isPublished: true 
+        active: true 
       },
       select: {
         id: true,
@@ -221,30 +221,30 @@ router.get('/all', async (req: Request, res: Response) => {
     // Try cache first
     const cached = await cache.get('sitemap:all');
     if (cached) {
-      return res.json(cached);
+      return void res.json(cached);
     }
 
     const [jobs, courses, events, mentors] = await Promise.all([
       prisma.job.findMany({
         where: { 
-          status: 'PUBLISHED',
-          deadline: { gte: new Date() }
+          isActive: true,
+          expiresAt: { gte: new Date() }
         },
         select: { id: true, updatedAt: true },
       }),
       prisma.course.findMany({
-        where: { isPublished: true },
+        where: { isActive: true },
         select: { id: true, updatedAt: true },
       }),
       prisma.culturalEvent.findMany({
         where: { 
-          isPublished: true,
+          isPublic: true,
           startDate: { gte: new Date() }
         },
         select: { id: true, updatedAt: true },
       }),
       prisma.mentorProfile.findMany({
-        where: { isPublished: true },
+        where: { active: true },
         select: { id: true, updatedAt: true },
       }),
     ]);
@@ -275,3 +275,4 @@ router.get('/all', async (req: Request, res: Response) => {
 });
 
 export default router;
+

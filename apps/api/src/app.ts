@@ -442,7 +442,7 @@ export function createApp() {
         if (process.env.NODE_ENV === 'production') {
             const metricsToken = process.env.METRICS_SECRET_TOKEN;
             if (metricsToken && authHeader !== `Bearer ${metricsToken}`) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return void res.status(401).json({ error: 'Unauthorized' });
             }
         }
         const metrics = getMetrics();
@@ -456,7 +456,7 @@ export function createApp() {
         if (process.env.NODE_ENV === 'production') {
             const metricsToken = process.env.METRICS_SECRET_TOKEN;
             if (metricsToken && authHeader !== `Bearer ${metricsToken}`) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return void res.status(401).json({ error: 'Unauthorized' });
             }
         }
         const summary = getMetricsSummary();
@@ -474,3 +474,4 @@ export function createApp() {
 
     return app;
 }
+

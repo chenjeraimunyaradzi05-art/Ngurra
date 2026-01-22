@@ -45,7 +45,7 @@ router.get('/businesses/:businessId', async (req, res) => {
     });
 
     if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
+      return void res.status(404).json({ error: 'Business not found' });
     }
 
     res.json({ business });
@@ -185,3 +185,4 @@ router.get('/categories', async (_req, res) => {
 });
 
 export default router;
+

@@ -13,7 +13,7 @@ function isAllowedUserType(req: any, allowed: string[]) {
 
 function requireUserType(allowed: string[]) {
   return (req: any, res: any, next: any) => {
-    if (!isAllowedUserType(req, allowed)) return res.status(403).json({ error: 'Not authorized' });
+    if (!isAllowedUserType(req, allowed)) return void res.status(403).json({ error: 'Not authorized' });
     return next();
   };
 }
@@ -41,13 +41,13 @@ async function safeCount(modelName: string, args: any) {
 /**
  * GET /reporting/metrics - Get platform impact metrics
  */
-router.get('/metrics', authenticate(), async (req: any, res) => {
+router.get('/metrics', authenticate, async (req: any, res) => {
   try {
     const { period, startDate, endDate } = req.query;
 
     // Government/institution reporting
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'INSTITUTION'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     // Calculate date range
@@ -161,10 +161,10 @@ router.get('/metrics', authenticate(), async (req: any, res) => {
 /**
  * GET /reporting/metrics/history - Get historical metrics
  */
-router.get('/metrics/history', authenticate(), async (req: any, res) => {
+router.get('/metrics/history', authenticate, async (req: any, res) => {
   try {
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'INSTITUTION'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const { metric, limit = 12 } = req.query;
@@ -196,7 +196,7 @@ router.get('/metrics/history', authenticate(), async (req: any, res) => {
  * - period=month|quarter|year (optional)
  * - startDate/endDate (optional)
  */
-router.get('/ctg', authenticate(), requireUserType(['GOVERNMENT', 'ADMIN']), async (req: any, res) => {
+router.get('/ctg', authenticate, requireUserType(['GOVERNMENT', 'ADMIN']), async (req: any, res) => {
   try {
     const { period, startDate, endDate } = req.query;
 
@@ -290,11 +290,11 @@ router.get('/ctg', authenticate(), requireUserType(['GOVERNMENT', 'ADMIN']), asy
 /**
  * GET /reporting/rap - Generate RAP compliance report
  */
-router.get('/rap', authenticate(), async (req: any, res) => {
+router.get('/rap', authenticate, async (req: any, res) => {
   try {
     // RAP reports are company-facing as well as government-facing
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'COMPANY'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const { year = new Date().getFullYear() } = req.query;
@@ -410,10 +410,10 @@ router.get('/rap', authenticate(), async (req: any, res) => {
  * - metric (optional)
  * - limit (optional)
  */
-router.get('/export', authenticate(), async (req: any, res) => {
+router.get('/export', authenticate, async (req: any, res) => {
   try {
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'INSTITUTION'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const { format = 'csv', metric, limit = 250 } = req.query;
@@ -429,21 +429,21 @@ router.get('/export', authenticate(), async (req: any, res) => {
 
     res.setHeader('Content-Type', exported.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    return res.send(exported.buffer);
+    return void res.send(exported.buffer);
   } catch (err: any) {
     const status = err?.statusCode || 500;
     console.error('Export metrics error:', err);
-    return res.status(status).json({ error: err?.message || 'Failed to export report' });
+    return void res.status(status).json({ error: err?.message || 'Failed to export report' });
   }
 });
 
 /**
  * GET /reporting/export/csv - Export metrics as CSV
  */
-router.get('/export/csv', authenticate(), async (req: any, res) => {
+router.get('/export/csv', authenticate, async (req: any, res) => {
   try {
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'INSTITUTION'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const { reportType = 'metrics', startDate, endDate } = req.query;
@@ -519,10 +519,10 @@ router.get('/export/csv', authenticate(), async (req: any, res) => {
 /**
  * GET /reporting/export/pdf - Generate PDF report (placeholder - needs PDF library)
  */
-router.get('/export/pdf', authenticate(), async (req: any, res) => {
+router.get('/export/pdf', authenticate, async (req: any, res) => {
   try {
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN', 'INSTITUTION'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     // Note: Full PDF generation would require a library like puppeteer or pdfkit
@@ -550,10 +550,10 @@ router.get('/export/pdf', authenticate(), async (req: any, res) => {
 /**
  * POST /reporting/sync - Trigger metrics sync (cron/admin)
  */
-router.post('/sync', authenticate(), async (req: any, res) => {
+router.post('/sync', authenticate, async (req: any, res) => {
   try {
     if (!isAllowedUserType(req, ['GOVERNMENT', 'ADMIN'])) {
-      return res.status(403).json({ error: 'Not authorized' });
+      return void res.status(403).json({ error: 'Not authorized' });
     }
 
     const now = new Date();
@@ -593,3 +593,5 @@ router.post('/sync', authenticate(), async (req: any, res) => {
 });
 
 export default router;
+
+

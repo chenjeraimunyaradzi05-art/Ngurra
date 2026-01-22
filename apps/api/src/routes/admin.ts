@@ -291,7 +291,7 @@ router.post('/reports/:id/:action', auth, requireAdmin, async (req, res) => {
         const adminId = req.user?.id;
 
         const report = await prisma.contentReport.findUnique({ where: { id } });
-        if (!report) return res.status(404).json({ error: 'Report not found' });
+        if (!report) return void res.status(404).json({ error: 'Report not found' });
 
         const actionMap: Record<string, { status: string; actionTaken: string; resolution: string }> = {
             approve: { status: 'resolved', actionTaken: 'remove_content', resolution: 'Report approved' },
@@ -301,7 +301,7 @@ router.post('/reports/:id/:action', auth, requireAdmin, async (req, res) => {
         };
 
         const mapped = actionMap[action];
-        if (!mapped) return res.status(400).json({ error: 'Invalid action' });
+        if (!mapped) return void res.status(400).json({ error: 'Invalid action' });
 
         const updated = await prisma.contentReport.update({
             where: { id },
@@ -373,3 +373,4 @@ export default router;
 
 
 export {};
+

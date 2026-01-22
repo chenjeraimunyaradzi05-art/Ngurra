@@ -18,12 +18,12 @@ const MAX_TOTAL_RESULTS = 50;
  * - limit: Max results per type (default: 10, max: 20)
  * - page: Pagination (default: 1)
  */
-router.get('/', optionalAuth(), async (req: any, res: any) => {
+router.get('/', optionalAuth, async (req: any, res: any) => {
   try {
     const query = String(req.query.q || '').trim();
     
     if (!query || query.length < 2) {
-      return res.status(400).json({ 
+      return void res.status(400).json({ 
         error: 'Search query must be at least 2 characters' 
       });
     }
@@ -405,7 +405,7 @@ router.get('/suggestions', async (req: any, res: any) => {
     const query = String(req.query.q || '').trim();
     
     if (query.length < 2) {
-      return res.json({ suggestions: [] });
+      return void res.json({ suggestions: [] });
     }
 
     // Get suggestions from recent job titles and skills
@@ -502,7 +502,7 @@ try {
  * GET /search/advanced
  * Advanced search with Elasticsearch and semantic search
  */
-router.get('/advanced', optionalAuth(), async (req: any, res: any) => {
+router.get('/advanced', optionalAuth, async (req: any, res: any) => {
   try {
     const { 
       q: query, 
@@ -514,7 +514,7 @@ router.get('/advanced', optionalAuth(), async (req: any, res: any) => {
     } = req.query;
 
     if (!query || query.length < 2) {
-      return res.status(400).json({ error: 'Query required' });
+      return void res.status(400).json({ error: 'Query required' });
     }
 
     const startTime = Date.now();
@@ -542,7 +542,7 @@ router.get('/advanced', optionalAuth(), async (req: any, res: any) => {
       });
     } else {
       // Fallback to database search
-      return res.redirect(`/search?q=${encodeURIComponent(query)}&types=${type}`);
+      return void res.redirect(`/search?q=${encodeURIComponent(query)}&types=${type}`);
     }
 
     // Track search analytics
@@ -604,7 +604,7 @@ router.get('/location/autocomplete', async (req: any, res: any) => {
     const { q, limit = 10 } = req.query;
 
     if (!locationSearch) {
-      return res.json({ suggestions: [] });
+      return void res.json({ suggestions: [] });
     }
 
     const suggestions = await locationSearch.autocomplete(q, Number(limit));
@@ -620,16 +620,16 @@ router.get('/location/autocomplete', async (req: any, res: any) => {
  * GET /search/jobs/nearby
  * Search jobs near a location
  */
-router.get('/jobs/nearby', optionalAuth(), async (req: any, res: any) => {
+router.get('/jobs/nearby', optionalAuth, async (req: any, res: any) => {
   try {
     const { location, distance = 50, ...filters } = req.query;
 
     if (!location) {
-      return res.status(400).json({ error: 'Location required' });
+      return void res.status(400).json({ error: 'Location required' });
     }
 
     if (!locationSearch) {
-      return res.status(503).json({ error: 'Location search not available' });
+      return void res.status(503).json({ error: 'Location search not available' });
     }
 
     // Get all active jobs
@@ -666,7 +666,7 @@ router.get('/jobs/map', async (req: any, res: any) => {
     const { north, south, east, west } = req.query;
 
     if (!locationSearch) {
-      return res.json({ markers: [], totalJobs: 0 });
+      return void res.json({ markers: [], totalJobs: 0 });
     }
 
     let jobs;
@@ -705,7 +705,7 @@ router.get('/jobs/map', async (req: any, res: any) => {
  * POST /search/track-click
  * Track when user clicks a search result
  */
-router.post('/track-click', optionalAuth(), async (req: any, res: any) => {
+router.post('/track-click', optionalAuth, async (req: any, res: any) => {
   try {
     const { searchId, clickedId, position } = req.body;
 
@@ -724,15 +724,15 @@ router.post('/track-click', optionalAuth(), async (req: any, res: any) => {
  * GET /search/analytics (Admin only)
  * Get search analytics dashboard data
  */
-router.get('/analytics', optionalAuth(), async (req: any, res: any) => {
+router.get('/analytics', optionalAuth, async (req: any, res: any) => {
   try {
     // Check if user is admin
     if (!req.user?.role || req.user.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Admin access required' });
+      return void res.status(403).json({ error: 'Admin access required' });
     }
 
     if (!searchAnalytics) {
-      return res.json({ error: 'Analytics not available' });
+      return void res.json({ error: 'Analytics not available' });
     }
 
     const { days = 30 } = req.query;
@@ -777,3 +777,5 @@ router.get('/health', async (req: any, res: any) => {
 });
 
 export default router;
+
+

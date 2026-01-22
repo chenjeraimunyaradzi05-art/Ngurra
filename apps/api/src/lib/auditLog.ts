@@ -148,7 +148,8 @@ function getSeverity(eventType) {
  * @param {Object} [params.metadata] - Additional context
  * @param {Object} [params.request] - Express request object for IP/user-agent
  */
-export async function createAuditLog({
+export async function createAuditLog(args: any) {
+  const {
   category,
   event,
   userId = null,
@@ -157,7 +158,7 @@ export async function createAuditLog({
   targetResourceType = null,
   metadata = {},
   request = null
-}) {
+} = args;
   try {
     const logEntry = {
       category,

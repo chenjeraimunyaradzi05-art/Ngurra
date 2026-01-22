@@ -89,11 +89,11 @@ router.get('/verify/:token', async (req, res) => {
     });
 
     if (!userBadge) {
-      return res.status(404).json({ error: 'Badge not found or invalid token' });
+      return void res.status(404).json({ error: 'Badge not found or invalid token' });
     }
 
     if (userBadge.expiresAt && userBadge.expiresAt < new Date()) {
-      return res.status(410).json({ error: 'Badge has expired' });
+      return void res.status(410).json({ error: 'Badge has expired' });
     }
 
     const user = await prisma.user.findUnique({
@@ -141,7 +141,7 @@ router.get('/:id', async (req, res) => {
     });
 
     if (!badge) {
-      return res.status(404).json({ error: 'Badge not found' });
+      return void res.status(404).json({ error: 'Badge not found' });
     }
 
     res.json({ badge });
@@ -178,10 +178,10 @@ router.post('/issue', authenticate, async (req, res) => {
     res.status(201).json({ userBadge });
   } catch (err) {
     if (err.statusCode) {
-      return res.status(err.statusCode).json({ error: err.message });
+      return void res.status(err.statusCode).json({ error: err.message });
     }
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'User already has this badge' });
+      return void res.status(409).json({ error: 'User already has this badge' });
     }
     console.error('Issue badge error:', err);
     res.status(500).json({ error: 'Failed to issue badge' });
@@ -205,10 +205,10 @@ router.post('/issue-for-course', async (req, res) => {
     res.status(201).json({ userBadge });
   } catch (err) {
     if (err.statusCode) {
-      return res.status(err.statusCode).json({ error: err.message });
+      return void res.status(err.statusCode).json({ error: err.message });
     }
     if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'Badge already issued' });
+      return void res.status(409).json({ error: 'Badge already issued' });
     }
     console.error('Issue course badge error:', err);
     res.status(500).json({ error: 'Failed to issue course badge' });
@@ -216,4 +216,5 @@ router.post('/issue-for-course', async (req, res) => {
 });
 
 export default router;
+
 

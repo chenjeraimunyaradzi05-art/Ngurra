@@ -7,7 +7,7 @@ import { authenticate } from '../middleware/auth';
 const router = express.Router();
 
 // All routes require authentication
-router.use(authenticate());
+router.use(authenticate);
 
 router.get('/profile', async (req, res, next) => {
   try {
@@ -66,3 +66,4 @@ router.get('/applications', async (req, res, next) => {
 });
 
 export default router;
+

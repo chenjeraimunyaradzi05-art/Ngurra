@@ -15,7 +15,7 @@ const authenticateJWT = auth.authenticate;
 router.get('/categories', async (req, res) => {
   try {
     // Try to get from database first
-    let categories = [];
+    let categories: any[] = [];
     try {
       categories = await prisma.forumCategory.findMany({
         orderBy: { sortOrder: 'asc' },
@@ -67,7 +67,7 @@ router.get('/categories', async (req, res) => {
 router.get('/topics/recent', async (req, res) => {
   try {
     const { limit = '10' } = req.query;
-    let topics = [];
+    let topics: any[] = [];
     
     try {
       topics = await prisma.forumThread.findMany({
@@ -123,8 +123,8 @@ router.get('/category/:slug', async (req, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
-    let category = null;
-    let threads = [];
+    let category: any = null;
+    let threads: any[] = [];
     let total = 0;
 
     try {
@@ -149,7 +149,7 @@ router.get('/category/:slug', async (req, res) => {
     }
 
     if (!category) {
-      return res.json({
+      return void res.json({
         category: { slug, name: 'Category' },
         topics: [],
         pagination: { page: pageNum, limit: limitNum, total: 0, pages: 0 },
@@ -170,7 +170,7 @@ router.get('/category/:slug', async (req, res) => {
       isLocked: Boolean(t.isClosed),
     }));
 
-    return res.json({
+    return void res.json({
       category: { id: category.id, slug: category.slug, name: category.name, description: category.description },
       topics,
       pagination: {
@@ -182,7 +182,7 @@ router.get('/category/:slug', async (req, res) => {
     });
   } catch (err) {
     console.error('Category topics error:', err);
-    return res.status(500).json({ error: 'Failed to fetch category topics' });
+    return void res.status(500).json({ error: 'Failed to fetch category topics' });
   }
 });
 
@@ -192,8 +192,8 @@ router.get('/category/:slug', async (req, res) => {
 router.get('/topic/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    let topic = null;
-    let replies = [];
+    let topic: any = null;
+    let replies: any[] = [];
 
     try {
       topic = await prisma.forumThread.findUnique({
@@ -274,10 +274,10 @@ router.post('/topic', authenticateJWT, async (req, res) => {
     const userId = (req as any).user.id;
 
     if (!title || !content || !categoryId) {
-      return res.status(400).json({ error: 'Title, content, and category are required' });
+      return void res.status(400).json({ error: 'Title, content, and category are required' });
     }
 
-    let topic = null;
+    let topic: any = null;
     try {
       const baseSlug = String(title)
         .toLowerCase()
@@ -316,10 +316,10 @@ router.post('/topic/:id/reply', authenticateJWT, async (req, res) => {
     const userId = (req as any).user.id;
 
     if (!content) {
-      return res.status(400).json({ error: 'Content is required' });
+      return void res.status(400).json({ error: 'Content is required' });
     }
 
-    let reply = null;
+    let reply: any = null;
     try {
       reply = await prisma.forumReply.create({
         data: {
@@ -341,4 +341,7 @@ router.post('/topic/:id/reply', authenticateJWT, async (req, res) => {
 });
 
 export default router;
+
+
+
 

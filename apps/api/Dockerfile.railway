@@ -1,38 +1,39 @@
 # =====================================
 # Ngurra Pathways API - Railway Dockerfile
 # =====================================
-# Simplified build for reliability
+# Production-ready build
 
-# ============ STAGE 1: Build ============
+# ============ STAGE 1: Builder ============
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
 RUN apk add --no-cache openssl
 
 # Copy entire API directory
 COPY apps/api .
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Clean install without workspace resolution
+RUN npm install --legacy-peer-deps --no-workspaces
 
 # Generate Prisma client
 ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
 RUN npx prisma generate
 
-# Build application
+# Build app
 RUN npm run build
 
-# ============ STAGE 2: Production ============
+# Clean up dev dependencies
+RUN npm prune --omit=dev --no-workspaces
+
+# ============ STAGE 2: Runtime ============
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-# Install runtime dependencies
 RUN apk add --no-cache openssl dumb-init
 
-# Create non-root user
+# Non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nodeuser
 
@@ -42,7 +43,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
 
-# Set ownership
 RUN chown -R nodeuser:nodejs /app
 USER nodeuser
 

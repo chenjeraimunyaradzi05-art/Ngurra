@@ -1,14 +1,39 @@
 import dotenv from 'dotenv';
 import http from 'http';
 
-// Load environment variables first
+// Load environment variables FIRST before any other imports
 dotenv.config();
 
 // Log startup immediately to see if we even get this far
+console.log('========================================');
 console.log('🚀 Starting Ngurra API...');
-console.log('PORT:', process.env.PORT || 3001);
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('DATABASE_URL set:', !!process.env.DATABASE_URL);
+console.log('========================================');
+console.log('Environment:');
+console.log('  PORT:', process.env.PORT || '3001 (default)');
+console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('  DATABASE_URL:', process.env.DATABASE_URL ? '✅ SET' : '❌ NOT SET');
+console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET');
+console.log('  DEV_JWT_SECRET:', process.env.DEV_JWT_SECRET ? '✅ SET' : '❌ NOT SET');
+console.log('========================================');
+
+// Critical check: DATABASE_URL must be set
+if (!process.env.DATABASE_URL) {
+  console.error('');
+  console.error('❌ FATAL ERROR: DATABASE_URL is not set!');
+  console.error('');
+  console.error('Please set the DATABASE_URL environment variable in Railway:');
+  console.error('  1. Go to your Railway project');
+  console.error('  2. Click on your API service');
+  console.error('  3. Go to Variables tab');
+  console.error('  4. Add DATABASE_URL with your PostgreSQL connection string');
+  console.error('');
+  console.error('Example: postgresql://user:password@host:5432/database');
+  console.error('');
+  // Don't exit - let the app try to start so we can see more logs
+}
+
+// Now import the rest of the application
+console.log('📦 Loading application modules...');
 
 import { createApp } from './app';
 import { logger } from './lib/logger';
@@ -16,6 +41,8 @@ import * as deployment from './lib/deployment';
 import { initRedis } from './lib/redisCache';
 import { setupSocket, getIO } from './lib/socket';
 import { initializeScheduler, shutdownScheduler } from './lib/scheduler';
+
+console.log('✅ Application modules loaded successfully');
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 

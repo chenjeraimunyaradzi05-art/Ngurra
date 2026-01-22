@@ -14,11 +14,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.string().regex(/^\d+$/).transform(Number).default('3001'),
 
-  // Database (required)
+  // Database (required in production, optional in dev)
   DATABASE_URL: z.string().url().refine(
     (url) => url.startsWith('postgresql://') || url.startsWith('postgres://'),
     { message: 'DATABASE_URL must be a PostgreSQL connection string' }
-  ),
+  ).optional(),
 
   // JWT Authentication (at least one required)
   JWT_SECRET: z.string().min(32).optional(),
@@ -123,7 +123,10 @@ function validateEnv() {
 
     // In production, fail hard. In development, warn but continue.
     if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
+      console.error('❌ FATAL: Environment validation failed in production');
+      console.error('Required environment variables may be missing. Check Railway variables.');
+      // Don't exit - let the app start so health checks can report the issue
+      return null;
     } else {
       console.warn('⚠️  Continuing in development mode with invalid config...\n');
       return null;

@@ -4,7 +4,6 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "apps/api/Dockerfile.railway"
-watchPatterns = ["apps/api/src/**", "apps/api/prisma/**", "apps/api/package.json"]
 
 [deploy]
 healthcheckPath = "/health"

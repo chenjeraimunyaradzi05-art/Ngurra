@@ -12,21 +12,21 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 
 # Copy package files first for better layer caching
-COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/package-lock.json ./
 
 # Install ALL dependencies (including dev) for building
 RUN npm ci --legacy-peer-deps
 
 # Copy prisma schema BEFORE generating client
-COPY prisma ./prisma
+COPY apps/api/prisma ./prisma
 
 # Generate Prisma client for linux-musl (Alpine)
 ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
 RUN npx prisma generate
 
 # Copy source files needed for build
-COPY src ./src
-COPY build.mjs tsconfig.json tsconfig.build.json ./
+COPY apps/api/src ./src
+COPY apps/api/build.mjs apps/api/tsconfig.json apps/api/tsconfig.build.json ./
 
 # Build the application
 RUN npm run build
@@ -38,13 +38,13 @@ WORKDIR /app
 
 RUN apk add --no-cache openssl
 
-COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/package-lock.json ./
 
 # Install ONLY production dependencies
 RUN npm ci --legacy-peer-deps --omit=dev
 
 # Copy prisma schema and generate for production
-COPY prisma ./prisma
+COPY apps/api/prisma ./prisma
 ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
 RUN npx prisma generate
 

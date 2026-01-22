@@ -1,14 +1,15 @@
 # Railway configuration for API service
-# Uses Dockerfile to avoid monorepo auto-detection issues
+# Uses optimized multi-stage Dockerfile
 
 [build]
 builder = "dockerfile"
 dockerfilePath = "apps/api/Dockerfile.railway"
-watchPatterns = ["apps/api/**"]
+watchPatterns = ["apps/api/src/**", "apps/api/prisma/**", "apps/api/package.json"]
 
 [deploy]
 healthcheckPath = "/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 120
+startCommand = "node dist/src/index.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 

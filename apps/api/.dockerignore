@@ -1,11 +1,17 @@
-# Dependencies
+# =====================================
+# Optimized .dockerignore for faster builds
+# =====================================
+
+# Dependencies (ALWAYS exclude - reinstalled in Docker)
 node_modules
 .pnpm-store
+.npm
 
-# Build outputs
+# Build outputs (rebuilt in Docker)
 dist
 build
 .next
+.turbo
 
 # Development files
 *.log
@@ -18,28 +24,38 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
 !.env.example
 !.env.production.example
 
-# IDE
+# IDE and Editor
 .vscode
 .idea
 *.swp
 *.swo
+*.vim
+.project
+.settings
 
 # OS files
 .DS_Store
 Thumbs.db
+*.DS_Store
 
-# Test outputs
+# Test outputs (large, not needed in production)
 coverage
 .nyc_output
 test-results
 playwright-report
+tests
+*.test.ts
+*.spec.ts
 
-# Git
+# Git (can be large)
 .git
 .gitignore
+.gitattributes
 
 # Documentation
 docs
@@ -49,11 +65,37 @@ docs
 # Development tools
 .eslintcache
 .prettierrc
+.eslintrc*
+eslint.config.*
+prettier.config.*
+vitest.config.*
 
 # Local development database
 prisma/*.db
 prisma/*.db-journal
+prisma/dev_test.db
 data/
+
+# Logs and temporary files
+logs
+*.log
+.logs
+api-dev.log
+
+# Backup and archive files
+backups
+archive
+*.bak
+*.backup
+
+# Scripts not needed in production
+scripts/
+
+# Apps folder (not needed)
+apps/
+
+# Type definitions (compiled away)
+*.d.ts.map
 
 # Logs
 logs

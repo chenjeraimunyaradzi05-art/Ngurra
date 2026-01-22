@@ -1,20 +1,21 @@
 # Nixpacks configuration for ngurra-api
-# This file is used when Railway root directory is set to apps/api
+# Fallback if Dockerfile build fails
 
 [phases.setup]
 nixPkgs = ["nodejs_20", "openssl"]
 
 [phases.install]
-cmds = ["npm install --legacy-peer-deps"]
+cmds = ["npm ci --legacy-peer-deps --omit=dev || npm install --legacy-peer-deps"]
 
 [phases.build]
 cmds = [
-    "npm run build",
-    "npx prisma generate"
+    "npx prisma generate",
+    "npm run build"
 ]
 
 [start]
-cmd = "npm run start"
+cmd = "node dist/src/index.js"
 
 [variables]
 NODE_ENV = "production"
+PRISMA_CLI_BINARY_TARGETS = "linux-musl-openssl-3.0.x"

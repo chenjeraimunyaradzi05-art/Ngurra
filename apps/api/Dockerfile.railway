@@ -1,29 +1,81 @@
 # =====================================
 # Ngurra Pathways API - Railway Dockerfile
 # =====================================
-# Simplified build for Railway deployment
+# Optimized multi-stage build for faster deploys
 
-FROM node:20-alpine
+# ============ STAGE 1: Build ============
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ openssl
+# Install ONLY essential build dependencies
+RUN apk add --no-cache openssl
 
-# Copy package files only (for better caching)
-COPY package*.json ./
+# Copy package files first for better layer caching
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Install ALL dependencies (including dev) for building
+RUN npm ci --legacy-peer-deps
 
-# Copy source code
-COPY . .
+# Copy prisma schema BEFORE generating client
+COPY prisma ./prisma
+
+# Generate Prisma client for linux-musl (Alpine)
+ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
+RUN npx prisma generate
+
+# Copy source files needed for build
+COPY src ./src
+COPY build.mjs tsconfig.json tsconfig.build.json ./
 
 # Build the application
 RUN npm run build
 
-# Generate Prisma client
+# ============ STAGE 2: Production Dependencies ============
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+RUN apk add --no-cache openssl
+
+COPY package.json package-lock.json ./
+
+# Install ONLY production dependencies
+RUN npm ci --legacy-peer-deps --omit=dev
+
+# Copy prisma schema and generate for production
+COPY prisma ./prisma
+ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
 RUN npx prisma generate
+
+# ============ STAGE 3: Production Runtime ============
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN apk add --no-cache openssl dumb-init
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nodeuser
+
+# Copy production dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+
+# Copy built application
+COPY --from=builder /app/dist ./dist
+
+# Copy prisma files needed at runtime
+COPY --from=deps /app/prisma ./prisma
+COPY --from=deps /app/node_modules/.prisma ./node_modules/.prisma
+
+# Set ownership
+RUN chown -R nodeuser:nodejs /app
+
+# Switch to non-root user
+USER nodeuser
 
 # Environment variables
 ENV NODE_ENV=production
@@ -32,9 +84,12 @@ ENV PORT=3333
 # Expose port
 EXPOSE 3333
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+# Health check (less aggressive for faster startup)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3333/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
 # Start the application
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/src/index.js"]

@@ -1,14 +1,21 @@
 import dotenv from 'dotenv';
 import http from 'http';
+
+// Load environment variables first
+dotenv.config();
+
+// Log startup immediately to see if we even get this far
+console.log('🚀 Starting Ngurra API...');
+console.log('PORT:', process.env.PORT || 3001);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL set:', !!process.env.DATABASE_URL);
+
 import { createApp } from './app';
 import { logger } from './lib/logger';
 import * as deployment from './lib/deployment';
 import { initRedis } from './lib/redisCache';
 import { setupSocket, getIO } from './lib/socket';
 import { initializeScheduler, shutdownScheduler } from './lib/scheduler';
-
-// Load environment variables first
-dotenv.config();
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 

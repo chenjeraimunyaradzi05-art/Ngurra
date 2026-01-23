@@ -179,11 +179,16 @@ export function createApp() {
         });
     }
 
+    const rateLimitWindowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10);
+    const rateLimitMax = parseInt(
+        process.env.RATE_LIMIT_MAX || (isE2E || nodeEnv === 'development' ? '100000' : '5000'),
+        10
+    );
+
     const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000,
-        // Keep production reasonably protected, but avoid test flakiness from 429s.
-        // Relax rate limit in development to prevent local issues
-        max: (isE2E || nodeEnv === 'development') ? 100000 : 1000, // Increased from 300 for initial deployment
+        windowMs: Number.isFinite(rateLimitWindowMs) ? rateLimitWindowMs : 15 * 60 * 1000,
+        // Increase production allowance to reduce friction; allow env overrides.
+        max: Number.isFinite(rateLimitMax) ? rateLimitMax : (isE2E || nodeEnv === 'development') ? 100000 : 5000,
         // Skip health checks and development entirely from rate limiting
         skip: (req) => nodeEnv === 'development' || req.path === '/health' || req.path.startsWith('/health'),
         standardHeaders: true,

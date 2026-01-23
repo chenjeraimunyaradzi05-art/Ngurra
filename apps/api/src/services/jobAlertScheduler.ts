@@ -216,21 +216,22 @@ export class JobAlertScheduler {
           alertFrequency: frequency,
           searchType: 'job',
         },
-        include: {
-          user: {
-            include: {
-              memberProfile: true,
-              // Check notification preferences
-            },
-          },
-        },
       });
 
       console.log(`[JobAlerts] Found ${searches.length} searches to process`);
 
       for (const search of searches) {
         try {
-          await this.processSearchAlert(search, result);
+          // Fetch user separately since SavedSearch doesn't have a user relation
+          const user = await prisma.user.findUnique({
+            where: { id: search.userId },
+            include: { memberProfile: true },
+          });
+          if (!user) {
+            console.warn(`[JobAlerts] User not found for search ${search.id}`);
+            continue;
+          }
+          await this.processSearchAlert({ ...search, user }, result);
           result.processed++;
         } catch (err) {
           console.error(`[JobAlerts] Error processing search ${search.id}:`, err);

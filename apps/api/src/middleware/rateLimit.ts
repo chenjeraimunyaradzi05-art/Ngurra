@@ -12,7 +12,13 @@ const rateLimit = require('express-rate-limit');
 const { RedisStore } = require('rate-limit-redis');
 const Redis = require('ioredis');
 
-const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+// Only create Redis client if REDIS_URL is explicitly set
+const redisClient = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
+  connectTimeout: 500,
+  enableOfflineQueue: false,
+  maxRetriesPerRequest: 1,
+  retryStrategy: () => null,
+}) : null;
 
 const isE2E = process.env.NODE_ENV === 'test' || process.env.SES_TEST_CAPTURE === '1';
 
@@ -81,15 +87,18 @@ const RATE_LIMITS = {
 function createRateLimiter(type, overrides = {}) {
   const config = RATE_LIMITS[type] || RATE_LIMITS.public;
   
+  // Only use Redis store if Redis client is available and not in test mode
+  const useRedisStore = !isE2E && redisClient;
+  
   return rateLimit({
     ...config,
     ...overrides,
     standardHeaders: true,
     legacyHeaders: false,
-    // Use MemoryStore for tests to avoid Redis dependencies
-    store: isE2E ? undefined : new RedisStore({
+    // Use MemoryStore if Redis not configured or in tests
+    store: useRedisStore ? new RedisStore({
       sendCommand: (...args) => redisClient.call(...args),
-    }),
+    }) : undefined,
     // Use IP + user ID for authenticated endpoints
     keyGenerator: (req) => {
       const userId = req.user?.id || req.user?.userId || '';

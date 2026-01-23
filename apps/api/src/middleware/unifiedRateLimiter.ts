@@ -24,11 +24,12 @@ const RATE_MULTIPLIER = isTest ? 100 : 1;
 let redisClient: Redis | null = null;
 
 function getRedisClient(): Redis | null {
-  if (!isProduction) return null;
+  // Only use Redis if REDIS_URL is explicitly configured
+  if (!isProduction || !process.env.REDIS_URL) return null;
   
   if (!redisClient) {
     try {
-      redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+      redisClient = new Redis(process.env.REDIS_URL, {
         connectTimeout: 500,
         enableOfflineQueue: false,
         maxRetriesPerRequest: 1,

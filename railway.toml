@@ -7,7 +7,7 @@ dockerfilePath = "Dockerfile.railway"
 watchPatterns = ["apps/api/src/**", "apps/api/prisma/**", "apps/api/package.json"]
 
 [deploy]
-healthcheckPath = "/health/live"
+healthcheckPath = "/health"
 healthcheckTimeout = 120
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3

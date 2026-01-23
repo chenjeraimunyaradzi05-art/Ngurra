@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -14,10 +14,6 @@ const DEFAULT_FILTERS = {
   status: 'ACTIVE',
 };
 
-/* CSS Variables inline for feminine theme accents */
-const accentPink = '#E91E8C';
-const accentPurple = '#8B5CF6';
-
 export default function RentalsPage() {
   const { isAuthenticated } = useAuth();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -32,6 +28,8 @@ export default function RentalsPage() {
   const [ownerInquiries, setOwnerInquiries] = useState([]);
   const [loadingOwnerInquiries, setLoadingOwnerInquiries] = useState(false);
   const [seekerProfile, setSeekerProfile] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showSeekerForm, setShowSeekerForm] = useState(false);
   const [profileForm, setProfileForm] = useState({
     budgetMin: '',
     budgetMax: '',
@@ -176,7 +174,9 @@ export default function RentalsPage() {
       const { ok, data } = await api(`/rentals/${listingId}/publish`, { method: 'PATCH' });
       if (!ok) throw new Error(data?.error || 'Failed to publish listing');
 
-      setListings((prev) => prev.map((listing) => (listing.id === listingId ? data.listing : listing)));
+      setListings((prev) =>
+        prev.map((listing) => (listing.id === listingId ? data.listing : listing)),
+      );
     } catch (err) {
       setError(err?.message || 'Failed to publish listing');
     }
@@ -217,7 +217,7 @@ export default function RentalsPage() {
       if (!ok) throw new Error(data?.error || 'Failed to update inquiry');
 
       setOwnerInquiries((prev) =>
-        prev.map((inquiry) => (inquiry.id === inquiryId ? data.inquiry : inquiry))
+        prev.map((inquiry) => (inquiry.id === inquiryId ? data.inquiry : inquiry)),
       );
     } catch (err) {
       setError(err?.message || 'Failed to update inquiry');
@@ -234,13 +234,22 @@ export default function RentalsPage() {
         budgetMin: profileForm.budgetMin ? Number(profileForm.budgetMin) : undefined,
         budgetMax: profileForm.budgetMax ? Number(profileForm.budgetMax) : undefined,
         preferredSuburbs: profileForm.preferredSuburbs
-          ? profileForm.preferredSuburbs.split(',').map((item) => item.trim()).filter(Boolean)
+          ? profileForm.preferredSuburbs
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
           : undefined,
         preferredStates: profileForm.preferredStates
-          ? profileForm.preferredStates.split(',').map((item) => item.trim()).filter(Boolean)
+          ? profileForm.preferredStates
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
           : undefined,
         propertyTypes: profileForm.propertyTypes
-          ? profileForm.propertyTypes.split(',').map((item) => item.trim()).filter(Boolean)
+          ? profileForm.propertyTypes
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
           : undefined,
         bedroomsMin: profileForm.bedroomsMin ? Number(profileForm.bedroomsMin) : undefined,
         bathroomsMin: profileForm.bathroomsMin ? Number(profileForm.bathroomsMin) : undefined,
@@ -258,551 +267,646 @@ export default function RentalsPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* === HERO SECTION (hub-section pattern) === */}
-      <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8" style={{
-        background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)',
-      }}>
-        {/* Radial gradient halos */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(circle at 15% 30%, rgba(236, 72, 153, 0.2), transparent 55%), radial-gradient(circle at 85% 0%, rgba(99, 102, 241, 0.18), transparent 40%)',
-        }} />
-        
-        <div className="relative max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-[1.4fr_0.8fr] gap-8 items-start">
-            {/* Left content */}
-            <div className="space-y-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-pink-600">
-                Housing security
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-                Find safe rentals, co-living sanctuaries and purchase-ready homes
-              </h1>
-              <p className="text-lg text-slate-600 max-w-xl">
-                Athena Housing Hub blends trauma-aware listings, guardian-vetted agents and mortgage copilots so you can explore new addresses without repeating the same story.
-              </p>
-
-              {/* Stats row (hub-section__signals) */}
-              <div className="flex flex-wrap gap-6 py-4">
-                <div className="text-center">
-                  <span className="block text-3xl font-bold text-slate-900">{total}</span>
-                  <span className="text-sm text-slate-500">active listings</span>
-                </div>
-                <div className="text-center">
-                  <span className="block text-3xl font-bold text-slate-900">3</span>
-                  <span className="text-sm text-slate-500">focus locations</span>
-                </div>
-                <div className="text-center">
-                  <span className="block text-3xl font-bold text-slate-900">2</span>
-                  <span className="text-sm text-slate-500">pathways</span>
-                </div>
-              </div>
-
-              {/* CTA Row */}
-              <div className="flex flex-wrap gap-3">
+    <main className="min-h-screen bg-[var(--color-background)]">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-[var(--color-primary)] to-teal-700 text-white">
+        <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div className="max-w-3xl">
+            <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-white/20 rounded-full mb-4">
+              Housing Hub
+            </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">
+              Find Your Safe Haven
+            </h1>
+            <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl">
+              Trauma-informed housing listings with guardian-vetted agents and supportive pathways
+              to secure accommodation.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => setShowCreateForm(!showCreateForm)}
+                    className="px-6 py-3 bg-white text-[var(--color-primary)] font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
+                  >
+                    {showCreateForm ? 'Hide Form' : '+ List Property'}
+                  </button>
+                  <Link
+                    href="/rentals/owner"
+                    className="px-6 py-3 bg-white/10 border border-white/30 font-semibold rounded-lg hover:bg-white/20 transition-all"
+                  >
+                    Owner Dashboard
+                  </Link>
+                </>
+              ) : (
                 <Link
-                  href="/rentals/profile"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(135deg, #E91E8C 0%, #8B5CF6 100%)', boxShadow: '0 4px 12px rgba(233, 30, 140, 0.3)' }}
+                  href="/auth/login"
+                  className="px-6 py-3 bg-white text-[var(--color-primary)] font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
                 >
-                  Update housing preferences
+                  Sign in to List Property
                 </Link>
-                <Link
-                  href="/rentals/owner"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold border-2 transition-all hover:bg-pink-50"
-                  style={{ borderColor: accentPink, color: accentPink }}
-                >
-                  Owner dashboard
-                </Link>
-              </div>
+              )}
             </div>
+          </div>
 
-            {/* Right card (hub-intro-card) */}
-            <div className="rounded-3xl border border-pink-200 bg-white/90 backdrop-blur-sm p-6 shadow-xl" style={{ boxShadow: '0 35px 75px rgba(15, 23, 42, 0.1)' }}>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-3">Guardian rituals</p>
-              <ul className="space-y-3 text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 w-2 h-2 rounded-full bg-pink-400 flex-shrink-0" />
-                  Listings screened for safety language + privacy settings.
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
-                  Agents pledge trauma-aware comms and flexible inspections.
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 w-2 h-2 rounded-full bg-indigo-400 flex-shrink-0" />
-                  Mortgage copilots keep deposit math and grant rules in one place.
-                </li>
-              </ul>
+          {/* Stats */}
+          <div className="mt-12 grid grid-cols-3 gap-4 max-w-md">
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold">{total}</div>
+              <div className="text-sm text-white/70">Listings</div>
+            </div>
+            <div className="text-center border-x border-white/20">
+              <div className="text-3xl sm:text-4xl font-bold">100%</div>
+              <div className="text-sm text-white/70">Verified</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold">24/7</div>
+              <div className="text-sm text-white/70">Support</div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Error Banner */}
       {error && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-          <div className="border border-red-300 bg-red-50 text-red-800 rounded-xl px-4 py-3">
-            {error}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+          <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 flex items-center justify-between">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="text-red-600 hover:text-red-800">
+              ✕
+            </button>
           </div>
         </div>
       )}
 
-      {/* === FILTER PANEL (housing-filter-panel) === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-label="Filter housing listings">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg" style={{ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' }}>
-          <div className="flex flex-wrap items-center gap-4 mb-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-600">Filter listings</p>
-            <span className="text-sm text-slate-500">{total} listings available</span>
+      {/* Create Listing Form (Collapsible) */}
+      {isAuthenticated && showCreateForm && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white rounded-2xl shadow-xl border border-[var(--color-border)] p-6 sm:p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-[var(--color-text)]">Create New Listing</h2>
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  Fill in the details to list your property
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateForm(false)}
+                className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] rounded-lg hover:bg-gray-100"
+              >
+                ✕
+              </button>
+            </div>
+            <form className="grid gap-6" onSubmit={handleCreateListing}>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                  Listing Title *
+                </label>
+                <input
+                  required
+                  value={form.title}
+                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g., Cozy 2BR Apartment in Surry Hills"
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your property, amenities, and any special features..."
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all resize-none"
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Suburb
+                  </label>
+                  <input
+                    value={form.suburb}
+                    onChange={(e) => setForm((prev) => ({ ...prev, suburb: e.target.value }))}
+                    placeholder="e.g., Surry Hills"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    State
+                  </label>
+                  <select
+                    value={form.state}
+                    onChange={(e) => setForm((prev) => ({ ...prev, state: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  >
+                    <option value="">Select state</option>
+                    <option value="NSW">NSW</option>
+                    <option value="VIC">VIC</option>
+                    <option value="QLD">QLD</option>
+                    <option value="WA">WA</option>
+                    <option value="SA">SA</option>
+                    <option value="TAS">TAS</option>
+                    <option value="ACT">ACT</option>
+                    <option value="NT">NT</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Postcode
+                  </label>
+                  <input
+                    value={form.postcode}
+                    onChange={(e) => setForm((prev) => ({ ...prev, postcode: e.target.value }))}
+                    placeholder="e.g., 2010"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Weekly Rent ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={form.weeklyRent}
+                    onChange={(e) => setForm((prev) => ({ ...prev, weeklyRent: e.target.value }))}
+                    placeholder="e.g., 550"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Bedrooms
+                  </label>
+                  <input
+                    type="number"
+                    value={form.bedrooms}
+                    onChange={(e) => setForm((prev) => ({ ...prev, bedrooms: e.target.value }))}
+                    placeholder="e.g., 2"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Bathrooms
+                  </label>
+                  <input
+                    type="number"
+                    value={form.bathrooms}
+                    onChange={(e) => setForm((prev) => ({ ...prev, bathrooms: e.target.value }))}
+                    placeholder="e.g., 1"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                    Available From
+                  </label>
+                  <input
+                    type="date"
+                    value={form.availableFrom}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, availableFrom: e.target.value }))
+                    }
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-3 rounded-xl font-medium text-[var(--color-text-secondary)] hover:bg-gray-100 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="px-8 py-3 rounded-xl font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-all shadow-lg"
+                >
+                  {creating ? 'Creating...' : 'Create Listing'}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-            <div className="space-y-1">
-              <label htmlFor="filter-suburb" className="text-sm font-medium text-slate-700">Location</label>
+        </section>
+      )}
+
+      {/* Filter Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border)] p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">Filter Listings</h2>
+            <button
+              type="button"
+              onClick={() => setFilters(DEFAULT_FILTERS)}
+              className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+            >
+              Reset all filters
+            </button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                Location
+              </label>
               <input
-                id="filter-suburb"
                 value={filters.suburb}
                 onChange={(e) => setFilters((prev) => ({ ...prev, suburb: e.target.value }))}
-                placeholder="Suburb"
-                className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
+                placeholder="Enter suburb"
+                className="w-full px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
               />
             </div>
-            <div className="space-y-1">
-              <label htmlFor="filter-state" className="text-sm font-medium text-slate-700">State</label>
-              <input
-                id="filter-state"
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                State
+              </label>
+              <select
                 value={filters.state}
                 onChange={(e) => setFilters((prev) => ({ ...prev, state: e.target.value }))}
-                placeholder="State"
-                className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-              />
+                className="w-full px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
+              >
+                <option value="">All states</option>
+                <option value="NSW">NSW</option>
+                <option value="VIC">VIC</option>
+                <option value="QLD">QLD</option>
+                <option value="WA">WA</option>
+                <option value="SA">SA</option>
+                <option value="TAS">TAS</option>
+                <option value="ACT">ACT</option>
+                <option value="NT">NT</option>
+              </select>
             </div>
-            <div className="space-y-1">
-              <label htmlFor="filter-budget" className="text-sm font-medium text-slate-700">Budget</label>
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                Budget ($/week)
+              </label>
               <div className="flex gap-2">
                 <input
+                  type="number"
                   value={filters.minRent}
                   onChange={(e) => setFilters((prev) => ({ ...prev, minRent: e.target.value }))}
                   placeholder="Min"
-                  className="w-1/2 rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
+                  className="w-1/2 px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
                 />
                 <input
+                  type="number"
                   value={filters.maxRent}
                   onChange={(e) => setFilters((prev) => ({ ...prev, maxRent: e.target.value }))}
                   placeholder="Max"
-                  className="w-1/2 rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
+                  className="w-1/2 px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
                 />
               </div>
             </div>
-            <div className="space-y-1">
-              <label htmlFor="filter-bedrooms" className="text-sm font-medium text-slate-700">Bedrooms</label>
-              <input
-                id="filter-bedrooms"
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                Bedrooms
+              </label>
+              <select
                 value={filters.bedrooms}
                 onChange={(e) => setFilters((prev) => ({ ...prev, bedrooms: e.target.value }))}
-                placeholder="Bedrooms"
-                className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-              />
+                className="w-full px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
+              >
+                <option value="">Any</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+              </select>
             </div>
-            <div className="space-y-1">
-              <label htmlFor="filter-status" className="text-sm font-medium text-slate-700">For</label>
+            <div>
+              <label className="block text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                Status
+              </label>
               <select
-                id="filter-status"
                 value={filters.status}
                 onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
-                className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
               >
                 <option value="ACTIVE">Active</option>
                 <option value="DRAFT">Draft</option>
                 <option value="PAUSED">Paused</option>
               </select>
             </div>
-            <div className="flex items-end">
-              <button
-                type="button"
-                className="w-full px-4 py-2 rounded-lg text-white font-semibold transition-all hover:-translate-y-0.5"
-                style={{ background: 'linear-gradient(135deg, #E91E8C 0%, #8B5CF6 100%)', boxShadow: '0 4px 12px rgba(233, 30, 140, 0.2)' }}
-                onClick={() => {/* filters auto-apply */}}
-              >
-                Show matches
-              </button>
-            </div>
           </div>
-          <div className="flex items-center justify-between mt-4 text-sm">
+        </div>
+      </section>
+
+      {/* Listings Grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-[var(--color-text)]">
+            {loading
+              ? 'Loading...'
+              : `${total} ${total === 1 ? 'Property' : 'Properties'} Available`}
+          </h2>
+          {isAuthenticated && (
             <button
-              type="button"
-              onClick={() => setFilters(DEFAULT_FILTERS)}
-              className="text-pink-600 hover:text-pink-700 font-medium"
+              onClick={() => setShowSeekerForm(!showSeekerForm)}
+              className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
             >
-              Reset filters
+              {showSeekerForm ? 'Hide Preferences' : 'Set Preferences'}
             </button>
-            <span className="text-slate-400">Tip: Use suburb + bedrooms for quick narrowing.</span>
-          </div>
-        </div>
-      </section>
-
-      {/* === TOOLS SECTION (Create Listing + Seeker Profile) === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Create Listing Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-all hover:shadow-xl" style={{ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' }}>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-2">Owner tools</p>
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Create Listing</h2>
-            {!isAuthenticated ? (
-              <div className="text-sm text-slate-500 py-4">Sign in to create a rental listing.</div>
-            ) : (
-              <form className="grid gap-4" onSubmit={handleCreateListing}>
-                <input
-                  required
-                  value={form.title}
-                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="Listing title"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Description"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm min-h-[80px] focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <input
-                    value={form.suburb}
-                    onChange={(e) => setForm((prev) => ({ ...prev, suburb: e.target.value }))}
-                    placeholder="Suburb"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={form.state}
-                    onChange={(e) => setForm((prev) => ({ ...prev, state: e.target.value }))}
-                    placeholder="State"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={form.postcode}
-                    onChange={(e) => setForm((prev) => ({ ...prev, postcode: e.target.value }))}
-                    placeholder="Postcode"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={form.weeklyRent}
-                    onChange={(e) => setForm((prev) => ({ ...prev, weeklyRent: e.target.value }))}
-                    placeholder="Weekly rent (AUD)"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={form.bedrooms}
-                    onChange={(e) => setForm((prev) => ({ ...prev, bedrooms: e.target.value }))}
-                    placeholder="Bedrooms"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={form.bathrooms}
-                    onChange={(e) => setForm((prev) => ({ ...prev, bathrooms: e.target.value }))}
-                    placeholder="Bathrooms"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                </div>
-                <input
-                  type="date"
-                  value={form.availableFrom}
-                  onChange={(e) => setForm((prev) => ({ ...prev, availableFrom: e.target.value }))}
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <button
-                  disabled={creating}
-                  className="mt-2 px-4 py-2.5 rounded-lg text-white font-semibold transition-all hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(135deg, #E91E8C 0%, #8B5CF6 100%)', boxShadow: '0 4px 12px rgba(233, 30, 140, 0.2)' }}
-                >
-                  {creating ? 'Creating...' : 'Create Listing'}
-                </button>
-              </form>
-            )}
-          </div>
-
-          {/* Seeker Profile Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-all hover:shadow-xl" style={{ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' }}>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-600 mb-1">Housing concierge</p>
-                <h2 className="text-xl font-bold text-slate-900">Seeker Profile</h2>
-              </div>
-              <Link href="/rentals/profile" className="text-sm text-pink-600 hover:text-pink-700 font-medium">
-                Manage →
-              </Link>
-            </div>
-            {!isAuthenticated ? (
-              <div className="text-sm text-slate-500 py-4">Sign in to save a seeker profile.</div>
-            ) : (
-              <form className="grid gap-4" onSubmit={handleSaveProfile}>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <input
-                    value={profileForm.budgetMin}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, budgetMin: e.target.value }))}
-                    placeholder="Budget min"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={profileForm.budgetMax}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, budgetMax: e.target.value }))}
-                    placeholder="Budget max"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                </div>
-                <input
-                  value={profileForm.preferredSuburbs}
-                  onChange={(e) => setProfileForm((prev) => ({ ...prev, preferredSuburbs: e.target.value }))}
-                  placeholder="Preferred suburbs (comma separated)"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <input
-                  value={profileForm.preferredStates}
-                  onChange={(e) => setProfileForm((prev) => ({ ...prev, preferredStates: e.target.value }))}
-                  placeholder="Preferred states (comma separated)"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <input
-                  value={profileForm.propertyTypes}
-                  onChange={(e) => setProfileForm((prev) => ({ ...prev, propertyTypes: e.target.value }))}
-                  placeholder="Property types (comma separated)"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <input
-                    value={profileForm.bedroomsMin}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, bedroomsMin: e.target.value }))}
-                    placeholder="Min bedrooms"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                  <input
-                    value={profileForm.bathroomsMin}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, bathroomsMin: e.target.value }))}
-                    placeholder="Min bathrooms"
-                    className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                  />
-                </div>
-                <textarea
-                  value={profileForm.notes}
-                  onChange={(e) => setProfileForm((prev) => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Notes for owners"
-                  className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm min-h-[80px] focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                />
-                <button
-                  disabled={savingProfile}
-                  className="mt-2 px-4 py-2.5 rounded-lg font-semibold border-2 transition-all hover:bg-pink-50"
-                  style={{ borderColor: accentPink, color: accentPink }}
-                >
-                  {savingProfile ? 'Saving...' : seekerProfile ? 'Update Profile' : 'Create Profile'}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* === OWNER INQUIRIES SECTION === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg" style={{ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' }}>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600 mb-1">Manage responses</p>
-              <h2 className="text-xl font-bold text-slate-900">Owner Inquiries</h2>
-            </div>
-            <Link href="/rentals/seekers" className="text-sm text-pink-600 hover:text-pink-700 font-medium">
-              Browse seekers →
-            </Link>
-          </div>
-          {!isAuthenticated ? (
-            <div className="text-sm text-slate-500 py-4">Sign in to manage inquiries.</div>
-          ) : loadingOwnerInquiries ? (
-            <div className="text-sm text-slate-500 py-4">Loading inquiries...</div>
-          ) : ownerInquiries.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center">
-              <p className="text-slate-500">No inquiries yet.</p>
-              <p className="text-sm text-slate-400 mt-1">When seekers reach out, their messages will appear here.</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {ownerInquiries.map((inquiry) => (
-                <div key={inquiry.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:shadow-md">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-slate-500">Listing: {inquiry.rentalListing?.title || 'Listing'}</span>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{
-                      background: inquiry.status === 'APPROVED' ? 'rgba(16, 185, 129, 0.12)' : inquiry.status === 'DECLINED' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(148, 163, 184, 0.2)',
-                      color: inquiry.status === 'APPROVED' ? '#059669' : inquiry.status === 'DECLINED' ? '#DC2626' : '#475569',
-                    }}>
-                      {inquiry.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-700 mb-3">{inquiry.message || 'No message provided.'}</p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleUpdateInquiry(inquiry.id, 'APPROVED')}
-                      className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleUpdateInquiry(inquiry.id, 'DECLINED')}
-                      className="text-xs font-semibold text-red-600 hover:text-red-700 transition"
-                    >
-                      Decline
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           )}
         </div>
-      </section>
 
-      {/* === LISTINGS GRID (housing-card-grid pattern) === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-label="Housing listings">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pink-600 mb-1">Browse properties</p>
-            <h2 className="text-2xl font-bold text-slate-900">Available Listings</h2>
+        {/* Seeker Profile Mini Form */}
+        {isAuthenticated && showSeekerForm && (
+          <div className="mb-8 bg-teal-50 border border-teal-200 rounded-2xl p-6">
+            <h3 className="font-semibold text-[var(--color-text)] mb-4">
+              {seekerProfile ? 'Update Your Housing Preferences' : 'Your Housing Preferences'}
+            </h3>
+            <form className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" onSubmit={handleSaveProfile}>
+              <input
+                value={profileForm.budgetMin}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, budgetMin: e.target.value }))}
+                placeholder="Min budget ($)"
+                className="px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
+              />
+              <input
+                value={profileForm.budgetMax}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, budgetMax: e.target.value }))}
+                placeholder="Max budget ($)"
+                className="px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
+              />
+              <input
+                value={profileForm.preferredSuburbs}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, preferredSuburbs: e.target.value }))
+                }
+                placeholder="Preferred suburbs"
+                className="px-4 py-2.5 rounded-lg border border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm"
+              />
+              <button
+                type="submit"
+                disabled={savingProfile}
+                className="px-6 py-2.5 rounded-lg font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-all"
+              >
+                {savingProfile ? 'Saving...' : seekerProfile ? 'Update' : 'Save'}
+              </button>
+            </form>
           </div>
-          <span className="text-sm text-slate-500">Showing {listings.length} of {total}</span>
-        </div>
+        )}
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {loading ? (
-            <div className="col-span-full text-center py-12 text-slate-500">Loading listings...</div>
-          ) : listings.length === 0 ? (
-            <div className="col-span-full rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
-              <p className="text-lg font-semibold text-slate-600">No listings found</p>
-              <p className="text-sm text-slate-400 mt-1">Try adjusting filters or create a new listing.</p>
-            </div>
-          ) : (
-            listings.map((listing) => (
-              <article key={listing.id} className="group rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1" style={{ boxShadow: '0 20px 50px rgba(15, 23, 42, 0.08)' }}>
-                {/* Card media area */}
-                <div className="relative h-40 bg-gradient-to-br from-pink-100 to-purple-100">
-                  {/* Status pill */}
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white" style={{ background: 'linear-gradient(135deg, #E91E8C 0%, #8B5CF6 100%)' }}>
-                    {listing.status === 'ACTIVE' ? 'Rent' : listing.status}
+        {/* Listings */}
+        {loading ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden animate-pulse"
+              >
+                <div className="h-48 bg-gray-200" />
+                <div className="p-5 space-y-3">
+                  <div className="h-5 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-6 bg-gray-200 rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : listings.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-[var(--color-border)]">
+            <div className="text-5xl mb-4">🏠</div>
+            <h3 className="text-xl font-semibold text-[var(--color-text)] mb-2">
+              No Listings Found
+            </h3>
+            <p className="text-[var(--color-text-secondary)] mb-6">
+              Try adjusting your filters or check back later
+            </p>
+            <button
+              onClick={() => setFilters(DEFAULT_FILTERS)}
+              className="px-6 py-2.5 rounded-lg font-medium text-[var(--color-primary)] border border-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all"
+            >
+              Clear Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {listings.map((listing) => (
+              <article
+                key={listing.id}
+                className="group bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+              >
+                {/* Image placeholder */}
+                <div className="relative h-48 bg-gradient-to-br from-teal-100 to-teal-200">
+                  <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-30">
+                    🏠
+                  </div>
+                  {/* Status badge */}
+                  <span
+                    className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${
+                      listing.status === 'ACTIVE'
+                        ? 'bg-green-500 text-white'
+                        : listing.status === 'DRAFT'
+                          ? 'bg-yellow-500 text-white'
+                          : 'bg-gray-500 text-white'
+                    }`}
+                  >
+                    {listing.status === 'ACTIVE' ? 'Available' : listing.status}
                   </span>
-                  {/* Verified badge */}
-                  <span className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-slate-700 border border-slate-200">
-                    Community listing
-                  </span>
+                  {/* Price badge */}
+                  {listing.weeklyRent && (
+                    <span className="absolute bottom-3 right-3 px-3 py-1 rounded-lg text-sm font-bold bg-white/95 text-[var(--color-text)] shadow-sm">
+                      ${listing.weeklyRent}/wk
+                    </span>
+                  )}
                 </div>
 
-                {/* Card body */}
+                {/* Content */}
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-pink-600 transition">{listing.title}</h3>
-                  <p className="text-sm text-slate-500 mb-2">{[listing.suburb, listing.state].filter(Boolean).join(', ') || 'Location not set'}</p>
-                  <p className="text-lg font-bold text-slate-900 mb-3">
-                    {listing.weeklyRent ? `$${listing.weeklyRent} / week` : 'Price on application'}
+                  <h3 className="font-semibold text-[var(--color-text)] text-lg mb-1 line-clamp-1 group-hover:text-[var(--color-primary)] transition-colors">
+                    {listing.title}
+                  </h3>
+                  <p className="text-sm text-[var(--color-text-secondary)] mb-3 flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    {[listing.suburb, listing.state].filter(Boolean).join(', ') || 'Location TBA'}
                   </p>
 
-                  {/* Stats row (housing-card__stats) */}
-                  <ul className="flex gap-4 text-sm text-slate-600 mb-4">
-                    <li><strong className="text-slate-900">{listing.bedrooms ?? '—'}</strong> Bedrooms</li>
-                    <li><strong className="text-slate-900">{listing.bathrooms ?? '—'}</strong> Bathrooms</li>
-                    <li><strong className="text-slate-900">—</strong> Car</li>
-                  </ul>
+                  {/* Features */}
+                  <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] mb-4">
+                    {listing.bedrooms && (
+                      <span className="flex items-center gap-1">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                          />
+                        </svg>
+                        {listing.bedrooms} bed
+                      </span>
+                    )}
+                    {listing.bathrooms && (
+                      <span className="flex items-center gap-1">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
+                          />
+                        </svg>
+                        {listing.bathrooms} bath
+                      </span>
+                    )}
+                  </div>
 
-                  <p className="text-sm text-slate-500 mb-4 line-clamp-2">{listing.description || 'No description provided.'}</p>
+                  {listing.description && (
+                    <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4">
+                      {listing.description}
+                    </p>
+                  )}
 
-                  {/* Card footer */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex -space-x-2">
-                      {/* Agent avatars placeholder */}
-                      <div className="w-8 h-8 rounded-full bg-pink-200 border-2 border-white" />
-                    </div>
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
                     <Link
                       href={`/rentals/${listing.id}`}
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-lg font-semibold text-sm border-2 transition-all hover:bg-pink-50"
-                      style={{ borderColor: accentPink, color: accentPink }}
+                      className="text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors"
                     >
-                      View details
+                      View Details →
                     </Link>
+                    {listing.status === 'DRAFT' && createdListingIds.has(listing.id) && (
+                      <button
+                        onClick={() => handlePublish(listing.id)}
+                        className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
+                      >
+                        Publish
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Inquiry section for authenticated users */}
+                {/* Inquiry Form */}
                 {isAuthenticated && listing.status === 'ACTIVE' && (
-                  <div className="border-t border-slate-100 p-4 bg-slate-50">
-                    <textarea
-                      value={inquiryMessages[listing.id] || ''}
-                      onChange={(e) =>
-                        setInquiryMessages((prev) => ({ ...prev, [listing.id]: e.target.value }))
-                      }
-                      placeholder="Send an inquiry to the owner..."
-                      className="w-full rounded-lg border-2 border-slate-200 px-3 py-2 text-sm min-h-[70px] focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition"
-                    />
-                    <button
-                      onClick={() => handleSendInquiry(listing.id)}
-                      disabled={sendingInquiryIds.has(listing.id)}
-                      className="mt-2 text-sm font-semibold text-pink-600 hover:text-pink-700 transition"
-                    >
-                      {sendingInquiryIds.has(listing.id) ? 'Sending...' : 'Send inquiry'}
-                    </button>
-                  </div>
-                )}
-
-                {listing.status === 'DRAFT' && createdListingIds.has(listing.id) && (
-                  <div className="border-t border-slate-100 p-4 bg-slate-50">
-                    <button
-                      onClick={() => handlePublish(listing.id)}
-                      className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition"
-                    >
-                      Publish listing →
-                    </button>
+                  <div className="px-5 pb-5">
+                    <div className="bg-[var(--color-surface)] rounded-xl p-4">
+                      <textarea
+                        value={inquiryMessages[listing.id] || ''}
+                        onChange={(e) =>
+                          setInquiryMessages((prev) => ({ ...prev, [listing.id]: e.target.value }))
+                        }
+                        placeholder="Send a message to the owner..."
+                        rows={2}
+                        className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all text-sm resize-none"
+                      />
+                      <button
+                        onClick={() => handleSendInquiry(listing.id)}
+                        disabled={sendingInquiryIds.has(listing.id)}
+                        className="mt-2 w-full py-2 rounded-lg font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-all text-sm"
+                      >
+                        {sendingInquiryIds.has(listing.id) ? 'Sending...' : 'Send Inquiry'}
+                      </button>
+                    </div>
                   </div>
                 )}
               </article>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* === MORTGAGE TOOLS CTA SECTION === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-[1.4fr_0.8fr] gap-8 items-start">
-          <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-600">Deposit copilots</p>
-            <h2 className="text-3xl font-bold text-slate-900">Mortgage tools sized for women-led households</h2>
-            <p className="text-lg text-slate-600 max-w-xl">
-              Run repayment scenarios, surface grant eligibility and keep your deposit gap front-and-centre. Every calculation remembers your preferences so support teams can pick up right where you left off.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
+      {/* Owner Inquiries Section */}
+      {isAuthenticated && (loadingOwnerInquiries || ownerInquiries.length > 0) && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border)] p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-[var(--color-text)]">Your Inquiries</h2>
               <Link
-                href="/rentals/mortgage"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5"
-                style={{ background: 'linear-gradient(135deg, #E91E8C 0%, #8B5CF6 100%)', boxShadow: '0 4px 12px rgba(233, 30, 140, 0.3)' }}
+                href="/rentals/seekers"
+                className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
               >
-                Launch mortgage calculator
-              </Link>
-              <Link
-                href="/rentals/profile"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold border-2 transition-all hover:bg-pink-50"
-                style={{ borderColor: accentPink, color: accentPink }}
-              >
-                Sync housing profile
+                Browse Seekers →
               </Link>
             </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {loadingOwnerInquiries ? (
+                <div className="col-span-full text-center py-8 text-[var(--color-text-secondary)]">
+                  Loading inquiries...
+                </div>
+              ) : ownerInquiries.length === 0 ? (
+                <div className="col-span-full text-center py-8 text-[var(--color-text-secondary)]">
+                  No inquiries yet
+                </div>
+              ) : (
+                ownerInquiries.map((inquiry) => (
+                  <div
+                    key={inquiry.id}
+                    className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-[var(--color-text)]">
+                        {inquiry.rentalListing?.title || 'Listing'}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          inquiry.status === 'APPROVED'
+                            ? 'bg-green-100 text-green-700'
+                            : inquiry.status === 'DECLINED'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {inquiry.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[var(--color-text-secondary)] mb-3 line-clamp-2">
+                      {inquiry.message || 'No message provided'}
+                    </p>
+                    {inquiry.status === 'PENDING' && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleUpdateInquiry(inquiry.id, 'APPROVED')}
+                          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 transition-all"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleUpdateInquiry(inquiry.id, 'DECLINED')}
+                          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-red-700 bg-red-100 hover:bg-red-200 transition-all"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-
-          <div className="rounded-3xl border border-purple-200 bg-gradient-to-br from-slate-900 via-purple-900/90 to-slate-900 p-6 text-white shadow-xl" style={{ boxShadow: '0 30px 60px rgba(15, 23, 42, 0.25)' }}>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-300 mb-3">What you get</p>
-            <ul className="space-y-3 text-slate-200">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 w-2 h-2 rounded-full bg-pink-400 flex-shrink-0" />
-                Deposit tracker that flags sponsor-ready gaps.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
-                Interest rate comparisons with ethical finance partners.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 w-2 h-2 rounded-full bg-indigo-400 flex-shrink-0" />
-                Grant bundles that update when states refresh rules.
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      )}
+    </main>
   );
 }

@@ -61,7 +61,7 @@ const variantClasses: Record<CardVariant, string> = {
   gradient: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20',
   // Ngurra theme variants - consistent with homepage design system
   ngurra:
-    'backdrop-blur-md bg-white/80 border border-slate-200 dark:bg-[#0f172a]/72 dark:border-slate-700/30 shadow-sm',
+    'backdrop-blur-md bg-white/90 border border-slate-200/80 dark:bg-slate-900/80 dark:border-slate-700/50 shadow-sm',
   'ngurra-dark': 'backdrop-blur-md bg-slate-900/90 border border-slate-700/50 shadow-sm',
   aura: 'backdrop-blur-sm border border-white/20 shadow-lg',
 };

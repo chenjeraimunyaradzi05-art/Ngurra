@@ -723,6 +723,206 @@ async function main() {
       salaryHigh: 90000,
       employment: 'CONTRACT',
     },
+    {
+      title: 'Apprentice Diesel Fitter',
+      companyIndex: 0,
+      description:
+        'Earn while you learn on heavy mobile equipment. Support experienced tradespeople with servicing, inspections, and safe workshop practices.',
+      location: 'Pilbara, WA (FIFO)',
+      salaryLow: 70000,
+      salaryHigh: 85000,
+      employment: 'APPRENTICESHIP',
+    },
+    {
+      title: 'Village Services Utility',
+      companyIndex: 0,
+      description:
+        'Support site village operations with cleaning, catering, and facilities upkeep. Great team role with rostered shifts.',
+      location: 'Pilbara, WA (FIFO)',
+      salaryLow: 62000,
+      salaryHigh: 78000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Drill Support Trainee',
+      companyIndex: 1,
+      description:
+        'Entry role assisting drill crews with sample handling, equipment preparation, and safety checks. Training and mentoring provided.',
+      location: 'Pilbara, WA (FIFO)',
+      salaryLow: 78000,
+      salaryHigh: 98000,
+      employment: 'TRAINEESHIP',
+    },
+    {
+      title: 'Environmental Field Assistant',
+      companyIndex: 1,
+      description:
+        'Support field monitoring, data collection, and compliance reporting. Ideal for candidates interested in land and water management.',
+      location: 'Perth, WA',
+      salaryLow: 75000,
+      salaryHigh: 95000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Warehouse Trainee',
+      companyIndex: 2,
+      description:
+        'Structured role in site logistics learning dispatch, inventory control, and safe loading practices.',
+      location: 'Perth, WA',
+      salaryLow: 65000,
+      salaryHigh: 80000,
+      employment: 'TRAINEESHIP',
+    },
+    {
+      title: 'Process Operator (Entry Level)',
+      companyIndex: 2,
+      description:
+        'Operate plant equipment under supervision and learn safe operating procedures, monitoring, and shutdown routines.',
+      location: 'Pilbara, WA (FIFO)',
+      salaryLow: 95000,
+      salaryHigh: 120000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Retail Sales Consultant',
+      companyIndex: 3,
+      description:
+        'Front-of-house retail role helping customers with device setup, plan changes, and product selection.',
+      location: 'Brisbane, QLD',
+      salaryLow: 48000,
+      salaryHigh: 62000,
+      employment: 'PART_TIME',
+    },
+    {
+      title: 'Field Technician Trainee',
+      companyIndex: 3,
+      description:
+        'Assist with basic installation tasks, site checks, and fault reporting across regional networks.',
+      location: 'Regional NSW',
+      salaryLow: 68000,
+      salaryHigh: 85000,
+      employment: 'TRAINEESHIP',
+    },
+    {
+      title: 'Online Personal Shopper',
+      companyIndex: 4,
+      description:
+        'Pick and pack online orders accurately and support a smooth customer experience.',
+      location: 'Sydney, NSW',
+      salaryLow: 42000,
+      salaryHigh: 52000,
+      employment: 'CASUAL',
+    },
+    {
+      title: 'Nightfill Assistant',
+      companyIndex: 4,
+      description:
+        'Evening and overnight stock replenishment with a focus on accuracy and store presentation.',
+      location: 'Newcastle, NSW',
+      salaryLow: 46000,
+      salaryHigh: 56000,
+      employment: 'PART_TIME',
+    },
+    {
+      title: 'Ramp Operations Trainee',
+      companyIndex: 5,
+      description:
+        'Learn safe ramp operations, baggage handling, and aircraft turnaround procedures with mentorship.',
+      location: 'Sydney Airport, NSW',
+      salaryLow: 65000,
+      salaryHigh: 80000,
+      employment: 'TRAINEESHIP',
+    },
+    {
+      title: 'Aircraft Cabin Cleaner',
+      companyIndex: 5,
+      description:
+        'Support fast aircraft turnaround by cleaning cabins and restocking supplies in line with safety standards.',
+      location: 'Sydney Airport, NSW',
+      salaryLow: 48000,
+      salaryHigh: 60000,
+      employment: 'CASUAL',
+    },
+    {
+      title: 'Branch Service Officer',
+      companyIndex: 6,
+      description:
+        'Customer-facing banking role supporting everyday transactions, guidance, and account updates.',
+      location: 'Melbourne, VIC',
+      salaryLow: 65000,
+      salaryHigh: 82000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Fraud Operations Analyst',
+      companyIndex: 6,
+      description:
+        'Monitor and respond to alerts, document investigations, and support safer banking outcomes.',
+      location: 'Sydney, NSW',
+      salaryLow: 80000,
+      salaryHigh: 100000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Customer Onboarding Specialist',
+      companyIndex: 7,
+      description:
+        'Guide new customers through setup, training, and early product success with clear support.',
+      location: 'Sydney, NSW (Hybrid)',
+      salaryLow: 80000,
+      salaryHigh: 105000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'QA Analyst',
+      companyIndex: 7,
+      description:
+        'Test features, report defects, and collaborate with engineers to improve product quality.',
+      location: 'Sydney, NSW',
+      salaryLow: 90000,
+      salaryHigh: 115000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Customer Success Associate',
+      companyIndex: 8,
+      description:
+        'Support onboarding, training, and retention for business customers. Strong communication required.',
+      location: 'Sydney, NSW (Hybrid)',
+      salaryLow: 85000,
+      salaryHigh: 110000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Junior QA Engineer',
+      companyIndex: 8,
+      description:
+        'Work with engineering teams on test plans, regression testing, and automation basics.',
+      location: 'Sydney, NSW',
+      salaryLow: 95000,
+      salaryHigh: 120000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Mail Sorting Officer',
+      companyIndex: 9,
+      description:
+        'Operate sorting equipment safely, ensure accuracy, and support smooth dispatch schedules.',
+      location: 'Melbourne, VIC',
+      salaryLow: 56000,
+      salaryHigh: 72000,
+      employment: 'FULL_TIME',
+    },
+    {
+      title: 'Shift Supervisor - Parcels',
+      companyIndex: 9,
+      description:
+        'Lead a small team on shift, coordinate dispatch priorities, and maintain safety compliance.',
+      location: 'Melbourne, VIC',
+      salaryLow: 75000,
+      salaryHigh: 92000,
+      employment: 'FULL_TIME',
+    },
   ];
 
   function slugify(s) {
@@ -732,11 +932,13 @@ async function main() {
       .replace(/^[-]+|[-]+$/g, '');
   }
 
+  const jobRecords = [];
+
   for (const j of jobs) {
     const companyId = companyUsers[j.companyIndex].id;
     const slug = slugify(`${j.title} ${companyUsers[j.companyIndex].name}`);
 
-    await prisma.job.upsert({
+    const job = await prisma.job.upsert({
       where: { slug },
       update: {
         title: j.title,
@@ -763,6 +965,8 @@ async function main() {
         viewCount: Math.floor(Math.random() * 500),
       },
     });
+
+    jobRecords.push(job);
   }
 
   // ------------------------------------------------------------------
@@ -841,6 +1045,154 @@ async function main() {
       },
     });
     memberIds.push(user.id);
+  }
+
+  // ------------------------------------------------------------------
+  // 4A. JOB APPLICATIONS & MESSAGES
+  // ------------------------------------------------------------------
+  console.log('Creating Job Applications & Messages...');
+
+  const jobPool = jobRecords.length
+    ? jobRecords
+    : await prisma.job.findMany({
+        where: { isActive: true },
+        take: 20,
+        orderBy: { postedAt: 'desc' },
+      });
+
+  const applicationSeeds = [
+    {
+      memberIndex: 0,
+      jobIndex: 0,
+      status: 'SUBMITTED',
+      coverLetter:
+        'I am excited to apply and learn on the job. I have a strong work ethic, a current driver licence, and a focus on safety.',
+      memberMessage:
+        'Hi team, I have applied for this role and would love the opportunity to learn on site. Happy to provide any extra info.',
+      companyMessage:
+        'Thanks for applying. We are reviewing applications this week and will be in touch regarding next steps.',
+    },
+    {
+      memberIndex: 0,
+      jobIndex: 5,
+      status: 'VIEWED',
+      coverLetter:
+        'I enjoy working with teams and keeping operations organised. I am comfortable with shift work and want to build a long-term career.',
+      memberMessage:
+        'Just checking in to confirm my application was received. Looking forward to hearing back.',
+      companyMessage:
+        'Application received. We will contact shortlisted candidates for a phone chat.',
+    },
+    {
+      memberIndex: 1,
+      jobIndex: 2,
+      status: 'SHORTLISTED',
+      coverLetter:
+        'FIFO experience and strong customer service background. I am keen to train into operations and contribute to safe outcomes.',
+      memberMessage:
+        'Thank you for considering my application. I am available for an interview at your convenience.',
+      companyMessage:
+        'We have shortlisted your application. Please share your availability for an interview this week.',
+    },
+    {
+      memberIndex: 2,
+      jobIndex: 8,
+      status: 'SUBMITTED',
+      coverLetter:
+        'I care deeply about Country and want to build a career in land management. I am ready to learn and work with community teams.',
+      memberMessage:
+        'I am passionate about caring for Country and would value the chance to join the team.',
+      companyMessage: 'Thanks for your interest. We will review your application and respond soon.',
+    },
+    {
+      memberIndex: 3,
+      jobIndex: 11,
+      status: 'SUBMITTED',
+      coverLetter:
+        'I bring strong communication skills and a calm approach under pressure. I enjoy helping people and learning new systems.',
+      memberMessage: 'Hello, I have applied and would appreciate any guidance on next steps.',
+      companyMessage:
+        'Thanks for applying. Please complete the short screening questionnaire sent to your email.',
+    },
+    {
+      memberIndex: 4,
+      jobIndex: 13,
+      status: 'INTERVIEW',
+      coverLetter:
+        'I am studying nursing and looking for part-time work that supports my learning and community care.',
+      memberMessage:
+        'Thanks for arranging the interview. I am available Thursday morning or Friday afternoon.',
+      companyMessage: 'Interview invitation sent. Please confirm your preferred time slot.',
+    },
+    {
+      memberIndex: 2,
+      jobIndex: 15,
+      status: 'SUBMITTED',
+      coverLetter:
+        'I have experience supporting community events and can handle fast-paced environments with a positive attitude.',
+      memberMessage:
+        'Keen to join the team and contribute. Let me know if you need any additional documents.',
+      companyMessage: 'Thanks for applying. We are reviewing applications in order of submission.',
+    },
+    {
+      memberIndex: 1,
+      jobIndex: 18,
+      status: 'VIEWED',
+      coverLetter:
+        'I enjoy structured work, safety-focused procedures, and team environments. Ready to begin immediately.',
+      memberMessage:
+        'Following up on my application. Happy to attend a site induction at short notice.',
+      companyMessage:
+        'We appreciate your interest. Shortlisted candidates will be contacted shortly.',
+    },
+  ];
+
+  for (const seed of applicationSeeds) {
+    const memberId = memberIds[seed.memberIndex];
+    const job = jobPool[seed.jobIndex % jobPool.length];
+
+    if (!memberId || !job) continue;
+
+    const applicationId = `seed-app-${memberId}-${job.id}`;
+
+    const application = await prisma.jobApplication.upsert({
+      where: { id: applicationId },
+      update: {
+        status: seed.status,
+        coverLetter: seed.coverLetter,
+      },
+      create: {
+        id: applicationId,
+        jobId: job.id,
+        userId: memberId,
+        coverLetter: seed.coverLetter,
+        status: seed.status,
+      },
+    });
+
+    await prisma.applicationMessage.upsert({
+      where: { id: `seed-msg-${application.id}-1` },
+      update: { body: seed.memberMessage, isPrivate: false },
+      create: {
+        id: `seed-msg-${application.id}-1`,
+        applicationId: application.id,
+        userId: memberId,
+        body: seed.memberMessage,
+        isPrivate: false,
+      },
+    });
+
+    await prisma.applicationMessage.upsert({
+      where: { id: `seed-msg-${application.id}-2` },
+      update: { body: seed.companyMessage, isPrivate: false },
+      create: {
+        id: `seed-msg-${application.id}-2`,
+        applicationId: application.id,
+        userId: job.userId,
+        body: seed.companyMessage,
+        isPrivate: false,
+      },
+    });
   }
 
   // ------------------------------------------------------------------

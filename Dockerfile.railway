@@ -32,7 +32,8 @@ COPY apps/api/build.mjs apps/api/tsconfig.json apps/api/tsconfig.build.json ./
 RUN npm run build
 
 # Prune to only production dependencies
-RUN npm prune --omit=dev
+# Note: Keep prisma for runtime migrations
+RUN npm prune --omit=dev && npm install prisma --save-prod
 
 # ============ STAGE 2: Production Runtime ============
 FROM node:20-alpine AS runtime

@@ -1,0 +1,9 @@
+<svg width="640" height="200" viewBox="0 0 640 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="200" rx="24" fill="white"/>
+  <g transform="translate(110 52)">
+    <path d="M60 10 L80 60 L40 60 Z" fill="#E31B23"/>
+    <path d="M110 10 L130 60 L90 60 Z" fill="#E31B23"/>
+    <path d="M85 55 L105 105 L65 105 Z" fill="#E31B23"/>
+  </g>
+  <text x="52%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="90" font-weight="700" fill="#E31B23">Westpac</text>
+</svg>

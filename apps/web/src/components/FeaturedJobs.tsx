@@ -24,7 +24,7 @@ const partnershipAds: PartnershipAd[] = [
       'Launch a career in data analytics, UX design, cybersecurity, and more with industry-recognized certificates.',
     cta: 'Explore certificates',
     href: 'https://grow.google/certificates/',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
+    imageUrl: '/partners/google.svg',
     imageAlt: 'Google logo',
   },
   {
@@ -34,7 +34,7 @@ const partnershipAds: PartnershipAd[] = [
     description: 'Support for study, leadership, and pathways into financial services careers.',
     cta: 'View scholarships',
     href: 'https://www.westpac.com.au/about-westpac/sustainability/working-in-the-community/indigenous-engagement/',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/4/47/Westpac_logo.svg',
+    imageUrl: '/partners/westpac.svg',
     imageAlt: 'Westpac logo',
   },
   {
@@ -44,7 +44,7 @@ const partnershipAds: PartnershipAd[] = [
     description: 'Health cover options and wellbeing programs tailored for community support.',
     cta: 'Learn more',
     href: 'https://www.medibank.com.au/',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/7/7c/Medibank_logo.svg',
+    imageUrl: '/partners/medibank.svg',
     imageAlt: 'Medibank logo',
   },
   {
@@ -54,7 +54,7 @@ const partnershipAds: PartnershipAd[] = [
     description: 'Flexible insurance options for home, car, and business—built around your needs.',
     cta: 'Get a quote',
     href: 'https://www.youi.com.au/',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9a/Youi_Insurance_logo.svg',
+    imageUrl: '/partners/youi.svg',
     imageAlt: 'Youi Insurance logo',
   },
 ];
@@ -81,9 +81,6 @@ export default function FeaturedJobs() {
             <Sparkles className="w-4 h-4 text-purple-500" />
             Partnerships & Advertising
           </div>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500">
-            Slide {activeIndex + 1} of {ads.length}
-          </span>
         </div>
 
         <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 p-6">

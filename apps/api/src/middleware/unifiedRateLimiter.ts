@@ -74,28 +74,33 @@ export const RateLimitTier = {
 
 type RateLimitTierType = typeof RateLimitTier[keyof typeof RateLimitTier];
 
+// Read from environment variables with fallbacks
+const ENV_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10); // 15 min default
+const ENV_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '2000', 10);
+const ENV_AUTH_MAX = parseInt(process.env.RATE_LIMIT_AUTH_MAX || '5000', 10);
+
 /**
  * Rate limit configurations
  */
 const RATE_CONFIGS: Record<RateLimitTierType, { windowMs: number; max: number; message: string }> = {
   public: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 * RATE_MULTIPLIER,
+    windowMs: ENV_WINDOW_MS,
+    max: ENV_MAX_REQUESTS * RATE_MULTIPLIER,
     message: 'Too many requests. Please try again in 15 minutes.',
   },
   authenticated: {
-    windowMs: 15 * 60 * 1000,
-    max: 300 * RATE_MULTIPLIER,
+    windowMs: ENV_WINDOW_MS,
+    max: ENV_AUTH_MAX * RATE_MULTIPLIER,
     message: 'Rate limit exceeded. Please slow down.',
   },
   premium: {
-    windowMs: 15 * 60 * 1000,
-    max: 1000 * RATE_MULTIPLIER,
+    windowMs: ENV_WINDOW_MS,
+    max: (ENV_AUTH_MAX * 2) * RATE_MULTIPLIER,
     message: 'Premium rate limit exceeded.',
   },
   admin: {
-    windowMs: 15 * 60 * 1000,
-    max: 2000 * RATE_MULTIPLIER,
+    windowMs: ENV_WINDOW_MS,
+    max: (ENV_AUTH_MAX * 4) * RATE_MULTIPLIER,
     message: 'Admin rate limit exceeded.',
   },
   sensitive: {

@@ -107,7 +107,7 @@
   for = "/api/*"
   [headers.values]
     # SECURITY: Restrict CORS to specific trusted domains (do not use wildcard "*")
-    Access-Control-Allow-Origin = "https://ngurrapathways.life"
+    Access-Control-Allow-Origin = "https://ngurra.netlify.app"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Authorization, Content-Type"
     Access-Control-Allow-Credentials = "true"
@@ -115,6 +115,14 @@
 # =============================================================================
 # Redirects
 # =============================================================================
+# API Proxy - Route all /api/* requests to Railway backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://ngurra-web-production.up.railway.app/:splat"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
 # Health check endpoints
 [[redirects]]
   from = "/health"

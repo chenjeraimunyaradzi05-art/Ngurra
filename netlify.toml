@@ -22,7 +22,7 @@
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://ngurra-web-production.up.railway.app"
   NEXT_PUBLIC_SOCKET_URL = "https://ngurra-web-production.up.railway.app"
-  NEXTAUTH_URL = "https://ngurra.netlify.app"
+  NEXTAUTH_URL = "https://ngurrapathways.life"
   NODE_ENV = "production"
 
 # =============================================================================
@@ -107,7 +107,7 @@
   for = "/api/*"
   [headers.values]
     # SECURITY: Restrict CORS to specific trusted domains (do not use wildcard "*")
-    Access-Control-Allow-Origin = "https://ngurra.netlify.app"
+    Access-Control-Allow-Origin = "https://ngurrapathways.life"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Authorization, Content-Type"
     Access-Control-Allow-Credentials = "true"

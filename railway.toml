@@ -1,5 +1,6 @@
 # Railway configuration for API service
 # Uses optimized multi-stage Dockerfile
+# Updated: healthcheck path aligned
 
 [build]
 builder = "dockerfile"

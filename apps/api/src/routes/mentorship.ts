@@ -826,6 +826,200 @@ router.post('/:id/sessions', authenticate, validateRequest(z.object({ body: ment
  * @desc List available mentors
  * @access Public
  */
+router.get('/mentors', async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { skills, location, page = '1', limit = '20' } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page as string, 10));
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string, 10)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const where: Record<string, unknown> = {
+      userType: 'MENTOR',
+    };
+
+    const [mentors, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limitNum,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          name: true,
+          avatarUrl: true,
+          bio: true,
+          skills: true,
+          location: true,
+        },
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    res.json({
+      data: mentors.map(m => ({
+        ...m,
+        name: m.name || `${m.firstName || ''} ${m.lastName || ''}`.trim(),
+      })),
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/mentors/:id
+ * @desc Get a specific mentor's profile
+ * @access Public
+ */
+router.get('/mentors/:id', async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { id } = req.params;
+
+    const mentor = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        name: true,
+        email: true,
+        avatarUrl: true,
+        bio: true,
+        skills: true,
+        location: true,
+        userType: true,
+      },
+    });
+
+    if (!mentor) {
+      return res.status(404).json({ error: 'Mentor not found' });
+    }
+
+    res.json({
+      data: {
+        ...mentor,
+        name: mentor.name || `${mentor.firstName || ''} ${mentor.lastName || ''}`.trim(),
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/mentors/:id/reviews
+ * @desc Get reviews for a mentor
+ * @access Public
+ */
+router.get('/mentors/:id/reviews', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Return empty reviews for now - can be implemented later
+    res.json({ data: [], total: 0 });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/mentors/:id/slots
+ * @desc Get available booking slots for a mentor
+ * @access Private
+ */
+router.get('/mentors/:id/slots', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { id } = req.params;
+
+    const slots = await prisma.mentorAvailabilitySlot.findMany({
+      where: { 
+        mentorId: id,
+        startTime: { gte: new Date() }
+      },
+      orderBy: { startTime: 'asc' },
+      take: 50,
+    });
+
+    res.json({ data: slots });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/mentors/:id/availability
+ * @desc Get mentor availability calendar
+ * @access Public
+ */
+router.get('/mentors/:id/availability', async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { id } = req.params;
+
+    const slots = await prisma.mentorAvailabilitySlot.findMany({
+      where: { 
+        mentorId: id,
+        startTime: { gte: new Date() }
+      },
+      orderBy: { startTime: 'asc' },
+      take: 100,
+    });
+
+    res.json({ data: slots });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/matches
+ * @desc Get mentorship matches for the current user
+ * @access Private
+ */
+router.get('/matches', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const userId = (req as any).user!.id;
+
+    const mentorships = await prisma.mentorship.findMany({
+      where: {
+        OR: [
+          { mentorId: userId },
+          { menteeId: userId }
+        ]
+      },
+      include: {
+        mentor: {
+          select: { id: true, firstName: true, lastName: true, name: true, avatarUrl: true }
+        },
+        mentee: {
+          select: { id: true, firstName: true, lastName: true, name: true, avatarUrl: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({ data: mentorships });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /mentorship/mentors/available
+ * @desc List available mentors (legacy route)
+ * @access Public
+ */
 router.get('/mentors/available', async (req, res, next) => {
   try {
     const { prisma } = req.app.locals;

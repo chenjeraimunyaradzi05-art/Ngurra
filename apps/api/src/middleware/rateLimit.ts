@@ -32,14 +32,14 @@ const RATE_LIMITS = {
   // Public endpoints (login, registration, job listings)
   public: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 * E2E_MULTIPLIER,
+    max: 500 * E2E_MULTIPLIER, // Increased from 100 for initial deployment
     message: { error: 'Too many requests. Please try again in 15 minutes.' }
   },
   
   // Authenticated user endpoints
   authenticated: {
     windowMs: 15 * 60 * 1000,
-    max: 300 * E2E_MULTIPLIER,
+    max: 500 * E2E_MULTIPLIER, // Increased from 300
     message: { error: 'Rate limit exceeded. Please slow down.' }
   },
   

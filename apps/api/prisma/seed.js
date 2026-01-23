@@ -759,6 +759,164 @@ async function main() {
   }
 
   // ------------------------------------------------------------------
+  // 4B. RENTAL LISTINGS (HOUSES & APARTMENTS)
+  // ------------------------------------------------------------------
+  console.log('Creating Rental Listings...');
+
+  const rentalListings = [
+    {
+      id: 'rental-1',
+      ownerUserId: memberIds[0],
+      status: 'ACTIVE',
+      title: 'Modern 2BR Apartment near the river',
+      description:
+        'Light-filled apartment with balcony, secure entry, and easy access to public transport.',
+      addressLine1: '12 Riverwalk Way',
+      suburb: 'South Brisbane',
+      state: 'QLD',
+      postcode: '4101',
+      weeklyRent: new client_1.Prisma.Decimal('620'),
+      bond: new client_1.Prisma.Decimal('2480'),
+      bedrooms: 2,
+      bathrooms: 1,
+      parking: 1,
+      availableFrom: new Date('2026-02-05'),
+    },
+    {
+      id: 'rental-2',
+      ownerUserId: memberIds[1],
+      status: 'ACTIVE',
+      title: 'Family home with backyard and study',
+      description: 'Three-bedroom home with a quiet workspace, fenced yard, and close to schools.',
+      addressLine1: '8 Gumtree Crescent',
+      suburb: 'Redfern',
+      state: 'NSW',
+      postcode: '2016',
+      weeklyRent: new client_1.Prisma.Decimal('780'),
+      bond: new client_1.Prisma.Decimal('3120'),
+      bedrooms: 3,
+      bathrooms: 2,
+      parking: 1,
+      availableFrom: new Date('2026-02-12'),
+    },
+    {
+      id: 'rental-3',
+      ownerUserId: memberIds[2],
+      status: 'ACTIVE',
+      title: 'Coastal 1BR unit with ocean breeze',
+      description: 'Compact unit ideal for singles or couples. Walk to beach and local cafes.',
+      addressLine1: '22 Seabreeze Terrace',
+      suburb: 'Broome',
+      state: 'WA',
+      postcode: '6725',
+      weeklyRent: new client_1.Prisma.Decimal('520'),
+      bond: new client_1.Prisma.Decimal('2080'),
+      bedrooms: 1,
+      bathrooms: 1,
+      parking: 1,
+      availableFrom: new Date('2026-02-01'),
+    },
+    {
+      id: 'rental-4',
+      ownerUserId: memberIds[3],
+      status: 'ACTIVE',
+      title: 'Spacious 4BR house close to community hub',
+      description: 'Open-plan living, shaded outdoor area, and storage for tools or equipment.',
+      addressLine1: '45 Community Lane',
+      suburb: 'Darwin',
+      state: 'NT',
+      postcode: '0800',
+      weeklyRent: new client_1.Prisma.Decimal('690'),
+      bond: new client_1.Prisma.Decimal('2760'),
+      bedrooms: 4,
+      bathrooms: 2,
+      parking: 2,
+      availableFrom: new Date('2026-02-20'),
+    },
+    {
+      id: 'rental-5',
+      ownerUserId: memberIds[4],
+      status: 'ACTIVE',
+      title: '2BR townhouse with garden courtyard',
+      description: 'Quiet street, pet-friendly courtyard, and modern kitchen.',
+      addressLine1: '5 Jacaranda Court',
+      suburb: 'Adelaide',
+      state: 'SA',
+      postcode: '5000',
+      weeklyRent: new client_1.Prisma.Decimal('560'),
+      bond: new client_1.Prisma.Decimal('2240'),
+      bedrooms: 2,
+      bathrooms: 1,
+      parking: 1,
+      availableFrom: new Date('2026-03-01'),
+    },
+    {
+      id: 'rental-6',
+      ownerUserId: memberIds[0],
+      status: 'ACTIVE',
+      title: 'Studio apartment in the city fringe',
+      description: 'Furnished studio with secure building access and onsite laundry.',
+      addressLine1: '33 Station Road',
+      suburb: 'Footscray',
+      state: 'VIC',
+      postcode: '3011',
+      weeklyRent: new client_1.Prisma.Decimal('420'),
+      bond: new client_1.Prisma.Decimal('1680'),
+      bedrooms: 1,
+      bathrooms: 1,
+      parking: 0,
+      availableFrom: new Date('2026-02-15'),
+    },
+    {
+      id: 'rental-7',
+      ownerUserId: memberIds[2],
+      status: 'ACTIVE',
+      title: '3BR apartment close to transport',
+      description: 'Family-sized apartment with lift access and large living area.',
+      addressLine1: '18 Junction Place',
+      suburb: 'Perth',
+      state: 'WA',
+      postcode: '6000',
+      weeklyRent: new client_1.Prisma.Decimal('740'),
+      bond: new client_1.Prisma.Decimal('2960'),
+      bedrooms: 3,
+      bathrooms: 2,
+      parking: 2,
+      availableFrom: new Date('2026-02-25'),
+    },
+    {
+      id: 'rental-8',
+      ownerUserId: memberIds[1],
+      status: 'ACTIVE',
+      title: '2BR duplex with shaded veranda',
+      description: 'Peaceful duplex with outdoor seating and easy access to local shops.',
+      addressLine1: '9 Wattle Street',
+      suburb: 'Cairns',
+      state: 'QLD',
+      postcode: '4870',
+      weeklyRent: new client_1.Prisma.Decimal('580'),
+      bond: new client_1.Prisma.Decimal('2320'),
+      bedrooms: 2,
+      bathrooms: 1,
+      parking: 1,
+      availableFrom: new Date('2026-02-10'),
+    },
+  ];
+
+  for (const listing of rentalListings) {
+    const { id, ...data } = listing;
+    try {
+      await prisma.rentalListing.upsert({
+        where: { id },
+        update: data,
+        create: { id, ...data },
+      });
+    } catch (e) {
+      console.log(`Skipping rental listing ${listing.title} (model might not exist)`);
+    }
+  }
+
+  // ------------------------------------------------------------------
   // 5. MENTORS
   // ------------------------------------------------------------------
   console.log('Creating Mentors...');
@@ -1339,6 +1497,179 @@ async function main() {
       });
     } catch (e) {
       console.log(`Skipping course ${c.title} (model might not exist in this schema version)`);
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // 6B. EXTERNAL COURSES (TAFE, UNI, COMMUNITY COLLEGES)
+  // ------------------------------------------------------------------
+  console.log('Seeding External Courses...');
+
+  const externalCourses = [
+    {
+      id: 'ext-tafe-nsw-cert3-it',
+      title: 'Certificate III in Information Technology',
+      description:
+        'Foundational IT skills: networking, support, cybersecurity basics, and digital service delivery.',
+      nationalCode: 'ICT30120',
+      industry: 'Technology',
+      qualification: 'Certificate III',
+      provider: 'TAFE NSW',
+      deliveryMode: 'Blended',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://www.tafensw.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-tafe-qld-cert4-community',
+      title: 'Certificate IV in Community Services',
+      description:
+        'Prepare for community support roles with case management, outreach, and cultural safety skills.',
+      nationalCode: 'CHC42021',
+      industry: 'Community Services',
+      qualification: 'Certificate IV',
+      provider: 'TAFE Queensland',
+      deliveryMode: 'Classroom',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://tafeqld.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-tafe-sa-cert3-carpentry',
+      title: 'Certificate III in Carpentry',
+      description:
+        'Apprenticeship pathway covering structural, framing, and on-site safety requirements.',
+      nationalCode: 'CPC30220',
+      industry: 'Construction',
+      qualification: 'Certificate III',
+      provider: 'TAFE SA',
+      deliveryMode: 'Classroom',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://www.tafesa.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-tafe-wa-cert3-hospitality',
+      title: 'Certificate III in Hospitality',
+      description: 'Front-of-house service, barista skills, and customer experience training.',
+      nationalCode: 'SIT30622',
+      industry: 'Hospitality',
+      qualification: 'Certificate III',
+      provider: 'TAFE WA',
+      deliveryMode: 'Blended',
+      fundingAvailable: true,
+      price: 1200,
+      url: 'https://www.tafe.wa.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-cdu-indigenous-ranger',
+      title: 'Indigenous Ranger Program',
+      description: 'Country care, fire management, and cultural heritage protection skills.',
+      industry: 'Land Management',
+      qualification: 'Program',
+      provider: 'Charles Darwin University',
+      deliveryMode: 'On Country',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://www.cdu.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-unimelb-grad-diploma-public-health',
+      title: 'Graduate Diploma in Public Health',
+      description: 'Population health, program design, and community health promotion.',
+      industry: 'Health',
+      qualification: 'Graduate Diploma',
+      provider: 'The University of Melbourne',
+      deliveryMode: 'Online',
+      fundingAvailable: false,
+      price: 18500,
+      url: 'https://www.unimelb.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-unsw-bachelor-arts-indigenous',
+      title: 'Bachelor of Arts (Indigenous Studies)',
+      description: 'Study Indigenous history, policy, and community development pathways.',
+      industry: 'Education',
+      qualification: 'Bachelor Degree',
+      provider: 'UNSW Sydney',
+      deliveryMode: 'Campus',
+      fundingAvailable: false,
+      price: 9800,
+      url: 'https://www.unsw.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-uts-college-diploma-business',
+      title: 'Diploma of Business',
+      description: 'Business fundamentals, marketing, finance, and project coordination.',
+      industry: 'Business',
+      qualification: 'Diploma',
+      provider: 'UTS College',
+      deliveryMode: 'Campus',
+      fundingAvailable: false,
+      price: 7200,
+      url: 'https://utscollege.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-rmit-cert4-networking',
+      title: 'Certificate IV in Information Technology (Networking)',
+      description: 'Networking fundamentals, cloud basics, and IT support pathways.',
+      nationalCode: 'ICT40120',
+      industry: 'Technology',
+      qualification: 'Certificate IV',
+      provider: 'RMIT University',
+      deliveryMode: 'Blended',
+      fundingAvailable: false,
+      price: 2400,
+      url: 'https://www.rmit.edu.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-community-college-services',
+      title: 'Community Services Foundations',
+      description: 'Entry pathway for community support work, wellbeing, and outreach roles.',
+      industry: 'Community Services',
+      qualification: 'Short Course',
+      provider: 'Community College',
+      deliveryMode: 'Classroom',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://www.communitycollege.com.au/',
+      isActive: true,
+    },
+    {
+      id: 'ext-tafe-nsw-diploma-early-childhood',
+      title: 'Diploma of Early Childhood Education and Care',
+      description: 'Prepare for educator roles in early learning and childcare settings.',
+      nationalCode: 'CHC50121',
+      industry: 'Education',
+      qualification: 'Diploma',
+      provider: 'TAFE NSW',
+      deliveryMode: 'Blended',
+      fundingAvailable: true,
+      price: 0,
+      url: 'https://www.tafensw.edu.au/',
+      isActive: true,
+    },
+  ];
+
+  for (const course of externalCourses) {
+    const { id, ...data } = course;
+    try {
+      await prisma.externalCourse.upsert({
+        where: { id },
+        update: { ...data, lastSyncedAt: new Date() },
+        create: { id, ...data, lastSyncedAt: new Date() },
+      });
+    } catch (e) {
+      console.log(`Skipping external course ${course.title} (model might not exist)`);
     }
   }
 

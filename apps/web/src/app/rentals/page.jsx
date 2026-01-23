@@ -267,9 +267,9 @@ export default function RentalsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-background)]">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--color-primary)] to-teal-700 text-white">
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="max-w-3xl">
@@ -288,7 +288,7 @@ export default function RentalsPage() {
                 <>
                   <button
                     onClick={() => setShowCreateForm(!showCreateForm)}
-                    className="px-6 py-3 bg-white text-[var(--color-primary)] font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
+                    className="px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
                   >
                     {showCreateForm ? 'Hide Form' : '+ List Property'}
                   </button>
@@ -302,7 +302,7 @@ export default function RentalsPage() {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="px-6 py-3 bg-white text-[var(--color-primary)] font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
+                  className="px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-white/90 transition-all shadow-lg"
                 >
                   Sign in to List Property
                 </Link>
@@ -331,7 +331,7 @@ export default function RentalsPage() {
       {/* Error Banner */}
       {error && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-          <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-800 dark:text-red-200 rounded-xl px-4 py-3 flex items-center justify-between">
             <span>{error}</span>
             <button onClick={() => setError(null)} className="text-red-600 hover:text-red-800">
               ✕
@@ -343,17 +343,19 @@ export default function RentalsPage() {
       {/* Create Listing Form (Collapsible) */}
       {isAuthenticated && showCreateForm && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-2xl shadow-xl border border-[var(--color-border)] p-6 sm:p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-[var(--color-text)]">Create New Listing</h2>
-                <p className="text-sm text-[var(--color-text-secondary)]">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Create New Listing
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Fill in the details to list your property
                 </p>
               </div>
               <button
                 onClick={() => setShowCreateForm(false)}
-                className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] rounded-lg hover:bg-gray-100"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
               >
                 ✕
               </button>
@@ -482,14 +484,14 @@ export default function RentalsPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="px-6 py-3 rounded-xl font-medium text-[var(--color-text-secondary)] hover:bg-gray-100 transition-all"
+                  className="px-6 py-3 rounded-xl font-medium text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="px-8 py-3 rounded-xl font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-all shadow-lg"
+                  className="px-8 py-3 rounded-xl font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 transition-all shadow-lg"
                 >
                   {creating ? 'Creating...' : 'Create Listing'}
                 </button>
@@ -501,13 +503,15 @@ export default function RentalsPage() {
 
       {/* Filter Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border)] p-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Filter Listings</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              Filter Listings
+            </h2>
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_FILTERS)}
-              className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+              className="text-sm text-purple-600 hover:text-purple-700 font-medium"
             >
               Reset all filters
             </button>
@@ -661,7 +665,7 @@ export default function RentalsPage() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden animate-pulse"
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-pulse"
               >
                 <div className="h-48 bg-gray-200" />
                 <div className="p-5 space-y-3">
@@ -673,7 +677,7 @@ export default function RentalsPage() {
             ))}
           </div>
         ) : listings.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-[var(--color-border)]">
+          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
             <div className="text-5xl mb-4">🏠</div>
             <h3 className="text-xl font-semibold text-[var(--color-text)] mb-2">
               No Listings Found
@@ -693,7 +697,7 @@ export default function RentalsPage() {
             {listings.map((listing) => (
               <article
                 key={listing.id}
-                className="group bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
               >
                 {/* Image placeholder */}
                 <div className="relative h-48 bg-gradient-to-br from-teal-100 to-teal-200">
@@ -840,33 +844,33 @@ export default function RentalsPage() {
       {/* Owner Inquiries Section */}
       {isAuthenticated && (loadingOwnerInquiries || ownerInquiries.length > 0) && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border)] p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-[var(--color-text)]">Your Inquiries</h2>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Your Inquiries</h2>
               <Link
                 href="/rentals/seekers"
-                className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+                className="text-sm text-purple-600 hover:text-purple-700 font-medium"
               >
                 Browse Seekers →
               </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {loadingOwnerInquiries ? (
-                <div className="col-span-full text-center py-8 text-[var(--color-text-secondary)]">
+                <div className="col-span-full text-center py-8 text-slate-500 dark:text-slate-400">
                   Loading inquiries...
                 </div>
               ) : ownerInquiries.length === 0 ? (
-                <div className="col-span-full text-center py-8 text-[var(--color-text-secondary)]">
+                <div className="col-span-full text-center py-8 text-slate-500 dark:text-slate-400">
                   No inquiries yet
                 </div>
               ) : (
                 ownerInquiries.map((inquiry) => (
                   <div
                     key={inquiry.id}
-                    className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]"
+                    className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-[var(--color-text)]">
+                      <span className="text-sm font-medium text-slate-900 dark:text-white">
                         {inquiry.rentalListing?.title || 'Listing'}
                       </span>
                       <span

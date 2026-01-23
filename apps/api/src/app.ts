@@ -183,7 +183,7 @@ export function createApp() {
         windowMs: 15 * 60 * 1000,
         // Keep production reasonably protected, but avoid test flakiness from 429s.
         // Relax rate limit in development to prevent local issues
-        max: (isE2E || nodeEnv === 'development') ? 100000 : 300, 
+        max: (isE2E || nodeEnv === 'development') ? 100000 : 1000, // Increased from 300 for initial deployment
         // Skip health checks and development entirely from rate limiting
         skip: (req) => nodeEnv === 'development' || req.path === '/health' || req.path.startsWith('/health'),
         standardHeaders: true,

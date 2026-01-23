@@ -20,9 +20,9 @@
   command = "npm install && npm --prefix apps/web run build"
 
 [context.production.environment]
-  NEXT_PUBLIC_API_URL = "https://api.gimbi.com.au"
-  NEXT_PUBLIC_SOCKET_URL = "https://api.gimbi.com.au"
-  NEXTAUTH_URL = "https://ngurrapathways.life"
+  NEXT_PUBLIC_API_URL = "https://ngurra-web-production.up.railway.app"
+  NEXT_PUBLIC_SOCKET_URL = "https://ngurra-web-production.up.railway.app"
+  NEXTAUTH_URL = "https://ngurra.netlify.app"
   NODE_ENV = "production"
 
 # =============================================================================

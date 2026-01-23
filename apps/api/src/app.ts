@@ -156,14 +156,15 @@ export function createApp() {
     // Rate limiting
     // IMPORTANT: In development we prefer the default in-memory store.
     // A misconfigured Redis store can hang *all* requests (including /health).
+    // ONLY use Redis if REDIS_URL is explicitly set - never fallback to localhost in production
     const useRedisRateLimit =
-        String(process.env.RATE_LIMIT_STORE || '').toLowerCase() === 'redis' || nodeEnv === 'production';
+        !!process.env.REDIS_URL && (String(process.env.RATE_LIMIT_STORE || '').toLowerCase() === 'redis' || nodeEnv === 'production');
 
     let limiterStore: RedisStore | undefined;
     let rateLimitRedisClient: Redis | undefined;
 
     if (useRedisRateLimit) {
-        rateLimitRedisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+        rateLimitRedisClient = new Redis(process.env.REDIS_URL!, {
             connectTimeout: parseInt(process.env.REDIS_CONNECT_TIMEOUT_MS || '500', 10),
             enableOfflineQueue: false,
             maxRetriesPerRequest: 1,
@@ -183,7 +184,8 @@ export function createApp() {
         // Keep production reasonably protected, but avoid test flakiness from 429s.
         // Relax rate limit in development to prevent local issues
         max: (isE2E || nodeEnv === 'development') ? 100000 : 300, 
-        skip: (req) => nodeEnv === 'development', // Skip entirely in development
+        // Skip health checks and development entirely from rate limiting
+        skip: (req) => nodeEnv === 'development' || req.path === '/health' || req.path.startsWith('/health'),
         standardHeaders: true,
         legacyHeaders: false,
         ...(limiterStore ? { store: limiterStore } : {}),

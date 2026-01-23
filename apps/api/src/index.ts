@@ -4,16 +4,22 @@ import http from 'http';
 // Load environment variables FIRST before any other imports
 dotenv.config();
 
+// PORT handling: Railway injects PORT=5432 from PostgreSQL service
+// Use API_PORT if set, otherwise PORT (but exclude 5432 which is PostgreSQL's port)
+const rawPort = process.env.API_PORT || process.env.PORT;
+const PORT = rawPort && rawPort !== '5432' ? Number(rawPort) : 3001;
+
 // Log startup immediately to see if we even get this far
 console.log('========================================');
 console.log('🚀 Starting Ngurra API...');
 console.log('========================================');
 console.log('Environment:');
-console.log('  PORT:', process.env.PORT || '3001 (default)');
+console.log('  PORT:', PORT, rawPort === '5432' ? '(ignored 5432 - PostgreSQL port)' : '');
 console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
 console.log('  DATABASE_URL:', process.env.DATABASE_URL ? '✅ SET' : '❌ NOT SET');
 console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET');
 console.log('  DEV_JWT_SECRET:', process.env.DEV_JWT_SECRET ? '✅ SET' : '❌ NOT SET');
+console.log('  REDIS_URL:', process.env.REDIS_URL ? '✅ SET' : '❌ NOT SET (rate limiting uses memory)');
 console.log('========================================');
 
 // Critical check: DATABASE_URL must be set
@@ -43,8 +49,6 @@ import { setupSocket, getIO } from './lib/socket';
 import { initializeScheduler, shutdownScheduler } from './lib/scheduler';
 
 console.log('✅ Application modules loaded successfully');
-
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 
 // Initialize services and start server
 async function startServer() {

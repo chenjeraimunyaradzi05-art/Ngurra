@@ -129,11 +129,6 @@
   to = "/.netlify/functions/health"
   status = 200
 
-[[redirects]]
-  from = "/api/health"
-  to = "/.netlify/functions/health"
-  status = 200
-
 # WWW to non-WWW redirect
 [[redirects]]
   from = "https://www.ngurrapathways.life/*"

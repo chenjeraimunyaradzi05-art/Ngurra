@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Live Streaming & Audio Rooms Routes
  * Phase 8.4: Steps 776-800
@@ -6,8 +5,10 @@
  */
 import express from 'express';
 import { AccessToken } from 'livekit-server-sdk';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import authenticateJWT from '../middleware/auth';
+
+const prisma = prismaClient as any;
 
 const router = express.Router();
 
@@ -109,7 +110,7 @@ router.get('/streams', async (req, res) => {
     ]);
 
     // Enrich with host info
-    const hostIds = [...new Set(streams.map(s => s.hostId))];
+    const hostIds : string[] = ([...new Set(streams.map(s => s.hostId))]).filter((id): id is string => id !== null);
     const userInfo = await getUserInfo(hostIds);
 
     const enrichedStreams = streams.map(stream => ({

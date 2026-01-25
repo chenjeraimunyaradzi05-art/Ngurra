@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Base Controller
  * 

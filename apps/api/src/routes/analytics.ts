@@ -1,10 +1,10 @@
-// @ts-nocheck
 import express from 'express';
 import { prisma } from '../db';
 import { authenticate } from '../middleware/auth';
 import { AnalyticsService } from '../services/analyticsService';
 
 const router = express.Router();
+const prismaAny = prisma as unknown as { impactMetric?: any };
 
 // GET /analytics/overview - platform-wide metrics (admin only)
 router.get('/overview', authenticate, async (req, res) => {
@@ -193,11 +193,11 @@ router.get('/impact', authenticate, async (req, res) => {
     try {
         const limit = Math.min(Number(req.query.limit || 20), 50);
 
-        if (!prisma.impactMetric) {
+        if (!prismaAny.impactMetric) {
             return void res.json({ metrics: [] });
         }
 
-        const metrics = await prisma.impactMetric.findMany({
+        const metrics = await prismaAny.impactMetric.findMany({
             orderBy: { createdAt: 'desc' },
             take: limit,
         });

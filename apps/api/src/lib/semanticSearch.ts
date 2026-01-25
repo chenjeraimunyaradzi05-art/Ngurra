@@ -607,18 +607,3 @@ async function updateAllEmbeddings(indexType) {
     return { success: 0, failed: 0 };
   }
 }
-
-module.exports = {
-  isAvailable,
-  generateEmbedding,
-  generateBatchEmbeddings,
-  cosineSimilarity,
-  semanticSearch,
-  findSimilarJobs,
-  expandQuery,
-  generateSuggestions,
-  hybridSearch,
-  updateAllEmbeddings
-};
-
-export {};

@@ -479,17 +479,3 @@ function generateQueryVariations(query) {
   
   return [...new Set(variations)];
 }
-
-module.exports = {
-  cachedSearch,
-  generateCacheKey,
-  optimizeQuery,
-  invalidateCache,
-  warmCache,
-  prefetchRelated,
-  performanceMonitor,
-  CONFIG,
-  withTimeout
-};
-
-export {};

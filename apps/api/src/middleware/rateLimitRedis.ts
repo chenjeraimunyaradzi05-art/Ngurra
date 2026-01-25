@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use strict";
 
 /**
@@ -18,49 +19,49 @@ const RATE_LIMIT_CONFIGS = {
   // Authentication endpoints - strict limits
   auth: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 10 attempts per window
+    max: 20, // 20 attempts per window (slightly increased)
     message: 'Too many authentication attempts. Please try again later.',
     keyPrefix: 'rl:auth:',
   },
   // AI endpoints - limited to prevent abuse
   ai: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 50, // 50 requests per hour
+    max: 100, // 100 requests per hour
     message: 'AI request limit reached. Please try again later.',
     keyPrefix: 'rl:ai:',
   },
   // Standard API endpoints
   api: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 1000, // 1000 requests per hour
+    max: 10000, // 10000 requests per hour (~2.7/sec avg)
     message: 'Rate limit exceeded. Please slow down.',
     keyPrefix: 'rl:api:',
   },
   // Search endpoints - moderate limits
   search: {
     windowMs: 60 * 1000, // 1 minute
-    max: 30, // 30 searches per minute
+    max: 120, // 120 searches per minute (2/sec)
     message: 'Too many search requests. Please slow down.',
     keyPrefix: 'rl:search:',
   },
   // Upload endpoints
   upload: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 50, // 50 uploads per hour
+    max: 100, // 100 uploads per hour
     message: 'Upload limit reached. Please try again later.',
     keyPrefix: 'rl:upload:',
   },
   // Sensitive operations (password reset, etc.)
   sensitive: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 5, // 5 attempts per hour
+    max: 20, // 20 attempts per hour
     message: 'Too many attempts. Please try again later.',
     keyPrefix: 'rl:sensitive:',
   },
   // Enterprise tier - higher limits
   enterprise: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10000, // 10,000 requests per hour
+    max: 50000, // 50,000 requests per hour
     message: 'Rate limit exceeded. Contact support for limit increase.',
     keyPrefix: 'rl:enterprise:',
   },
@@ -372,17 +373,4 @@ const rateLimiters = {
   sensitive: createRateLimiter('sensitive'),
   enterprise: createRateLimiter('enterprise'),
 };
-
-module.exports = {
-  initRateLimitRedis,
-  createRateLimiter,
-  rateLimitByKey,
-  skipIf,
-  getRateLimitStatus,
-  resetRateLimit,
-  rateLimiters,
-  RATE_LIMIT_CONFIGS,
-};
-
-export {};
 

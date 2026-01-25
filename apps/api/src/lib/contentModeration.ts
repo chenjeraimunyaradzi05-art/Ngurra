@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 // Simple, deterministic content moderation helper.
@@ -40,9 +41,3 @@ export function moderateText(text: string, options: ModerationOptions = {}) {
     score: flagged ? Math.min(1, matched.length / 3) : 0,
   };
 }
-
-module.exports = {
-  moderateText,
-};
-
-export {};

@@ -4,6 +4,15 @@
  */
 
 import type { HousingType } from '@prisma/client';
+import {
+  createListing,
+  publishListing,
+  searchListings,
+  sendInquiry,
+  addListingPhotos,
+  respondToInquiry,
+  updateSeekerProfile,
+} from '../../src/services/womenHousing';
 const mockPrisma = vi.hoisted(() => ({
   womenHousingPortal: {
     create: vi.fn(),
@@ -40,16 +49,6 @@ const mockPrisma = vi.hoisted(() => ({
 vi.mock('../../src/db', () => ({
   prisma: mockPrisma,
 }));
-
-const {
-  createListing,
-  publishListing,
-  searchListings,
-  sendInquiry,
-  addListingPhotos,
-  respondToInquiry,
-  updateSeekerProfile,
-} = await import('../../src/services/womenHousing');
 
 const housingType = 'APARTMENT' as unknown as HousingType;
 

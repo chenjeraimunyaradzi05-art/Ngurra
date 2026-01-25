@@ -497,21 +497,3 @@ async function getNotificationStats(userId) {
     recentActivity
   };
 }
-
-module.exports = {
-  CATEGORIES,
-  TIME_GROUPS,
-  getNotificationCenter,
-  markAsRead,
-  markAllAsRead,
-  deleteNotification,
-  clearOldNotifications,
-  createNotification,
-  createBulkNotifications,
-  getNotificationHistory,
-  getNotificationStats,
-  getCategoryCounts,
-  formatNotification
-};
-
-export {};

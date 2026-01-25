@@ -564,23 +564,3 @@ async function getAllAnnouncements(options = {}) {
     }
   };
 }
-
-module.exports = {
-  ANNOUNCEMENT_TYPES,
-  PRIORITY,
-  AUDIENCES,
-  createAnnouncement,
-  getActiveAnnouncementsForUser,
-  dismissAnnouncement,
-  recordView,
-  recordClick,
-  publishAnnouncement,
-  scheduleAnnouncement,
-  getAnnouncementAnalytics,
-  updateAnnouncement,
-  deleteAnnouncement,
-  deactivateExpiredAnnouncements,
-  getAllAnnouncements
-};
-
-export {};

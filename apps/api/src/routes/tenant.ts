@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 /**
  * Multi-tenant Configuration Routes

@@ -9,7 +9,9 @@ import express from 'express';
 import authenticateJWT from '../middleware/auth';
 import { getRecommendations, calculateRecommendationScore } from '../lib/jobRecommendations';
 import { parsePagination, apiResponse, paginationMeta } from '../lib/apiVersion';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+
+const prisma = prismaClient as any;
 
 const router = express.Router();
 

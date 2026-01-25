@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Experiments API Routes
  * 
@@ -19,7 +18,8 @@ import {
   createExperiment,
   updateExperimentStatus
 } from '../lib/experiments';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
@@ -44,7 +44,7 @@ router.post('/variant', async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       try {
         const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ngurra-secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ngurra-secret') as any;
         userId = decoded.id || decoded.userId || userId;
       } catch {
         // Token invalid, use anonymous ID
@@ -83,7 +83,7 @@ router.post('/convert', async (req, res) => {
       try {
         const jwt = require('jsonwebtoken');
         const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ngurra-secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ngurra-secret') as any;
         userId = decoded.id || decoded.userId || userId;
       } catch {
         // Use anonymous

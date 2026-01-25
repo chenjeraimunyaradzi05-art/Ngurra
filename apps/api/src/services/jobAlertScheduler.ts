@@ -8,12 +8,9 @@
  * - Manual API call
  */
 
-// @ts-nocheck
 import { prisma } from '../db';
 import { notificationService } from './notificationService';
-
-// emailQueue uses CommonJS exports
-const { queueEmail } = require('../lib/emailQueue');
+import { queueEmail } from '../lib/emailQueue';
 
 interface JobAlertResult {
   processed: number;

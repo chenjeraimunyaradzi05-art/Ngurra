@@ -23,9 +23,9 @@ export async function analyzeSkillGap({ prisma, userId, jobId }) {
 
   const userSkillMap = new Map<string, any>(userSkills.map((us: any) => [us.skillId, us]));
 
-  const matchedSkills = [];
-  const missingSkills = [];
-  const underqualifiedSkills = [];
+  const matchedSkills: any[] = [];
+  const missingSkills: any[] = [];
+  const underqualifiedSkills: any[] = [];
 
   for (const js of jobSkills) {
     const userSkill = userSkillMap.get(js.skillId) as any;
@@ -113,9 +113,3 @@ export async function analyzeSkillGap({ prisma, userId, jobId }) {
 }
 
 export default analyzeSkillGap;
-
-module.exports = {
-  analyzeSkillGap,
-};
-
-export {};

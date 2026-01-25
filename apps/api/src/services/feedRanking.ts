@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Feed Ranking Service
  * 
@@ -10,8 +9,11 @@
  * - Cultural Relevance: Indigenous community context (unique to Ngurra)
  */
 
-import { prisma } from '../lib/prisma';
-import { redisCache } from '../lib/redisCache';
+import { prisma as prismaClient } from '../db';
+import redisCacheClient from '../lib/redisCacheWrapper';
+
+const prisma = prismaClient as any;
+const redisCache = redisCacheClient as any;
 
 // Feed ranking weights
 interface FeedWeights {
@@ -298,7 +300,7 @@ export class FeedRankingService {
   }> {
     // Try to get from cache first
     const cacheKey = `feed:ranked:${userId}:${cursor || 'start'}`;
-    const cached = await redisCache.get<RankedPost[]>(cacheKey);
+    const cached = await redisCache.get(cacheKey) as RankedPost[];
     
     if (cached) {
       return {
@@ -335,7 +337,7 @@ export class FeedRankingService {
   private async buildUserContext(userId: string): Promise<UserContext> {
     // Try cache first
     const cacheKey = `user:context:${userId}`;
-    const cached = await redisCache.get<UserContext>(cacheKey);
+    const cached = await redisCache.get(cacheKey) as UserContext;
     if (cached) return cached;
 
     // Fetch user data
@@ -521,7 +523,7 @@ export class FeedRankingService {
    */
   async getTrendingPosts(limit: number = 20): Promise<PostWithAuthor[]> {
     const cacheKey = 'feed:trending';
-    const cached = await redisCache.get<PostWithAuthor[]>(cacheKey);
+    const cached = await redisCache.get(cacheKey) as PostWithAuthor[];
     if (cached) return cached.slice(0, limit);
 
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -585,7 +587,7 @@ export class FeedRankingService {
     variant: 'control' | 'treatment'
   ): Promise<RankedPost[]> {
     // Define experiment variants
-    const variants: Record<string, Partial<FeedWeights>> = {
+    const variants: Record<string, Record<'control' | 'treatment', Partial<FeedWeights>>> = {
       'exp-001-engagement': {
         control: {},
         treatment: { engagement: 0.35, recency: 0.25 }

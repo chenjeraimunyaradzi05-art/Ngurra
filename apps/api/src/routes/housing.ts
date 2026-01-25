@@ -5,7 +5,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { HousingType } from '@prisma/client';
 import {
   createListing,

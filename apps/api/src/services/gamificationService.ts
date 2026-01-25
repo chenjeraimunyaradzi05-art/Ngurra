@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Gamification & Achievement System Service
  * 
@@ -14,9 +13,11 @@
  * - Rewards redemption
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface Achievement {
@@ -555,7 +556,7 @@ class GamificationService {
       const cacheKey = `${this.cachePrefix}profile:${userId}`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       const [user, achievements, rank, streak] = await Promise.all([

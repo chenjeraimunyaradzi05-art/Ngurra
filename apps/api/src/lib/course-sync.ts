@@ -4,7 +4,7 @@
  * TAFE/RTO Course Sync Job
  * Ingests course data from external providers
  */
-const { prisma } = require('../db');
+import { prisma } from '../db';
 
 // Mock TAFE providers for demonstration
 const PROVIDERS = [
@@ -112,21 +112,36 @@ async function syncAllCourses() {
 
       for (const course of courses) {
         try {
-          await prisma.externalCourse.upsert({
-            where: { externalId: course.externalId },
-            create: {
-              ...course,
-              isActive: true,
-              lastSyncedAt: new Date(),
-            },
-            update: {
-              ...course,
-              isActive: true,
-              lastSyncedAt: new Date(),
-            },
+          // Use externalId if provided, otherwise use provider + course code combo
+          const lookupId = course.externalId || `${provider.id}-${course.nationalCode || course.title}`;
+          
+          // Find existing or create
+          const existing = await prisma.externalCourse.findFirst({
+            where: { externalId: lookupId }
           });
+
+          if (existing) {
+            await prisma.externalCourse.update({
+              where: { id: existing.id },
+              data: {
+                ...course,
+                externalId: lookupId,
+                isActive: true,
+                lastSyncedAt: new Date(),
+              }
+            });
+          } else {
+            await prisma.externalCourse.create({
+              data: {
+                ...course,
+                externalId: lookupId,
+                isActive: true,
+                lastSyncedAt: new Date(),
+              }
+            });
+          }
           totalSynced++;
-        } catch (err) {
+        } catch (err: any) {
           console.error(`[Course Sync] Error syncing course ${course.externalId}:`, err.message);
           totalErrors++;
         }
@@ -190,12 +205,3 @@ async function runSyncJob() {
     };
   }
 }
-
-module.exports = {
-  syncAllCourses,
-  markStaleCourses,
-  runSyncJob,
-  PROVIDERS,
-};
-
-export {};

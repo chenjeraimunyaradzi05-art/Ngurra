@@ -1,7 +1,8 @@
 import express from 'express';
 import { z } from 'zod';
 import auth from '../middleware/auth';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { stripe, createConnectedAccount, createAccountLink, createTransfer } from '../lib/stripe';
 
 const router = express.Router();

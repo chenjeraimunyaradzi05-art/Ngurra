@@ -132,6 +132,7 @@ import authRouter from './routes/auth';
 import culturalRouter from './routes/cultural';
 import socialStoriesRouter from './routes/social-stories';
 import pulseRouter from './routes/pulse';
+import usersRouter from './routes/users';
 
 export function createApp() {
     /** Create Express app and configure middleware */
@@ -402,6 +403,8 @@ export function createApp() {
         base.use('/social-stories', socialStoriesRouter);
         // Phase 9: Short Video Platform (Pulse)
         base.use('/pulse', pulseRouter);
+        // User profile management
+        base.use('/users', usersRouter);
     };
 
     // Mount routes at root

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Webhook Delivery System
  * 
@@ -314,7 +313,7 @@ function verifyWebhookSignature(payload, signature, secret, options: any = {}) {
   
   // Handle different signature formats
   let signatureValue = signature;
-  let timestamp = null;
+  let timestamp: number | null = null;
   
   // Parse Stripe-style signature: t=timestamp,v1=signature
   if (signature.includes('t=')) {
@@ -470,7 +469,7 @@ async function createWebhook(data) {
     data: {
       companyId,
       name,
-      description,
+      // description, // Removed as it does not exist in schema
       url,
       secret,
       events: JSON.stringify(events),

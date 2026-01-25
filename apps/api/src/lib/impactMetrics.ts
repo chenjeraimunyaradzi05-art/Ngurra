@@ -124,11 +124,3 @@ async function getImpactSnapshot({ startDate, endDate, cohortId } = {}) {
     };
   }
 }
-
-module.exports = {
-  recordImpactMetric,
-  listImpactMetrics,
-  getImpactSnapshot,
-};
-
-export {};

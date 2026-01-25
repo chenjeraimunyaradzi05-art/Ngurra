@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Internationalization (i18n) Utilities
  * 
@@ -175,7 +174,7 @@ function formatDateTime(date, options = {}) {
     ...options,
   };
   
-  return d.toLocaleString(DEFAULT_LOCALE, defaultOptions);
+  return d.toLocaleString(DEFAULT_LOCALE, defaultOptions as Intl.DateTimeFormatOptions);
 }
 
 /**
@@ -190,7 +189,7 @@ function formatTime(date, options = {}) {
     ...options,
   };
   
-  return d.toLocaleTimeString(DEFAULT_LOCALE, defaultOptions);
+  return d.toLocaleTimeString(DEFAULT_LOCALE, defaultOptions as Intl.DateTimeFormatOptions);
 }
 
 /**
@@ -199,7 +198,7 @@ function formatTime(date, options = {}) {
 function formatRelativeTime(date, locale = DEFAULT_LOCALE) {
   const now = new Date();
   const d = new Date(date);
-  const diff = now - d;
+  const diff = now.getTime() - d.getTime();
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -296,22 +295,3 @@ function createI18nContext(initialLocale = DEFAULT_LOCALE) {
     getStates,
   };
 }
-
-module.exports = {
-  DEFAULT_LOCALE,
-  DEFAULT_TIMEZONE,
-  LOCALES,
-  translations,
-  t,
-  formatDate,
-  formatDateTime,
-  formatTime,
-  formatRelativeTime,
-  formatCurrency,
-  formatNumber,
-  formatPhoneNumber,
-  getStates,
-  createI18nContext,
-};
-
-export {};

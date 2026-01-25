@@ -501,15 +501,3 @@ function getDataProcessingRegistry() {
     updatedAt: new Date().toISOString()
   };
 }
-
-module.exports = {
-  exportUserData,
-  deleteUserData,
-  recordConsent,
-  getConsentStatus,
-  runRetentionCleanup,
-  getDataProcessingRegistry,
-  RETENTION_PERIODS
-};
-
-export {};

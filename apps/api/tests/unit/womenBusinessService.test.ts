@@ -4,6 +4,14 @@
  */
 
 import type { BusinessStage, WomenBusinessType } from '@prisma/client';
+import {
+  createBusiness,
+  publishBusiness,
+  addProduct,
+  createGoal,
+  updateGoalProgress,
+  getBusinessStats,
+} from '../../src/services/womenBusiness';
 const mockPrisma = vi.hoisted(() => ({
   womenBusiness: {
     create: vi.fn(),
@@ -41,15 +49,6 @@ const mockPrisma = vi.hoisted(() => ({
 vi.mock('../../src/db', () => ({
   prisma: mockPrisma,
 }));
-
-const {
-  createBusiness,
-  publishBusiness,
-  addProduct,
-  createGoal,
-  updateGoalProgress,
-  getBusinessStats,
-} = await import('../../src/services/womenBusiness');
 
 const businessType = 'SERVICE' as unknown as WomenBusinessType;
 const stage = 'IDEA' as unknown as BusinessStage;

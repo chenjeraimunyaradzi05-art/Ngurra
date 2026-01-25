@@ -231,7 +231,7 @@ async function processJobsImport(importId, rows, userId) {
           title: row.title,
           description: row.description || '',
           location: row.location,
-          type: row.type, // full-time, part-time, contract, etc.
+          type: row.type as any, // full-time, part-time, contract, etc.
           salary: row.salary || null,
           category: row.category || 'General',
           requirements: row.requirements || null,
@@ -536,7 +536,7 @@ async function processCoursesImport(importId, rows, userId) {
           description: row.description,
           category: row.category || 'General',
           duration: row.duration || null,
-          level: row.level || 'Beginner',
+          level: (row.level || 'Beginner') as any,
           format: row.format || 'online',
           price: row.price ? parseFloat(row.price) : null,
           isFree: row.price === '0' || row.free?.toLowerCase() === 'yes',

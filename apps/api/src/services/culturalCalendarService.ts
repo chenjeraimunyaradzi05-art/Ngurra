@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Cultural Calendar Service
  * 
@@ -14,10 +13,12 @@
  * - Recurring cultural observances
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
 import { notificationService } from './notificationService';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface CulturalEvent {
@@ -225,7 +226,7 @@ class CulturalCalendarService {
       const cacheKey = `${this.cachePrefix}upcoming:${JSON.stringify(options)}`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       // Build where clause
@@ -286,7 +287,7 @@ class CulturalCalendarService {
       const cacheKey = `${this.cachePrefix}month:${year}-${month}`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       const events = await prisma.culturalEvent.findMany({

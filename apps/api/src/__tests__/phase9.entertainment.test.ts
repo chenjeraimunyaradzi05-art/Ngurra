@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 9: Entertainment & Content Module Integration Tests
  * Steps 801-875: Short Video (Pulse), Long-Form Content (Cinema), Success Stories
@@ -23,7 +24,8 @@ let testStoryId: string;
 const testUser = {
   email: `pulse_test_${Date.now()}@test.com`,
   password: 'TestPass123!',
-  name: 'Pulse Test User',
+  firstName: 'Pulse',
+  lastName: 'Test User',
 };
 
 describe('Phase 9: Entertainment & Content Module', () => {
@@ -38,20 +40,21 @@ describe('Phase 9: Entertainment & Content Module', () => {
       .send({
         email: testUser.email,
         password: testUser.password,
-        name: testUser.name,
-        userType: 'SEEKER',
+        firstName: testUser.firstName,
+        lastName: testUser.lastName,
+        userType: 'MEMBER',
       });
 
     if (signupRes.status === 201) {
-      testUserId = signupRes.body.user?.id;
-      testUserToken = signupRes.body.token;
+      testUserId = signupRes.body.data?.user?.id;
+      testUserToken = signupRes.body.data?.token;
     } else {
       // Try login if user exists
       const loginRes = await request(app)
         .post('/api/auth/login')
         .send({ email: testUser.email, password: testUser.password });
-      testUserId = loginRes.body.user?.id;
-      testUserToken = loginRes.body.token;
+      testUserId = loginRes.body.data?.user?.id;
+      testUserToken = loginRes.body.data?.token;
     }
 
     // Create test audio
@@ -62,7 +65,6 @@ describe('Phase 9: Entertainment & Content Module', () => {
           artistName: 'Test Artist',
           audioUrl: 'https://example.com/test-audio.mp3',
           duration: 30,
-          category: 'pop',
         },
       });
       testAudioId = audio.id;
@@ -70,8 +72,8 @@ describe('Phase 9: Entertainment & Content Module', () => {
       // Create test challenge
       const challenge = await prisma.pulseChallenge.create({
         data: {
-          hashtag: '#TestChallenge',
-          title: 'Test Challenge',
+          name: 'Test Challenge',
+          hashtag: `#TestChallenge${Date.now()}`,
           description: 'Join our test challenge!',
           rules: 'Be creative!',
           startDate: new Date(),

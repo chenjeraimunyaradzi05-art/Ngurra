@@ -580,19 +580,3 @@ async function disconnectCalendar(userId, provider) {
   
   return { disconnected: true, provider };
 }
-
-module.exports = {
-  getAuthUrl,
-  exchangeCodeForTokens,
-  saveCalendarConnection,
-  getValidAccessToken,
-  createCalendarEvent,
-  getFreeBusy,
-  findAvailableSlots,
-  deleteCalendarEvent,
-  getConnectedCalendars,
-  disconnectCalendar,
-  OAUTH_CONFIG
-};
-
-export {};

@@ -11,7 +11,7 @@ import auth from '../middleware/auth';
 interface SocialPost {
   id: string;
   authorId: string;
-  authorType?: string;
+  authorType: string;
   orgId?: string | null;
   content: string;
   type: string;
@@ -19,7 +19,7 @@ interface SocialPost {
   visibility: string;
   likeCount: number;
   commentCount: number;
-  shareCount?: number;
+  shareCount: number;
   isActive: boolean;
   isSpam: boolean;
   createdAt: Date;
@@ -61,7 +61,7 @@ const MAX_AGE_HOURS = 168; // 7 days
 /**
  * Calculate feed score for ranking
  */
-function calculateFeedScore(post: any, userId: string, connections: string[], following: string[]) {
+function calculateFeedScore(post: SocialPost, userId: string, connections: string[], following: string[]) {
   const now = Date.now();
   const postAge = (now - new Date(post.createdAt).getTime()) / (1000 * 60 * 60); // hours
   

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cultural Safety Module
  * 

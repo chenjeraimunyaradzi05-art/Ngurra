@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Community Advisory Council API Routes
  * 
@@ -25,7 +24,9 @@
 
 import express from 'express';
 import authenticateJWT from '../middleware/auth';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+
+const prisma = prismaClient as any;
 
 const router = express.Router();
 

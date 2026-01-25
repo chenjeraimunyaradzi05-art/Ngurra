@@ -252,15 +252,3 @@ function getAvailableProviders() {
     },
   };
 }
-
-module.exports = {
-  createVideoMeeting,
-  createJitsiMeeting,
-  createZoomMeeting,
-  generateRoomName,
-  generateJitsiEmbed,
-  getEmbedProps,
-  getAvailableProviders,
-};
-
-export {};

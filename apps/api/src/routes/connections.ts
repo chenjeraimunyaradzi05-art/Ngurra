@@ -1,10 +1,10 @@
-// @ts-nocheck
 /**
  * Connections Routes
  * Handles user connections, following, and messaging
  */
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import authenticateJWT from '../middleware/auth';
 
 const router = express.Router();

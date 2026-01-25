@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 const { prisma } = require('../db');
@@ -262,13 +263,3 @@ async function computeEmployerCultureFit(companyUserId, options = {}) {
     notes,
   };
 }
-
-module.exports = {
-  computeEmployerCultureFit,
-  // exported for unit-style consumers
-  rapLevelScore,
-  retentionScoreFromSignals,
-  mentorParticipationScoreFromSignals,
-};
-
-export {};

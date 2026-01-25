@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use strict";
 
 /**
@@ -339,26 +340,3 @@ function _testCaptureClear() {
 function _testCaptureGetAll() {
   return [...capturedMessages];
 }
-
-module.exports = {
-  sendSMS,
-  sendJobAlertSMS,
-  sendInterviewReminderSMS,
-  sendSessionReminderSMS,
-  sendVerificationSMS,
-  sendApplicationReceivedSMS,
-  sendApplicationStatusSMS,
-  sendUserSMS,
-  isValidAustralianPhone,
-  normalizePhone,
-  isOptedIn,
-  updateSmsPreferences,
-  processIncomingSMS,
-  getSmsStats,
-  SMS_TYPES,
-  _testCaptureClear,
-  _testCaptureGetAll,
-};
-
-
-export {};

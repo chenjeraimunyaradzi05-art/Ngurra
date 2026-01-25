@@ -58,7 +58,7 @@ function normalizeText(value: string | null | undefined) {
   return String(value || '').toLowerCase();
 }
 
-function buildOpportunityTags(item: { title?: string; provider?: string; description?: string }) {
+function buildOpportunityTags(item: { title?: string; provider?: string; description?: string | null }) {
   const text = `${item.title || ''} ${item.provider || ''} ${item.description || ''}`.toLowerCase();
   const tags: string[] = [];
 

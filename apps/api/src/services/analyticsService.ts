@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Analytics Service
  * 
@@ -11,9 +10,11 @@
  * - Indigenous community impact
  */
 
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface AnalyticsEvent {

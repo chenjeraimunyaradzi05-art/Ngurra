@@ -3,7 +3,9 @@
  * Phase 3 analytics coverage
  */
 
-const mockPrisma = {
+import { jobPerformanceService } from '../../src/services/jobPerformanceService';
+
+const mockPrisma = vi.hoisted(() => ({
   jobPerformance: {
     findUnique: vi.fn(),
     create: vi.fn(),
@@ -15,11 +17,9 @@ const mockPrisma = {
     update: vi.fn(),
     findMany: vi.fn(),
   },
-};
+}));
 
 vi.mock('../../src/db', () => ({ prisma: mockPrisma }));
-
-const { jobPerformanceService } = await import('../../src/services/jobPerformanceService');
 
 describe('jobPerformanceService', () => {
   beforeEach(() => {

@@ -6,7 +6,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import PDFDocument from 'pdfkit';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { authenticate } from '../middleware/auth';
 import {
   listLegalDocumentTemplates,

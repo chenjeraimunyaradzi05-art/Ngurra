@@ -563,16 +563,3 @@ async function trackEngagement(userId, contentType, contentId, action) {
     // Model might not exist, silent fail
   }
 }
-
-module.exports = {
-  getPersonalizedFeed,
-  getRecommendedForums,
-  getRecommendedStories,
-  getUpcomingEvents,
-  getTrendingContent,
-  getDiscoveryPageData,
-  getPopularTopics,
-  trackEngagement
-};
-
-export {};

@@ -466,8 +466,8 @@ async function findOrCreateSSOUser({ email, name, companyId, provider, providerI
     user = await prisma.user.create({
       data: {
         email,
-        password: '', // SSO users don't have passwords
-        userType: 'company',
+        password: null, // SSO users don't have passwords
+        userType: 'COMPANY',
         companyProfile: {
           create: {
             companyName: name || email.split('@')[0],

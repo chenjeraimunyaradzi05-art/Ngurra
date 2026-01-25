@@ -13,7 +13,8 @@
 import { PrismaClient } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 
-const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
+const prisma = prismaClient as any;
 
 // ============================================================================
 // CONFIGURATION

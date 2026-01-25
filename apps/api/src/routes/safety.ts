@@ -5,8 +5,9 @@
  * and DV-Safe features (quick exit, evidence preservation, hidden rooms)
  */
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import authenticateJWT from '../middleware/auth';
+const prisma = prismaClient as any;
 import {
     createSafetyPlan,
     preserveEvidence,

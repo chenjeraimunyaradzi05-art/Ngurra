@@ -4,7 +4,6 @@
  * Protected endpoints for triggering scheduled tasks
  */
 
-// @ts-nocheck
 import express from 'express';
 import auth from '../middleware/auth';
 import { prisma } from '../db';

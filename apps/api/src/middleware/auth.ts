@@ -110,23 +110,27 @@ export function authenticate(arg1?: any, arg2?: any, arg3?: any) {
       });
     }
     
-    // Attach user to request
+    // Attach user to request - handle both 'id' and 'userId' from token
+    const userId = payload.id || (payload as any).userId;
     req.user = {
-      id: payload.id,
+      id: userId,
       email: payload.email,
-      userType: payload.userType,
-      role: payload.userType, // Alias for compatibility
+      userType: payload.userType || (payload as any).role,
+      role: payload.userType || (payload as any).role, // Alias for compatibility
     };
     
     // Optionally fetch full user from DB for additional data
     try {
       const user = await prisma.user.findUnique({
-        where: { id: payload.id },
+        where: { id: userId },
         select: { id: true, email: true, name: true, userType: true },
       });
       
       if (user) {
         req.user.name = user.name || undefined;
+        // Ensure userType is set from DB if available
+        req.user.userType = user.userType;
+        req.user.role = user.userType;
       }
     } catch (error) {
       // Continue without full user data - token is still valid

@@ -413,12 +413,3 @@ class FeatureFlagsManager extends EventEmitter {
 
 // Singleton instance
 const featureFlags = new FeatureFlagsManager({ envPrefix: 'FEATURE_' });
-
-module.exports = {
-  FlagType,
-  FeatureFlagsManager,
-  featureFlags,
-  defaultFlags,
-};
-
-export {};

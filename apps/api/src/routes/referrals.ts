@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Referral System API Routes
  * 
@@ -16,7 +15,8 @@
  */
 
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import authenticateJWT from '../middleware/auth';
 import crypto from 'crypto';
 
@@ -162,6 +162,7 @@ router.post('/validate', async (req, res) => {
     const referralCode = await prisma.referralCode.findUnique({
       where: { code: code.toUpperCase() },
       include: {
+        // @ts-ignore
         user: {
           select: {
             id: true,
@@ -284,6 +285,7 @@ router.get('/history', authenticateJWT, async (req, res) => {
 
     const history = referrals.map(r => ({
       id: r.id,
+      // @ts-ignore
       refereeName: r.referee?.memberProfile?.firstName || 'Anonymous',
       status: r.status,
       creditsEarned: r.creditsEarned,

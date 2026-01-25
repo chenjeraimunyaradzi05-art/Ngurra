@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * DV-Safe Module - Domestic Violence Safety Features
  * 

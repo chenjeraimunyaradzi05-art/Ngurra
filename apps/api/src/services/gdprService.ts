@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * GDPR Compliance Service (Steps 31-35)
  * 

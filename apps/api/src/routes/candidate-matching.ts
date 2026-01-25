@@ -14,7 +14,8 @@
 
 import express from 'express';
 import authenticateJWT from '../middleware/auth';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import {
   rankApplicantsForJob,
   getApplicantStats,
@@ -300,7 +301,7 @@ router.get('/jobs/:jobId/insights', authenticateJWT, verifyJobOwner, async (req,
     const ranked = await rankApplicantsForJob(jobId, { minScore: 0, limit: 100 });
 
     // Generate insights
-    const insights = [];
+    const insights: any[] = [];
 
     // Talent pool quality
     if (stats.byTier.EXCELLENT + stats.byTier.GOOD >= 5) {

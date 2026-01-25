@@ -6,6 +6,8 @@
 
 import type { Express } from 'express';
 
+const testMock = (globalThis as any).vi || (globalThis as any).jest;
+
 // Set test environment
 process.env.NODE_ENV = 'test';
 process.env.DEV_JWT_SECRET = 'test-jwt-secret-for-vitest-at-least-32-chars';
@@ -13,14 +15,16 @@ process.env.JWT_SECRET = 'test-jwt-secret-for-vitest-at-least-32-chars';
 process.env.SES_TEST_CAPTURE = '1';
 
 // Mock external services by default
-vi.mock('../src/lib/mailer', () => ({
-  sendEmail: vi.fn().mockResolvedValue({ success: true }),
-  sendTemplateEmail: vi.fn().mockResolvedValue({ success: true }),
-}));
+if (testMock?.mock) {
+  testMock.mock('../src/lib/mailer', () => ({
+    sendEmail: testMock.fn().mockResolvedValue({ success: true }),
+    sendTemplateEmail: testMock.fn().mockResolvedValue({ success: true }),
+  }));
 
-vi.mock('../src/lib/pushNotifications', () => ({
-  sendPushNotification: vi.fn().mockResolvedValue({ success: true }),
-}));
+  testMock.mock('../src/lib/pushNotifications', () => ({
+    sendPushNotification: testMock.fn().mockResolvedValue({ success: true }),
+  }));
+}
 
 // Test app instance
 let testApp: Express | null = null;
@@ -63,8 +67,21 @@ export async function createTestApp(): Promise<Express> {
     
     // Try to initialize Prisma
     try {
+      if (!process.env.DATABASE_URL) {
+        console.log('⚠️  DATABASE_URL not set - integration tests will be skipped');
+        serverAvailable = false;
+        return testApp;
+      }
+
       const prismaModule = await import('../src/db');
       testPrisma = prismaModule.default || prismaModule.prisma;
+
+      const connectWithTimeout = Promise.race([
+        testPrisma.$connect(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Prisma connect timeout')), 1500))
+      ]);
+
+      await connectWithTimeout;
       serverAvailable = true;
     } catch {
       console.log('⚠️  Prisma not available - integration tests will be skipped');

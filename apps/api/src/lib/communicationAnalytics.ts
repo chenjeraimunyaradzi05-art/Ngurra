@@ -609,18 +609,3 @@ async function getUserPreferencesSummary() {
     return { totalUsers: 0 };
   }
 }
-
-module.exports = {
-  getCommunicationDashboard,
-  getEmailAnalytics,
-  getSmsAnalytics,
-  getPushAnalytics,
-  getNotificationAnalytics,
-  getWebhookAnalytics,
-  getCommunicationTrend,
-  getChannelComparison,
-  getAbTestResults,
-  getUserPreferencesSummary
-};
-
-export {};

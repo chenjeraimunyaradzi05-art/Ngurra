@@ -4,6 +4,15 @@
  */
 
 import type { WomenSpaceType } from '@prisma/client';
+import {
+  createWomenSpace,
+  joinSpace,
+  getAccessibleSpaces,
+  createPost,
+  getSpacePosts,
+  joinSupportCircle,
+  flagPost,
+} from '../../src/services/womenSpaces';
 const mockPrisma = vi.hoisted(() => ({
   womenSpace: {
     create: vi.fn(),
@@ -44,7 +53,7 @@ const mockPrisma = vi.hoisted(() => ({
   },
 }));
 
-const logSecurityEvent = vi.fn();
+const logSecurityEvent = vi.hoisted(() => vi.fn());
 
 vi.mock('../../src/db', () => ({
   prisma: mockPrisma,
@@ -56,16 +65,6 @@ vi.mock('../../src/lib/securityAudit', () => ({
     CONTENT_FLAGGED: 'CONTENT_FLAGGED',
   },
 }));
-
-const {
-  createWomenSpace,
-  joinSpace,
-  getAccessibleSpaces,
-  createPost,
-  getSpacePosts,
-  joinSupportCircle,
-  flagPost,
-} = await import('../../src/services/womenSpaces');
 
 const spaceType = 'SUPPORT' as unknown as WomenSpaceType;
 

@@ -7,7 +7,7 @@
  * This is intentionally safe/no-op by default and can be wired into a scheduler later.
  */
 
-const { prisma } = require('../db');
+import { prisma } from '../db';
 
 const MILESTONES = [
   { milestone: 'MONTH_3', days: 90 },
@@ -20,8 +20,9 @@ async function runLongitudinalTracking({ now = new Date() } = {}) {
   const runAt = now instanceof Date ? now : new Date(now);
 
   // If placementOutcome table doesn't exist in some envs, fail gracefully.
-  const safeModel = (name) => {
-    const model = prisma?.[name];
+  const prismaAny = prisma as any;
+  const safeModel = (name: string) => {
+    const model = prismaAny?.[name];
     return model && typeof model.findMany === 'function' ? model : null;
   };
 
@@ -74,9 +75,3 @@ async function runLongitudinalTracking({ now = new Date() } = {}) {
 
   return { ok: true, processed };
 }
-
-module.exports = {
-  runLongitudinalTracking,
-};
-
-export {};

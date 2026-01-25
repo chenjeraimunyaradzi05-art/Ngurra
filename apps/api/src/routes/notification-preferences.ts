@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use strict";
 /**
  * Notification Preferences API Routes

@@ -32,49 +32,49 @@ const RATE_LIMITS = {
   // Public endpoints (login, registration, job listings)
   public: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500 * E2E_MULTIPLIER, // Increased from 100 for initial deployment
+    max: 5000 * E2E_MULTIPLIER, // Increased significantly for general browsing
     message: { error: 'Too many requests. Please try again in 15 minutes.' }
   },
   
   // Authenticated user endpoints
   authenticated: {
     windowMs: 15 * 60 * 1000,
-    max: 500 * E2E_MULTIPLIER, // Increased from 300
+    max: 10000 * E2E_MULTIPLIER, // Significant increase for active sessions
     message: { error: 'Rate limit exceeded. Please slow down.' }
   },
   
   // Sensitive endpoints (password reset, verification)
   sensitive: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10 * E2E_MULTIPLIER,
+    max: 20 * E2E_MULTIPLIER, // Keeping strict, but slightly more lenient than 10
     message: { error: 'Too many attempts. Please try again in an hour.' }
   },
   
   // AI endpoints (expensive operations)
   ai: {
     windowMs: 60 * 1000, // 1 minute
-    max: 10 * E2E_MULTIPLIER,
+    max: 100 * E2E_MULTIPLIER, // Increased for power users
     message: { error: 'AI rate limit reached. Please wait before making more AI requests.' }
   },
   
   // File uploads
   uploads: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 50 * E2E_MULTIPLIER,
+    max: 100 * E2E_MULTIPLIER,
     message: { error: 'Upload limit reached. Please try again later.' }
   },
   
   // Admin endpoints
   admin: {
     windowMs: 15 * 60 * 1000,
-    max: 500 * E2E_MULTIPLIER,
+    max: 5000 * E2E_MULTIPLIER,
     message: { error: 'Admin rate limit exceeded.' }
   },
   
   // Search endpoints
   search: {
     windowMs: 60 * 1000, // 1 minute
-    max: 30 * E2E_MULTIPLIER,
+    max: 120 * E2E_MULTIPLIER, // 2 per second averge
     message: { error: 'Search rate limit reached. Please wait before searching again.' }
   }
 };

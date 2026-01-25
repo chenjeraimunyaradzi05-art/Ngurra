@@ -298,18 +298,3 @@ function getContentType(format) {
   };
   return contentTypes[format] || 'application/octet-stream';
 }
-
-module.exports = {
-  optimizeImage,
-  generateVariants,
-  generatePlaceholder,
-  validateImage,
-  stripExif,
-  generateSrcset,
-  getContentType,
-  SUPPORTED_FORMATS,
-  OUTPUT_FORMATS,
-  IMAGE_PRESETS,
-};
-
-export {};

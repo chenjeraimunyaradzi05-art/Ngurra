@@ -8,7 +8,11 @@ import { z } from 'zod';
 import { prisma } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../lib/errors';
+import { forgotPasswordSchema, resetPasswordSchema } from '../lib/validation';
+import { emailService } from '../services/emailService';
+import { redisCache } from '../lib/redisCacheWrapper';
 
 const router = Router();
 
@@ -298,6 +302,98 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /auth/forgot-password
+ * @desc Request password reset (always returns success)
+ * @access Public
+ */
+router.post('/forgot-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validation = forgotPasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return void res.status(400).json({
+        error: 'Validation failed',
+        details: validation.error.flatten().fieldErrors,
+      });
+    }
+
+    const email = validation.data.email.toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, name: true },
+    });
+
+    if (user) {
+      const token = crypto.randomBytes(32).toString('hex');
+      const tokenKey = `password_reset:${token}`;
+      const userKey = `password_reset:user:${user.id}`;
+      const ttlSeconds = 60 * 60; // 1 hour
+
+      // Invalidate any existing token for this user
+      const previousToken = await redisCache.get<string>(userKey);
+      if (previousToken) {
+        await redisCache.delete(`password_reset:${previousToken}`);
+      }
+
+      await redisCache.set(tokenKey, { userId: user.id, email: user.email }, ttlSeconds);
+      await redisCache.set(userKey, token, ttlSeconds);
+
+      const firstName = (user.name || 'there').split(' ')[0];
+      try {
+        await emailService.sendPasswordReset(user.email, firstName, token);
+      } catch (err) {
+        console.error('Failed to send password reset email', err);
+      }
+    }
+
+    // Always return success to prevent email enumeration
+    return void res.json({
+      message: 'If an account exists with this email, a reset link has been sent.',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /auth/reset-password
+ * @desc Reset password using token
+ * @access Public
+ */
+router.post('/reset-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validation = resetPasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return void res.status(400).json({
+        error: 'Validation failed',
+        details: validation.error.flatten().fieldErrors,
+      });
+    }
+
+    const { token, password } = validation.data;
+    const tokenKey = `password_reset:${token}`;
+    const record = await redisCache.get<{ userId: string; email: string }>(tokenKey);
+
+    if (!record?.userId) {
+      return void res.status(400).json({ error: 'Invalid or expired reset token.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await prisma.user.update({
+      where: { id: record.userId },
+      data: { password: hashedPassword },
+    });
+
+    await redisCache.delete(tokenKey);
+    await redisCache.delete(`password_reset:user:${record.userId}`);
+
+    return void res.json({ message: 'Password reset successful. You can now sign in.' });
   } catch (error) {
     next(error);
   }

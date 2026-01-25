@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Community Initiatives Service
  * 
@@ -16,9 +15,11 @@
  * - Cultural preservation projects
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface CommunityInitiative {

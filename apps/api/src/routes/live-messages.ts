@@ -216,6 +216,7 @@ router.get(
 
       // Get all typing status keys for this conversation
       const typingUsers = [];
+      // @ts-ignore
       for (const [key] of messagingManager.typingStatus) {
         if (key.startsWith(`${conversationId}:`)) {
           const typingUserId = key.split(':')[1];

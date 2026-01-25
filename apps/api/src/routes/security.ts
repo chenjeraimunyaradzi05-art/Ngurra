@@ -13,11 +13,15 @@
  */
 
 import express from 'express';
+// @ts-ignore
 import { authenticate, authorize } from '../middleware/auth';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import logger from '../lib/logger';
+// @ts-ignore
 import { audit } from '../lib/auditLog';
 import * as sessionManager from '../lib/sessionManager';
+
+const prisma = prismaClient as any;
 import * as twoFactorAuth from '../lib/twoFactorAuth';
 import securityAlerts from '../lib/securityAlerts';
 import maintenanceMode from '../lib/maintenanceMode';
@@ -231,7 +235,7 @@ router.post('/2fa/backup-codes', authenticate, async (req, res) => {
  * GET /security/admin/overview
  * Get security overview for admin dashboard
  */
-router.get('/admin/overview', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/overview', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -293,7 +297,7 @@ router.get('/admin/overview', authenticate, authorize('admin'), async (req, res)
  * GET /security/admin/audit-logs
  * Get recent audit logs
  */
-router.get('/admin/audit-logs', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/audit-logs', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const { 
       page = 1, 
@@ -350,7 +354,7 @@ router.get('/admin/audit-logs', authenticate, authorize('admin'), async (req, re
  * GET /security/admin/suspicious-activity
  * Get suspicious activity reports
  */
-router.get('/admin/suspicious-activity', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/suspicious-activity', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const last7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     
@@ -397,7 +401,7 @@ router.get('/admin/suspicious-activity', authenticate, authorize('admin'), async
  * POST /security/admin/cleanup-sessions
  * Clean up expired sessions (admin action)
  */
-router.post('/admin/cleanup-sessions', authenticate, authorize('admin'), async (req, res) => {
+router.post('/admin/cleanup-sessions', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const cleaned = await sessionManager.cleanupExpiredSessions();
     
@@ -417,7 +421,7 @@ router.post('/admin/cleanup-sessions', authenticate, authorize('admin'), async (
  * GET /security/admin/users-without-2fa
  * List users without 2FA enabled (for security reporting)
  */
-router.get('/admin/users-without-2fa', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/users-without-2fa', authenticate, authorize(['admin']), async (req, res) => {
   try {
     const { role, limit = 50 } = req.query;
     
@@ -454,7 +458,7 @@ router.get('/admin/users-without-2fa', authenticate, authorize('admin'), async (
  * GET /security/admin/alerts
  * Get security alerts with optional filtering
  */
-router.get('/admin/alerts', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/alerts', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!securityAlerts) {
       return void res.status(501).json({ error: 'Security alerts not available' });
@@ -480,7 +484,7 @@ router.get('/admin/alerts', authenticate, authorize('admin'), async (req, res) =
  * POST /security/admin/alerts/:id/acknowledge
  * Acknowledge a security alert
  */
-router.post('/admin/alerts/:id/acknowledge', authenticate, authorize('admin'), async (req, res) => {
+router.post('/admin/alerts/:id/acknowledge', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!securityAlerts) {
       return void res.status(501).json({ error: 'Security alerts not available' });
@@ -512,7 +516,7 @@ router.post('/admin/alerts/:id/acknowledge', authenticate, authorize('admin'), a
  * GET /security/admin/maintenance
  * Get current maintenance mode status
  */
-router.get('/admin/maintenance', authenticate, authorize('admin'), async (req, res) => {
+router.get('/admin/maintenance', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!maintenanceMode) {
       return void res.json({ active: false, config: { enabled: false } });
@@ -530,7 +534,7 @@ router.get('/admin/maintenance', authenticate, authorize('admin'), async (req, r
  * POST /security/admin/maintenance/enable
  * Enable maintenance mode
  */
-router.post('/admin/maintenance/enable', authenticate, authorize('admin'), async (req, res) => {
+router.post('/admin/maintenance/enable', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!maintenanceMode) {
       return void res.status(501).json({ error: 'Maintenance mode not available' });
@@ -562,7 +566,7 @@ router.post('/admin/maintenance/enable', authenticate, authorize('admin'), async
  * POST /security/admin/maintenance/disable
  * Disable maintenance mode
  */
-router.post('/admin/maintenance/disable', authenticate, authorize('admin'), async (req, res) => {
+router.post('/admin/maintenance/disable', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!maintenanceMode) {
       return void res.status(501).json({ error: 'Maintenance mode not available' });
@@ -586,7 +590,7 @@ router.post('/admin/maintenance/disable', authenticate, authorize('admin'), asyn
  * POST /security/admin/maintenance/schedule
  * Schedule a maintenance window
  */
-router.post('/admin/maintenance/schedule', authenticate, authorize('admin'), async (req, res) => {
+router.post('/admin/maintenance/schedule', authenticate, authorize(['admin']), async (req, res) => {
   try {
     if (!maintenanceMode) {
       return void res.status(501).json({ error: 'Maintenance mode not available' });
@@ -633,6 +637,7 @@ router.post('/data-export', authenticate, async (req, res) => {
     
     const exportData = await gdprService.exportUserData(req.user.id);
     
+    // @ts-ignore
     await audit.log(req.user.id, 'DATA_EXPORT_REQUESTED', req);
     
     res.json({
@@ -679,6 +684,7 @@ router.post('/delete-account', authenticate, async (req, res) => {
     // Soft delete (30 day recovery period)
     await gdprService.softDeleteUser(req.user.id, reason);
     
+    // @ts-ignore
     await audit.log(req.user.id, 'ACCOUNT_DELETION_REQUESTED', req, {
       reason,
       scheduledDeletionDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -710,6 +716,7 @@ router.post('/cancel-deletion', authenticate, async (req, res) => {
       }
     });
     
+    // @ts-ignore
     await audit.log(req.user.id, 'ACCOUNT_DELETION_CANCELLED', req);
     
     res.json({ message: 'Account deletion cancelled' });

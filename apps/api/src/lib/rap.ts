@@ -130,7 +130,7 @@ export async function updateCertificationBadge(companyUserId) {
   }
 
   // Determine next level
-  let nextLevel = null;
+  let nextLevel: any = null;
   if (certification.level === 'BRONZE') {
     nextLevel = {
       level: 'SILVER',

@@ -554,11 +554,3 @@ async function getSimilarCourses(courseId, limit = 5) {
     return [];
   }
 }
-
-module.exports = {
-  getRecommendations,
-  generateLearningPath,
-  getSimilarCourses
-};
-
-export {};

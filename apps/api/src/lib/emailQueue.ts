@@ -1,6 +1,4 @@
 // @ts-nocheck
-'use strict';
-
 /**
  * Email Queue System (Step 41)
  * 
@@ -12,10 +10,10 @@
  * - Rate limiting
  */
 
-const { prisma } = require('../db');
-const { sendMail } = require('./mailer');
-const logger = require('./logger');
-const crypto = require('crypto');
+import { prisma } from '../db';
+import { sendMail } from './mailer';
+import logger from './logger';
+import crypto from 'crypto';
 
 // Queue configuration
 const QUEUE_CONFIG = {

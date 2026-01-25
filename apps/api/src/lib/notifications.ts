@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Notification Service
  * 
@@ -7,7 +6,9 @@
 
 import { Queue } from 'bullmq';
 import { logger } from './logger';
-import { sendEmail, EmailTemplate } from '../services/email';
+import { sendEmail } from '../services/email';
+
+type EmailTemplate = string;
 
 /**
  * Notification types
@@ -266,11 +267,16 @@ class NotificationService {
     const user = await this.getUser(notification.userId);
     if (!user?.email) return;
     
-    await sendEmail(template.emailTemplate, user.email, {
-      userName: user.firstName,
-      title: notification.title,
-      message: notification.message,
-      ...notification.data,
+    await sendEmail({
+      template: template.emailTemplate,
+      to: user.email,
+      subject: notification.title, // Assuming subject is required and can be title
+      data: {
+        userName: user.firstName,
+        title: notification.title,
+        message: notification.message,
+        ...notification.data,
+      }
     });
   }
   

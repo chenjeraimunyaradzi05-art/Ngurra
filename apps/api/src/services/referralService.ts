@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Referral Program Service
  * 
@@ -13,10 +12,12 @@
  * - Analytics and reporting
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
 import { gamificationService } from './gamificationService';
+
+const prisma = prismaClient as any;
 import crypto from 'crypto';
 
 // Types
@@ -468,7 +469,7 @@ class ReferralService {
       const cacheKey = `${this.cachePrefix}stats:${userId}`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       const [totalReferrals, successfulReferrals, pendingReferrals, hiredReferrals, rewards, rank] = await Promise.all([

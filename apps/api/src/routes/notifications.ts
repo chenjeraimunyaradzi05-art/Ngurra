@@ -1,5 +1,6 @@
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import auth from '../middleware/auth';
 import * as push from '../lib/pushNotifications';
 

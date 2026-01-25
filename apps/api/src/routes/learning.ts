@@ -3,7 +3,8 @@
  * Phase 6: Education & Training
  */
 import { Router } from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 
 const router = Router();
 

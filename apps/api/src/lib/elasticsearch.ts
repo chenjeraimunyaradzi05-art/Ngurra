@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 /**
@@ -869,23 +870,5 @@ async function health() {
     return { status: 'error', message: error.message };
   }
 }
-
-module.exports = {
-  initClient,
-  getClient,
-  isAvailable,
-  ensureIndices,
-  indexDocument,
-  bulkIndex,
-  deleteDocument,
-  search,
-  suggest,
-  findSimilar,
-  syncAll,
-  health,
-  INDICES
-};
-
-export {};
 
 

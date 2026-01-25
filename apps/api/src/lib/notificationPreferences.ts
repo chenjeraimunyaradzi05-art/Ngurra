@@ -359,23 +359,3 @@ function getNotificationTypes() {
   
   return byCategory;
 }
-
-module.exports = {
-  CHANNELS,
-  NOTIFICATION_TYPES,
-  IMPORTANCE_LEVELS,
-  getPreferences,
-  updatePreferences,
-  shouldSendNotification,
-  snoozeNotifications,
-  cancelSnooze,
-  setQuietHours,
-  setChannelPreferences,
-  disableNotificationType,
-  enableNotificationType,
-  setDigestPreferences,
-  getNotificationTypes,
-  isQuietTime
-};
-
-export {};

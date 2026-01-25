@@ -240,15 +240,3 @@ function corsHeaders(allowedOrigins = []) {
   };
 }
 
-module.exports = {
-  cspMiddleware,
-  cspWithNonce,
-  securityHeadersMiddleware,
-  corsHeaders,
-  generateNonce,
-  buildCspHeader,
-  defaultDirectives,
-};
-
-export {};
-

@@ -14,6 +14,7 @@ import authenticateJWT from '../middleware/auth';
 import { prisma } from '../db';
 
 const router = express.Router();
+const prismaAny = prisma as unknown as { elderVerification?: any };
 
 function isAdmin(req) {
   return req.user?.userType === 'GOVERNMENT' ||
@@ -57,8 +58,8 @@ router.post('/elder-request', authenticateJWT, async (req, res) => {
     }
 
     // If a Prisma model exists in some environments, use it.
-    if (prisma.elderVerification) {
-      const created = await prisma.elderVerification.create({
+    if (prismaAny.elderVerification) {
+      const created = await prismaAny.elderVerification.create({
         data: {
           userId,
           name,
@@ -83,8 +84,8 @@ router.post('/elder-request', authenticateJWT, async (req, res) => {
 // Admin: list pending requests
 router.get('/admin/elder-requests', authenticateJWT, requireAdmin, async (req, res) => {
   try {
-    if (prisma.elderVerification) {
-      const requests = await prisma.elderVerification.findMany({
+    if (prismaAny.elderVerification) {
+      const requests = await prismaAny.elderVerification.findMany({
         where: { status: 'pending' },
         orderBy: { createdAt: 'desc' },
         take: 100,
@@ -112,8 +113,8 @@ router.put('/admin/elder-requests/:id', authenticateJWT, requireAdmin, async (re
 
     const reviewer = req.user?.id || null;
 
-    if (prisma.elderVerification) {
-      const updated = await prisma.elderVerification.update({
+    if (prismaAny.elderVerification) {
+      const updated = await prismaAny.elderVerification.update({
         where: { id },
         data: {
           status,

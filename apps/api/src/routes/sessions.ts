@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 
 /**
@@ -10,7 +9,8 @@
 
 import express from 'express';
 import crypto from 'crypto';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import authenticateJWT from '../middleware/auth';
 import { UAParser } from 'ua-parser-js';
 

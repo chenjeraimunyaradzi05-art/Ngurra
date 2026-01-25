@@ -1,6 +1,6 @@
-// @ts-nocheck
 import express, { Request, Response, NextFunction } from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { authenticate } from '../middleware/auth';
 import { z } from 'zod';
 

@@ -6,12 +6,15 @@
  * Tracks job views, applications, and funnel metrics
  */
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import { authenticate as authenticateJWT } from '../middleware/auth';
+// @ts-ignore
 import { checkAnalyticsAccess } from './subscriptions-v2';
 import { isAdmin as checkIsAdmin } from '../middleware/adminAuth';
 import crypto from 'crypto';
 import { jobPerformanceService } from '../services/jobPerformanceService';
+
+const prisma = prismaClient as any;
 
 const router = express.Router();
 

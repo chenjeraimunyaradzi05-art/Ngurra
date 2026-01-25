@@ -4,6 +4,14 @@
  */
 
 import type { WellnessMood } from '@prisma/client';
+import {
+  createCheckIn,
+  getWellnessInsights,
+  getDailyAffirmation,
+  requestSisterMatch,
+  respondToMatch,
+  rsvpToEvent,
+} from '../../src/services/wellness';
 const mockPrisma = vi.hoisted(() => ({
   wellnessCheckIn: {
     upsert: vi.fn(),
@@ -40,15 +48,6 @@ const mockPrisma = vi.hoisted(() => ({
 vi.mock('../../src/db', () => ({
   prisma: mockPrisma,
 }));
-
-const {
-  createCheckIn,
-  getWellnessInsights,
-  getDailyAffirmation,
-  requestSisterMatch,
-  respondToMatch,
-  rsvpToEvent,
-} = await import('../../src/services/wellness');
 
 const mood = 'CALM' as unknown as WellnessMood;
 

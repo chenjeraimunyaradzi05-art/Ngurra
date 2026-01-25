@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * LinkedIn Profile Import Library
  * 
@@ -110,12 +109,12 @@ async function importLinkedInToProfile(userId, importOptions: any = {}) {
   }
 
   if (importAvatar && linkedInData.avatar) {
-    profileUpdate.avatar = linkedInData.avatar;
+    profileUpdate.avatarUrl = linkedInData.avatar;
   }
 
   // Update profile
-  const updatedProfile = await prisma.profile.update({
-    where: { userId },
+  const updatedProfile = await prisma.user.update({
+    where: { id: userId },
     data: profileUpdate
   });
 
@@ -123,8 +122,10 @@ async function importLinkedInToProfile(userId, importOptions: any = {}) {
   await prisma.auditLog.create({
     data: {
       userId,
+      category: 'USER',
+      event: 'LINKEDIN_IMPORT',
       action: 'LINKEDIN_IMPORT',
-      details: JSON.stringify({
+      metadata: JSON.stringify({
         importedFields: Object.keys(profileUpdate),
         linkedInId: linkedInData.id,
         timestamp: new Date().toISOString()
@@ -255,7 +256,7 @@ async function parseResumeText(resumeText) {
     /(?:position|role|job):\s*([A-Za-z\s]+)/gi
   ];
 
-  const experienceMatches = [];
+  const experienceMatches: string[] = [];
   experiencePatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(text)) !== null) {
@@ -271,7 +272,7 @@ async function parseResumeText(resumeText) {
     /(?:completed?|studying)\s+([A-Za-z\s]+)\s+at\s+([A-Za-z\s]+)/gi
   ];
 
-  const educationMatches = [];
+  const educationMatches: string[] = [];
   educationPatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(text)) !== null) {

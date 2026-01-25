@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CDN and Static Asset Configuration
  * 

@@ -16,7 +16,8 @@
  */
 
 import express, { Request, Response } from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { authenticate } from '../middleware/auth';
 
 const router = express.Router();

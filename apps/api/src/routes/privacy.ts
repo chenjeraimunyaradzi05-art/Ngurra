@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use strict";
 /**
  * GDPR Privacy Routes
@@ -247,13 +246,16 @@ router.get('/registry', optionalAuth, async (req, res) => {
 router.get('/retention', optionalAuth, async (req, res) => {
   res.json({
     success: true,
-    retentionPeriods: Object.entries(RETENTION_PERIODS).map(([key, days]) => ({
-      dataType: key,
-      retentionDays: days,
-      retentionDescription: days < 365 
-        ? `${days} days` 
-        : `${Math.round(days / 365)} year(s)`
-    }))
+    retentionPeriods: Object.entries(RETENTION_PERIODS).map(([key, days]) => {
+      const daysNum = Number(days);
+      return {
+        dataType: key,
+        retentionDays: daysNum,
+        retentionDescription: daysNum < 365 
+          ? `${daysNum} days` 
+          : `${Math.round(daysNum / 365)} year(s)`
+        };
+    })
   });
 });
 

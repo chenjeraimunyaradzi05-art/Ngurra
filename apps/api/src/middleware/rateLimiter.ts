@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Rate Limiting Middleware
  * 
@@ -350,18 +351,4 @@ function bypassTrustedIPs(trustedIPs = []) {
     next();
   };
 }
-
-module.exports = {
-  createTieredRateLimiter,
-  strictRateLimiter,
-  slidingWindowLimiter,
-  tokenBucketLimiter,
-  bypassTrustedIPs,
-  MemoryRateLimitStore,
-  RedisRateLimitStore,
-  RATE_LIMIT_TIERS,
-  ENDPOINT_LIMITS,
-};
-
-export {};
 

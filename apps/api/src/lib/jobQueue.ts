@@ -372,18 +372,3 @@ const defaultQueue = queueManager.createQueue('default');
 const emailQueue = queueManager.createQueue('email', { concurrency: 3 });
 const notificationQueue = queueManager.createQueue('notification', { concurrency: 10 });
 const exportQueue = queueManager.createQueue('export', { concurrency: 2 });
-
-module.exports = {
-  Job,
-  JobState,
-  Priority,
-  JobQueue,
-  QueueManager,
-  queueManager,
-  defaultQueue,
-  emailQueue,
-  notificationQueue,
-  exportQueue,
-};
-
-export {};

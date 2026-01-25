@@ -440,19 +440,3 @@ function parseLocation(rawLocation) {
 
   return { type: 'unknown', raw: rawLocation };
 }
-
-module.exports = {
-  geocode,
-  calculateDistance,
-  filterByDistance,
-  isRemoteJob,
-  autocomplete,
-  formatForMapView,
-  getJobsInBounds,
-  getDistanceOptions,
-  parseLocation,
-  AUSTRALIAN_LOCATIONS,
-  REMOTE_KEYWORDS
-};
-
-export {};

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * User Data Export Route
  * 

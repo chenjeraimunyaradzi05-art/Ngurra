@@ -468,16 +468,3 @@ async function getUserSearchHistory(userId, limit = 20) {
     return [];
   }
 }
-
-module.exports = {
-  trackSearch,
-  trackClick,
-  getDashboardData,
-  getPopularSearches,
-  getZeroResultSearches,
-  getSearchConversion,
-  getSearchTrend,
-  getUserSearchHistory
-};
-
-export {};

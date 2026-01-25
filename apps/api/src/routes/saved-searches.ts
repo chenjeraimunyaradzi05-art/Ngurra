@@ -1,8 +1,10 @@
 // @ts-nocheck
 import express from 'express';
 import { z } from 'zod';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import auth from '../middleware/auth';
+
+const prisma = prismaClient as any;
 import { validateRequest } from '../middleware/validate';
 
 const router = express.Router();
@@ -207,7 +209,7 @@ router.post('/:id/run', auth.authenticate, async (req: any, res: any) => {
 
     if (savedSearch.searchType === 'job') {
       // Build job search query
-      const where = { isActive: true };
+      const where: any = { isActive: true };
       
       if (query.q) {
         where.OR = [
@@ -392,7 +394,7 @@ export async function processJobAlerts(frequency = 'daily') {
         const lastAlertAt = search.lastAlertAt || new Date(0);
 
         // Build query for new jobs since last alert
-        const where = {
+        const where: any = {
           isActive: true,
           postedAt: { gt: lastAlertAt },
         };

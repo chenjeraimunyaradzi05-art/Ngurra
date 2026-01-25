@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Admin Health Monitoring Routes
  * 
@@ -29,7 +28,7 @@ let requestsPerMinute = 0;
  * GET /api/admin/health
  * Get comprehensive system health status
  */
-router.get('/health', authenticate, authorize('ADMIN'), async (req: Request, res: Response) => {
+router.get('/health', authenticate, authorize(['ADMIN']), async (req: Request, res: Response) => {
   try {
     const health = await getSystemHealth();
     res.json(health);
@@ -89,7 +88,13 @@ async function getSystemHealth() {
 }
 
 async function checkServices() {
-  const services = [
+  const services: {
+    name: string;
+    status: 'healthy' | 'degraded' | 'down';
+    latency: number;
+    uptime: number;
+    lastCheck: string;
+  }[] = [
     {
       name: 'API Server',
       status: 'healthy' as const,

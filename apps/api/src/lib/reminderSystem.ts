@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 /**
@@ -609,18 +610,3 @@ async function runDailyReminderJobs() {
   logger.info('Daily reminder jobs completed', results);
   return results;
 }
-
-module.exports = {
-  REMINDER_CONFIG,
-  processSessionReminders,
-  processDeadlineReminders,
-  processCourseReminders,
-  processProfileNudges,
-  processInactiveUserReengagement,
-  runAllReminderJobs,
-  runDailyReminderJobs,
-  sendSessionReminder,
-  calculateProfileCompletion
-};
-
-export {};

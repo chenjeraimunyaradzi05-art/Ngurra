@@ -4,8 +4,10 @@
  * Handles community events with registration, RSVPs, and management
  */
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
 import authenticateJWT from '../middleware/auth';
+
+const prisma = prismaClient as any;
 
 const router = express.Router();
 

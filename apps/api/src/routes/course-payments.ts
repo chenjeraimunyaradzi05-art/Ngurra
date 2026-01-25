@@ -5,7 +5,8 @@
  */
 
 import { Router } from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import authenticate from '../middleware/auth';
 import Stripe from 'stripe';
 

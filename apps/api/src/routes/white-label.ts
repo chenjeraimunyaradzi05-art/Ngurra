@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * White-Label Platform Configuration Routes
  * Allows customization of branding, colors, and domain for white-label deployments
@@ -230,9 +229,12 @@ router.post('/tenants', async (req, res) => {
     // Log tenant creation
     await prisma.auditLog.create({
       data: {
+        event: 'white_label.tenant_created',
         action: 'WHITE_LABEL_TENANT_CREATED',
         userId: ownerId,
-        metadata: JSON.stringify({ tenantId: tenant.id, slug })
+        targetResourceType: 'white_label_tenant',
+        targetResourceId: tenant.id,
+        metadata: JSON.stringify({ tenantId: tenant.id, slug }),
       }
     });
 
@@ -307,7 +309,7 @@ router.put('/tenants/:slug', authenticateJWT, checkTenantAccess, async (req, res
         accentColor,
         footerText,
         customCss,
-        customJs,
+        // customJs is not persisted in schema
         supportEmail,
         supportPhone,
         termsUrl,
@@ -321,8 +323,11 @@ router.put('/tenants/:slug', authenticateJWT, checkTenantAccess, async (req, res
     // Log the update
     await prisma.auditLog.create({
       data: {
+        event: 'white_label.tenant_updated',
         action: 'WHITE_LABEL_TENANT_UPDATED',
         userId: req.user.id,
+        targetResourceType: 'white_label_tenant',
+        targetResourceId: tenant.id,
         metadata: JSON.stringify({ tenantId: tenant.id, slug })
       }
     });
@@ -354,8 +359,11 @@ router.delete('/tenants/:slug', async (req, res) => {
 
     await prisma.auditLog.create({
       data: {
+        event: 'white_label.tenant_deactivated',
         action: 'WHITE_LABEL_TENANT_DEACTIVATED',
-        metadata: { tenantId: tenant.id, slug }
+        targetResourceType: 'white_label_tenant',
+        targetResourceId: tenant.id,
+        metadata: JSON.stringify({ tenantId: tenant.id, slug })
       }
     });
 

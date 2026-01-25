@@ -14,7 +14,8 @@ import { PrismaClient } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
+const prisma = prismaClient as any;
 
 // ============================================================================
 // CONFIGURATION

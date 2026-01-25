@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Indigenous Language Service
  * 
@@ -14,9 +13,11 @@
  * Traditional Custodians and language authorities of each nation.
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface IndigenousLanguage {
@@ -387,7 +388,7 @@ class IndigenousLanguageService {
       const cacheKey = `${this.cachePrefix}all`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       // In production, this would come from the database

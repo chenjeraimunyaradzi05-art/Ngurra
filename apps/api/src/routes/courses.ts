@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import { authenticate as authenticateJWT } from '../middleware/auth';
 import { requireAdmin, isAdmin } from '../middleware/adminAuth';
 import { searchExternalCourses, listExternalProviders, runCourseSync } from '../lib/tafeApi';
@@ -10,6 +11,27 @@ type LessonProgress = {
   id: string;
   title: string;
   completedAt?: string | null;
+  progress?: number;
+  timeSpent?: number;
+  duration?: number;
+  type?: 'video' | 'reading' | 'quiz' | 'exercise';
+};
+
+type UiLesson = {
+  id: string;
+  title: string;
+  duration: number;
+  type: 'video' | 'reading' | 'quiz' | 'exercise';
+  completed: boolean;
+  progress: number;
+  timeSpent: number;
+};
+
+type UiModule = {
+  id: string;
+  title: string;
+  lessons: UiLesson[];
+  progress: number;
 };
 
 /**
@@ -66,6 +88,38 @@ function computeProgress(lessons: LessonProgress[]) {
   const nextLesson = lessons.find((l) => !l.completedAt)?.title || null;
   const progress = total ? Math.round((completed / total) * 100) : 0;
   return { total, completed, nextLesson, progress };
+}
+
+function normalizeLessonsForUi(lessons: LessonProgress[]): UiLesson[] {
+  return lessons.map((lesson) => {
+    const duration = typeof lesson.duration === 'number' ? lesson.duration : 20;
+    const completed = Boolean(lesson.completedAt);
+    const progress = typeof lesson.progress === 'number' ? Math.max(0, Math.min(100, lesson.progress)) : (completed ? 100 : 0);
+    const timeSpent = typeof lesson.timeSpent === 'number' ? lesson.timeSpent : (completed ? duration : 0);
+    const type = lesson.type || 'reading';
+    return {
+      id: lesson.id,
+      title: lesson.title,
+      duration,
+      type,
+      completed,
+      progress,
+      timeSpent,
+    };
+  });
+}
+
+function buildModulesForUi(lessons: UiLesson[]): UiModule[] {
+  const completed = lessons.filter((lesson) => lesson.completed).length;
+  const progress = lessons.length ? Math.round((completed / lessons.length) * 100) : 0;
+  return [
+    {
+      id: 'module-1',
+      title: 'Module 1',
+      lessons,
+      progress,
+    },
+  ];
 }
 
 interface WhereClause {
@@ -150,24 +204,367 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Get enrolled courses
-router.get('/enrolled', /* authenticateJWT, */ async (req: Request, res: Response) => {
-  const userId = (req as any).user?.id || 'demo-user-id';
-  // Mock response for now to unblock UI
-  res.json({ 
-    courses: [
-      {
-        id: '101',
-        title: 'Introduction to Career Planning',
-        description: 'Learn how to plan your career path effectively.',
-        progress: 45,
-        totalLessons: 10,
-        completedLessons: 4,
-        imageUrl: '/images/courses/career-planning.jpg',
-        category: 'Career',
-        institution: { name: 'Ngurra Pathways' }
+router.get('/enrolled', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const enrolments = await prisma.courseEnrolment.findMany({
+      where: { userId },
+      include: {
+        course: {
+          include: {
+            institution: { select: { id: true, email: true, institutionProfile: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const courses = await Promise.all(enrolments.map(async (enrolment) => {
+      const course = enrolment.course as any;
+      const lessons = await getOrInitializeLessons(enrolment.id, course);
+      const progressMeta = computeProgress(lessons);
+      const uiLessons = normalizeLessonsForUi(lessons);
+      const modules = buildModulesForUi(uiLessons);
+
+      const totalDuration = uiLessons.reduce((sum, lesson) => sum + lesson.duration, 0);
+      const timeSpent = uiLessons.reduce((sum, lesson) => sum + lesson.timeSpent, 0);
+      const profile = course?.institution?.institutionProfile as any;
+      const instructorName = profile?.institutionName || profile?.name || course?.providerName || course?.institution?.email || 'Unknown Instructor';
+      const instructorAvatar = profile?.avatarUrl || undefined;
+      const enrolledAt = enrolment.startDate || enrolment.createdAt;
+      const progress = enrolment.progress ?? progressMeta.progress ?? 0;
+
+      return {
+        id: enrolment.courseId,
+        title: course?.title || 'Untitled Course',
+        description: course?.description || '',
+        imageUrl: course?.imageUrl || undefined,
+        instructor: {
+          name: instructorName,
+          avatar: instructorAvatar,
+        },
+        category: course?.category || 'General',
+        totalLessons: progressMeta.total,
+        completedLessons: progressMeta.completed,
+        totalDuration,
+        timeSpent,
+        progress,
+        enrolledAt: enrolledAt?.toISOString ? enrolledAt.toISOString() : String(enrolledAt),
+        lastAccessedAt: enrolment.updatedAt?.toISOString ? enrolment.updatedAt.toISOString() : undefined,
+        certificateAvailable: Boolean(enrolment.certificateUrl) || progress === 100,
+        certificateId: enrolment.certificateUrl ? enrolment.id : undefined,
+        modules,
+      };
+    }));
+
+    res.json({ courses });
+  } catch (e) {
+    console.error('Fetch enrolled courses error:', e);
+    res.status(500).json({ error: 'Failed to fetch enrolled courses' });
+  }
+});
+
+// Get course progress by courseId (frontend expects this shape)
+router.get('/:courseId/progress', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const enrolment = await prisma.courseEnrolment.findFirst({
+      where: { userId, courseId: req.params.courseId },
+      include: {
+        course: {
+          include: { institution: { select: { id: true, email: true, institutionProfile: true } } },
+        },
+      },
+    });
+
+    if (!enrolment) {
+      return void res.status(404).json({ error: 'Enrolment not found' });
+    }
+
+    const course = enrolment.course as any;
+    const lessons = await getOrInitializeLessons(enrolment.id, course);
+    const progressMeta = computeProgress(lessons);
+    const uiLessons = normalizeLessonsForUi(lessons);
+    const modules = buildModulesForUi(uiLessons);
+
+    const totalDuration = uiLessons.reduce((sum, lesson) => sum + lesson.duration, 0);
+    const timeSpent = uiLessons.reduce((sum, lesson) => sum + lesson.timeSpent, 0);
+    const profile = course?.institution?.institutionProfile as any;
+    const instructorName = profile?.institutionName || profile?.name || course?.providerName || course?.institution?.email || 'Unknown Instructor';
+    const instructorAvatar = profile?.avatarUrl || undefined;
+    const enrolledAt = enrolment.startDate || enrolment.createdAt;
+    const progress = enrolment.progress ?? progressMeta.progress ?? 0;
+
+    res.json({
+      id: enrolment.courseId,
+      title: course?.title || 'Untitled Course',
+      description: course?.description || '',
+      imageUrl: course?.imageUrl || undefined,
+      instructor: {
+        name: instructorName,
+        avatar: instructorAvatar,
+      },
+      category: course?.category || 'General',
+      totalLessons: progressMeta.total,
+      completedLessons: progressMeta.completed,
+      totalDuration,
+      timeSpent,
+      progress,
+      enrolledAt: enrolledAt?.toISOString ? enrolledAt.toISOString() : String(enrolledAt),
+      lastAccessedAt: enrolment.updatedAt?.toISOString ? enrolment.updatedAt.toISOString() : undefined,
+      certificateAvailable: Boolean(enrolment.certificateUrl) || progress === 100,
+      certificateId: enrolment.certificateUrl ? enrolment.id : undefined,
+      modules,
+    });
+  } catch (e) {
+    console.error('Fetch course progress error:', e);
+    res.status(500).json({ error: 'Failed to fetch course progress' });
+  }
+});
+
+// Mark lesson as completed by courseId
+router.post('/:courseId/lessons/:lessonId/complete', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const enrolment = await prisma.courseEnrolment.findFirst({
+      where: { userId, courseId: req.params.courseId },
+      include: { course: true },
+    });
+
+    if (!enrolment) {
+      return void res.status(404).json({ error: 'Enrolment not found' });
+    }
+
+    const lessons = await getOrInitializeLessons(enrolment.id, enrolment.course);
+    const target = lessons.find((lesson) => lesson.id === req.params.lessonId);
+    if (!target) return void res.status(404).json({ error: 'Lesson not found' });
+
+    if (!target.completedAt) {
+      target.completedAt = new Date().toISOString();
+    }
+    target.progress = 100;
+    target.timeSpent = typeof target.timeSpent === 'number' ? target.timeSpent : (target.duration || 20);
+
+    await updateLessonProgress(enrolment.id, lessons);
+
+    const progressMeta = computeProgress(lessons);
+    const updated = await prisma.courseEnrolment.update({
+      where: { id: enrolment.id },
+      data: {
+        progress: progressMeta.progress,
+        nextLesson: progressMeta.nextLesson || null,
+        status: progressMeta.progress === 100 ? 'COMPLETED' : 'IN_PROGRESS',
+        ...(progressMeta.progress === 100 ? { completedAt: new Date() } : {}),
+      },
+    });
+
+    res.json({
+      enrolmentId: updated.id,
+      progress: updated.progress,
+      status: updated.status,
+      nextLesson: updated.nextLesson,
+      totalLessons: progressMeta.total,
+      completedLessons: progressMeta.completed,
+      lessons: normalizeLessonsForUi(lessons),
+    });
+  } catch (e) {
+    console.error('Complete lesson error:', e);
+    res.status(500).json({ error: 'Failed to complete lesson' });
+  }
+});
+
+// Update lesson progress by courseId (frontend expects this route)
+router.put('/:courseId/lessons/:lessonId/progress', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const enrolment = await prisma.courseEnrolment.findFirst({
+      where: { userId, courseId: req.params.courseId },
+      include: { course: true },
+    });
+
+    if (!enrolment) {
+      return void res.status(404).json({ error: 'Enrolment not found' });
+    }
+
+    const lessons = await getOrInitializeLessons(enrolment.id, enrolment.course);
+    const target = lessons.find((lesson) => lesson.id === req.params.lessonId);
+    if (!target) return void res.status(404).json({ error: 'Lesson not found' });
+
+    const progress = typeof req.body?.progress === 'number' ? req.body.progress : parseInt(req.body?.progress);
+    if (!Number.isNaN(progress)) {
+      target.progress = Math.max(0, Math.min(100, progress));
+      if (target.progress === 100 && !target.completedAt) {
+        target.completedAt = new Date().toISOString();
+      } else if (target.progress < 100) {
+        target.completedAt = null;
       }
-    ]
-  });
+    }
+
+    const timeSpent = typeof req.body?.timeSpent === 'number' ? req.body.timeSpent : parseInt(req.body?.timeSpent);
+    if (!Number.isNaN(timeSpent)) {
+      target.timeSpent = Math.max(0, timeSpent);
+    }
+
+    await updateLessonProgress(enrolment.id, lessons);
+
+    const progressMeta = computeProgress(lessons);
+    const updated = await prisma.courseEnrolment.update({
+      where: { id: enrolment.id },
+      data: {
+        progress: progressMeta.progress,
+        nextLesson: progressMeta.nextLesson || null,
+        status: progressMeta.progress === 100 ? 'COMPLETED' : 'IN_PROGRESS',
+        ...(progressMeta.progress === 100 ? { completedAt: new Date() } : {}),
+      },
+    });
+
+    res.json({
+      enrolmentId: updated.id,
+      progress: updated.progress,
+      status: updated.status,
+      nextLesson: updated.nextLesson,
+      totalLessons: progressMeta.total,
+      completedLessons: progressMeta.completed,
+      lessons: normalizeLessonsForUi(lessons),
+    });
+  } catch (e) {
+    console.error('Update lesson progress error:', e);
+    res.status(500).json({ error: 'Failed to update lesson progress' });
+  }
+});
+
+// Get certificate by courseId
+router.get('/:courseId/certificate', authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const enrolment = await prisma.courseEnrolment.findFirst({
+      where: { userId, courseId: req.params.courseId },
+    });
+
+    if (!enrolment) {
+      return void res.status(404).json({ error: 'Enrolment not found' });
+    }
+
+    if (!enrolment.certificateUrl) {
+      return void res.status(404).json({ error: 'Certificate not issued yet' });
+    }
+
+    res.json({ certificateUrl: enrolment.certificateUrl });
+  } catch (e) {
+    console.error('Fetch certificate error:', e);
+    res.status(500).json({ error: 'Failed to fetch certificate' });
+  }
+});
+
+// Persistent notes/quiz endpoints
+router.get('/:courseId/notes', authenticateJWT, async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const enrolment = await prisma.courseEnrolment.findUnique({
+      where: { userId_courseId: { userId, courseId: req.params.courseId } },
+      include: { notes: { orderBy: { createdAt: 'desc' } } }
+    });
+    // Add courseId to each note as expected by frontend
+    const notes = (enrolment?.notes || []).map((n: any) => ({
+      ...n,
+      courseId: req.params.courseId
+    }));
+    res.json({ notes });
+  } catch (e) {
+    console.error('Fetch notes error:', e);
+    res.json({ notes: [] }); 
+  }
+});
+
+router.post('/:courseId/notes', authenticateJWT, async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const enrolment = await prisma.courseEnrolment.findUnique({
+      where: { userId_courseId: { userId, courseId: req.params.courseId } }
+    });
+
+    if (!enrolment) {
+      return void res.status(404).json({ error: 'Not enrolled in this course' });
+    }
+
+    const note = await prisma.courseNote.create({
+      data: {
+        courseEnrolmentId: enrolment.id,
+        lessonId: req.body?.lessonId,
+        content: String(req.body?.content || '')
+      }
+    });
+
+    res.status(201).json({
+      ...note,
+      courseId: req.params.courseId
+    });
+  } catch (e) {
+    console.error('Create note error:', e);
+    res.status(500).json({ error: 'Failed to create note' });
+  }
+});
+
+router.delete('/:courseId/notes/:noteId', authenticateJWT, async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const note = await prisma.courseNote.findUnique({
+      where: { id: req.params.noteId },
+      include: { courseEnrolment: true }
+    });
+
+    if (!note || note.courseEnrolment.userId !== userId) {
+      return void res.status(404).json({ error: 'Note not found' });
+    }
+
+    await prisma.courseNote.delete({ where: { id: req.params.noteId } });
+    res.status(204).send();
+  } catch (e) {
+    console.error('Delete note error:', e);
+    res.status(500).json({ error: 'Failed to delete note' });
+  }
+});
+
+router.get('/:courseId/quiz-results', authenticateJWT, async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  if (!userId) return void res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const enrolment = await prisma.courseEnrolment.findUnique({
+      where: { userId_courseId: { userId, courseId: req.params.courseId } },
+      include: { quizResults: { orderBy: { createdAt: 'desc' } } }
+    });
+    res.json({ results: enrolment?.quizResults || [] });
+  } catch (e) {
+    console.error('Fetch quiz results error:', e);
+    res.json({ results: [] }); 
+  }
 });
 
 // Get course categories

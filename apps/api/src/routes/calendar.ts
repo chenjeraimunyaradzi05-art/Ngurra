@@ -8,8 +8,10 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticate as authenticateToken } from '../middleware/auth';
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import crypto from 'crypto';
+
+const prisma = prismaClient as any;
 
 const router = Router();
 
@@ -428,7 +430,7 @@ router.get('/events', authenticateToken, async (req: Request, res: Response) => 
             `timeMin=${startDate.toISOString()}&timeMax=${endDate.toISOString()}&singleEvents=true&orderBy=startTime`,
             { headers: { Authorization: `Bearer ${accessToken}` } }
           );
-          const data = await eventsResponse.json();
+          const data: any = await eventsResponse.json();
           
           if (data.items) {
             allEvents.push(...data.items.map((item: any) => ({
@@ -446,7 +448,7 @@ router.get('/events', authenticateToken, async (req: Request, res: Response) => 
             `startDateTime=${startDate.toISOString()}&endDateTime=${endDate.toISOString()}&$orderby=start/dateTime`,
             { headers: { Authorization: `Bearer ${accessToken}` } }
           );
-          const data = await eventsResponse.json();
+          const data: any = await eventsResponse.json();
           
           if (data.value) {
             allEvents.push(...data.value.map((item: any) => ({

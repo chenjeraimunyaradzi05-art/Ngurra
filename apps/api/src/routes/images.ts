@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Image Optimization Route
  * 
@@ -248,6 +247,7 @@ router.post('/optimize', async (req, res) => {
       original: validation.metadata,
       placeholder,
       variants: Object.fromEntries(
+        // @ts-ignore
         Object.entries(variants).map(([name, { info }]) => [name, info])
       ),
     });

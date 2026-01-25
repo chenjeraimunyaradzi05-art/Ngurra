@@ -144,14 +144,31 @@ router.get('/history', authenticateJWT, async (req, res) => {
     const history = await getWellnessHistory(req.user.id, parseInt(limit));
 
     // Calculate trends
+    const moodScore = (mood) => {
+      switch (mood) {
+        case 'GREAT':
+          return 5;
+        case 'GOOD':
+          return 4;
+        case 'OKAY':
+          return 3;
+        case 'LOW':
+          return 2;
+        case 'STRUGGLING':
+          return 1;
+        default:
+          return 0;
+      }
+    };
+
     let trend = null;
     if (history.length >= 3) {
       const recent = history.slice(0, 3);
       const older = history.slice(3, 6);
       
       if (older.length >= 3) {
-        const recentAvg = recent.reduce((s, h) => s + h.mood, 0) / recent.length;
-        const olderAvg = older.reduce((s, h) => s + h.mood, 0) / older.length;
+        const recentAvg = recent.reduce((s, h) => s + moodScore(h.mood), 0) / recent.length;
+        const olderAvg = older.reduce((s, h) => s + moodScore(h.mood), 0) / older.length;
         
         if (recentAvg > olderAvg + 0.5) trend = 'improving';
         else if (recentAvg < olderAvg - 0.5) trend = 'declining';

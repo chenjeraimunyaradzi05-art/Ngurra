@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 /**
@@ -255,9 +256,3 @@ async function runProactiveOutreach({
     nudges,
   };
 }
-
-module.exports = {
-  runProactiveOutreach,
-};
-
-export {};

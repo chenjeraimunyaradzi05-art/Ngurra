@@ -1893,7 +1893,35 @@ model CourseEnrolment {
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
 
+  notes        CourseNote[]
+  quizResults  CourseQuizResult[]
+
   @@unique([userId, courseId])
+}
+
+model CourseNote {
+  id                String          @id @default(cuid())
+  content           String          @db.Text
+  lessonId          String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  courseEnrolmentId String
+  courseEnrolment   CourseEnrolment @relation(fields: [courseEnrolmentId], references: [id], onDelete: Cascade)
+
+  @@index([courseEnrolmentId])
+}
+
+model CourseQuizResult {
+  id                String          @id @default(cuid())
+  score             Int
+  total             Int
+  passed            Boolean
+  details           Json?
+  createdAt         DateTime        @default(now())
+  courseEnrolmentId String
+  courseEnrolment   CourseEnrolment @relation(fields: [courseEnrolmentId], references: [id], onDelete: Cascade)
+
+  @@index([courseEnrolmentId])
 }
 
 /// Digital badges and micro-credentials
@@ -2165,6 +2193,7 @@ model DataExportRequest {
 
 model ExternalCourse {
   id               String    @id @default(cuid())
+  externalId       String?   @unique
   title            String
   name             String?
   description      String?

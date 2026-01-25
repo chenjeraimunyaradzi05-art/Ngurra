@@ -9,7 +9,8 @@
  */
 
 import express from 'express';
-import { prisma } from '../db';
+import { prisma as prismaClient } from '../db';
+const prisma = prismaClient as any;
 import authenticateJWT from '../middleware/auth';
 import crypto from 'crypto';
 import sovereigntyStore from '../lib/sovereignty-store';

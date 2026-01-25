@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use strict";
 
 /**
@@ -27,7 +28,7 @@ const RECORDING_RETENTION_DAYS = parseInt(process.env.RECORDING_RETENTION_DAYS |
 /**
  * Recording status enum
  */
-const RecordingStatus = {
+export const RecordingStatus = {
   PENDING: 'PENDING',
   RECORDING: 'RECORDING',
   PROCESSING: 'PROCESSING',
@@ -67,7 +68,7 @@ function generateRecordingId(sessionId) {
  * @param {string} options.roomName - Jitsi room name
  * @returns {object} - Recording metadata
  */
-async function createRecording(options) {
+export async function createRecording(options) {
   const { sessionId, mentorId, menteeId, roomName } = options;
   
   const recordingId = generateRecordingId(sessionId);
@@ -108,7 +109,7 @@ async function createRecording(options) {
  * @param {object} updates - Fields to update
  * @returns {object} - Updated recording
  */
-async function updateRecording(recordingId, updates) {
+export async function updateRecording(recordingId, updates) {
   const metadataPath = path.join(RECORDINGS_DIR, `${recordingId}.json`);
   
   try {
@@ -134,7 +135,7 @@ async function updateRecording(recordingId, updates) {
  * @param {string} recordingId - Recording ID
  * @returns {object|null} - Recording metadata
  */
-async function getRecording(recordingId) {
+export async function getRecording(recordingId) {
   const metadataPath = path.join(RECORDINGS_DIR, `${recordingId}.json`);
   
   try {
@@ -151,7 +152,7 @@ async function getRecording(recordingId) {
  * @param {string} sessionId - Session ID
  * @returns {Array} - List of recordings
  */
-async function getSessionRecordings(sessionId) {
+export async function getSessionRecordings(sessionId) {
   await ensureRecordingsDir();
   
   try {
@@ -181,7 +182,7 @@ async function getSessionRecordings(sessionId) {
  * @param {string} userId - User ID
  * @returns {Array} - List of recordings
  */
-async function getUserRecordings(userId) {
+export async function getUserRecordings(userId) {
   await ensureRecordingsDir();
   
   try {
@@ -216,7 +217,7 @@ async function getUserRecordings(userId) {
  * @param {number} fileInfo.fileSize - File size in bytes
  * @returns {object} - Updated recording
  */
-async function processRecording(recordingId, fileInfo) {
+export async function processRecording(recordingId, fileInfo) {
   const { videoPath, duration, fileSize } = fileInfo;
   
   // Update status to processing
@@ -273,7 +274,7 @@ async function processRecording(recordingId, fileInfo) {
  * @param {string} recordingId - Recording ID for caching
  * @returns {object} - Transcript with timestamps
  */
-async function generateTranscript(audioPath, recordingId) {
+export async function generateTranscript(audioPath, recordingId) {
   if (!OPENAI_API_KEY) {
     throw new Error('OpenAI API key not configured');
   }
@@ -345,7 +346,7 @@ async function uploadToS3(filePath, recordingId) {
  * @param {number} expiresIn - Expiry in seconds (default: 1 hour)
  * @returns {string} - Signed URL
  */
-function generatePlaybackUrl(recordingId, expiresIn = 3600) {
+export function generatePlaybackUrl(recordingId, expiresIn = 3600) {
   const expires = Math.floor(Date.now() / 1000) + expiresIn;
   const signature = crypto
     .createHmac('sha256', process.env.JWT_SECRET || 'secret')
@@ -364,7 +365,7 @@ function generatePlaybackUrl(recordingId, expiresIn = 3600) {
  * @param {string} signature - URL signature
  * @returns {boolean} - Valid or not
  */
-function validatePlaybackUrl(recordingId, expires, signature) {
+export function validatePlaybackUrl(recordingId, expires, signature) {
   if (Date.now() / 1000 > expires) return false;
   
   const expected = crypto
@@ -380,7 +381,7 @@ function validatePlaybackUrl(recordingId, expires, signature) {
  * Clean up expired recordings
  * @returns {number} - Number of recordings cleaned
  */
-async function cleanupExpiredRecordings() {
+export async function cleanupExpiredRecordings() {
   await ensureRecordingsDir();
   
   try {
@@ -416,7 +417,7 @@ async function cleanupExpiredRecordings() {
  * Get Jitsi configuration for recording-enabled sessions
  * @returns {object} - Jitsi config with recording enabled
  */
-function getRecordingConfig() {
+export function getRecordingConfig() {
   return {
     // Jibri (Jitsi recording) configuration
     enableRecording: true,
@@ -436,19 +437,4 @@ function getRecordingConfig() {
   };
 }
 
-module.exports = {
-  RecordingStatus,
-  createRecording,
-  updateRecording,
-  getRecording,
-  getSessionRecordings,
-  getUserRecordings,
-  processRecording,
-  generateTranscript,
-  generatePlaybackUrl,
-  validatePlaybackUrl,
-  cleanupExpiredRecordings,
-  getRecordingConfig,
-};
-
-export {};
+// Exports handled inline

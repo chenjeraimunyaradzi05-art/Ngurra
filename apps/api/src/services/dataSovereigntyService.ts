@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Indigenous Data Sovereignty Service
  * 
@@ -21,10 +20,12 @@
  * - Cultural sensitivity classification
  */
 
-import { prisma } from '../lib/database';
+import { prisma as prismaClient } from '../lib/database';
 import { logger } from '../lib/logger';
 import { redisCache } from '../lib/redisCacheWrapper';
 import crypto from 'crypto';
+
+const prisma = prismaClient as any;
 
 // Types
 export interface DataSovereigntyPreferences {
@@ -166,7 +167,7 @@ class DataSovereigntyService {
       const cacheKey = `${this.cachePrefix}prefs:${userId}`;
       const cached = await redisCache.get(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return JSON.parse(cached as string);
       }
 
       let prefs = await prisma.dataSovereigntyPreference.findUnique({

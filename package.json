@@ -4,6 +4,7 @@
   "description": "Serverless function demos for the Gimbi careers site (Netlify-style)",
   "private": true,
   "main": "index.js",
+  "packageManager": "npm@10.8.2",
   "engines": {
     "node": ">=20"
   },

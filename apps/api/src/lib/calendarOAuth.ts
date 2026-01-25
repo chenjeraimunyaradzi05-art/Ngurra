@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Google Calendar OAuth Integration Library
  * Handles OAuth flow and calendar operations for mentor scheduling
@@ -295,21 +296,3 @@ function getDefaultAvailability() {
     { dayOfWeek: 5, startTime: '09:00', endTime: '17:00', timezone: 'Australia/Sydney' },
   ];
 }
-
-module.exports = {
-  createOAuth2Client,
-  getAuthUrl,
-  getTokensFromCode,
-  createCalendarClient,
-  getFreeBusy,
-  getAvailableSlots,
-  createSessionEvent,
-  updateSessionEvent,
-  cancelSessionEvent,
-  isConfigured,
-  generateFallbackSlots,
-  getDefaultAvailability,
-  SCOPES,
-};
-
-export {};

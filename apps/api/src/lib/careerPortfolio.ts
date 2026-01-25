@@ -16,7 +16,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuid } from 'uuid';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
+const prisma = prismaClient as any;
 
 // ============================================================================
 // CONFIGURATION

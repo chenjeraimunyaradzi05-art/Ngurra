@@ -4,6 +4,15 @@
  */
 
 import type { ListingStatus, RentalInquiryStatus } from '@prisma/client';
+import {
+  createRentalListing,
+  publishRentalListing,
+  searchRentalListings,
+  sendRentalInquiry,
+  respondToRentalInquiry,
+  getOwnerRentalListings,
+  upsertSeekerProfile,
+} from '../../src/services/rentals';
 
 const mockPrisma = vi.hoisted(() => ({
   rentalListing: {
@@ -31,16 +40,6 @@ const mockPrisma = vi.hoisted(() => ({
 vi.mock('../../src/db', () => ({
   prisma: mockPrisma,
 }));
-
-const {
-  createRentalListing,
-  publishRentalListing,
-  searchRentalListings,
-  sendRentalInquiry,
-  respondToRentalInquiry,
-  getOwnerRentalListings,
-  upsertSeekerProfile,
-} = await import('../../src/services/rentals');
 
 const status = 'ACTIVE' as ListingStatus;
 const inquiryStatus = 'RESPONDED' as RentalInquiryStatus;

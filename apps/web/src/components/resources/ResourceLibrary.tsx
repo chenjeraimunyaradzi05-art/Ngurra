@@ -1,148 +1,68 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '../Button';
 import api from '@/lib/apiClient';
-import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import { Button } from '@/components/ui/button';
 
-/**
- * ResourceLibrary - Educational and career resources
- *
- * Features:
- * - Browse resources by category
- * - Download documents
- * - Video tutorials
- * - Cultural resources
- * - Career guides
- * - Bookmark and save resources
- */
+// Theme colors
+const accentPink = '#E91E8C';
+const accentPurple = '#8B5CF6';
 
+// Resource types
 interface Resource {
   id: string;
   title: string;
   description: string;
   type: 'document' | 'video' | 'article' | 'template' | 'guide' | 'toolkit';
-  category: 'career' | 'education' | 'culture' | 'business' | 'health' | 'community' | 'technology';
-  format?: 'pdf' | 'doc' | 'video' | 'web' | 'zip';
+  category: string;
+  thumbnailUrl?: string;
   url?: string;
   downloadUrl?: string;
-  thumbnailUrl?: string;
-  duration?: number; // for videos
-  fileSize?: number; // bytes
   author?: {
-    id: string;
     name: string;
     organization?: string;
   };
   tags: string[];
+  rating?: number;
+  ratingCount?: number;
+  viewCount: number;
+  downloadCount: number;
+  fileSize?: number;
+  duration?: number;
+  isBookmarked?: boolean;
   isFeatured?: boolean;
   isIndigenousResource?: boolean;
   culturalContext?: string;
-  viewCount: number;
-  downloadCount: number;
-  rating?: number;
-  ratingCount?: number;
-  isBookmarked: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-// ResourceCollection interface available for future use
-
-function normalizeResourceCategory(category: string | undefined): Resource['category'] {
-  const c = String(category || '').toLowerCase();
-  if (c.includes('culture') || c.includes('cultural')) return 'culture';
-  if (c.includes('educ') || c.includes('training') || c.includes('course')) return 'education';
-  if (c.includes('health') || c.includes('wellness')) return 'health';
-  if (c.includes('business') || c.includes('finance') || c.includes('grant')) return 'business';
-  if (c.includes('community')) return 'community';
-  if (c.includes('tech') || c.includes('digital') || c.includes('software')) return 'technology';
-  return 'career';
-}
-
-function normalizeResourceType(type: string | undefined): Resource['type'] {
-  const t = String(type || '').toLowerCase();
-  if (t.includes('video') || t.includes('webinar')) return 'video';
-  if (t.includes('template')) return 'template';
-  if (t.includes('toolkit')) return 'toolkit';
-  if (t.includes('article')) return 'article';
-  if (t.includes('guide') || t.includes('course') || t.includes('ebook')) return 'guide';
-  return 'document';
-}
-
-function mapApiResourceToUi(r: any): Resource {
-  const publishedAt = r.publishedAt || r.createdAt || new Date().toISOString();
-  const updatedAt = r.updatedAt || publishedAt;
-  return {
-    id: String(r.id),
-    title: r.title,
-    description: r.description || '',
-    type: normalizeResourceType(r.type),
-    category: normalizeResourceCategory(r.category),
-    format: undefined,
-    url: r.url || r.contentUrl || undefined,
-    downloadUrl: r.downloadUrl || r.url || undefined,
-    thumbnailUrl: r.thumbnailUrl || r.thumbnail || undefined,
-    duration: r.duration || undefined,
-    fileSize: r.fileSize || undefined,
-    author: r.author
-      ? {
-          id: String(r.author.id ?? 'author'),
-          name: r.author.name || 'Ngurra Pathways',
-          organization: r.author.organization,
-        }
-      : undefined,
-    tags: Array.isArray(r.tags) ? r.tags : [],
-    isFeatured: !!r.isFeatured,
-    isIndigenousResource: !!r.isIndigenous || !!r.isIndigenousResource,
-    culturalContext: r.culturalContext,
-    viewCount: Number(r.viewCount ?? r.views ?? 0),
-    downloadCount: Number(r.downloadCount ?? r.downloads ?? 0),
-    rating: r.rating,
-    ratingCount: r.ratingCount,
-    isBookmarked: !!r.isBookmarked,
-    createdAt: new Date(publishedAt).toISOString(),
-    updatedAt: new Date(updatedAt).toISOString(),
-  };
+// Helper function for Cloudinary URLs
+function toCloudinaryAutoUrl(url: string): string {
+  if (!url) return '';
+  if (url.includes('cloudinary')) return url;
+  return url;
 }
 
 // API functions
 const resourcesApi = {
-  async getResources(params?: {
-    category?: string;
-    type?: string;
-    search?: string;
-    featured?: boolean;
-  }): Promise<{ resources: Resource[] }> {
-    const searchParams = new URLSearchParams();
-    if (params?.category) searchParams.set('category', params.category);
-    if (params?.type) searchParams.set('type', params.type);
-    if (params?.search) searchParams.set('search', params.search);
-    if (params?.featured) searchParams.set('featured', 'true');
+  async getResources(filters?: { category?: string; type?: string; search?: string }) {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.type) params.append('type', filters.type);
+    if (filters?.search) params.append('search', filters.search);
 
-    const response = await api(`/resources?${searchParams.toString()}`);
+    const response = await api(`/resources?${params.toString()}`);
     if (!response.ok) return { resources: [] };
-
-    const data = response.data;
-    return { resources: (data?.resources || []).map(mapApiResourceToUi) };
+    return { resources: response.data?.resources || [] };
   },
 
-  async getResource(id: string): Promise<Resource> {
-    const response = await api(`/resources/${id}`);
-    if (!response.ok || !response.data) throw new Error('Failed to load resource');
-    return mapApiResourceToUi(response.data);
-  },
-
-  async getBookmarked(): Promise<{ resources: Resource[] }> {
+  async getBookmarked() {
     const response = await api('/resources/bookmarked');
     if (!response.ok) return { resources: [] };
-
-    const data = response.data;
-    // Handle both array and object response formats
-    const items = Array.isArray(data?.resources) ? data.resources : Array.isArray(data) ? data : [];
-
-    return { resources: items.map(mapApiResourceToUi) };
+    return { resources: response.data?.resources || [] };
   },
 
   async bookmarkResource(id: string): Promise<void> {
@@ -166,17 +86,43 @@ const resourcesApi = {
   },
 };
 
-// Resource type config
-const typeConfig: Record<string, { icon: string; label: string; color: string }> = {
-  document: { icon: '📄', label: 'Document', color: 'blue' },
-  video: { icon: '🎥', label: 'Video', color: 'red' },
-  article: { icon: '📰', label: 'Article', color: 'green' },
-  template: { icon: '📋', label: 'Template', color: 'purple' },
-  guide: { icon: '📖', label: 'Guide', color: 'orange' },
-  toolkit: { icon: '🧰', label: 'Toolkit', color: 'teal' },
+// Config objects
+const typeConfig: Record<
+  string,
+  { icon: string; label: string; color: string; bg: string; text: string }
+> = {
+  document: {
+    icon: '📄',
+    label: 'Document',
+    color: 'blue',
+    bg: 'bg-blue-50',
+    text: 'text-blue-600',
+  },
+  video: { icon: '🎥', label: 'Video', color: 'red', bg: 'bg-red-50', text: 'text-red-600' },
+  article: {
+    icon: '📰',
+    label: 'Article',
+    color: 'green',
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-600',
+  },
+  template: {
+    icon: '📋',
+    label: 'Template',
+    color: 'purple',
+    bg: 'bg-purple-50',
+    text: 'text-purple-600',
+  },
+  guide: {
+    icon: '📖',
+    label: 'Guide',
+    color: 'orange',
+    bg: 'bg-orange-50',
+    text: 'text-orange-600',
+  },
+  toolkit: { icon: '🧰', label: 'Toolkit', color: 'teal', bg: 'bg-teal-50', text: 'text-teal-600' },
 };
 
-// Category config
 const categoryConfig: Record<string, { icon: string; label: string; description: string }> = {
   career: {
     icon: '💼',
@@ -215,14 +161,138 @@ const categoryConfig: Record<string, { icon: string; label: string; description:
   },
 };
 
-// Format file size
+// Demo resources
+const demoResources: Resource[] = [
+  {
+    id: '1',
+    title: 'First Nations Career Planning Guide',
+    description:
+      'A comprehensive guide to planning your career journey, setting goals, and achieving success while staying connected to your cultural identity.',
+    type: 'guide',
+    category: 'career',
+    thumbnailUrl: '',
+    url: '#',
+    downloadUrl: '#',
+    author: { name: 'Career Services Team', organization: 'Ngurra Pathways' },
+    tags: ['career', 'planning', 'goals', 'first nations'],
+    rating: 4.8,
+    ratingCount: 156,
+    viewCount: 2345,
+    downloadCount: 890,
+    isBookmarked: false,
+    isFeatured: true,
+    isIndigenousResource: true,
+    culturalContext:
+      'This guide incorporates Traditional Custodian perspectives on career and community contribution.',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    title: 'Resume Template for Career Changers',
+    description:
+      'Professional resume template designed for those transitioning careers. Highlights transferable skills and experience.',
+    type: 'template',
+    category: 'career',
+    thumbnailUrl: '',
+    downloadUrl: '#',
+    author: { name: 'HR Professionals Network' },
+    tags: ['resume', 'template', 'career change'],
+    rating: 4.6,
+    ratingCount: 234,
+    viewCount: 5678,
+    downloadCount: 2341,
+    isBookmarked: true,
+    isFeatured: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '3',
+    title: 'Interview Preparation Video Series',
+    description:
+      'Learn how to ace your next job interview with tips from hiring managers and career coaches.',
+    type: 'video',
+    category: 'career',
+    thumbnailUrl: '',
+    url: '#',
+    duration: 3600,
+    author: { name: 'Interview Experts', organization: 'Career Academy' },
+    tags: ['interview', 'preparation', 'video'],
+    rating: 4.9,
+    ratingCount: 567,
+    viewCount: 12456,
+    downloadCount: 0,
+    isFeatured: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '4',
+    title: 'Indigenous Business Startup Toolkit',
+    description:
+      'Everything you need to start and grow an Indigenous-owned business. Includes templates, checklists, and funding guides.',
+    type: 'toolkit',
+    category: 'business',
+    thumbnailUrl: '',
+    downloadUrl: '#',
+    author: { name: 'Indigenous Business Network' },
+    tags: ['business', 'startup', 'indigenous', 'toolkit'],
+    rating: 4.7,
+    ratingCount: 89,
+    viewCount: 3456,
+    downloadCount: 1234,
+    isIndigenousResource: true,
+    culturalContext:
+      'Developed in consultation with Indigenous business owners and community leaders.',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '5',
+    title: 'Digital Skills for Beginners',
+    description:
+      'Build foundational digital literacy skills including email, document creation, and basic software use.',
+    type: 'guide',
+    category: 'technology',
+    thumbnailUrl: '',
+    url: '#',
+    author: { name: 'Tech Education Team' },
+    tags: ['digital skills', 'beginner', 'technology'],
+    rating: 4.5,
+    ratingCount: 123,
+    viewCount: 4567,
+    downloadCount: 890,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '6',
+    title: 'Mental Health at Work Guide',
+    description:
+      'Practical strategies for maintaining mental wellbeing in the workplace. Includes self-care tips and support resources.',
+    type: 'guide',
+    category: 'health',
+    thumbnailUrl: '',
+    downloadUrl: '#',
+    author: { name: 'Wellbeing Team', organization: 'Ngurra Pathways' },
+    tags: ['mental health', 'wellbeing', 'workplace'],
+    rating: 4.8,
+    ratingCount: 201,
+    viewCount: 6789,
+    downloadCount: 2345,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+// Format helpers
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// Format duration
 function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   if (mins < 60) return `${mins} min`;
@@ -231,9 +301,9 @@ function formatDuration(seconds: number): string {
   return `${hours}h ${remainingMins}m`;
 }
 
-// Star rating component
+// Star Rating Component
 function StarRating({
-  rating: _rating,
+  rating = 0,
   count,
   interactive = false,
   onRate,
@@ -241,16 +311,18 @@ function StarRating({
   rating?: number;
   count?: number;
   interactive?: boolean;
-  onRate?: (_value: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onRate?: (rating: number) => void;
 }) {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const displayRating = hoverRating !== null ? hoverRating : _rating || 0;
+  const displayRating = hoverRating !== null ? hoverRating : rating;
 
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
+          type="button"
           disabled={!interactive}
           onClick={() => interactive && onRate?.(star)}
           onMouseEnter={() => interactive && setHoverRating(star)}
@@ -258,11 +330,7 @@ function StarRating({
           className={`${interactive ? 'cursor-pointer' : 'cursor-default'}`}
         >
           <svg
-            className={`w-4 h-4 ${
-              star <= displayRating
-                ? 'text-yellow-400 fill-current'
-                : 'text-gray-300 dark:text-gray-600'
-            }`}
+            className={`w-4 h-4 ${star <= displayRating ? 'text-amber-400 fill-current' : 'text-slate-300'}`}
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -270,7 +338,7 @@ function StarRating({
           </svg>
         </button>
       ))}
-      {count !== undefined && <span className="text-xs text-gray-500 ml-1">({count})</span>}
+      {count !== undefined && <span className="text-xs text-slate-500 ml-1">({count})</span>}
     </div>
   );
 }
@@ -292,87 +360,96 @@ function ResourceCard({
 
   return (
     <div
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+      className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50 overflow-hidden hover:shadow-xl hover:border-pink-200 transition-all duration-300 cursor-pointer group"
       onClick={onView}
     >
       {/* Thumbnail */}
       {resource.thumbnailUrl ? (
-        <div className="relative h-36 bg-gray-100 dark:bg-gray-900">
+        <div className="relative h-40 bg-slate-100">
           <img
             src={toCloudinaryAutoUrl(resource.thumbnailUrl)}
             alt=""
             className="w-full h-full object-cover"
           />
           {resource.type === 'video' && resource.duration && (
-            <span className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+            <span className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded-lg font-medium">
               {formatDuration(resource.duration)}
             </span>
           )}
           {resource.isFeatured && (
-            <span className="absolute top-2 left-2 px-2 py-1 bg-amber-500 text-white text-xs font-medium rounded">
-              Featured
+            <span className="absolute top-3 left-3 px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
+              ⭐ Featured
             </span>
           )}
         </div>
       ) : (
         <div
-          className={`h-24 bg-gradient-to-br from-${typeInfo.color}-400 to-${typeInfo.color}-600 flex items-center justify-center`}
+          className="h-32 flex items-center justify-center relative"
+          style={{ background: `linear-gradient(135deg, ${accentPink}10, ${accentPurple}10)` }}
         >
-          <span className="text-4xl">{typeInfo.icon}</span>
+          <span className="text-5xl">{typeInfo.icon}</span>
+          {resource.isFeatured && (
+            <span className="absolute top-3 left-3 px-3 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
+              ⭐ Featured
+            </span>
+          )}
         </div>
       )}
 
-      <div className="p-4">
+      <div className="p-5">
         {/* Type & Category */}
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-3">
           <span
-            className={`px-2 py-0.5 text-xs font-medium rounded bg-${typeInfo.color}-100 dark:bg-${typeInfo.color}-900/30 text-${typeInfo.color}-700 dark:text-${typeInfo.color}-400`}
+            className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${typeInfo.bg} ${typeInfo.text}`}
           >
-            {typeInfo.label}
+            {typeInfo.icon} {typeInfo.label}
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-slate-500 font-medium">
             {categoryInfo.icon} {categoryInfo.label}
           </span>
           {resource.isIndigenousResource && (
-            <span className="px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">
+            <span
+              className="px-2 py-1 text-xs bg-amber-100 text-amber-700 rounded-lg"
+              title="Indigenous Resource"
+            >
               🤝
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-2">
+        <h3 className="font-bold text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 mb-2">
           {resource.title}
         </h3>
 
         {/* Description */}
-        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{resource.description}</p>
+        <p className="text-sm text-slate-500 line-clamp-2 mb-3">{resource.description}</p>
 
         {/* Author */}
         {resource.author && (
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-slate-400 mb-3">
             By {resource.author.name}
             {resource.author.organization && ` · ${resource.author.organization}`}
           </p>
         )}
 
-        {/* Meta info */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-3 text-xs text-gray-500">
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div className="flex items-center gap-2">
             {resource.rating !== undefined && (
               <StarRating rating={resource.rating} count={resource.ratingCount} />
             )}
-            <span>{resource.viewCount.toLocaleString()} views</span>
           </div>
 
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={onBookmark}
-              className={`p-1.5 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-colors ${
                 resource.isBookmarked
-                  ? 'text-yellow-500'
-                  : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'text-amber-500 bg-amber-50'
+                  : 'text-slate-400 hover:text-amber-500 hover:bg-amber-50'
               }`}
+              title={resource.isBookmarked ? 'Remove bookmark' : 'Bookmark'}
             >
               <svg
                 className={`w-5 h-5 ${resource.isBookmarked ? 'fill-current' : ''}`}
@@ -391,7 +468,8 @@ function ResourceCard({
             {resource.downloadUrl && (
               <button
                 onClick={onDownload}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-lg text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                title="Download"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -422,28 +500,34 @@ function ResourceDetailModal({
   onClose: () => void;
   onBookmark: () => void;
   onDownload: () => void;
-  onRate: (_value: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  onRate: (rating: number) => void;
 }) {
   const typeInfo = typeConfig[resource.type] || typeConfig.document;
   const categoryInfo = categoryConfig[resource.category] || categoryConfig.career;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+          <div className="flex items-center gap-3">
             <span
-              className={`px-3 py-1 text-sm font-medium rounded-full bg-${typeInfo.color}-100 dark:bg-${typeInfo.color}-900/30 text-${typeInfo.color}-700 dark:text-${typeInfo.color}-400`}
+              className={`px-3 py-1.5 text-sm font-semibold rounded-lg ${typeInfo.bg} ${typeInfo.text}`}
             >
               {typeInfo.icon} {typeInfo.label}
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-500 font-medium">
               {categoryInfo.icon} {categoryInfo.label}
             </span>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-colors">
+            <svg
+              className="w-5 h-5 text-slate-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -470,7 +554,7 @@ function ResourceDetailModal({
 
           {/* Thumbnail for non-video */}
           {resource.type !== 'video' && resource.thumbnailUrl && (
-            <div className="mb-6 h-48 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden">
+            <div className="mb-6 h-48 bg-slate-100 rounded-xl overflow-hidden">
               <img
                 src={toCloudinaryAutoUrl(resource.thumbnailUrl)}
                 alt=""
@@ -479,13 +563,11 @@ function ResourceDetailModal({
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {resource.title}
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-3">{resource.title}</h1>
 
           {/* Author */}
           {resource.author && (
-            <div className="flex items-center gap-2 mb-4 text-sm text-gray-500">
+            <div className="flex items-center gap-2 mb-4 text-sm text-slate-500">
               <span>By {resource.author.name}</span>
               {resource.author.organization && (
                 <>
@@ -497,8 +579,8 @@ function ResourceDetailModal({
           )}
 
           {/* Stats */}
-          <div className="flex items-center gap-4 mb-6 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-slate-500">
+            <span className="flex items-center gap-1.5">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -514,9 +596,9 @@ function ResourceDetailModal({
                 />
               </svg>
               {resource.viewCount.toLocaleString()} views
-            </div>
+            </span>
             {resource.downloadCount > 0 && (
-              <div className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
@@ -526,7 +608,7 @@ function ResourceDetailModal({
                   />
                 </svg>
                 {resource.downloadCount.toLocaleString()} downloads
-              </div>
+              </span>
             )}
             {resource.fileSize && <span>{formatFileSize(resource.fileSize)}</span>}
             {resource.duration && <span>{formatDuration(resource.duration)}</span>}
@@ -534,20 +616,20 @@ function ResourceDetailModal({
 
           {/* Cultural Context */}
           {resource.culturalContext && (
-            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border-l-4 border-amber-500 mb-6">
-              <h3 className="font-medium text-amber-900 dark:text-amber-200 mb-1">
-                Cultural Context
+            <div className="p-4 bg-amber-50 rounded-xl border-l-4 border-amber-500 mb-6">
+              <h3 className="font-semibold text-amber-900 mb-1 flex items-center gap-2">
+                🤝 Cultural Context
               </h3>
-              <p className="text-sm text-amber-800 dark:text-amber-300">
-                {resource.culturalContext}
-              </p>
+              <p className="text-sm text-amber-800">{resource.culturalContext}</p>
             </div>
           )}
 
           {/* Description */}
-          <div className="prose dark:prose-invert max-w-none mb-6">
+          <div className="prose prose-slate max-w-none mb-6">
             {resource.description.split('\n').map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} className="text-slate-600">
+                {p}
+              </p>
             ))}
           </div>
 
@@ -557,7 +639,7 @@ function ResourceDetailModal({
               {resource.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm"
+                  className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium"
                 >
                   #{tag}
                 </span>
@@ -566,8 +648,8 @@ function ResourceDetailModal({
           )}
 
           {/* Rating */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-3">Rate this resource</h3>
+          <div className="p-5 bg-slate-50 rounded-xl">
+            <h3 className="font-semibold text-slate-900 mb-3">Rate this resource</h3>
             <StarRating
               rating={resource.rating}
               count={resource.ratingCount}
@@ -578,14 +660,14 @@ function ResourceDetailModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+        <div className="p-5 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-sm text-slate-500">
             Last updated: {new Date(resource.updatedAt).toLocaleDateString('en-AU')}
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={onBookmark}>
               <svg
-                className={`w-4 h-4 mr-2 ${resource.isBookmarked ? 'fill-current text-yellow-500' : ''}`}
+                className={`w-4 h-4 mr-2 ${resource.isBookmarked ? 'fill-current text-amber-500' : ''}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -600,7 +682,12 @@ function ResourceDetailModal({
               {resource.isBookmarked ? 'Saved' : 'Save'}
             </Button>
             {resource.downloadUrl && (
-              <Button onClick={onDownload}>
+              <Button
+                onClick={onDownload}
+                style={{
+                  background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
+                }}
+              >
                 <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
@@ -624,9 +711,10 @@ function ResourceDetailModal({
 
 // Main Component
 export function ResourceLibrary() {
-  useAuth(); // Check auth status but don't need the user object
+  // eslint-disable-next-line no-unused-vars
+  const { user } = useAuth();
 
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState<Resource[]>(demoResources);
   const [bookmarkedResources, setBookmarkedResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -637,12 +725,8 @@ export function ResourceLibrary() {
   const loadResources = useCallback(async () => {
     setIsLoading(true);
 
-    // Safety timeout to prevent infinite spinner
     const timeoutId = setTimeout(() => {
-      if (document.visibilityState === 'visible') {
-        console.warn('Resource loading timed out - forcing completion');
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }, 12000);
 
     try {
@@ -653,12 +737,13 @@ export function ResourceLibrary() {
         }),
         resourcesApi.getBookmarked(),
       ]);
-      setResources(resourcesRes.resources || []);
+
+      if (resourcesRes.resources?.length > 0) {
+        setResources(resourcesRes.resources);
+      }
       setBookmarkedResources(bookmarkedRes.resources || []);
     } catch (error) {
       console.error('Failed to load resources:', error);
-      // Ensure we at least show empty state rather than spinning forever
-      setResources([]);
     } finally {
       clearTimeout(timeoutId);
       setIsLoading(false);
@@ -676,7 +761,6 @@ export function ResourceLibrary() {
       } else {
         await resourcesApi.bookmarkResource(resource.id);
       }
-      // Update local state
       setResources((prev) =>
         prev.map((r) => (r.id === resource.id ? { ...r, isBookmarked: !r.isBookmarked } : r)),
       );
@@ -685,7 +769,7 @@ export function ResourceLibrary() {
           prev ? { ...prev, isBookmarked: !prev.isBookmarked } : null,
         );
       }
-      await loadResources(); // Refresh bookmarked list
+      await loadResources();
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
     }
@@ -712,23 +796,12 @@ export function ResourceLibrary() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/30 flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
+      >
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center animate-pulse">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-          </div>
+          <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-slate-600 font-medium">Loading resources...</p>
         </div>
       </div>
@@ -736,59 +809,81 @@ export function ResourceLibrary() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/30">
-      {/* Modern Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-sky-600">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-xl" />
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-overlay filter blur-xl" />
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-sky-300 rounded-full mix-blend-overlay filter blur-xl" />
+    <div
+      className="min-h-screen"
+      style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
+    >
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-30"
+            style={{
+              background: `radial-gradient(circle, ${accentPink}30, transparent 70%)`,
+              filter: 'blur(60px)',
+            }}
+          />
+          <div
+            className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full opacity-20"
+            style={{
+              background: `radial-gradient(circle, ${accentPurple}30, transparent 70%)`,
+              filter: 'blur(60px)',
+            }}
+          />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-8">
-            <a href="/" className="text-indigo-200 hover:text-white transition-colors">
+            <Link href="/" className="text-slate-500 hover:text-pink-600 transition-colors">
               Home
-            </a>
+            </Link>
             <svg
-              className="w-4 h-4 text-indigo-300"
+              className="w-4 h-4 text-slate-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-white font-medium">Resources</span>
+            <span className="text-pink-600 font-medium">Resources</span>
           </nav>
 
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm mb-6">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-              <span>Career Development</span>
+          {/* Header */}
+          <div className="max-w-3xl mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25">
+                <svg
+                  className="w-7 h-7 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+              </div>
+              <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-pink-500/10 to-purple-500/10 text-pink-600 border border-pink-200">
+                {resources.length} Resources
+              </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Resource Library</h1>
-            <p className="text-xl text-indigo-100">
-              Career guides, templates, tutorials, and cultural resources to support your
-              professional journey.
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+              Resource Library
+            </h1>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              Career guides, templates, tutorials, and cultural resources to support your journey.
+              Find what you need to succeed.
             </p>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Card */}
-        <div className="-mt-8 mb-10 relative z-10">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/50 p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
+          {/* Search */}
+          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="relative flex-1">
                 <svg
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
                   fill="none"
@@ -806,18 +901,19 @@ export function ResourceLibrary() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search resources by title, description..."
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
+                  placeholder="Search resources..."
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
                 />
               </div>
 
+              {/* Filters */}
               <div className="flex gap-3">
                 <select
                   value={filters.category || ''}
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, category: e.target.value || undefined }))
                   }
-                  className="px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 appearance-none cursor-pointer transition-all min-w-[160px]"
+                  className="px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 text-slate-900 font-medium cursor-pointer transition-all min-w-[160px]"
                 >
                   <option value="">All Categories</option>
                   {Object.entries(categoryConfig).map(([key, config]) => (
@@ -832,7 +928,7 @@ export function ResourceLibrary() {
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, type: e.target.value || undefined }))
                   }
-                  className="px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 appearance-none cursor-pointer transition-all min-w-[140px]"
+                  className="px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 text-slate-900 font-medium cursor-pointer transition-all min-w-[140px]"
                 >
                   <option value="">All Types</option>
                   {Object.entries(typeConfig).map(([key, config]) => (
@@ -845,25 +941,24 @@ export function ResourceLibrary() {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {/* Tabs */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => setView('browse')}
-            className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${
-              view === 'browse'
-                ? 'bg-indigo-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-300'
+            className={`px-5 py-2.5 rounded-xl font-semibold transition-all ${
+              view === 'browse' ? 'bg-pink-100 text-pink-600' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             Browse All
           </button>
           <button
             onClick={() => setView('saved')}
-            className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${
-              view === 'saved'
-                ? 'bg-indigo-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-300'
+            className={`px-5 py-2.5 rounded-xl font-semibold transition-all ${
+              view === 'saved' ? 'bg-pink-100 text-pink-600' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             Saved ({bookmarkedResources.length})
@@ -889,7 +984,7 @@ export function ResourceLibrary() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
                     />
                   </svg>
                 </div>
@@ -913,7 +1008,7 @@ export function ResourceLibrary() {
         {view === 'browse' && !filters.category && !searchQuery && (
           <section className="mb-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-sky-500">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="none"
@@ -924,7 +1019,7 @@ export function ResourceLibrary() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                   />
                 </svg>
               </div>
@@ -935,13 +1030,13 @@ export function ResourceLibrary() {
                 <button
                   key={key}
                   onClick={() => setFilters((prev) => ({ ...prev, category: key }))}
-                  className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-xl transition-all text-left"
+                  className="p-5 bg-white rounded-2xl border border-slate-100 shadow-lg hover:shadow-xl hover:border-pink-200 transition-all text-left group"
                 >
                   <span className="text-4xl mb-3 block">{config.icon}</span>
-                  <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                  <h3 className="font-bold text-slate-900 group-hover:text-pink-600 transition-colors mb-1">
                     {config.label}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{config.description}</p>
+                  <p className="text-xs text-slate-500 line-clamp-2">{config.description}</p>
                 </button>
               ))}
             </div>
@@ -951,7 +1046,7 @@ export function ResourceLibrary() {
         {/* Resources Grid */}
         <section>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-500">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -962,7 +1057,7 @@ export function ResourceLibrary() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
             </div>
@@ -988,16 +1083,29 @@ export function ResourceLibrary() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 rounded-2xl bg-white border border-slate-200">
-              <div className="text-6xl mb-4">📚</div>
-              <h3 className="text-lg font-semibold text-slate-900">
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 shadow-lg">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <span className="text-4xl">📚</span>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">
                 {view === 'saved' ? 'No saved resources' : 'No resources found'}
               </h3>
-              <p className="text-slate-500 mt-2">
+              <p className="text-slate-500 mb-6">
                 {view === 'saved'
                   ? 'Save resources to access them later'
                   : 'Try adjusting your search or filters'}
               </p>
+              {view !== 'saved' && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilters({});
+                  }}
+                  className="px-6 py-2.5 rounded-xl font-medium text-pink-600 bg-pink-50 hover:bg-pink-100 transition-colors"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           )}
         </section>

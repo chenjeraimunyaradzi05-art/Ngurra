@@ -1,176 +1,165 @@
 'use client';
 
-import { API_BASE } from '@/lib/apiBase';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Calendar,
-  MapPin,
   Clock,
+  MapPin,
   Users,
   Search,
-  Sparkles,
-  Plus,
   ChevronRight,
+  Plus,
   Video,
-  Globe,
-  Star,
+  Sparkles,
+  Filter,
   ArrowRight,
+  Globe,
+  Loader2,
 } from 'lucide-react';
 
-const API_URL = API_BASE;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-// Fallback mock events data
+// Theme colors
+const accentPink = '#E91E8C';
+const accentPurple = '#8B5CF6';
+
+const categories = ['All', 'Career', 'Workshop', 'Networking', 'Mentorship', 'Cultural'];
+const eventTypes = ['All Types', 'In-Person', 'Virtual', 'Hybrid'];
+
+// Mock events data
 const mockEvents = [
   {
-    id: 1,
-    title: 'First Nations Career Fair 2025',
+    id: '1',
+    title: 'First Nations Tech Career Fair',
     description:
-      'Join us for the largest Indigenous career fair in Australia. Connect with over 50 employers committed to Indigenous hiring.',
-    date: '2025-02-15',
-    time: '9:00 AM - 4:00 PM',
+      'Connect with top employers committed to Indigenous inclusion. Network with industry professionals, explore opportunities, and take the next step in your tech career.',
+    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '10:00 AM - 4:00 PM AEST',
     location: 'Sydney Convention Centre',
-    type: 'In Person',
+    type: 'In-Person',
     category: 'Career',
-    attendees: 245,
-    organizer: 'Ngurra Pathways',
-    image: null,
+    attendees: 234,
     isFeatured: true,
+    image: '/images/events/career-fair.jpg',
+    organizer: 'Ngurra Pathways',
   },
   {
-    id: 2,
-    title: 'Women in Leadership Workshop',
+    id: '2',
+    title: 'Resume Writing Masterclass',
     description:
-      'An empowering workshop for First Nations women exploring leadership roles. Learn from successful Indigenous leaders.',
-    date: '2025-02-20',
-    time: '10:00 AM - 2:00 PM',
+      'Learn how to craft a standout resume that highlights your unique skills and experiences. Get tips from HR professionals and career coaches.',
+    date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '2:00 PM - 3:30 PM AEST',
     location: 'Online via Zoom',
     type: 'Virtual',
     category: 'Workshop',
     attendees: 89,
-    organizer: 'Aboriginal Women Business Network',
-    image: null,
     isFeatured: true,
+    image: '/images/events/workshop.jpg',
+    organizer: 'Career Services',
   },
   {
-    id: 3,
-    title: 'Resume Writing Masterclass',
+    id: '3',
+    title: 'Women in Leadership Panel',
     description:
-      'Learn how to craft a compelling resume that showcases your skills and cultural strengths.',
-    date: '2025-02-22',
-    time: '1:00 PM - 3:00 PM',
-    location: 'Online',
-    type: 'Virtual',
-    category: 'Workshop',
-    attendees: 56,
-    organizer: 'Ngurra Pathways',
-    image: null,
-    isFeatured: false,
-  },
-  {
-    id: 4,
-    title: 'Community Networking Night',
-    description:
-      'A relaxed evening to connect with other First Nations professionals in your area.',
-    date: '2025-02-28',
-    time: '6:00 PM - 9:00 PM',
-    location: 'Melbourne CBD',
-    type: 'In Person',
+      'Hear inspiring stories from First Nations women leaders across various industries. Q&A session included.',
+    date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '6:00 PM - 8:00 PM AEST',
+    location: 'Brisbane City Library & Online',
+    type: 'Hybrid',
     category: 'Networking',
-    attendees: 78,
-    organizer: 'Victorian Indigenous Chamber',
-    image: null,
+    attendees: 156,
     isFeatured: false,
+    organizer: "Women's Network",
   },
   {
-    id: 5,
-    title: 'Tech Industry Mentorship Info Session',
-    description: 'Discover opportunities in tech and connect with mentors in the industry.',
-    date: '2025-03-05',
-    time: '11:00 AM - 12:30 PM',
-    location: 'Online',
+    id: '4',
+    title: 'Mentorship Circle: Tech Industry',
+    description:
+      'Join a supportive group session with experienced tech mentors. Share experiences, ask questions, and build your network.',
+    date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '4:00 PM - 5:30 PM AEST',
+    location: 'Online via Teams',
     type: 'Virtual',
     category: 'Mentorship',
-    attendees: 42,
-    organizer: 'Indigenous Tech Network',
-    image: null,
+    attendees: 32,
     isFeatured: false,
+    organizer: 'Tech Mentors Program',
   },
   {
-    id: 6,
-    title: 'NAIDOC Week Celebrations',
+    id: '5',
+    title: 'NAIDOC Week Celebration',
     description:
-      'Join us for a week of cultural celebrations, workshops, and community gatherings.',
-    date: '2025-07-06',
-    time: 'All Week',
-    location: 'Various Locations',
-    type: 'Hybrid',
+      'Celebrate NAIDOC Week with cultural performances, art exhibitions, and community gathering. All are welcome to join.',
+    date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '11:00 AM - 6:00 PM AEST',
+    location: 'Federation Square, Melbourne',
+    type: 'In-Person',
     category: 'Cultural',
     attendees: 512,
+    isFeatured: false,
     organizer: 'NAIDOC Committee',
-    image: null,
-    isFeatured: true,
+  },
+  {
+    id: '6',
+    title: 'Interview Skills Bootcamp',
+    description:
+      'Intensive workshop covering common interview questions, body language, and negotiation techniques.',
+    date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    time: '9:00 AM - 12:00 PM AEST',
+    location: 'Perth CBD Hub',
+    type: 'In-Person',
+    category: 'Workshop',
+    attendees: 45,
+    isFeatured: false,
+    organizer: 'Career Academy',
   },
 ];
 
-const categories = ['All', 'Career', 'Workshop', 'Networking', 'Mentorship', 'Cultural'];
-const eventTypes = ['All Types', 'In Person', 'Virtual', 'Hybrid'];
-
-export default function EventsClient({ initialEvents = [] }) {
-  const hasPrefetched = initialEvents.length > 0;
-  const [events, setEvents] = useState(hasPrefetched ? initialEvents : []);
+export default function EventsClient({ initialEvents, hasPrefetched }) {
+  const [events, setEvents] = useState(hasPrefetched ? initialEvents : mockEvents);
   const [loading, setLoading] = useState(!hasPrefetched);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All Types');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    // Skip fetch if we have prefetched data
-    if (hasPrefetched) {
-      return;
-    }
+    if (hasPrefetched) return;
+
     const fetchEvents = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`${API_URL}/events`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch events');
+        const res = await fetch(`${API_BASE}/events`);
+        if (res.ok) {
+          const data = await res.json();
+          const normalizedEvents = (data.events || data || []).map((e) => ({
+            id: e.id || e._id,
+            title: e.title || 'Untitled Event',
+            description: e.description || '',
+            date: e.date || e.startDate || new Date().toISOString(),
+            time: e.time || e.startTime || 'TBA',
+            location: e.location || 'TBA',
+            type: e.type || e.eventType || 'In-Person',
+            category: e.category || 'Career',
+            attendees: e.attendees || e.attendeeCount || 0,
+            isFeatured: e.isFeatured || e.featured || false,
+            image: e.image || e.imageUrl || null,
+            organizer: e.organizer || e.organizerName || 'Ngurra Pathways',
+          }));
+          if (normalizedEvents.length > 0) {
+            setEvents(normalizedEvents);
+          }
         }
-
-        const data = await response.json();
-
-        // Normalize API response to expected format
-        const normalizedEvents = (data.events || data || []).map((event) => ({
-          id: event.id,
-          title: event.title || event.name,
-          description: event.description || '',
-          date: event.date || event.startDate,
-          time:
-            event.time ||
-            (event.startTime && event.endTime ? `${event.startTime} - ${event.endTime}` : ''),
-          location: event.location || event.venue || '',
-          type: event.type || (event.isVirtual ? 'Virtual' : 'In Person'),
-          category: event.category || 'General',
-          attendees: event.attendees || event._count?.attendees || 0,
-          organizer: typeof event.organizer === 'object' ? event.organizer.name : event.organizer,
-          image: event.imageUrl || event.bannerImage || null,
-          isFeatured: event.isFeatured || false,
-        }));
-
-        setEvents(normalizedEvents.length > 0 ? normalizedEvents : mockEvents);
       } catch (err) {
         console.error('Error fetching events:', err);
-        // Fallback to mock data
-        setEvents(mockEvents);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasPrefetched]);
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
@@ -184,26 +173,60 @@ export default function EventsClient({ initialEvents = [] }) {
   const featuredEvents = filteredEvents.filter((e) => e.isFeatured);
   const upcomingEvents = filteredEvents.filter((e) => !e.isFeatured);
 
-  const getShortDate = (dateString) => {
+  const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return { day: 'TBA', month: '' };
-      return {
-        day: date.getDate(),
-        month: date.toLocaleString('en-AU', { month: 'short' }).toUpperCase(),
-      };
+      if (isNaN(date.getTime())) return 'Date TBA';
+      return date.toLocaleDateString('en-AU', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     } catch {
-      return { day: 'TBA', month: '' };
+      return 'Date TBA';
+    }
+  };
+
+  const formatDay = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '--';
+      return date.getDate();
+    } catch {
+      return '--';
+    }
+  };
+
+  const formatMonth = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '---';
+      return date.toLocaleString('en-AU', { month: 'short' }).toUpperCase();
+    } catch {
+      return '---';
+    }
+  };
+
+  const getTypeStyle = (type) => {
+    switch (type) {
+      case 'Virtual':
+        return { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200' };
+      case 'Hybrid':
+        return { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' };
+      default:
+        return { bg: 'bg-pink-50', text: 'text-pink-600', border: 'border-pink-200' };
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen py-12 px-6 flex items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/30">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
+      >
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center animate-pulse">
-            <Calendar className="w-8 h-8 text-white" />
-          </div>
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: accentPink }} />
           <p className="text-slate-600 font-medium">Loading events...</p>
         </div>
       </div>
@@ -211,201 +234,222 @@ export default function EventsClient({ initialEvents = [] }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/30">
-      {/* Modern Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-sky-600">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-xl animate-blob" />
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-sky-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-2000" />
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-4000" />
+    <div
+      className="min-h-screen"
+      style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
+    >
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-30"
+            style={{
+              background: `radial-gradient(circle, ${accentPink}30, transparent 70%)`,
+              filter: 'blur(60px)',
+            }}
+          />
+          <div
+            className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full opacity-20"
+            style={{
+              background: `radial-gradient(circle, ${accentPurple}30, transparent 70%)`,
+              filter: 'blur(60px)',
+            }}
+          />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-8">
-            <Link href="/" className="text-indigo-200 hover:text-white transition-colors">
+            <Link href="/" className="text-slate-500 hover:text-pink-600 transition-colors">
               Home
             </Link>
-            <ChevronRight className="w-4 h-4 text-indigo-300" />
-            <span className="text-white font-medium">Events</span>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+            <span className="text-pink-600 font-medium">Events</span>
           </nav>
 
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm mb-6">
-                <Sparkles className="w-4 h-4" />
-                <span>Community Events</span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25">
+                  <Calendar className="w-7 h-7 text-white" />
+                </div>
+                <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-pink-500/10 to-purple-500/10 text-pink-600 border border-pink-200">
+                  {events.length} Events
+                </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Discover Events</h1>
-              <p className="text-xl text-indigo-100">
-                Connect, learn, and grow with First Nations professionals and community members at
-                our curated events.
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+                Community Events
+              </h1>
+              <p className="text-lg text-slate-600 leading-relaxed">
+                Connect, learn, and grow with the Ngurra Pathways community. Join workshops,
+                networking events, and cultural celebrations.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/events/cultural"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-medium hover:bg-white/20 transition-all"
+                className="flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all bg-white border border-slate-200 text-slate-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600 shadow-sm"
               >
                 🎭 Cultural Calendar
               </Link>
               <Link
                 href="/events/create"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-indigo-600 font-semibold hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl"
+                className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-xl hover:scale-[1.02]"
+                style={{
+                  background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
+                  boxShadow: '0 8px 20px rgba(233, 30, 140, 0.25)',
+                }}
               >
                 <Plus className="w-5 h-5" />
                 Create Event
               </Link>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search & Filters Card */}
-        <div className="-mt-8 mb-10 relative z-10">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/50 p-6">
+          {/* Search & Filters Card */}
+          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                  Search Events
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search by event name, description..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
-                  />
-                </div>
+              {/* Search Input */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search events by name or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
+                />
               </div>
-              <div className="flex gap-3">
-                <div className="min-w-[150px]">
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                    Category
-                  </label>
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 appearance-none cursor-pointer transition-all"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="min-w-[150px]">
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                    Event Type
-                  </label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white text-slate-900 appearance-none cursor-pointer transition-all"
-                  >
-                    {eventTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+
+              {/* Filter Toggle (Mobile) */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="lg:hidden flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium"
+              >
+                <Filter className="w-5 h-5" />
+                Filters
+              </button>
+
+              {/* Filter Dropdowns */}
+              <div
+                className={`flex flex-col sm:flex-row gap-3 ${showFilters ? '' : 'hidden lg:flex'}`}
+              >
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 text-slate-900 font-medium cursor-pointer transition-all min-w-[140px]"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 text-slate-900 font-medium cursor-pointer transition-all min-w-[140px]"
+                >
+                  {eventTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {/* Featured Events */}
         {featuredEvents.length > 0 && (
           <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500">
-                  <Star className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900">Featured Events</h2>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="text-sm text-slate-500">{featuredEvents.length} featured</span>
+              <h2 className="text-2xl font-bold text-slate-900">Featured Events</h2>
             </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               {featuredEvents.map((event) => {
-                const dateInfo = getShortDate(event.date);
+                const typeStyle = getTypeStyle(event.type);
                 return (
                   <Link
                     key={event.id}
                     href={`/events/${event.id}`}
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-indigo-300 hover:shadow-2xl transition-all duration-300"
+                    className="group relative bg-white rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-pink-500/10 hover:border-pink-200 transition-all duration-300"
                   >
                     {/* Featured Badge */}
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-semibold shadow-lg">
-                        <Star className="w-3 h-3" /> Featured
-                      </span>
+                    <div className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold shadow-lg">
+                      ⭐ Featured
                     </div>
 
-                    {/* Event Image/Placeholder */}
-                    <div className="relative h-48 bg-gradient-to-br from-indigo-500 via-purple-500 to-sky-500">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Calendar className="w-20 h-20 text-white/30" />
-                      </div>
-                      {/* Date Badge */}
-                      <div className="absolute bottom-4 right-4 bg-white rounded-xl px-4 py-2 text-center shadow-lg">
-                        <div className="text-2xl font-bold text-indigo-600">{dateInfo.day}</div>
-                        <div className="text-xs font-medium text-slate-500">{dateInfo.month}</div>
-                      </div>
+                    {/* Event Image/Gradient */}
+                    <div
+                      className="h-44 flex items-center justify-center relative"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentPink}15, ${accentPurple}15)`,
+                      }}
+                    >
+                      <Calendar className="w-20 h-20 text-pink-200" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
                     </div>
 
                     <div className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
+                      {/* Tags */}
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
                         <span
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                            event.type === 'Virtual'
-                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                              : event.type === 'Hybrid'
-                                ? 'bg-purple-50 text-purple-600 border border-purple-200'
-                                : 'bg-sky-50 text-sky-600 border border-sky-200'
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${typeStyle.bg} ${typeStyle.text} border ${typeStyle.border}`}
                         >
-                          {event.type === 'Virtual' && <Video className="w-3 h-3" />}
-                          {event.type === 'In Person' && <MapPin className="w-3 h-3" />}
-                          {event.type === 'Hybrid' && <Globe className="w-3 h-3" />}
+                          {event.type === 'Virtual' && <Video className="w-3.5 h-3.5" />}
+                          {event.type === 'Hybrid' && <Globe className="w-3.5 h-3.5" />}
                           {event.type}
                         </span>
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-600 border border-purple-200">
                           {event.category}
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-bold mb-2 text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                      {/* Title & Description */}
+                      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-pink-600 transition-colors line-clamp-2">
                         {event.title}
                       </h3>
-                      <p className="text-sm mb-4 text-slate-500 line-clamp-2">
+                      <p className="text-slate-500 text-sm mb-4 line-clamp-2 leading-relaxed">
                         {event.description}
                       </p>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Clock className="w-4 h-4 text-indigo-500" />
-                          <span>{event.time || 'Time TBA'}</span>
+                      {/* Event Details */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-3 text-slate-600">
+                          <Calendar className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                          <span className="font-medium">{formatDate(event.date)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <MapPin className="w-4 h-4 text-indigo-500" />
-                          <span className="truncate">{event.location || 'Location TBA'}</span>
+                        <div className="flex items-center gap-3 text-slate-600">
+                          <Clock className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-slate-600">
+                          <MapPin className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      {/* Footer */}
+                      <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                         <div className="flex items-center gap-2 text-sm text-slate-500">
                           <Users className="w-4 h-4" />
                           <span>{event.attendees} attending</span>
                         </div>
-                        <div className="flex items-center gap-2 text-indigo-600 font-medium text-sm group-hover:gap-3 transition-all">
-                          View Details <ArrowRight className="w-4 h-4" />
+                        <div className="flex items-center gap-1 text-pink-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                          View Details
+                          <ArrowRight className="w-4 h-4" />
                         </div>
                       </div>
                     </div>
@@ -420,28 +464,30 @@ export default function EventsClient({ initialEvents = [] }) {
         <section>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-sky-500">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-slate-900">Upcoming Events</h2>
             </div>
-            <span className="text-sm text-slate-500">{upcomingEvents.length} events</span>
+            <span className="text-sm text-slate-500 font-medium">
+              {upcomingEvents.length} events
+            </span>
           </div>
 
           {upcomingEvents.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
-                <Calendar className="w-8 h-8 text-slate-400" />
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 shadow-lg">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <Calendar className="w-10 h-10 text-slate-400" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">No events found</h3>
-              <p className="text-slate-500 mb-4">Try adjusting your filters or check back later</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">No events found</h3>
+              <p className="text-slate-500 mb-6">Try adjusting your filters or search terms</p>
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCategory('All');
                   setSelectedType('All Types');
                 }}
-                className="text-indigo-600 font-medium hover:text-indigo-700"
+                className="px-6 py-2.5 rounded-xl font-medium text-pink-600 bg-pink-50 hover:bg-pink-100 transition-colors"
               >
                 Clear all filters
               </button>
@@ -449,55 +495,57 @@ export default function EventsClient({ initialEvents = [] }) {
           ) : (
             <div className="space-y-4">
               {upcomingEvents.map((event) => {
-                const dateInfo = getShortDate(event.date);
+                const typeStyle = getTypeStyle(event.type);
                 return (
                   <Link
                     key={event.id}
                     href={`/events/${event.id}`}
-                    className="group flex flex-col md:flex-row gap-4 p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300"
+                    className="group flex flex-col md:flex-row gap-5 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-pink-200 transition-all duration-300"
                   >
-                    {/* Date Column */}
-                    <div className="flex-shrink-0 w-full md:w-24 h-24 rounded-xl bg-gradient-to-br from-indigo-50 to-sky-50 border border-indigo-100 flex flex-col items-center justify-center">
-                      <div className="text-3xl font-bold text-indigo-600">{dateInfo.day}</div>
-                      <div className="text-sm font-medium text-slate-500">{dateInfo.month}</div>
+                    {/* Date Card */}
+                    <div className="flex md:flex-col items-center md:items-center justify-center gap-3 md:gap-1 w-full md:w-24 h-auto md:h-24 rounded-xl flex-shrink-0 bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-100 p-3">
+                      <div className="text-3xl md:text-4xl font-bold text-pink-600">
+                        {formatDay(event.date)}
+                      </div>
+                      <div className="text-sm font-semibold text-purple-600">
+                        {formatMonth(event.date)}
+                      </div>
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      {/* Tags */}
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            event.type === 'Virtual'
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : event.type === 'Hybrid'
-                                ? 'bg-purple-50 text-purple-600'
-                                : 'bg-sky-50 text-sky-600'
-                          }`}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${typeStyle.bg} ${typeStyle.text}`}
                         >
                           {event.type === 'Virtual' && <Video className="w-3 h-3" />}
                           {event.type}
                         </span>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-600">
                           {event.category}
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-semibold mb-2 text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      {/* Title */}
+                      <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-pink-600 transition-colors">
                         {event.title}
                       </h3>
 
-                      <p className="text-sm text-slate-500 mb-3 line-clamp-1">
+                      {/* Description */}
+                      <p className="text-slate-500 text-sm mb-3 line-clamp-1">
                         {event.description}
                       </p>
 
+                      {/* Meta */}
                       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                         <span className="flex items-center gap-1.5">
                           <Clock className="w-4 h-4 text-slate-400" />
-                          {event.time || 'Time TBA'}
+                          {event.time}
                         </span>
                         <span className="flex items-center gap-1.5">
                           <MapPin className="w-4 h-4 text-slate-400" />
-                          {event.location || 'Location TBA'}
+                          {event.location}
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Users className="w-4 h-4 text-slate-400" />
@@ -506,11 +554,10 @@ export default function EventsClient({ initialEvents = [] }) {
                       </div>
                     </div>
 
-                    {/* Action */}
-                    <div className="flex items-center justify-end md:justify-center">
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-medium text-sm group-hover:bg-indigo-100 transition-colors">
-                        <span className="hidden md:inline">View</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {/* Arrow */}
+                    <div className="hidden md:flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
+                        <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-pink-600 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </div>
                   </Link>
@@ -518,6 +565,39 @@ export default function EventsClient({ initialEvents = [] }) {
               })}
             </div>
           )}
+        </section>
+
+        {/* Call to Action */}
+        <section className="mt-16">
+          <div
+            className="relative overflow-hidden rounded-3xl p-8 md:p-12"
+            style={{
+              background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
+            }}
+          >
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/10 translate-y-1/2 -translate-x-1/2" />
+            </div>
+
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  Want to host your own event?
+                </h3>
+                <p className="text-white/80 text-lg">
+                  Share your knowledge with the community and make an impact.
+                </p>
+              </div>
+              <Link
+                href="/events/create"
+                className="flex items-center gap-2 px-8 py-4 bg-white rounded-xl font-bold text-pink-600 hover:bg-pink-50 transition-colors shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+                Create Event
+              </Link>
+            </div>
+          </div>
         </section>
       </div>
     </div>

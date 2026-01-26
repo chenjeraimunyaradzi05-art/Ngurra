@@ -784,6 +784,7 @@ export default function RentalsPage() {
   const [activeTab, setActiveTab] = useState<'browse' | 'agents' | 'calculator' | 'support'>(
     'browse',
   );
+  const [showReportModal, setShowReportModal] = useState<HousingIssue | null>(null);
 
   // Mock listings for fallback
   const mockListings: Listing[] = [
@@ -1542,14 +1543,14 @@ export default function RentalsPage() {
               {/* Housing Issues Grid */}
               <div className="grid gap-4 sm:grid-cols-2">
                 {housingIssues.map((issue) => (
-                  <Link
+                  <button
                     key={issue.id}
-                    href={issue.link || '#'}
-                    className="p-5 rounded-2xl transition-all hover:scale-[1.01]"
+                    className="p-5 rounded-2xl transition-all hover:scale-[1.01] w-full text-left"
                     style={{
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                     }}
+                    onClick={() => setShowReportModal(issue)}
                   >
                     <div className="flex items-start gap-4">
                       <span className="text-3xl">{issue.icon}</span>
@@ -1577,8 +1578,71 @@ export default function RentalsPage() {
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  </button>
                 ))}
+              </div>
+
+              {/* Report Modal */}
+              {showReportModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                  <div
+                    className="w-full max-w-md rounded-2xl p-6"
+                    style={{
+                      background: 'linear-gradient(135deg, #1A0F2E, #2D1B69)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-white">Report Housing Issue</h3>
+                      <button
+                        className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                        onClick={() => setShowReportModal(null)}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="mb-4">
+                      <span className="text-3xl mr-2">{showReportModal.icon}</span>
+                      <span className="font-semibold text-white">{showReportModal.title}</span>
+                      <p className="text-sm text-gray-400 mt-2">{showReportModal.description}</p>
+                    </div>
+                    <form className="space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Your Name (optional)"
+                        className="w-full px-4 py-2 rounded-xl text-white bg-white/10 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      />
+                      <input
+                        type="email"
+                        placeholder="Your Email (optional)"
+                        className="w-full px-4 py-2 rounded-xl text-white bg-white/10 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      />
+                      <textarea
+                        placeholder="Describe the issue..."
+                        rows={4}
+                        className="w-full px-4 py-2 rounded-xl text-white bg-white/10 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full py-2 rounded-xl font-semibold text-white transition-all hover:scale-[1.02]"
+                        style={{ background: 'linear-gradient(135deg, #8B5CF6, #E91E8C)' }}
+                      >
+                        Submit Report
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-8 text-center">
+                <p className="text-gray-400 mb-2">Need urgent help or want to talk to someone?</p>
+                <Link
+                  href="/contact?topic=housing"
+                  className="inline-block px-6 py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02]"
+                  style={{ background: 'linear-gradient(135deg, #14B8A6, #10B981)' }}
+                >
+                  Contact Housing Support
+                </Link>
               </div>
             </div>
 

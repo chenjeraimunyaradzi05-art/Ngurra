@@ -16,24 +16,121 @@ export default function ConnectionsPage() {
 
   // Fallback mock data
   const mockConnections = [
-    { id: 1, name: 'Sarah Mitchell', role: 'Software Developer', company: 'First Nations Dev Corp', avatar: '👩🏽', trustLevel: 'verified', mutualConnections: 23 },
-    { id: 2, name: 'James K.', role: 'Community Manager', company: 'Indigenous Business Network', avatar: '👨🏿', trustLevel: 'trusted', mutualConnections: 15 },
-    { id: 3, name: 'Elder Mary T.', role: 'Cultural Advisor', company: 'Community Council', avatar: '👩🏽', trustLevel: 'verified', mutualConnections: 45 },
-    { id: 4, name: 'David Williams', role: 'Project Manager', company: 'Tech Solutions', avatar: '👨🏽', trustLevel: 'established', mutualConnections: 8 },
-    { id: 5, name: 'Lisa Park', role: 'HR Manager', company: 'Inclusive Hiring Co', avatar: '👩🏻', trustLevel: 'trusted', mutualConnections: 12 },
-    { id: 6, name: 'Michael Chen', role: 'Data Analyst', company: 'Analytics Firm', avatar: '👨🏻', trustLevel: 'basic', mutualConnections: 3 }
+    {
+      id: 1,
+      name: 'Sarah Mitchell',
+      role: 'Software Developer',
+      company: 'First Nations Dev Corp',
+      avatar: '👩🏽',
+      trustLevel: 'verified',
+      mutualConnections: 23,
+    },
+    {
+      id: 2,
+      name: 'James K.',
+      role: 'Community Manager',
+      company: 'Indigenous Business Network',
+      avatar: '👨🏿',
+      trustLevel: 'trusted',
+      mutualConnections: 15,
+    },
+    {
+      id: 3,
+      name: 'Elder Mary T.',
+      role: 'Cultural Advisor',
+      company: 'Community Council',
+      avatar: '👩🏽',
+      trustLevel: 'verified',
+      mutualConnections: 45,
+    },
+    {
+      id: 4,
+      name: 'David Williams',
+      role: 'Project Manager',
+      company: 'Tech Solutions',
+      avatar: '👨🏽',
+      trustLevel: 'established',
+      mutualConnections: 8,
+    },
+    {
+      id: 5,
+      name: 'Lisa Park',
+      role: 'HR Manager',
+      company: 'Inclusive Hiring Co',
+      avatar: '👩🏻',
+      trustLevel: 'trusted',
+      mutualConnections: 12,
+    },
+    {
+      id: 6,
+      name: 'Michael Chen',
+      role: 'Data Analyst',
+      company: 'Analytics Firm',
+      avatar: '👨🏻',
+      trustLevel: 'basic',
+      mutualConnections: 3,
+    },
   ];
 
   const mockFollowers = [
-    { id: 7, name: 'Emma Wilson', role: 'Student', company: 'University of Sydney', avatar: '👩🏼', trustLevel: 'new', isFollowingBack: false },
-    { id: 8, name: 'Tom Brown', role: 'Career Changer', avatar: '👨🏽', trustLevel: 'basic', isFollowingBack: true },
-    { id: 9, name: 'Jessica Lee', role: 'Trainee Developer', company: 'Tech Bootcamp', avatar: '👩🏻', trustLevel: 'basic', isFollowingBack: false }
+    {
+      id: 7,
+      name: 'Emma Wilson',
+      role: 'Student',
+      company: 'University of Sydney',
+      avatar: '👩🏼',
+      trustLevel: 'new',
+      isFollowingBack: false,
+    },
+    {
+      id: 8,
+      name: 'Tom Brown',
+      role: 'Career Changer',
+      avatar: '👨🏽',
+      trustLevel: 'basic',
+      isFollowingBack: true,
+    },
+    {
+      id: 9,
+      name: 'Jessica Lee',
+      role: 'Trainee Developer',
+      company: 'Tech Bootcamp',
+      avatar: '👩🏻',
+      trustLevel: 'basic',
+      isFollowingBack: false,
+    },
   ];
 
   const mockPending = [
-    { id: 10, name: 'Alex Johnson', role: 'Recruiter', company: 'Talent Agency', avatar: '👨🏼', trustLevel: 'established', type: 'received', time: '2 days ago' },
-    { id: 11, name: 'Nina Patel', role: 'Community Leader', avatar: '👩🏽', trustLevel: 'trusted', type: 'received', time: '3 days ago' },
-    { id: 12, name: 'Robert Kim', role: 'Mentor', company: 'Career Mentors', avatar: '👨🏻', trustLevel: 'verified', type: 'sent', time: '1 week ago' }
+    {
+      id: 10,
+      name: 'Alex Johnson',
+      role: 'Recruiter',
+      company: 'Talent Agency',
+      avatar: '👨🏼',
+      trustLevel: 'established',
+      type: 'received',
+      time: '2 days ago',
+    },
+    {
+      id: 11,
+      name: 'Nina Patel',
+      role: 'Community Leader',
+      avatar: '👩🏽',
+      trustLevel: 'trusted',
+      type: 'received',
+      time: '3 days ago',
+    },
+    {
+      id: 12,
+      name: 'Robert Kim',
+      role: 'Mentor',
+      company: 'Career Mentors',
+      avatar: '👨🏻',
+      trustLevel: 'verified',
+      type: 'sent',
+      time: '1 week ago',
+    },
   ];
 
   const [connections, setConnections] = useState(mockConnections);
@@ -41,7 +138,12 @@ export default function ConnectionsPage() {
   const [following, setFollowing] = useState(mockConnections.slice(0, 4));
   const [pending, setPending] = useState(mockPending);
   const [loading, setLoading] = useState(false);
-  const [counts, setCounts] = useState({ connections: mockConnections.length, followers: mockFollowers.length, following: 4, pending: mockPending.length });
+  const [counts, setCounts] = useState({
+    connections: mockConnections.length,
+    followers: mockFollowers.length,
+    following: 4,
+    pending: mockPending.length,
+  });
 
   const tabs = [
     { id: 'connections', label: 'Connections', count: counts.connections },
@@ -55,7 +157,13 @@ export default function ConnectionsPage() {
     setFollowers(mockFollowers);
     setFollowing(mockConnections.slice(0, 4));
     setPending(mockPending);
-    setCounts({ connections: mockConnections.length, followers: mockFollowers.length, following: 4, pending: mockPending.length });
+    setCounts({
+      connections: mockConnections.length,
+      followers: mockFollowers.length,
+      following: 4,
+      pending: mockPending.length,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchConnections = useCallback(async () => {
@@ -163,6 +271,7 @@ export default function ConnectionsPage() {
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyMockData, authLoading, isAuthenticated]);
 
   useEffect(() => {
@@ -170,64 +279,84 @@ export default function ConnectionsPage() {
   }, [fetchConnections]);
 
   const trustBadges = {
-    verified: { icon: '✓', color: 'text-pink-500', bg: 'bg-pink-100', label: 'Verified' },
-    trusted: { icon: '⭐', color: 'text-purple-500', bg: 'bg-purple-100', label: 'Trusted' },
-    established: { icon: '💎', color: 'text-pink-500', bg: 'bg-pink-100', label: 'Established' },
+    verified: { icon: '✓', color: 'text-indigo-500', bg: 'bg-indigo-100', label: 'Verified' },
+    trusted: { icon: '⭐', color: 'text-sky-500', bg: 'bg-sky-100', label: 'Trusted' },
+    established: {
+      icon: '💎',
+      color: 'text-indigo-500',
+      bg: 'bg-indigo-100',
+      label: 'Established',
+    },
     basic: { icon: '👤', color: 'text-slate-400', bg: 'bg-slate-100', label: 'Member' },
-    new: { icon: '🌱', color: 'text-purple-400', bg: 'bg-purple-100', label: 'New' }
+    new: { icon: '🌱', color: 'text-sky-400', bg: 'bg-sky-100', label: 'New' },
   };
 
   // Theme colors
-  const accentPink = '#E91E8C';
-  const accentPurple = '#8B5CF6';
+  const accentPrimary = '#4F46E5';
+  const accentSecondary = '#0EA5E9';
 
   const getDataForTab = () => {
     switch (activeTab) {
-      case 'connections': return connections;
-      case 'followers': return followers;
-      case 'following': return following;
-      case 'pending': return pending;
-      default: return [];
+      case 'connections':
+        return connections;
+      case 'followers':
+        return followers;
+      case 'following':
+        return following;
+      case 'pending':
+        return pending;
+      default:
+        return [];
     }
   };
 
-  const filteredData = getDataForTab().filter(person => 
-    person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    person.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    person.company?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = getDataForTab().filter(
+    (person) =>
+      person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      person.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      person.company?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <div 
+    <div
       className="min-h-screen pt-24 pb-20 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0F2FE 100%)' }}
     >
       {/* Decorative halos */}
-      <div 
+      <div
         className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${accentPink}22 0%, transparent 70%)`, filter: 'blur(40px)' }}
+        style={{
+          background: `radial-gradient(circle, ${accentPrimary}22 0%, transparent 70%)`,
+          filter: 'blur(40px)',
+        }}
       />
-      <div 
+      <div
         className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${accentPurple}22 0%, transparent 70%)`, filter: 'blur(40px)' }}
+        style={{
+          background: `radial-gradient(circle, ${accentSecondary}22 0%, transparent 70%)`,
+          filter: 'blur(40px)',
+        }}
       />
 
       <div className="container mx-auto px-4 max-w-3xl relative">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Link href="/feed" className="p-2 rounded-full hover:bg-white/80 transition-colors text-slate-600 bg-white border border-slate-200">
-              ← 
+            <Link
+              href="/feed"
+              className="p-2 rounded-full hover:bg-white/80 transition-colors text-slate-600 bg-white border border-slate-200"
+            >
+              ←
             </Link>
             <h1 className="text-2xl font-bold text-slate-800">My Network</h1>
           </div>
-          
-          <Link 
-            href="/connections/find" 
+
+          <Link
+            href="/connections/find"
             className="px-4 py-2 rounded-full text-white font-medium text-sm transition-all hover:scale-[1.02]"
-            style={{ 
-              background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-              boxShadow: '0 4px 12px rgba(233, 30, 140, 0.3)'
+            style={{
+              background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
             }}
           >
             Find People
@@ -236,14 +365,17 @@ export default function ConnectionsPage() {
 
         {/* Tab Navigation */}
         <div className="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
               style={
                 activeTab === tab.id
-                  ? { background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`, color: 'white' }
+                  ? {
+                      background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                      color: 'white',
+                    }
                   : { background: 'white', border: '1px solid #E2E8F0', color: '#64748B' }
               }
             >
@@ -264,7 +396,7 @@ export default function ConnectionsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${activeTab}...`}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
             />
           </div>
         </div>
@@ -272,46 +404,58 @@ export default function ConnectionsPage() {
         {/* People List */}
         {authLoading || loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-10 h-10 rounded-full animate-spin border-4 border-pink-200 border-t-pink-500" />
+            <div className="w-10 h-10 rounded-full animate-spin border-4 border-indigo-200 border-t-indigo-500" />
           </div>
         ) : (
           <div className="space-y-3">
             {filteredData.length === 0 ? (
-              <div className="bg-white border border-slate-200 rounded-xl p-8 text-center" style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}>
+              <div
+                className="bg-white border border-slate-200 rounded-xl p-8 text-center"
+                style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}
+              >
                 <span className="text-4xl mb-4 block">👥</span>
                 <p className="text-slate-500">
                   {searchQuery ? 'No results found' : `No ${activeTab} yet`}
                 </p>
               </div>
             ) : (
-              filteredData.map(person => (
-                <div 
-                  key={person.id} 
-                  className="bg-white border border-slate-200 rounded-xl p-4 hover:border-pink-300 transition-colors"
+              filteredData.map((person) => (
+                <div
+                  key={person.id}
+                  className="bg-white border border-slate-200 rounded-xl p-4 hover:border-indigo-300 transition-colors"
                   style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}
                 >
                   <div className="flex items-center gap-4">
                     {/* Avatar */}
                     <Link href={`/profile/${person.id}`} className="block">
-                      <div 
+                      <div
                         className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
-                        style={{ background: 'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)' }}
+                        style={{
+                          background:
+                            'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                        }}
                       >
                         {person.avatar}
                       </div>
                     </Link>
-                    
+
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <Link href={`/profile/${person.id}`} className="font-medium text-slate-800 hover:text-pink-600 transition-colors">
+                        <Link
+                          href={`/profile/${person.id}`}
+                          className="font-medium text-slate-800 hover:text-indigo-600 transition-colors"
+                        >
                           {person.name}
                         </Link>
-                        {person.trustLevel && trustBadges[person.trustLevel] && person.trustLevel !== 'basic' && person.trustLevel !== 'new' && (
-                          <span className={`text-sm ${trustBadges[person.trustLevel].color}`}>
-                            {trustBadges[person.trustLevel].icon}
-                          </span>
-                        )}
+                        {person.trustLevel &&
+                          trustBadges[person.trustLevel] &&
+                          person.trustLevel !== 'basic' &&
+                          person.trustLevel !== 'new' && (
+                            <span className={`text-sm ${trustBadges[person.trustLevel].color}`}>
+                              {trustBadges[person.trustLevel].icon}
+                            </span>
+                          )}
                       </div>
                       <p className="text-slate-500 text-sm truncate">{person.role}</p>
                       {person.company && (
@@ -324,18 +468,19 @@ export default function ConnectionsPage() {
                       )}
                       {person.type && (
                         <p className="text-slate-400 text-xs mt-1">
-                          {person.type === 'received' ? 'Request received' : 'Request sent'} • {person.time}
+                          {person.type === 'received' ? 'Request received' : 'Request sent'} •{' '}
+                          {person.time}
                         </p>
                       )}
                     </div>
-                    
+
                     {/* Actions */}
                     <div className="flex gap-2 flex-shrink-0">
                       {activeTab === 'connections' && (
                         <>
-                          <Link 
+                          <Link
                             href={`/messages?user=${person.id}`}
-                            className="p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-pink-100 hover:text-pink-600 transition-colors"
+                            className="p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
                           >
                             💬
                           </Link>
@@ -344,51 +489,56 @@ export default function ConnectionsPage() {
                           </button>
                         </>
                       )}
-                      
+
                       {activeTab === 'followers' && (
-                        <button 
+                        <button
                           className="px-4 py-2 rounded-full text-sm font-medium transition-all"
                           style={
                             person.isFollowingBack
                               ? { background: '#F1F5F9', color: '#64748B' }
-                              : { background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`, color: 'white' }
+                              : {
+                                  background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                                  color: 'white',
+                                }
                           }
                         >
                           {person.isFollowingBack ? 'Following' : 'Follow Back'}
                         </button>
-                    )}
-                    
-                    {activeTab === 'following' && (
-                      <button className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                        Following
-                      </button>
-                    )}
-                    
-                    {activeTab === 'pending' && person.type === 'received' && (
-                      <>
-                        <button 
-                          className="px-4 py-2 rounded-full text-sm font-medium text-white"
-                          style={{ background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)` }}
-                        >
-                          Accept
-                        </button>
+                      )}
+
+                      {activeTab === 'following' && (
                         <button className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                          Decline
+                          Following
                         </button>
-                      </>
-                    )}
-                    
-                    {activeTab === 'pending' && person.type === 'sent' && (
-                      <button className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                        Cancel
-                      </button>
-                    )}
+                      )}
+
+                      {activeTab === 'pending' && person.type === 'received' && (
+                        <>
+                          <button
+                            className="px-4 py-2 rounded-full text-sm font-medium text-white"
+                            style={{
+                              background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                            }}
+                          >
+                            Accept
+                          </button>
+                          <button className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
+                            Decline
+                          </button>
+                        </>
+                      )}
+
+                      {activeTab === 'pending' && person.type === 'sent' && (
+                        <button className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
+                          Cancel
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
         )}
 
         {/* People You May Know - Only show on connections tab */}
@@ -397,20 +547,47 @@ export default function ConnectionsPage() {
             <h2 className="text-lg font-semibold text-slate-800 mb-4">People You May Know</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { id: 101, name: 'Rachel Green', role: 'UX Designer', avatar: '👩🏼', mutualConnections: 7 },
-                { id: 102, name: 'Marcus Johnson', role: 'Career Coach', avatar: '👨🏿', mutualConnections: 12 },
-                { id: 103, name: 'Amy Wong', role: 'Tech Lead', avatar: '👩🏻', mutualConnections: 5 },
-                { id: 104, name: 'Daniel Torres', role: 'Entrepreneur', avatar: '👨🏽', mutualConnections: 9 }
-              ].map(person => (
-                <div 
-                  key={person.id} 
+                {
+                  id: 101,
+                  name: 'Rachel Green',
+                  role: 'UX Designer',
+                  avatar: '👩🏼',
+                  mutualConnections: 7,
+                },
+                {
+                  id: 102,
+                  name: 'Marcus Johnson',
+                  role: 'Career Coach',
+                  avatar: '👨🏿',
+                  mutualConnections: 12,
+                },
+                {
+                  id: 103,
+                  name: 'Amy Wong',
+                  role: 'Tech Lead',
+                  avatar: '👩🏻',
+                  mutualConnections: 5,
+                },
+                {
+                  id: 104,
+                  name: 'Daniel Torres',
+                  role: 'Entrepreneur',
+                  avatar: '👨🏽',
+                  mutualConnections: 9,
+                },
+              ].map((person) => (
+                <div
+                  key={person.id}
                   className="bg-white border border-slate-200 rounded-xl p-4"
                   style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}
                 >
                   <div className="flex items-center gap-3">
-                    <div 
+                    <div
                       className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                      style={{ background: 'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)' }}
+                      style={{
+                        background:
+                          'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                      }}
                     >
                       {person.avatar}
                     </div>
@@ -419,9 +596,11 @@ export default function ConnectionsPage() {
                       <p className="text-slate-500 text-sm truncate">{person.role}</p>
                       <p className="text-slate-400 text-xs">{person.mutualConnections} mutual</p>
                     </div>
-                    <button 
+                    <button
                       className="px-3 py-1.5 rounded-full text-sm text-white font-medium"
-                      style={{ background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)` }}
+                      style={{
+                        background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                      }}
                     >
                       Connect
                     </button>
@@ -433,7 +612,7 @@ export default function ConnectionsPage() {
         )}
 
         {/* Invite Friends */}
-        <div 
+        <div
           className="mt-8 bg-white border border-slate-200 rounded-xl p-6 text-center"
           style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}
         >

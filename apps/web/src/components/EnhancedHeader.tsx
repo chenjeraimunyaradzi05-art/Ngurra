@@ -33,7 +33,7 @@ const publicNavigation = [
   { name: 'Mentorship', href: '/mentorship', icon: <Users className="w-4 h-4" /> },
   { name: 'Community', href: '/community', icon: <Sparkles className="w-4 h-4" /> },
   { name: 'Resources', href: '/resources', icon: <BookOpen className="w-4 h-4" /> },
-  { name: 'Events', href: '/events', icon: <Calendar className="w-4 h-4" /> },
+  { name: 'Business', href: '/business-suite', icon: <Briefcase className="w-4 h-4" /> },
 ];
 
 function roleNavigation(userType: string) {

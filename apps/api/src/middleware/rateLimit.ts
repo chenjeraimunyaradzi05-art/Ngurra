@@ -9,16 +9,45 @@
  */
 
 const rateLimit = require('express-rate-limit');
-const { RedisStore } = require('rate-limit-redis');
-const Redis = require('ioredis');
 
-// Only create Redis client if REDIS_URL is explicitly set
-const redisClient = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
-  connectTimeout: 500,
-  enableOfflineQueue: false,
-  maxRetriesPerRequest: 1,
-  retryStrategy: () => null,
-}) : null;
+// Redis is optional - only import if REDIS_URL is set and we want to use it
+let redisClient: any = null;
+let RedisStore: any = null;
+
+// Only attempt Redis connection in production with REDIS_URL
+const shouldUseRedis = process.env.REDIS_URL && process.env.NODE_ENV === 'production';
+
+if (shouldUseRedis) {
+  try {
+    const Redis = require('ioredis');
+    const redisModule = require('rate-limit-redis');
+    RedisStore = redisModule.RedisStore;
+    
+    redisClient = new Redis(process.env.REDIS_URL, {
+      connectTimeout: 2000,
+      enableOfflineQueue: false,
+      maxRetriesPerRequest: 1,
+      retryStrategy: (times: number) => {
+        if (times > 2) return null; // Stop retrying after 2 attempts
+        return Math.min(times * 100, 500);
+      },
+    });
+    
+    redisClient.on('error', (err: Error) => {
+      console.warn('⚠️  Redis rate-limit client error (falling back to memory):', err.message);
+      redisClient = null;
+    });
+    
+    redisClient.on('ready', () => {
+      console.log('✅ Redis connected for rate limiting');
+    });
+  } catch (err: any) {
+    console.warn('⚠️  Redis not available for rate limiting, using memory store:', err.message);
+    redisClient = null;
+  }
+} else {
+  console.log('ℹ️  Using in-memory rate limiting (Redis disabled in development)');
+}
 
 const isE2E = process.env.NODE_ENV === 'test' || process.env.SES_TEST_CAPTURE === '1';
 
@@ -84,11 +113,11 @@ const RATE_LIMITS = {
  * @param {string} type - One of: public, authenticated, sensitive, ai, uploads, admin, search
  * @param {Object} overrides - Optional config overrides
  */
-function createRateLimiter(type, overrides = {}) {
+function createRateLimiter(type: string, overrides = {}) {
   const config = RATE_LIMITS[type] || RATE_LIMITS.public;
   
-  // Only use Redis store if Redis client is available and not in test mode
-  const useRedisStore = !isE2E && redisClient;
+  // Only use Redis store if Redis client is available, connected, and not in test mode
+  const useRedisStore = !isE2E && redisClient && RedisStore;
   
   return rateLimit({
     ...config,
@@ -97,7 +126,7 @@ function createRateLimiter(type, overrides = {}) {
     legacyHeaders: false,
     // Use MemoryStore if Redis not configured or in tests
     store: useRedisStore ? new RedisStore({
-      sendCommand: (...args) => redisClient.call(...args),
+      sendCommand: (...args: any[]) => redisClient.call(...args),
     }) : undefined,
     // Use IP + user ID for authenticated endpoints
     keyGenerator: (req) => {

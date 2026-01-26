@@ -3,7 +3,36 @@
  * Phase 5: Housing & Real Estate
  */
 
-import type { ListingStatus, RentalInquiryStatus } from '@prisma/client';
+import { ListingStatus, RentalInquiryStatus } from '@prisma/client';
+
+// Create mocks using vi.hoisted so they're available before module mocking
+const mockPrisma = vi.hoisted(() => ({
+  rentalListing: {
+    create: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    update: vi.fn(),
+    count: vi.fn(),
+  },
+  rentalInquiry: {
+    findFirst: vi.fn(),
+    findUnique: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    findMany: vi.fn(),
+  },
+  propertySeekerProfile: {
+    upsert: vi.fn(),
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+  },
+}));
+
+vi.mock('../../src/db', () => ({
+  prisma: mockPrisma,
+}));
+
 import {
   createRentalListing,
   publishRentalListing,
@@ -14,44 +43,12 @@ import {
   upsertSeekerProfile,
 } from '../../src/services/rentals';
 
-const createMockPrisma = () => ({
-  rentalListing: {
-    create: jest.fn(),
-    findFirst: jest.fn(),
-    findMany: jest.fn(),
-    findUnique: jest.fn(),
-    update: jest.fn(),
-    count: jest.fn(),
-  },
-  rentalInquiry: {
-    findFirst: jest.fn(),
-    findUnique: jest.fn(),
-    create: jest.fn(),
-    update: jest.fn(),
-    findMany: jest.fn(),
-  },
-  propertySeekerProfile: {
-    upsert: jest.fn(),
-    findUnique: jest.fn(),
-    findMany: jest.fn(),
-  },
-});
-
-jest.mock('../../src/db', () => {
-  const prisma = createMockPrisma();
-  return { prisma };
-});
-
-const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
-  prisma: ReturnType<typeof createMockPrisma>;
-};
-
 const status = 'ACTIVE' as ListingStatus;
 const inquiryStatus = 'RESPONDED' as RentalInquiryStatus;
 
 describe('rentalsService', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('creates rental listing in draft status', async () => {

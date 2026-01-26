@@ -20,7 +20,8 @@ import {
   GraduationCap,
   Sparkles,
   Calendar,
-  PiggyBank
+  PiggyBank,
+  Building2
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -52,6 +53,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     { href: '/member/wellness', label: 'Wellness', icon: Heart },
     { href: '/member/financial-wellness', label: 'Financial Wellness', icon: PiggyBank },
     { href: '/events', label: 'Events', icon: Calendar },
+    { href: '/business-suite', label: 'Business Suite', icon: Building2 },
   ];
 
   const bottomNavItems = [

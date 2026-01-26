@@ -4,12 +4,14 @@ import api from '@/lib/apiClient';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { socketService } from '@/lib/socket';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * Messages Page
  * Direct messaging interface with real-time features and safety
  */
 export default function MessagesPage() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,7 +20,7 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [sendingMessage, setSendingMessage] = useState(false);
   const messagesEndRef = useRef(null);
-  const [myUserId, setMyUserId] = useState(null);
+  const myUserId = user?.id || null;
   
   // Real-time state
   const [typingUsers, setTypingUsers] = useState({}); // { conversationId: [userIds] }

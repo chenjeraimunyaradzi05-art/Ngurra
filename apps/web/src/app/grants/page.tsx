@@ -401,7 +401,7 @@ export default function GrantsPage() {
 
         const fetchedGrants: Grant[] = [];
 
-        if (grantsRes.ok && grantsRes.data?.grants) {
+        if (grantsRes.ok && 'data' in grantsRes && grantsRes.data?.grants) {
           fetchedGrants.push(
             ...grantsRes.data.grants.map((g: any) => ({
               id: g.id,
@@ -419,7 +419,7 @@ export default function GrantsPage() {
           );
         }
 
-        if (initiativesRes.ok && initiativesRes.data) {
+        if (initiativesRes.ok && 'data' in initiativesRes && initiativesRes.data) {
           const initGrants = Array.isArray(initiativesRes.data)
             ? initiativesRes.data
             : initiativesRes.data.data || [];
@@ -437,7 +437,7 @@ export default function GrantsPage() {
           );
         }
 
-        if (businessRes.ok && businessRes.data?.grants) {
+        if (businessRes.ok && 'data' in businessRes && businessRes.data?.grants) {
           fetchedGrants.push(
             ...businessRes.data.grants.map((g: any) => ({
               id: g.id,

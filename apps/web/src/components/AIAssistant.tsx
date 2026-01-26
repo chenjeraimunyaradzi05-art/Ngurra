@@ -17,8 +17,9 @@ const KangarooLogo = () => (
 );
 
 export default function AIAssistant() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>(() => {
     try {
       const raw = localStorage.getItem('gimbi:ai:messages');
@@ -28,6 +29,7 @@ export default function AIAssistant() {
       return [];
     }
   });
+
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,27 +47,94 @@ export default function AIAssistant() {
     }, 60);
   }, [messages, open]);
 
+  // Load or create a conversation when opened (if authenticated)
+  useEffect(() => {
+    if (!open || !isAuthenticated || !token) return;
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/ai/conversations`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error('Failed to fetch conversations');
+        const payload = await res.json();
+        const convs = payload.conversations || [];
+        if (convs.length > 0) {
+          const first = convs[0];
+          setConversationId(first.id);
+          // load messages for this conversation
+          const r2 = await fetch(`${API_BASE}/ai/conversations/${first.id}`, { headers: { Authorization: `Bearer ${token}` } });
+          if (r2.ok) {
+            const p = await r2.json();
+            if (!cancelled && p.conversation?.messages) {
+              setMessages(p.conversation.messages.map((m: any) => ({ role: m.role === 'assistant' ? 'ai' : 'user', text: m.content })));
+            }
+          }
+        } else {
+          // create a conversation
+          const r3 = await fetch(`${API_BASE}/ai/conversations`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ title: 'Conversation with Athena' }) });
+          if (r3.ok) {
+            const p = await r3.json();
+            setConversationId(p.conversation.id);
+            setMessages([]);
+          }
+        }
+      } catch (err) {
+        console.debug('Could not initialize AI conversation', err);
+      }
+    };
+
+    void load();
+    return () => { cancelled = true; };
+  }, [open, isAuthenticated, token]);
+
   const ask = async (question: string) => {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/ai/concierge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: isAuthenticated ? user?.id : undefined, context: question }),
-      });
-      if (!res.ok) throw new Error('AI service error');
-      const data = await res.json();
-      if (data.suggestions && data.suggestions.length) {
-        const text = data.suggestions.map((s: string) => `• ${s}`).join('\n');
-        setMessages((prev) => [...prev, { role: 'ai', text }]);
-      } else if (data.text) {
-        setMessages((prev) => [...prev, { role: 'ai', text: data.text }]);
+      if (isAuthenticated && conversationId && token) {
+        // Post to conversation messages endpoint
+        const res = await fetch(`${API_BASE}/ai/conversations/${conversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ role: 'user', content: question }),
+        });
+
+        if (res.status === 429) {
+          setError('AI requests rate limited. Please try again later.');
+          setMessages((prev) => [...prev, { role: 'ai', text: 'Rate limit exceeded. Please wait and try again.' }]);
+          return;
+        }
+
+        if (!res.ok) throw new Error('AI service error');
+        const d = await res.json();
+        if (d && d.assistantMessage) {
+          const text = d.assistantMessage.content || d.assistantMessage.text || 'No response';
+          setMessages((prev) => [...prev, { role: 'ai', text }]);
+        } else if (d && d.source === 'safety' && d.assistantMessage) {
+          setMessages((prev) => [...prev, { role: 'ai', text: d.assistantMessage.content || 'Content removed due to safety.' }]);
+        } else {
+          setMessages((prev) => [...prev, { role: 'ai', text: "Sorry, I couldn't find anything. Try rephrasing." }]);
+        }
       } else {
-        setMessages((prev) => [
-          ...prev,
-          { role: 'ai', text: "Sorry, I couldn't find anything. Try rephrasing." },
-        ]);
+        // Fallback for unauthenticated users: call concierge directly
+        const res = await fetch(`${API_BASE}/ai/concierge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: isAuthenticated ? user?.id : undefined, context: question }),
+        });
+        if (!res.ok) throw new Error('AI service error');
+        const data = await res.json();
+        if (data.suggestions && data.suggestions.length) {
+          const text = data.suggestions.map((s: string) => `• ${s}`).join('\n');
+          setMessages((prev) => [...prev, { role: 'ai', text }]);
+        } else if (data.text) {
+          setMessages((prev) => [...prev, { role: 'ai', text: data.text }]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'ai', text: "Sorry, I couldn't find anything. Try rephrasing." },
+          ]);
+        }
       }
     } catch (err) {
       console.error('AI ask error', err);
@@ -84,6 +153,20 @@ export default function AIAssistant() {
     if (!q) return;
     setMessages((prev) => [...prev, { role: 'user', text: q }]);
     setInput('');
+
+    // Ensure conversation exists for authenticated users
+    if (isAuthenticated && !conversationId && token) {
+      try {
+        const r = await fetch(`${API_BASE}/ai/conversations`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ title: 'Conversation with Athena' }) });
+        if (r.ok) {
+          const p = await r.json();
+          setConversationId(p.conversation.id);
+        }
+      } catch (err) {
+        console.debug('Failed to create conversation', err);
+      }
+    }
+
     await ask(q);
     setOpen(true);
   };

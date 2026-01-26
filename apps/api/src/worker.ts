@@ -213,6 +213,9 @@ async function processCleanupJob(job) {
       case 'audit-logs':
         result = await archiveOldAuditLogs();
         break;
+      case 'old-ai-conversations':
+        result = await cleanupOldAiConversations();
+        break;
       default:
         throw new Error(`Unknown cleanup task: ${task}`);
     }
@@ -394,6 +397,23 @@ async function archiveOldAuditLogs() {
   return { logsToArchive: count, status: 'pending' };
 }
 
+async function cleanupOldAiConversations() {
+  const retentionDays = parseInt(process.env.AI_CONVERSATION_RETENTION_DAYS || '90', 10);
+  const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
+
+  try {
+    const result = await prisma.aiConversation.deleteMany({
+      where: { updatedAt: { lt: cutoff } },
+    });
+
+    logger.info('[Cleanup] Old AI conversations removed', { deletedConversations: result.count, retentionDays });
+    return { deletedConversations: result.count };
+  } catch (err) {
+    logger.error('[Cleanup] Failed to remove old AI conversations', { error: err.message });
+    return { status: 'failed', error: err.message };
+  }
+}
+
 // ========================================
 // Report Generation Implementations
 // ========================================
@@ -553,10 +573,10 @@ async function generateGovernmentReport(params) {
     // RAP-certified employers
     const rapCertifiedEmployers = await prisma.company.count({
       where: {
-        rapStatus: { notIn: [null, 'NONE'] as any },
+        rapStatus: { notIn: [null, 'NONE'] },
       },
     });
-    
+
     // Training & mentorship
     const completedMentorships = await prisma.mentorship.count({
       where: {
@@ -620,7 +640,7 @@ async function generateEmployerReport(params) {
     const applicationsByStatus = applications.reduce((acc, app) => {
       acc[app.status] = (acc[app.status] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
     
     // Time to hire
     const hiredApplications = await prisma.application.findMany({

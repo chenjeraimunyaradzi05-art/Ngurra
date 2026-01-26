@@ -251,18 +251,24 @@ export default function MessagesPage() {
             senderId: myUserId && msg.senderId === myUserId ? 'me' : 'other',
             content: msg.content,
             timestamp: formatTime(new Date(msg.createdAt)),
-            isRead: true,
+            isRead: msg.isRead ?? true,
           }));
           setMessages(formattedMessages);
 
-          // Mark messages as read via socket
-          try {
-            const ids = formattedMessages.map((m) => m.id);
-            if (ids.length && selectedConversation) {
+          // Mark unread messages as read on the server and notify via socket
+          const unreadFromOthers = (data.messages || []).filter(
+            (m) => m.senderId !== myUserId && !m.isRead,
+          );
+          if (unreadFromOthers.length) {
+            try {
+              await api(`/live-messages/conversations/${selectedConversation.id}/read`, {
+                method: 'POST',
+              });
+              const ids = unreadFromOthers.map((m) => m.id);
               socketService.markAsRead(selectedConversation.id, ids);
+            } catch (err) {
+              console.warn('Failed to mark messages as read:', err);
             }
-          } catch (err) {
-            // ignore
           }
         }
       } catch (err) {
@@ -412,41 +418,30 @@ export default function MessagesPage() {
     e.preventDefault();
     if (!newMessage.trim() || !selectedConversation) return;
 
+    const tempId = `tmp-${Math.random().toString(36).slice(2, 9)}`;
+    const tempMsg = {
+      id: tempId,
+      senderId: 'me',
+      content: newMessage.trim(),
+      timestamp: formatTime(new Date()),
+      status: 'sending',
+    };
+
+    // Optimistic UI
+    setMessages((prev) => [...prev, tempMsg]);
+    setNewMessage('');
     setSendingMessage(true);
-    // Optimistic UI: create a temporary message id
-    const tempId = 'temp-' + Math.random().toString(36).slice(2, 9);
-
-    // Add optimistic message to UI
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: tempId,
-        senderId: 'me',
-        content: newMessage,
-        timestamp: formatTime(new Date()),
-        isRead: true,
-        sending: true,
-      },
-    ]);
-
-    // Emit via socket for real-time delivery
-    try {
-      if (selectedConversation) {
-        socketService.sendMessage(selectedConversation.id, newMessage);
-      }
-    } catch (emitErr) {
-      console.warn('Socket send failed:', emitErr);
-    }
 
     try {
+      // POST to REST API
       const response = await api(`/messages/conversations/${selectedConversation.id}/messages`, {
         method: 'POST',
-        body: { content: newMessage },
+        body: { content: tempMsg.content },
       });
 
       if (response.ok) {
         const message = response.data?.message || response.data;
-        // Replace temp message with server message
+        // Replace temp message with confirmed message
         setMessages((prev) =>
           prev.map((m) =>
             m.id === tempId
@@ -461,26 +456,55 @@ export default function MessagesPage() {
           ),
         );
 
-        // Inform server we've read messages (optional)
+        // Optionally send via socket to ensure real-time delivery
         try {
-          socketService.markAsRead(selectedConversation.id, [message.id]);
+          socketService.sendMessage(selectedConversation.id, message.content);
         } catch (err) {
-          // ignore
+          console.debug('Socket send failed, server should broadcast:', err);
         }
       } else {
-        // Mark the temp message as failed
-        setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? { ...m, failed: true, sending: false } : m)),
-        );
+        // Mark as failed
+        setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' } : m)));
       }
     } catch (err) {
       console.error('Error sending message:', err);
-      setMessages((prev) =>
-        prev.map((m) => (m.id === tempId ? { ...m, failed: true, sending: false } : m)),
-      );
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' } : m)));
     } finally {
       setSendingMessage(false);
-      setNewMessage('');
+    }
+  };
+
+  const retrySend = async (msg) => {
+    if (!selectedConversation) return;
+    // Set to sending
+    setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: 'sending' } : m)));
+
+    try {
+      const response = await api(`/messages/conversations/${selectedConversation.id}/messages`, {
+        method: 'POST',
+        body: { content: msg.content },
+      });
+      if (response.ok) {
+        const message = response.data?.message || response.data;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === msg.id
+              ? {
+                  id: message.id,
+                  senderId: 'me',
+                  content: message.content,
+                  timestamp: formatTime(new Date(message.createdAt)),
+                  isRead: true,
+                }
+              : m,
+          ),
+        );
+      } else {
+        setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: 'failed' } : m)));
+      }
+    } catch (err) {
+      console.error('Retry failed:', err);
+      setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, status: 'failed' } : m)));
     }
   };
 
@@ -692,6 +716,15 @@ export default function MessagesPage() {
                       >
                         {message.timestamp}
                         {message.senderId === 'me' && message.isRead && ' ✓✓'}
+                        {message.status === 'sending' && ' ⏳'}
+                        {message.status === 'failed' && (
+                          <span className="ml-2 text-red-400">
+                            Failed ·{' '}
+                            <button className="underline" onClick={() => retrySend(message)}>
+                              Retry
+                            </button>
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>

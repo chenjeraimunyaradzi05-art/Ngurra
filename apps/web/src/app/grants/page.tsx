@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import api from '@/lib/apiClient';
 import {
@@ -21,6 +21,8 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useRef } from 'react';
 
 // Theme colors
 const accentPink = '#E91E8C';
@@ -400,21 +402,12 @@ export default function GrantsPage() {
   const [grants, setGrants] = useState<Grant[]>(allGrants);
   const [showFilters, setShowFilters] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
-  const aiInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Focus AI input on open and close on Escape
-  useEffect(() => {
-    if (!showAIModal) return;
-    const timer = setTimeout(() => aiInputRef.current?.focus?.(), 100);
-    const onKey = (e: KeyboardEvent) => {
-      if ((e as KeyboardEvent).key === 'Escape') setShowAIModal(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [showAIModal]);
+  const { user, isAuthenticated } = useAuth();
+  const [aiMessages, setAiMessages] = useState([] as { role: 'user' | 'ai'; text: string }[]);
+  const [aiInput, setAiInput] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const aiLiveRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch grants from API and merge with static data
   useEffect(() => {
@@ -553,6 +546,55 @@ export default function GrantsPage() {
         return <Award className="w-4 h-4" />;
     }
   };
+
+  async function handleSendAI() {
+    if (!aiInput.trim()) return;
+    setAiError(null);
+    setAiLoading(true);
+    const userQuestion = aiInput.trim();
+    setAiMessages((prev) => [...prev, { role: 'user', text: userQuestion }]);
+    setAiInput('');
+
+    try {
+      const res = await fetch('/api/ai/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: isAuthenticated ? user?.id : undefined,
+          context: userQuestion,
+        }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || 'AI service error');
+      }
+
+      const data = await res.json();
+      // Show AI suggestions or fallback text
+      if (data.suggestions && data.suggestions.length > 0) {
+        const text = data.suggestions.map((s: string) => `• ${s}`).join('\n');
+        setAiMessages((prev) => [...prev, { role: 'ai', text }]);
+      } else if (data.text) {
+        setAiMessages((prev) => [...prev, { role: 'ai', text: data.text }]);
+      } else {
+        setAiMessages((prev) => [
+          ...prev,
+          { role: 'ai', text: 'Athena: Sorry, I could not find anything. Try rephrasing.' },
+        ]);
+      }
+
+      // Scroll to bottom
+      setTimeout(() => {
+        aiLiveRef.current?.scrollTo({ top: aiLiveRef.current.scrollHeight, behavior: 'smooth' });
+      }, 50);
+    } catch (err) {
+      console.error('AI ask error', err);
+      setAiError('Failed to contact AI assistant. Please try again later.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   return (
     <>
@@ -942,12 +984,7 @@ export default function GrantsPage() {
 
       {/* AI Modal (placeholder) */}
       {showAIModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="gimbi-ai-title"
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-xl relative">
             <button
               className="absolute top-4 right-4 text-gray-400 hover:text-pink-500"
@@ -958,23 +995,69 @@ export default function GrantsPage() {
             </button>
             <div className="flex flex-col items-center">
               <KangarooLogo />
-              <h2 id="gimbi-ai-title" className="mt-2 mb-4 text-xl font-bold text-amber-500">
-                Gimbi AI Assistant
-              </h2>
+              <h2 className="mt-2 mb-4 text-xl font-bold text-amber-500">Gimbi AI Assistant</h2>
               <p className="text-gray-700 text-center mb-4">
                 How can I help you with grants today?
               </p>
-              {/* Placeholder for AI chat UI */}
-              <input
-                ref={aiInputRef}
-                type="text"
-                className="w-full px-4 py-2 rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="Ask a question..."
-                aria-label="Ask a question"
-              />
-              <button className="mt-4 px-6 py-2 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 text-white font-bold shadow hover:scale-105 transition-all">
-                Send
-              </button>
+              {/* AI chat UI */}
+              <div className="w-full">
+                <div className="mb-2 text-sm text-slate-500">
+                  Ask Athena for grant recommendations, application tips, or eligibility help.
+                </div>
+
+                <div
+                  className="max-h-64 overflow-y-auto mb-3 bg-slate-50 rounded-lg p-3 space-y-2"
+                  ref={aiLiveRef}
+                  aria-live="polite"
+                >
+                  {aiMessages.length === 0 && (
+                    <div className="text-sm text-slate-400">
+                      No suggestions yet. Try asking &apos;What grants can I apply for as an
+                      Indigenous business in NSW?&apos;
+                    </div>
+                  )}
+                  {aiMessages.map((m, i) => (
+                    <div
+                      key={i}
+                      className={`text-sm p-2 rounded ${m.role === 'ai' ? 'bg-white' : 'bg-pink-50 text-slate-800'}`}
+                    >
+                      {m.role === 'ai' ? (
+                        <strong className="text-emerald-600">Athena:</strong>
+                      ) : (
+                        <strong className="text-pink-600">You:</strong>
+                      )}{' '}
+                      <span className="ml-2">{m.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {aiError && <div className="text-red-500 text-sm mb-2">{aiError}</div>}
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={aiInput}
+                    onChange={(e) => setAiInput(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        await handleSendAI();
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    placeholder="Ask the assistant..."
+                    aria-label="Ask the assistant"
+                  />
+                  <button
+                    onClick={handleSendAI}
+                    disabled={aiLoading || aiInput.trim() === ''}
+                    className={`px-4 py-2 rounded-full text-white font-bold ${aiLoading || aiInput.trim() === '' ? 'bg-amber-200' : 'bg-amber-400 hover:scale-105'} transition-all`}
+                    aria-busy={aiLoading}
+                  >
+                    {aiLoading ? 'Thinking…' : 'Ask'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

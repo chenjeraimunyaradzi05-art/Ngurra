@@ -221,22 +221,24 @@ export default function FeedPage() {
   }
 
   const handleNewPost = (post) => {
-    setPosts((prev) => [
-      {
-        id: Math.random().toString(36).substring(7),
-        authorName: 'You',
-        authorAvatar: '',
-        authorTitle: '',
-        trustLevel: 'verified',
-        content: post.content,
-        mediaUrl: post.media && post.media[0] ? post.media[0].preview : undefined,
-        reactions: { like: 0, love: 0, support: 0, celebrate: 0 },
-        commentCount: 0,
-        shareCount: 0,
-        createdAt: 'Just now',
-      },
-      ...prev,
-    ]);
+    // If API returned a fully formed post object, use it. Otherwise fall back to a local representation.
+    const newPost = post?.id
+      ? post
+      : {
+          id: Math.random().toString(36).substring(7),
+          authorName: 'You',
+          authorAvatar: '',
+          authorTitle: '',
+          trustLevel: 'verified',
+          content: post.content,
+          mediaUrl: post.media && post.media[0] ? post.media[0].preview : undefined,
+          reactions: { like: 0, love: 0, support: 0, celebrate: 0 },
+          commentCount: 0,
+          shareCount: 0,
+          createdAt: 'Just now',
+        };
+
+    setPosts((prev) => [newPost, ...prev]);
   };
 
   const reactionEmojis = {
@@ -532,23 +534,15 @@ export default function FeedPage() {
                     {/* Media */}
                     {post.mediaUrl && (
                       <div className="relative aspect-video overflow-hidden">
-                        {/\.(mp4|webm|ogg)$/i.test(post.mediaUrl) ? (
-                          <video
-                            src={post.mediaUrl}
-                            controls
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Image
-                            src={post.mediaUrl}
-                            alt="Post media"
-                            fill
-                            cloudinary={isCloudinaryPublicId(post.mediaUrl)}
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 60vw"
-                            priority={index < 2}
-                          />
-                        )}
+                        <Image
+                          src={post.mediaUrl}
+                          alt="Post media"
+                          fill
+                          cloudinary={isCloudinaryPublicId(post.mediaUrl)}
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 60vw"
+                          priority={index < 2}
+                        />
                       </div>
                     )}
 

@@ -10,121 +10,133 @@ const Footer = dynamic(() => import('../components/Footer'));
 const CookieConsent = dynamic(() => import('../components/CookieConsent'));
 const ConnectionBannerWrapper = dynamic(() => import('../components/ConnectionBannerWrapper'));
 import { SkipLinks } from '../components/ui/SkipLinks';
+import type { ReactNode } from 'react';
+const AIAssistant = dynamic(() => import('../components/AIAssistant'));
+
 import Script from 'next/script';
 import { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-    title: {
-        default: 'Ngurra Pathways | Indigenous Employment & Mentorship',
-        template: '%s | Ngurra Pathways'
+  title: {
+    default: 'Ngurra Pathways | Indigenous Employment & Mentorship',
+    template: '%s | Ngurra Pathways',
+  },
+  description:
+    'A culturally-grounded employment, education & mentorship platform for First Nations futures. Find jobs, courses, and mentors designed for Indigenous Australians.',
+  keywords: [
+    'Indigenous employment',
+    'First Nations jobs',
+    'Aboriginal careers',
+    'Indigenous mentorship',
+    'TAFE courses Indigenous',
+    'culturally safe workplace',
+  ],
+  authors: [{ name: 'Ngurra Pathways' }],
+  creator: 'Ngurra Pathways',
+  publisher: 'Ngurra Pathways',
+  manifest: '/manifest.json',
+  metadataBase: new URL('https://ngurrapathways.life'),
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
-    description: 'A culturally-grounded employment, education & mentorship platform for First Nations futures. Find jobs, courses, and mentors designed for Indigenous Australians.',
-    keywords: ['Indigenous employment', 'First Nations jobs', 'Aboriginal careers', 'Indigenous mentorship', 'TAFE courses Indigenous', 'culturally safe workplace'],
-    authors: [{ name: 'Ngurra Pathways' }],
-    creator: 'Ngurra Pathways',
-    publisher: 'Ngurra Pathways',
-    manifest: '/manifest.json',
-    metadataBase: new URL('https://ngurrapathways.life'),
-    alternates: {
-        canonical: '/',
-    },
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-        },
-    },
-    appleWebApp: {
-        capable: true,
-        statusBarStyle: 'black-translucent',
-        title: 'Ngurra Pathways',
-    },
-    openGraph: {
-        type: 'website',
-        locale: 'en_AU',
-        url: 'https://ngurrapathways.life',
-        siteName: 'Ngurra Pathways',
-        title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
-        description: 'A culturally-grounded employment, education & mentorship platform for First Nations futures',
-        images: [
-            {
-                url: '/brand/ngurra-og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'Ngurra Pathways - Indigenous Employment Platform',
-            },
-        ],
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
-        description: 'Employment & mentorship platform for First Nations futures',
-        images: ['/brand/ngurra-og-image.png'],
-        creator: '@ngurrapathways',
-    },
-    icons: {
-        icon: [
-        { url: '/favicon.svg', type: 'image/svg+xml' },
-        { url: '/brand/ngurra-logo.png', sizes: '32x32', type: 'image/png' },
-        { url: '/brand/ngurra-logo.png', sizes: '192x192', type: 'image/png' },
-        ],
-        apple: [
-        { url: '/brand/ngurra-logo.png', sizes: '180x180', type: 'image/png' },
-        ],
-        shortcut: [{ url: '/favicon.svg' }],
-    },
-    verification: {
-        google: 'your-google-verification-code',
-    },
-    category: 'employment',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Ngurra Pathways',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_AU',
+    url: 'https://ngurrapathways.life',
+    siteName: 'Ngurra Pathways',
+    title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
+    description:
+      'A culturally-grounded employment, education & mentorship platform for First Nations futures',
+    images: [
+      {
+        url: '/brand/ngurra-og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Ngurra Pathways - Indigenous Employment Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
+    description: 'Employment & mentorship platform for First Nations futures',
+    images: ['/brand/ngurra-og-image.png'],
+    creator: '@ngurrapathways',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/brand/ngurra-logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/brand/ngurra-logo.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [{ url: '/brand/ngurra-logo.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: [{ url: '/favicon.svg' }],
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  category: 'employment',
 };
 
 export const viewport: Viewport = {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    themeColor: '#6B4C9A',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#6B4C9A',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-    // JSON-LD structured data for Organization
-    const organizationSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'Ngurra Pathways',
-        url: 'https://ngurrapathways.com.au',
-        logo: 'https://ngurrapathways.com.au/brand/ngurra-logo.png',
-        description: 'A culturally-grounded employment, education & mentorship platform for First Nations futures',
-        sameAs: [
-            'https://twitter.com/ngurrapathways',
-            'https://www.linkedin.com/company/ngurra-pathways',
-            'https://www.facebook.com/ngurrapathways',
-        ],
-        contactPoint: {
-            '@type': 'ContactPoint',
-            contactType: 'customer service',
-            availableLanguage: 'English',
-        },
-    };
+export default function RootLayout({ children }: { children: ReactNode }) {
+  // JSON-LD structured data for Organization
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Ngurra Pathways',
+    url: 'https://ngurrapathways.com.au',
+    logo: 'https://ngurrapathways.com.au/brand/ngurra-logo.png',
+    description:
+      'A culturally-grounded employment, education & mentorship platform for First Nations futures',
+    sameAs: [
+      'https://twitter.com/ngurrapathways',
+      'https://www.linkedin.com/company/ngurra-pathways',
+      'https://www.facebook.com/ngurrapathways',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: 'English',
+    },
+  };
 
-    const websiteSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Ngurra Pathways',
-        url: 'https://ngurrapathways.com.au',
-        potentialAction: {
-            '@type': 'SearchAction',
-            target: 'https://ngurrapathways.com.au/jobs?q={search_term_string}',
-            'query-input': 'required name=search_term_string',
-        },
-    };
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Ngurra Pathways',
+    url: 'https://ngurrapathways.com.au',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://ngurrapathways.com.au/jobs?q={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
 
-    return (<html lang="en" suppressHydrationWarning>
+  return (
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/brand/ngurra-logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -156,16 +168,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-gray-900 cosmic:bg-cosmic-dark text-gray-900 dark:text-slate-50 cosmic:text-slate-50 transition-colors duration-200`}>
+      <body
+        className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-gray-900 cosmic:bg-cosmic-dark text-gray-900 dark:text-slate-50 cosmic:text-slate-50 transition-colors duration-200`}
+      >
         {/* Celestial background layers - only visible in cosmic mode */}
-        <div 
+        <div
           className="fixed inset-0 pointer-events-none opacity-0 cosmic:opacity-80 transition-opacity duration-300"
           style={{
-            background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 35%, #6B4C9A 70%, #3D1A2A 100%)',
+            background:
+              'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 35%, #6B4C9A 70%, #3D1A2A 100%)',
           }}
           aria-hidden="true"
         />
-        <div 
+        <div
           className="fixed inset-0 pointer-events-none opacity-0 cosmic:opacity-80 transition-opacity duration-300"
           style={{
             backgroundImage: `
@@ -174,29 +189,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               radial-gradient(circle at 50% 50%, rgba(228, 91, 138, 0.08) 0%, transparent 50%),
               radial-gradient(circle at 10% 80%, rgba(135, 206, 235, 0.08) 0%, transparent 35%),
               radial-gradient(circle at 90% 15%, rgba(183, 110, 121, 0.1) 0%, transparent 35%)
-            `
+            `,
           }}
           aria-hidden="true"
         />
         {/* Precious stone dot pattern overlay - only in cosmic mode */}
-        <div 
+        <div
           className="fixed inset-0 pointer-events-none dot-celestial opacity-0 cosmic:opacity-30 transition-opacity duration-300"
           aria-hidden="true"
         />
-        <a href="#main-content" className="skip-link">Skip to main content</a>
-        <SkipLinks links={[
-          { id: 'main-content', label: 'Skip to main content' },
-          { id: 'navigation', label: 'Skip to navigation' },
-        ]} />
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <SkipLinks
+          links={[
+            { id: 'main-content', label: 'Skip to main content' },
+            { id: 'navigation', label: 'Skip to navigation' },
+          ]}
+        />
         <Providers>
           <HeaderNavigation />
           <div className="flex-1 relative z-10">
-            <main id="main-content" className="pt-8 pb-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">{children}</main>
+            <main id="main-content" className="pt-8 pb-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {children}
+            </main>
           </div>
           <PartnershipModuleWrapper />
           <Footer />
           <CookieConsent />
           <ConnectionBannerWrapper />
+          <AIAssistant />
         </Providers>
         <Script id="register-sw" strategy="beforeInteractive">
           {`
@@ -282,5 +304,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
       </body>
-    </html>);
+    </html>
+  );
 }

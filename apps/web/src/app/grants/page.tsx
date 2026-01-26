@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
 import Link from 'next/link';
 import api from '@/lib/apiClient';
 import {
@@ -21,8 +22,6 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useRef } from 'react';
 
 // Theme colors
 const accentPink = '#E91E8C';
@@ -375,24 +374,6 @@ const states = [
   { id: 'ACT', name: 'Australian Capital Territory' },
 ];
 
-// Kangaroo SVG (inline for simplicity)
-const KangarooLogo = () => (
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-label="Kangaroo Logo"
-  >
-    <circle cx="16" cy="16" r="16" fill="#F59E0B" />
-    <path d="M10 20c2-4 6-7 10-7 2 0 3 2 2 4-1 2-4 3-6 3l-2 4-4-4z" fill="#fff" />
-    <ellipse cx="20" cy="13" rx="2" ry="1" fill="#fff" />
-    <circle cx="21" cy="12" r="0.5" fill="#333" />
-    <circle cx="19" cy="12" r="0.5" fill="#333" />
-  </svg>
-);
-
 export default function GrantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -401,13 +382,6 @@ export default function GrantsPage() {
   const [loading, setLoading] = useState(true);
   const [grants, setGrants] = useState<Grant[]>(allGrants);
   const [showFilters, setShowFilters] = useState(false);
-  const [showAIModal, setShowAIModal] = useState(false);
-  const { user, isAuthenticated } = useAuth();
-  const [aiMessages, setAiMessages] = useState([] as { role: 'user' | 'ai'; text: string }[]);
-  const [aiInput, setAiInput] = useState('');
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const aiLiveRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch grants from API and merge with static data
   useEffect(() => {
@@ -546,55 +520,6 @@ export default function GrantsPage() {
         return <Award className="w-4 h-4" />;
     }
   };
-
-  async function handleSendAI() {
-    if (!aiInput.trim()) return;
-    setAiError(null);
-    setAiLoading(true);
-    const userQuestion = aiInput.trim();
-    setAiMessages((prev) => [...prev, { role: 'user', text: userQuestion }]);
-    setAiInput('');
-
-    try {
-      const res = await fetch('/api/ai/concierge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: isAuthenticated ? user?.id : undefined,
-          context: userQuestion,
-        }),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || 'AI service error');
-      }
-
-      const data = await res.json();
-      // Show AI suggestions or fallback text
-      if (data.suggestions && data.suggestions.length > 0) {
-        const text = data.suggestions.map((s: string) => `• ${s}`).join('\n');
-        setAiMessages((prev) => [...prev, { role: 'ai', text }]);
-      } else if (data.text) {
-        setAiMessages((prev) => [...prev, { role: 'ai', text: data.text }]);
-      } else {
-        setAiMessages((prev) => [
-          ...prev,
-          { role: 'ai', text: 'Athena: Sorry, I could not find anything. Try rephrasing.' },
-        ]);
-      }
-
-      // Scroll to bottom
-      setTimeout(() => {
-        aiLiveRef.current?.scrollTo({ top: aiLiveRef.current.scrollHeight, behavior: 'smooth' });
-      }, 50);
-    } catch (err) {
-      console.error('AI ask error', err);
-      setAiError('Failed to contact AI assistant. Please try again later.');
-    } finally {
-      setAiLoading(false);
-    }
-  }
 
   return (
     <>
@@ -970,98 +895,6 @@ export default function GrantsPage() {
           )}
         </main>
       </div>
-
-      {/* Floating AI Button */}
-      <button
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-gradient-to-br from-amber-400 to-pink-500 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-pink-500"
-        style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}
-        aria-label="Open AI Assistant"
-        onClick={() => setShowAIModal(true)}
-      >
-        <KangarooLogo />
-        <span className="font-bold text-white text-base">AI</span>
-      </button>
-
-      {/* AI Modal (placeholder) */}
-      {showAIModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-xl relative">
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-pink-500"
-              aria-label="Close AI Assistant"
-              onClick={() => setShowAIModal(false)}
-            >
-              ×
-            </button>
-            <div className="flex flex-col items-center">
-              <KangarooLogo />
-              <h2 className="mt-2 mb-4 text-xl font-bold text-amber-500">Gimbi AI Assistant</h2>
-              <p className="text-gray-700 text-center mb-4">
-                How can I help you with grants today?
-              </p>
-              {/* AI chat UI */}
-              <div className="w-full">
-                <div className="mb-2 text-sm text-slate-500">
-                  Ask Athena for grant recommendations, application tips, or eligibility help.
-                </div>
-
-                <div
-                  className="max-h-64 overflow-y-auto mb-3 bg-slate-50 rounded-lg p-3 space-y-2"
-                  ref={aiLiveRef}
-                  aria-live="polite"
-                >
-                  {aiMessages.length === 0 && (
-                    <div className="text-sm text-slate-400">
-                      No suggestions yet. Try asking &apos;What grants can I apply for as an
-                      Indigenous business in NSW?&apos;
-                    </div>
-                  )}
-                  {aiMessages.map((m, i) => (
-                    <div
-                      key={i}
-                      className={`text-sm p-2 rounded ${m.role === 'ai' ? 'bg-white' : 'bg-pink-50 text-slate-800'}`}
-                    >
-                      {m.role === 'ai' ? (
-                        <strong className="text-emerald-600">Athena:</strong>
-                      ) : (
-                        <strong className="text-pink-600">You:</strong>
-                      )}{' '}
-                      <span className="ml-2">{m.text}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {aiError && <div className="text-red-500 text-sm mb-2">{aiError}</div>}
-
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={aiInput}
-                    onChange={(e) => setAiInput(e.target.value)}
-                    onKeyDown={async (e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        await handleSendAI();
-                      }
-                    }}
-                    className="flex-1 px-4 py-2 rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    placeholder="Ask the assistant..."
-                    aria-label="Ask the assistant"
-                  />
-                  <button
-                    onClick={handleSendAI}
-                    disabled={aiLoading || aiInput.trim() === ''}
-                    className={`px-4 py-2 rounded-full text-white font-bold ${aiLoading || aiInput.trim() === '' ? 'bg-amber-200' : 'bg-amber-400 hover:scale-105'} transition-all`}
-                    aria-busy={aiLoading}
-                  >
-                    {aiLoading ? 'Thinking…' : 'Ask'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

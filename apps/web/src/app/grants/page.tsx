@@ -1,24 +1,21 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import api from '@/lib/apiClient';
 import {
   Search,
   Filter,
-  DollarSign,
-  Building2,
-  GraduationCap,
-  Users,
-  Briefcase,
-  Home,
-  Heart,
-  Sparkles,
+  ChevronRight,
   ExternalLink,
-  Clock,
+  DollarSign,
   MapPin,
-  Loader2,
+  ArrowRight,
   Star,
+  Bookmark,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
   Award,
 } from 'lucide-react';
 
@@ -28,890 +25,710 @@ const accentPurple = '#8B5CF6';
 
 interface Grant {
   id: string;
-  title: string;
+  name: string;
   provider: string;
+  amount: string;
   description: string;
-  amount?: string;
-  maxAmount?: number;
-  minAmount?: number;
-  deadline?: string;
-  category: string;
-  tags?: string[];
-  eligibility?: string[];
-  applicationUrl?: string;
-  isActive: boolean;
-  level: 'federal' | 'state' | 'indigenous' | 'private';
+  url: string;
+  category: 'federal' | 'state' | 'aboriginal' | 'private';
   state?: string;
+  deadline?: string;
+  eligibility?: string[];
+  featured?: boolean;
 }
 
-// Demo grants data - comprehensive list of real Australian grants
-const demoGrants: Grant[] = [
-  // Federal Grants
+// Comprehensive grants data
+const allGrants: Grant[] = [
+  // Federal Government Grants
   {
-    id: 'fed-1',
-    title: 'Indigenous Business Australia (IBA) Business Development Loans',
-    provider: 'Indigenous Business Australia',
+    id: 'indigenous-entrepreneurs-fund',
+    name: 'Indigenous Entrepreneurs Fund',
+    provider: 'National Indigenous Australians Agency (NIAA)',
+    amount: 'Up to $500,000',
     description:
-      'Finance to help Indigenous Australians start or grow a business. Includes business support services and concessional loan terms.',
-    amount: 'Up to $1,000,000',
-    maxAmount: 1000000,
-    deadline: 'Ongoing',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: [
-      'Aboriginal or Torres Strait Islander',
-      'Viable business plan',
-      'Australian resident',
-    ],
-    applicationUrl: 'https://iba.gov.au/business/',
-    isActive: true,
-    level: 'federal',
+      'Funding for Indigenous businesses to grow, create jobs, and build economic independence in communities.',
+    url: 'https://www.niaa.gov.au/indigenous-affairs/economic-development',
+    category: 'federal',
+    eligibility: ['51%+ Indigenous owned', 'Operating business', 'Growth potential'],
+    featured: true,
   },
   {
-    id: 'fed-2',
-    title: 'Indigenous Advancement Strategy (IAS)',
-    provider: 'National Indigenous Australians Agency',
+    id: 'indigenous-skills-jobs',
+    name: 'Indigenous Skills and Jobs Programme',
+    provider: 'NIAA',
+    amount: 'Varies based on project',
     description:
-      'Funding for programs that support Indigenous employment, education, and community development.',
-    amount: 'Varies by project',
-    deadline: 'Rolling applications',
-    category: 'community',
-    tags: ['indigenous', 'education', 'employment'],
-    eligibility: ['Aboriginal and Torres Strait Islander communities', 'Registered organisations'],
-    applicationUrl: 'https://www.niaa.gov.au/indigenous-affairs/grants-and-funding',
-    isActive: true,
-    level: 'federal',
+      'Support for Indigenous employment, enterprise development, and skills training initiatives.',
+    url: 'https://www.niaa.gov.au/indigenous-affairs/employment',
+    category: 'federal',
+    eligibility: ['Indigenous organisations', 'Employment focused projects'],
   },
   {
-    id: 'fed-3',
-    title: 'Indigenous Skills and Employment Program (ISEP)',
+    id: 'entrepreneurs-programme',
+    name: "Entrepreneurs' Programme",
+    provider: 'AusIndustry',
+    amount: 'Matched funding up to $20,000',
+    description:
+      'Business improvement advice, implementation support, and connections to research for growth.',
+    url: 'https://business.gov.au/grants-and-programs/entrepreneurs-programme',
+    category: 'federal',
+    eligibility: ['Australian business', 'Annual turnover $1.5M+', 'Growth focused'],
+  },
+  {
+    id: 'new-enterprise-incentive',
+    name: 'New Enterprise Incentive Scheme (NEIS)',
     provider: 'Department of Employment',
+    amount: 'Up to $12,480 income support + mentoring',
     description:
-      'Supports Indigenous Australians to get skills and sustainable jobs through tailored employment services.',
-    amount: 'Funded services',
-    deadline: 'Ongoing',
-    category: 'employment',
-    tags: ['indigenous', 'employment', 'training'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'Job seekers', '15+ years old'],
-    applicationUrl: 'https://www.niaa.gov.au/indigenous-affairs/employment',
-    isActive: true,
-    level: 'federal',
+      'Income support, training, and mentoring for eligible job seekers starting a new business.',
+    url: 'https://www.dewr.gov.au/self-employment-programs/new-enterprise-incentive-scheme-neis',
+    category: 'federal',
+    eligibility: ['Job seeker', 'Viable business idea', 'Completed NEIS training'],
   },
   {
-    id: 'fed-4',
-    title: 'ABSTUDY',
-    provider: 'Services Australia',
-    description:
-      'Financial help for Indigenous Australians who are studying or undertaking an Australian Apprenticeship.',
-    amount: 'Up to $28,500/year',
-    maxAmount: 28500,
-    deadline: 'Ongoing',
-    category: 'education',
-    tags: ['indigenous', 'education'],
-    eligibility: [
-      'Aboriginal or Torres Strait Islander',
-      'Enrolled in approved course',
-      'Australian resident',
-    ],
-    applicationUrl: 'https://www.servicesaustralia.gov.au/abstudy',
-    isActive: true,
-    level: 'federal',
-  },
-  {
-    id: 'fed-5',
-    title: 'Indigenous Home Ownership Program',
+    id: 'iba-business-support',
+    name: 'IBA Business Support',
     provider: 'Indigenous Business Australia',
+    amount: 'Loans from $5,000 to $5M',
     description:
-      'Home loans with lower deposit requirements and competitive interest rates for Indigenous Australians.',
-    amount: 'Home loans up to market value',
-    deadline: 'Ongoing',
-    category: 'housing',
-    tags: ['indigenous', 'housing'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'Steady income', 'Good credit history'],
-    applicationUrl: 'https://iba.gov.au/homes/',
-    isActive: true,
-    level: 'federal',
-  },
-  // State Grants - NSW
-  {
-    id: 'nsw-1',
-    title: 'Aboriginal Business Development Program',
-    provider: 'NSW Government',
-    description:
-      'Grants and support services to help Aboriginal businesses start, grow and succeed in NSW.',
-    amount: 'Up to $50,000',
-    maxAmount: 50000,
-    deadline: 'Rolling applications',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: ['Aboriginal-owned business', 'Operating in NSW', 'ABN required'],
-    applicationUrl: 'https://www.nsw.gov.au/grants-and-funding',
-    isActive: true,
-    level: 'state',
-    state: 'NSW',
+      'Business loans, support, and workshops specifically for Indigenous entrepreneurs and businesses.',
+    url: 'https://www.iba.gov.au/business/',
+    category: 'aboriginal',
+    eligibility: ['Aboriginal or Torres Strait Islander', 'Viable business plan'],
+    featured: true,
   },
   {
-    id: 'nsw-2',
-    title: 'Aboriginal Housing Office Grants',
-    provider: 'Aboriginal Housing Office NSW',
-    description:
-      'Housing assistance for Aboriginal people including home ownership and rental assistance.',
-    amount: 'Varies',
-    deadline: 'Ongoing',
-    category: 'housing',
-    tags: ['indigenous', 'housing'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'NSW resident'],
-    applicationUrl: 'https://www.aho.nsw.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'NSW',
-  },
-  // State Grants - VIC
-  {
-    id: 'vic-1',
-    title: 'Aboriginal Business Development Fund',
-    provider: 'Victorian Government',
-    description: 'Financial support for Aboriginal businesses to innovate, grow and create jobs.',
-    amount: 'Up to $100,000',
-    maxAmount: 100000,
-    deadline: 'Grant rounds',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: ['Aboriginal-owned (51%+)', 'Victorian business', 'Viable business model'],
-    applicationUrl: 'https://business.vic.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'VIC',
+    id: 'iba-home-loans',
+    name: 'IBA Home Loans',
+    provider: 'Indigenous Business Australia',
+    amount: 'Up to $750,000',
+    description: 'Home loans for Indigenous Australians to buy, build, or renovate their own home.',
+    url: 'https://www.iba.gov.au/homes/',
+    category: 'aboriginal',
+    eligibility: ['Aboriginal or Torres Strait Islander', 'First home buyer preferred'],
   },
   {
-    id: 'vic-2',
-    title: 'Koorie Education Scholarships',
-    provider: 'Department of Education Victoria',
-    description: 'Scholarships for Aboriginal students pursuing education and training pathways.',
-    amount: 'Up to $5,000',
-    maxAmount: 5000,
-    deadline: 'Annual',
-    category: 'education',
-    tags: ['indigenous', 'education'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'Victorian resident', 'Enrolled student'],
-    applicationUrl: 'https://www.vic.gov.au/koorie-education',
-    isActive: true,
-    level: 'state',
-    state: 'VIC',
-  },
-  // State Grants - QLD
-  {
-    id: 'qld-1',
-    title: 'Indigenous Business Growth Program',
-    provider: 'Queensland Government',
-    description: 'Support for Indigenous businesses to scale up and access new markets.',
-    amount: 'Up to $25,000',
-    maxAmount: 25000,
-    deadline: 'Open year-round',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: ['Indigenous ownership 50%+', 'Queensland based', '12+ months trading'],
-    applicationUrl: 'https://www.business.qld.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'QLD',
-  },
-  {
-    id: 'qld-2',
-    title: 'Aboriginal and Torres Strait Islander Housing',
-    provider: 'Queensland Department of Housing',
-    description:
-      'Housing assistance including public housing, home ownership support, and emergency housing.',
-    amount: 'Varies by program',
-    deadline: 'Ongoing',
-    category: 'housing',
-    tags: ['indigenous', 'housing'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'Queensland resident'],
-    applicationUrl: 'https://www.housing.qld.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'QLD',
-  },
-  // State Grants - WA
-  {
-    id: 'wa-1',
-    title: 'Aboriginal Business Development Program',
-    provider: 'Western Australian Government',
-    description: 'Grants and business support to help Aboriginal enterprises succeed.',
-    amount: 'Up to $75,000',
-    maxAmount: 75000,
-    deadline: 'Rolling',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: ['Aboriginal-owned', 'WA business', 'Business plan required'],
-    applicationUrl:
-      'https://www.wa.gov.au/organisation/department-of-primary-industries-and-regional-development',
-    isActive: true,
-    level: 'state',
-    state: 'WA',
-  },
-  {
-    id: 'wa-2',
-    title: 'Aboriginal Ranger Program',
-    provider: 'WA Parks and Wildlife',
-    description:
-      'Employment and training opportunities for Aboriginal people in land and sea management.',
-    amount: 'Paid employment',
-    deadline: 'Ongoing',
-    category: 'employment',
-    tags: ['indigenous', 'employment', 'environmental'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'Interest in conservation'],
-    applicationUrl: 'https://www.dbca.wa.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'WA',
-  },
-  // State Grants - SA
-  {
-    id: 'sa-1',
-    title: 'Aboriginal Economic Participation',
-    provider: 'South Australian Government',
-    description: 'Programs to increase Aboriginal employment and business opportunities in SA.',
-    amount: 'Varies',
-    deadline: 'Multiple programs',
-    category: 'employment',
-    tags: ['indigenous', 'employment', 'business'],
-    eligibility: ['Aboriginal or Torres Strait Islander', 'SA resident'],
-    applicationUrl: 'https://www.sa.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'SA',
-  },
-  // State Grants - NT
-  {
-    id: 'nt-1',
-    title: 'Indigenous Business Development',
-    provider: 'NT Government',
-    description:
-      'Business support and grants for Aboriginal enterprises in the Northern Territory.',
-    amount: 'Up to $50,000',
-    maxAmount: 50000,
-    deadline: 'Rolling',
-    category: 'business',
-    tags: ['indigenous', 'business'],
-    eligibility: ['Aboriginal-owned', 'NT based'],
-    applicationUrl: 'https://nt.gov.au/',
-    isActive: true,
-    level: 'state',
-    state: 'NT',
-  },
-  // Indigenous Specific
-  {
-    id: 'ind-1',
-    title: 'Many Rivers Microenterprise Program',
-    provider: 'Many Rivers',
-    description:
-      'Free business coaching and small loans for Indigenous entrepreneurs and disadvantaged Australians.',
-    amount: 'Loans up to $20,000',
-    maxAmount: 20000,
-    deadline: 'Ongoing',
-    category: 'business',
-    tags: ['indigenous', 'business', 'microfinance'],
-    eligibility: [
-      'Want to start or grow a small business',
-      'Limited access to traditional finance',
-    ],
-    applicationUrl: 'https://mfrm.org.au/',
-    isActive: true,
-    level: 'indigenous',
-  },
-  {
-    id: 'ind-2',
-    title: 'Supply Nation Certified Supplier Program',
+    id: 'supply-nation-certification',
+    name: 'Supply Nation Certification',
     provider: 'Supply Nation',
+    amount: 'Access to $3B+ procurement',
     description:
-      'Certification that connects Indigenous businesses with corporate and government procurement opportunities.',
-    amount: 'Business opportunities',
-    deadline: 'Ongoing',
-    category: 'business',
-    tags: ['indigenous', 'business', 'procurement'],
-    eligibility: ['51%+ Indigenous owned', 'Registered business', 'ABN/ACN'],
-    applicationUrl: 'https://supplynation.org.au/',
-    isActive: true,
-    level: 'indigenous',
+      'Get certified as an Indigenous business to access corporate and government procurement opportunities.',
+    url: 'https://supplynation.org.au/',
+    category: 'aboriginal',
+    eligibility: ['51%+ Indigenous owned', 'Registered business'],
+    featured: true,
   },
   {
-    id: 'ind-3',
-    title: 'Yarn Australia Women&apos;s Business Program',
-    provider: 'Yarn Australia',
-    description: 'Dedicated support for Aboriginal and Torres Strait Islander women in business.',
-    amount: 'Training and mentoring',
-    deadline: 'Program intakes',
-    category: 'business',
-    tags: ['indigenous', 'women', 'business'],
-    eligibility: ['Aboriginal or Torres Strait Islander woman', 'Business interest'],
-    applicationUrl: 'https://yarnaustralia.com/',
-    isActive: true,
-    level: 'indigenous',
+    id: 'many-rivers-microfinance',
+    name: 'Many Rivers Microfinance',
+    provider: 'Many Rivers',
+    amount: 'Loans from $500 to $20,000',
+    description:
+      'Microfinance loans and business coaching for Indigenous entrepreneurs starting small businesses.',
+    url: 'https://manyrivers.org.au/',
+    category: 'aboriginal',
+    eligibility: ['Indigenous entrepreneur', 'Small business start-up'],
+  },
+
+  // NSW State Grants
+  {
+    id: 'nsw-aboriginal-economic-prosperity',
+    name: 'Aboriginal Economic Prosperity Framework',
+    provider: 'NSW Government',
+    amount: 'Varies by program',
+    description:
+      'Programs supporting Aboriginal economic development, business growth, and employment in NSW.',
+    url: 'https://www.aboriginalaffairs.nsw.gov.au/',
+    category: 'state',
+    state: 'NSW',
+    eligibility: ['NSW based', 'Aboriginal business or organisation'],
   },
   {
-    id: 'ind-4',
-    title: 'Deadly Science Equipment Grants',
-    provider: 'Deadly Science',
+    id: 'nsw-boosting-business',
+    name: 'Boosting Business Innovation Program',
+    provider: 'Investment NSW',
+    amount: 'Up to $100,000',
     description:
-      'Science equipment and books for schools with high Indigenous student populations.',
-    amount: 'Equipment packages',
-    deadline: 'Term-based',
-    category: 'education',
-    tags: ['indigenous', 'education', 'science'],
-    eligibility: ['Schools with 10%+ Indigenous students', 'Regional/remote priority'],
-    applicationUrl: 'https://deadlyscience.org.au/',
-    isActive: true,
-    level: 'indigenous',
+      'Co-funding for collaborative research projects between businesses and research organisations.',
+    url: 'https://www.investment.nsw.gov.au/',
+    category: 'state',
+    state: 'NSW',
+  },
+
+  // VIC State Grants
+  {
+    id: 'vic-aboriginal-business',
+    name: 'Aboriginal Business Development',
+    provider: 'Aboriginal Victoria',
+    amount: 'Up to $50,000',
+    description:
+      'Grants for Aboriginal businesses in Victoria for equipment, marketing, and business development.',
+    url: 'https://www.firstpeoplesrelations.vic.gov.au/',
+    category: 'state',
+    state: 'VIC',
+    eligibility: ['Victorian Aboriginal business', 'Registered business'],
   },
   {
-    id: 'ind-5',
-    title: 'CareerTrackers Internship Program',
-    provider: 'CareerTrackers',
+    id: 'vic-small-business-grants',
+    name: 'Small Business Grants',
+    provider: 'Business Victoria',
+    amount: 'Up to $10,000',
     description:
-      'Paid internships and mentoring for Indigenous university students with Australia&apos;s top employers.',
-    amount: 'Paid internships',
-    deadline: 'Annual intake',
-    category: 'employment',
-    tags: ['indigenous', 'employment', 'internship'],
-    eligibility: [
-      'Aboriginal or Torres Strait Islander',
-      'University student',
-      'Australian citizen/PR',
-    ],
-    applicationUrl: 'https://www.careertrackers.org.au/',
-    isActive: true,
-    level: 'indigenous',
+      'Support for small businesses to adapt, grow, and innovate in changing market conditions.',
+    url: 'https://business.vic.gov.au/',
+    category: 'state',
+    state: 'VIC',
+  },
+
+  // QLD State Grants
+  {
+    id: 'qld-backing-indigenous-arts',
+    name: 'Backing Indigenous Arts',
+    provider: 'Arts Queensland',
+    amount: 'Up to $50,000',
+    description:
+      'Supporting Queensland Indigenous artists and art centres to develop and promote their work.',
+    url: 'https://www.arts.qld.gov.au/',
+    category: 'state',
+    state: 'QLD',
+    eligibility: ['Queensland Indigenous artist', 'Established practice'],
+  },
+  {
+    id: 'qld-small-business-grants',
+    name: 'Business Growth Fund',
+    provider: 'Business Queensland',
+    amount: 'Up to $50,000',
+    description: 'Co-investment funding to help Queensland small businesses grow and create jobs.',
+    url: 'https://www.business.qld.gov.au/',
+    category: 'state',
+    state: 'QLD',
+  },
+
+  // WA State Grants
+  {
+    id: 'wa-aboriginal-business-program',
+    name: 'Aboriginal Business Development Program',
+    provider: 'Department of Primary Industries WA',
+    amount: 'Up to $20,000',
+    description:
+      'Supporting Aboriginal businesses in Western Australia with business development and growth.',
+    url: 'https://www.wa.gov.au/organisation/department-of-primary-industries-and-regional-development',
+    category: 'state',
+    state: 'WA',
+    eligibility: ['WA Aboriginal business', '50%+ Indigenous ownership'],
+  },
+
+  // SA State Grants
+  {
+    id: 'sa-aboriginal-business-accelerator',
+    name: 'Aboriginal Business Accelerator',
+    provider: 'Office for Small and Family Business SA',
+    amount: 'Mentoring + up to $10,000',
+    description:
+      'Intensive business support program for Aboriginal entrepreneurs in South Australia.',
+    url: 'https://www.sa.gov.au/',
+    category: 'state',
+    state: 'SA',
+    eligibility: ['SA Aboriginal entrepreneur', 'Business idea or early-stage business'],
+  },
+
+  // NT State Grants
+  {
+    id: 'nt-indigenous-business-support',
+    name: 'Indigenous Business Development',
+    provider: 'NT Government',
+    amount: 'Varies',
+    description:
+      'Support programs for Indigenous businesses in the Northern Territory including remote communities.',
+    url: 'https://nt.gov.au/industry/business',
+    category: 'state',
+    state: 'NT',
+    eligibility: ['NT based', 'Indigenous ownership'],
+  },
+
+  // TAS State Grants
+  {
+    id: 'tas-aboriginal-business-program',
+    name: 'Aboriginal Small Business Program',
+    provider: 'Business Tasmania',
+    amount: 'Up to $10,000',
+    description: 'Grants and support for Aboriginal-owned small businesses in Tasmania.',
+    url: 'https://www.business.tas.gov.au/',
+    category: 'state',
+    state: 'TAS',
+    eligibility: ['Tasmanian Aboriginal business'],
+  },
+
+  // ACT Grants
+  {
+    id: 'act-indigenous-business',
+    name: 'ACT Indigenous Business Support',
+    provider: 'ACT Government',
+    amount: 'Up to $15,000',
+    description:
+      'Supporting Indigenous businesses in the ACT with establishment and growth funding.',
+    url: 'https://www.act.gov.au/',
+    category: 'state',
+    state: 'ACT',
+    eligibility: ['ACT based Indigenous business'],
+  },
+
+  // Private/Corporate Programs
+  {
+    id: 'westpac-scholars',
+    name: 'Westpac Indigenous Business Scholarship',
+    provider: 'Westpac',
+    amount: '$15,000 scholarship',
+    description: 'Scholarships for Indigenous business students and emerging entrepreneurs.',
+    url: 'https://scholars.westpacgroup.com.au/',
+    category: 'private',
+    eligibility: ['Indigenous Australian', 'Business studies or entrepreneur'],
+  },
+  {
+    id: 'google-indigenous-tech',
+    name: 'Google for Startups',
+    provider: 'Google',
+    amount: 'Training + up to $100,000 credits',
+    description: 'Accelerator program and cloud credits for Indigenous-led tech startups.',
+    url: 'https://startup.google.com/',
+    category: 'private',
+    eligibility: ['Indigenous-led startup', 'Tech focus'],
   },
 ];
 
 const categories = [
-  { id: 'all', label: 'All Grants', icon: Sparkles },
-  { id: 'business', label: 'Business', icon: Briefcase },
-  { id: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'employment', label: 'Employment', icon: Users },
-  { id: 'housing', label: 'Housing', icon: Home },
-  { id: 'community', label: 'Community', icon: Heart },
+  { id: 'all', name: 'All Grants', icon: '🏆' },
+  { id: 'federal', name: 'Federal Government', icon: '🏛️' },
+  { id: 'state', name: 'State Government', icon: '📍' },
+  { id: 'aboriginal', name: 'Aboriginal Specific', icon: '🪃' },
+  { id: 'private', name: 'Private & Corporate', icon: '🏢' },
 ];
 
-const levels = [
-  { id: 'all', label: 'All Sources' },
-  { id: 'federal', label: 'Federal Government' },
-  { id: 'state', label: 'State Government' },
-  { id: 'indigenous', label: 'Indigenous Organisations' },
-];
-
-const states = [
-  { id: 'all', label: 'All States' },
-  { id: 'NSW', label: 'New South Wales' },
-  { id: 'VIC', label: 'Victoria' },
-  { id: 'QLD', label: 'Queensland' },
-  { id: 'WA', label: 'Western Australia' },
-  { id: 'SA', label: 'South Australia' },
-  { id: 'TAS', label: 'Tasmania' },
-  { id: 'NT', label: 'Northern Territory' },
-  { id: 'ACT', label: 'ACT' },
-];
+const states = ['All States', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'NT', 'TAS', 'ACT'];
 
 export default function GrantsPage() {
-  const [grants, setGrants] = useState<Grant[]>([]);
+  const [grants, setGrants] = useState<Grant[]>(allGrants);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
-  const [selectedState, setSelectedState] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedState, setSelectedState] = useState('All States');
+  const [savedGrants, setSavedGrants] = useState<string[]>([]);
 
-  // Fetch grants from API with fallback to demo data
-  const fetchGrants = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await api('/financial/grants');
-      if (response.ok && response.data?.grants?.length > 0) {
-        setGrants(response.data.grants);
-      } else {
-        setGrants(demoGrants);
+  useEffect(() => {
+    // Try to fetch from API, fall back to static data
+    const fetchGrants = async () => {
+      try {
+        const response = await api('/business-formation/grants');
+        if (response.ok && response.data?.grants) {
+          // API data is available, but we use our comprehensive list
+          // which already includes the API grants
+          setGrants(allGrants);
+        }
+      } catch (error) {
+        console.error('Failed to fetch grants:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch grants:', error);
-      setGrants(demoGrants);
-    } finally {
-      setLoading(false);
+    };
+
+    fetchGrants();
+
+    // Load saved grants from localStorage
+    const saved = localStorage.getItem('savedGrants');
+    if (saved) {
+      setSavedGrants(JSON.parse(saved));
     }
   }, []);
 
-  useEffect(() => {
-    fetchGrants();
-  }, [fetchGrants]);
+  const toggleSaveGrant = (grantId: string) => {
+    const updated = savedGrants.includes(grantId)
+      ? savedGrants.filter((id) => id !== grantId)
+      : [...savedGrants, grantId];
+    setSavedGrants(updated);
+    localStorage.setItem('savedGrants', JSON.stringify(updated));
+  };
 
-  // Filter grants
   const filteredGrants = grants.filter((grant) => {
     const matchesSearch =
-      !searchQuery ||
-      grant.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      grant.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      grant.description.toLowerCase().includes(searchQuery.toLowerCase());
+      grant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      grant.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      grant.provider.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory = selectedCategory === 'all' || grant.category === selectedCategory;
 
-    const matchesLevel = selectedLevel === 'all' || grant.level === selectedLevel;
-
     const matchesState =
-      selectedState === 'all' ||
-      !grant.state ||
-      grant.state === selectedState ||
-      grant.level === 'federal' ||
-      grant.level === 'indigenous';
+      selectedState === 'All States' || !grant.state || grant.state === selectedState;
 
-    return matchesSearch && matchesCategory && matchesLevel && matchesState;
+    return matchesSearch && matchesCategory && matchesState;
   });
 
-  const federalGrants = filteredGrants.filter((g) => g.level === 'federal');
-  const stateGrants = filteredGrants.filter((g) => g.level === 'state');
-  const indigenousGrants = filteredGrants.filter((g) => g.level === 'indigenous');
+  const featuredGrants = grants.filter((g) => g.featured);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: accentPink }} />
+          <p className="text-slate-600">Loading grants...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Hero Header */}
-      <div
-        className="relative overflow-hidden border-b border-white/10"
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Hero Section */}
+      <section
+        className="relative py-16 sm:py-20 overflow-hidden"
         style={{
           background: `linear-gradient(135deg, ${accentPink}15 0%, ${accentPurple}15 100%)`,
         }}
       >
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20 blur-3xl"
-            style={{ background: accentPink }}
+            className="absolute top-20 left-10 w-64 h-64 rounded-full opacity-20"
+            style={{ background: accentPink, filter: 'blur(100px)' }}
           />
           <div
-            className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20 blur-3xl"
-            style={{ background: accentPurple }}
+            className="absolute bottom-10 right-10 w-80 h-80 rounded-full opacity-20"
+            style={{ background: accentPurple, filter: 'blur(100px)' }}
           />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
-                  }}
-                >
-                  <Award className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white">Grants & Funding</h1>
-                  <p className="text-white/60">Federal, State & Indigenous funding opportunities</p>
-                </div>
-              </div>
-              <p className="text-white/70 max-w-2xl">
-                Discover grants, scholarships, and funding programs designed to support Aboriginal
-                and Torres Strait Islander people in business, education, employment, and housing.
-              </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-slate-200 text-sm font-medium text-slate-700 mb-6">
+              <Award className="w-4 h-4" style={{ color: accentPink }} />
+              Federal, State &amp; Indigenous Grants
             </div>
+            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6">
+              Funding &amp; Grants for{' '}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
+                }}
+              >
+                Indigenous Australians
+              </span>
+            </h1>
+            <p className="text-lg text-slate-600 mb-8">
+              Discover grants, loans, and funding opportunities from federal, state, and private
+              sources to help start or grow your business, education, or career.
+            </p>
 
-            {/* Quick Stats */}
-            <div className="flex gap-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center min-w-[100px]">
-                <div className="text-2xl font-bold text-white">{grants.length}</div>
-                <div className="text-xs text-white/60">Total Grants</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center min-w-[100px]">
-                <div className="text-2xl font-bold text-white">{federalGrants.length}</div>
-                <div className="text-xs text-white/60">Federal</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center min-w-[100px]">
-                <div className="text-2xl font-bold text-white">{indigenousGrants.length}</div>
-                <div className="text-xs text-white/60">Indigenous Orgs</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search & Filters */}
-      <div className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-sm border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+            {/* Search Bar */}
+            <div className="relative max-w-2xl mx-auto">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search grants by name, provider, or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:border-transparent"
-                style={{ '--tw-ring-color': accentPink } as React.CSSProperties}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-slate-800"
               />
             </div>
-
-            {/* Filter Toggle (Mobile) */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white"
-            >
-              <Filter className="w-5 h-5" />
-              Filters
-            </button>
-
-            {/* Desktop Filters */}
-            <div className="hidden lg:flex items-center gap-3">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2"
-                style={{ '--tw-ring-color': accentPink } as React.CSSProperties}
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id} className="bg-slate-800">
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className="px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2"
-                style={{ '--tw-ring-color': accentPink } as React.CSSProperties}
-              >
-                {levels.map((level) => (
-                  <option key={level.id} value={level.id} className="bg-slate-800">
-                    {level.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2"
-                style={{ '--tw-ring-color': accentPink } as React.CSSProperties}
-              >
-                {states.map((state) => (
-                  <option key={state.id} value={state.id} className="bg-slate-800">
-                    {state.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Mobile Filters */}
-          {showFilters && (
-            <div className="lg:hidden mt-4 flex flex-col gap-3">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white"
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id} className="bg-slate-800">
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white"
-              >
-                {levels.map((level) => (
-                  <option key={level.id} value={level.id} className="bg-slate-800">
-                    {level.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white"
-              >
-                {states.map((state) => (
-                  <option key={state.id} value={state.id} className="bg-slate-800">
-                    {state.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Category Pills */}
-          <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                    selectedCategory === cat.id
-                      ? 'text-white'
-                      : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                  }`}
-                  style={
-                    selectedCategory === cat.id
-                      ? {
-                          background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
-                        }
-                      : {}
-                  }
-                >
-                  <Icon className="w-4 h-4" />
-                  {cat.label}
-                </button>
-              );
-            })}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-white/40" />
+      {/* Featured Grants */}
+      {featuredGrants.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex items-center gap-3 mb-6">
+            <Star className="w-6 h-6" style={{ color: accentPink }} />
+            <h2 className="text-2xl font-bold text-slate-900">Featured Opportunities</h2>
           </div>
-        ) : filteredGrants.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 flex items-center justify-center">
-              <Search className="w-8 h-8 text-white/40" />
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">No grants found</h3>
-            <p className="text-white/60">Try adjusting your search or filters</p>
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {/* Federal Grants Section */}
-            {(selectedLevel === 'all' || selectedLevel === 'federal') &&
-              federalGrants.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-white">Federal Government Grants</h2>
-                      <p className="text-sm text-white/60">Australia-wide programs and funding</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {federalGrants.map((grant) => (
-                      <GrantCard key={grant.id} grant={grant} />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-            {/* State Grants Section */}
-            {(selectedLevel === 'all' || selectedLevel === 'state') && stateGrants.length > 0 && (
-              <section>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-green-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white">State & Territory Grants</h2>
-                    <p className="text-sm text-white/60">Location-specific programs</p>
-                  </div>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {stateGrants.map((grant) => (
-                    <GrantCard key={grant.id} grant={grant} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Indigenous Organisations Section */}
-            {(selectedLevel === 'all' || selectedLevel === 'indigenous') &&
-              indigenousGrants.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                      <Star className="w-5 h-5 text-amber-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-white">
-                        Indigenous Organisation Programs
-                      </h2>
-                      <p className="text-sm text-white/60">Community-led support and funding</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {indigenousGrants.map((grant) => (
-                      <GrantCard key={grant.id} grant={grant} />
-                    ))}
-                  </div>
-                </section>
-              )}
-          </div>
-        )}
-
-        {/* Help Section */}
-        <section className="mt-16">
-          <div
-            className="rounded-2xl p-8 text-center"
-            style={{
-              background: `linear-gradient(135deg, ${accentPink}15 0%, ${accentPurple}15 100%)`,
-            }}
-          >
-            <h3 className="text-xl font-bold text-white mb-3">Need Help Applying?</h3>
-            <p className="text-white/70 mb-6 max-w-lg mx-auto">
-              Our team can help you identify the right grants and support your application process.
-              Connect with a business mentor or financial counsellor.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/mentorship"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white font-semibold transition-all hover:opacity-90"
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredGrants.map((grant) => (
+              <div
+                key={grant.id}
+                className="relative rounded-2xl p-6 border-2 transition-all hover:shadow-xl"
                 style={{
-                  background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
+                  borderColor: accentPink,
+                  background: `linear-gradient(135deg, ${accentPink}05 0%, ${accentPurple}05 100%)`,
                 }}
               >
-                <Users className="w-5 h-5" />
-                Find a Mentor
-              </Link>
-              <Link
-                href="/member/financial-wellness"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-all"
-              >
-                <DollarSign className="w-5 h-5" />
-                Financial Support
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-}
-
-// Grant Card Component
-function GrantCard({ grant }: { grant: Grant }) {
-  const CategoryIcon = getCategoryIcon(grant.category);
-  const accentPink = '#E91E8C';
-  const accentPurple = '#8B5CF6';
-
-  const getLevelBadgeStyles = (level: string) => {
-    switch (level) {
-      case 'federal':
-        return 'bg-blue-500/20 text-blue-300';
-      case 'state':
-        return 'bg-green-500/20 text-green-300';
-      case 'indigenous':
-        return 'bg-amber-500/20 text-amber-300';
-      default:
-        return 'bg-gray-500/20 text-gray-300';
-    }
-  };
-
-  function getCategoryIcon(category: string) {
-    switch (category) {
-      case 'business':
-        return Briefcase;
-      case 'education':
-        return GraduationCap;
-      case 'employment':
-        return Users;
-      case 'housing':
-        return Home;
-      case 'community':
-        return Heart;
-      default:
-        return Sparkles;
-    }
-  }
-
-  return (
-    <div className="group bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all">
-      <div className="p-5">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{
-                background: `linear-gradient(135deg, ${accentPink}30, ${accentPurple}30)`,
-              }}
-            >
-              <CategoryIcon className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getLevelBadgeStyles(
-                  grant.level,
-                )}`}
-              >
-                {grant.level === 'federal'
-                  ? 'Federal'
-                  : grant.level === 'state'
-                    ? grant.state || 'State'
-                    : 'Indigenous Org'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Title & Provider */}
-        <h3 className="font-semibold text-white mb-1 line-clamp-2 group-hover:text-pink-300 transition-colors">
-          {grant.title}
-        </h3>
-        <p className="text-sm text-white/50 mb-3">{grant.provider}</p>
-
-        {/* Description */}
-        <p className="text-sm text-white/70 mb-4 line-clamp-3">{grant.description}</p>
-
-        {/* Amount & Deadline */}
-        <div className="flex items-center gap-4 text-sm mb-4">
-          {grant.amount && (
-            <div className="flex items-center gap-1.5 text-green-400">
-              <DollarSign className="w-4 h-4" />
-              <span>{grant.amount}</span>
-            </div>
-          )}
-          {grant.deadline && (
-            <div className="flex items-center gap-1.5 text-white/50">
-              <Clock className="w-4 h-4" />
-              <span>{grant.deadline}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Tags */}
-        {grant.tags && grant.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {grant.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-0.5 text-xs rounded-full bg-white/10 text-white/60"
-              >
-                {tag}
-              </span>
+                <div className="absolute -top-3 -right-3">
+                  <span
+                    className="px-3 py-1 text-xs font-bold text-white rounded-full"
+                    style={{
+                      background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
+                    }}
+                  >
+                    Featured
+                  </span>
+                </div>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">
+                      {grant.category === 'aboriginal'
+                        ? '🪃'
+                        : grant.category === 'federal'
+                          ? '🏛️'
+                          : '🏢'}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                      {grant.provider}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => toggleSaveGrant(grant.id)}
+                    className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                  >
+                    <Bookmark
+                      className={`w-5 h-5 ${savedGrants.includes(grant.id) ? 'fill-current' : ''}`}
+                      style={{ color: savedGrants.includes(grant.id) ? accentPink : '#94a3b8' }}
+                    />
+                  </button>
+                </div>
+                <h3 className="font-bold text-lg text-slate-900 mb-2">{grant.name}</h3>
+                <p className="text-sm text-slate-600 mb-4 line-clamp-2">{grant.description}</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <DollarSign className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-emerald-700">{grant.amount}</span>
+                </div>
+                <a
+                  href={grant.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-white font-medium transition-all hover:scale-[1.02]"
+                  style={{ background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})` }}
+                >
+                  Apply Now <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             ))}
           </div>
-        )}
+        </section>
+      )}
 
-        {/* CTA */}
-        {grant.applicationUrl && (
-          <a
-            href={grant.applicationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-            style={{
-              background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
-            }}
-          >
-            Apply Now
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        )}
-      </div>
+      {/* Filters & Results */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar Filters */}
+          <aside className="lg:w-64 flex-shrink-0">
+            <div className="sticky top-4 space-y-6">
+              {/* Category Filter */}
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <Filter className="w-4 h-4" />
+                  Categories
+                </h3>
+                <div className="space-y-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        selectedCategory === cat.id
+                          ? 'bg-pink-50 text-pink-700 border border-pink-200'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.name}</span>
+                      <span className="ml-auto text-xs text-slate-400">
+                        {cat.id === 'all'
+                          ? grants.length
+                          : grants.filter((g) => g.category === cat.id).length}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* State Filter */}
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  State/Territory
+                </h3>
+                <select
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                >
+                  {states.map((state) => (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Quick Links */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
+                <h3 className="font-bold text-slate-900 mb-3">Need Help?</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  Our team can help you find the right grants for your situation.
+                </p>
+                <Link
+                  href="/mentorship"
+                  className="flex items-center gap-2 text-sm font-medium"
+                  style={{ color: accentPink }}
+                >
+                  Talk to a Mentor <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+          {/* Results Grid */}
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-slate-600">
+                Showing{' '}
+                <span className="font-semibold text-slate-900">{filteredGrants.length}</span> grants
+              </p>
+              {savedGrants.length > 0 && (
+                <button
+                  className="flex items-center gap-2 text-sm font-medium"
+                  style={{ color: accentPink }}
+                >
+                  <Bookmark className="w-4 h-4 fill-current" />
+                  {savedGrants.length} Saved
+                </button>
+              )}
+            </div>
+
+            {filteredGrants.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+                <AlertCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <h3 className="font-semibold text-slate-700 mb-2">No grants found</h3>
+                <p className="text-sm text-slate-500">Try adjusting your filters or search terms</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredGrants.map((grant) => (
+                  <div
+                    key={grant.id}
+                    className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span
+                            className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
+                              grant.category === 'federal'
+                                ? 'bg-blue-100 text-blue-700'
+                                : grant.category === 'state'
+                                  ? 'bg-amber-100 text-amber-700'
+                                  : grant.category === 'aboriginal'
+                                    ? 'bg-emerald-100 text-emerald-700'
+                                    : 'bg-purple-100 text-purple-700'
+                            }`}
+                          >
+                            {grant.category === 'federal'
+                              ? '🏛️ Federal'
+                              : grant.category === 'state'
+                                ? `📍 ${grant.state || 'State'}`
+                                : grant.category === 'aboriginal'
+                                  ? '🪃 Aboriginal'
+                                  : '🏢 Private'}
+                          </span>
+                          <span className="text-xs text-slate-500">{grant.provider}</span>
+                        </div>
+                        <h3 className="font-bold text-lg text-slate-900 mb-2">{grant.name}</h3>
+                        <p className="text-sm text-slate-600 mb-3">{grant.description}</p>
+
+                        {grant.eligibility && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {grant.eligibility.map((req, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-lg"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                {req}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                            <DollarSign className="w-4 h-4" />
+                            {grant.amount}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex sm:flex-col items-center gap-2">
+                        <button
+                          onClick={() => toggleSaveGrant(grant.id)}
+                          className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+                        >
+                          <Bookmark
+                            className={`w-5 h-5 ${savedGrants.includes(grant.id) ? 'fill-current' : ''}`}
+                            style={{
+                              color: savedGrants.includes(grant.id) ? accentPink : '#94a3b8',
+                            }}
+                          />
+                        </button>
+                        <a
+                          href={grant.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm transition-all hover:scale-[1.02]"
+                          style={{
+                            background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
+                          }}
+                        >
+                          Details <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div
+          className="rounded-3xl p-8 md:p-12 relative overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)` }}
+        >
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          </div>
+          <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                Ready to Start Your Business Journey?
+              </h2>
+              <p className="text-white/80 max-w-xl">
+                Our Business Suite helps you plan, register, and manage your business with tools
+                designed specifically for Indigenous entrepreneurs.
+              </p>
+            </div>
+            <Link
+              href="/business-suite"
+              className="flex items-center gap-2 px-6 py-3 bg-white rounded-xl font-semibold transition-all hover:scale-105"
+              style={{ color: accentPink }}
+            >
+              Open Business Suite <ChevronRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Disclaimer */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-800">
+            <strong>Disclaimer:</strong> Grant information is provided for guidance only.
+            Availability, amounts, and eligibility criteria may change. Always verify current
+            details directly with the grant provider before applying.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

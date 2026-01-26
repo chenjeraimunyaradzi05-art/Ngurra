@@ -48,12 +48,10 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   const communityNavItems = [
     { href: '/member/mentorship-community', label: 'Mentorship Community', icon: Users },
-    { href: '/social-feed', label: 'Social Feed', icon: MessageSquare },
     { href: '/member/messages', label: 'Messages', icon: MessageSquare },
     { href: '/member/notifications', label: 'Notifications', icon: Bell },
     { href: '/member/wellness', label: 'Wellness', icon: Heart },
     { href: '/member/financial-wellness', label: 'Financial Wellness', icon: PiggyBank },
-    { href: '/grants', label: 'Grants & Funding', icon: Award },
     { href: '/events', label: 'Events', icon: Calendar },
     { href: '/business-suite', label: 'Business Suite', icon: Building2 },
   ];

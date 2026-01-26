@@ -14,12 +14,11 @@ const publicNavigation = [
   { name: 'Courses', href: '/courses' },
   { name: 'Mentorship', href: '/mentorship' },
   { name: 'Community', href: '/community' },
-  { name: 'Social', href: '/social-feed' },
   { name: 'Housing', href: '/rentals' },
   { name: 'Resources', href: '/resources' },
-  { name: 'Grants', href: '/grants' },
-  { name: 'Business', href: '/business-suite' },
   { name: 'Events', href: '/events' },
+  { name: 'Grants', href: '/grants' },
+  { name: 'About', href: '/about' },
 ];
 
 function roleNavigation(userType: string) {
@@ -27,22 +26,25 @@ function roleNavigation(userType: string) {
   if (t === 'member')
     return [
       { name: 'Dashboard', href: '/member/dashboard' },
-      { name: 'My Mentors', href: '/member/mentorship' },
-      { name: 'Applications', href: '/member/applications' },
+      { name: 'Messages', href: '/messages' },
+      { name: 'Connections', href: '/connections' },
+      { name: 'Business Suite', href: '/business-suite' },
+      { name: 'Grants', href: '/grants' },
       { name: 'Housing', href: '/rentals' },
-      { name: 'Career', href: '/career' },
-      { name: 'Messages', href: '/member/messages' },
       { name: 'Settings', href: '/settings' },
     ];
   if (t === 'mentor')
     return [
       { name: 'Mentor Hub', href: '/mentor/dashboard' },
+      { name: 'Messages', href: '/messages' },
+      { name: 'Connections', href: '/connections' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Settings', href: '/settings' },
     ];
   if (t === 'tafe' || t === 'institution')
     return [
       { name: 'TAFE', href: '/tafe/dashboard' },
+      { name: 'Messages', href: '/messages' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Settings', href: '/settings' },
     ];
@@ -50,6 +52,7 @@ function roleNavigation(userType: string) {
     return [
       { name: 'Dashboard', href: '/company/dashboard' },
       { name: 'Jobs', href: '/company/jobs' },
+      { name: 'Messages', href: '/messages' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Billing', href: '/company/billing' },
       { name: 'Settings', href: '/settings' },

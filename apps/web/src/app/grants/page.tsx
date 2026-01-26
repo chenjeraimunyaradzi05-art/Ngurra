@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import api from '@/lib/apiClient';
 import {
@@ -373,6 +373,24 @@ const states = [
   { id: 'ACT', name: 'Australian Capital Territory' },
 ];
 
+// Kangaroo SVG (inline for simplicity)
+const KangarooLogo = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="Kangaroo Logo"
+  >
+    <circle cx="16" cy="16" r="16" fill="#F59E0B" />
+    <path d="M10 20c2-4 6-7 10-7 2 0 3 2 2 4-1 2-4 3-6 3l-2 4-4-4z" fill="#fff" />
+    <ellipse cx="20" cy="13" rx="2" ry="1" fill="#fff" />
+    <circle cx="21" cy="12" r="0.5" fill="#333" />
+    <circle cx="19" cy="12" r="0.5" fill="#333" />
+  </svg>
+);
+
 export default function GrantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -381,6 +399,22 @@ export default function GrantsPage() {
   const [loading, setLoading] = useState(true);
   const [grants, setGrants] = useState<Grant[]>(allGrants);
   const [showFilters, setShowFilters] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const aiInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Focus AI input on open and close on Escape
+  useEffect(() => {
+    if (!showAIModal) return;
+    const timer = setTimeout(() => aiInputRef.current?.focus?.(), 100);
+    const onKey = (e: KeyboardEvent) => {
+      if ((e as KeyboardEvent).key === 'Escape') setShowAIModal(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [showAIModal]);
 
   // Fetch grants from API and merge with static data
   useEffect(() => {
@@ -521,304 +555,198 @@ export default function GrantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Hero Section */}
-      <section
-        className="relative py-16 md:py-24"
-        style={{
-          background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-        }}
-      >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white/90 text-sm font-medium mb-6 backdrop-blur-sm">
-              <DollarSign className="w-4 h-4" />
-              <span>Federal • State • Aboriginal Grants</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Grants & Funding
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8">
-              Discover funding opportunities for Aboriginal and Torres Strait Islander businesses,
-              entrepreneurs, and organisations. Access federal, state, and Indigenous-specific
-              grants.
-            </p>
+    <>
+      <div className="min-h-screen bg-slate-50">
+        {/* Hero Section */}
+        <section
+          className="relative py-16 md:py-24"
+          style={{
+            background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
+          }}
+        >
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white/90 text-sm font-medium mb-6 backdrop-blur-sm">
+                <DollarSign className="w-4 h-4" />
+                <span>Federal • State • Aboriginal Grants</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                Grants & Funding
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8">
+                Discover funding opportunities for Aboriginal and Torres Strait Islander businesses,
+                entrepreneurs, and organisations. Access federal, state, and Indigenous-specific
+                grants.
+              </p>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search grants by name, provider, or keyword..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-xl"
-                />
+              {/* Search Bar */}
+              <div className="max-w-2xl mx-auto">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search grants by name, provider, or keyword..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-xl"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Category Tabs */}
-      <section className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
-            {categories.map((cat) => (
+        {/* Category Tabs */}
+        <section className="bg-white border-b border-slate-200 sticky top-0 z-30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                    selectedCategory === cat.id
+                      ? 'text-white shadow-lg'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                  style={
+                    selectedCategory === cat.id
+                      ? { background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})` }
+                      : {}
+                  }
+                >
+                  <span>{cat.icon}</span>
+                  {cat.name}
+                </button>
+              ))}
+
+              {/* Filter Button */}
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                  selectedCategory === cat.id
-                    ? 'text-white shadow-lg'
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ml-auto ${
+                  showFilters
+                    ? 'bg-slate-900 text-white'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
-                style={
-                  selectedCategory === cat.id
-                    ? { background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})` }
-                    : {}
-                }
               >
-                <span>{cat.icon}</span>
-                {cat.name}
+                <Filter className="w-4 h-4" />
+                Filters
               </button>
-            ))}
+            </div>
 
-            {/* Filter Button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ml-auto ${
-                showFilters
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-          </div>
-
-          {/* Expanded Filters */}
-          {showFilters && (
-            <div className="pb-4 border-t border-slate-100 pt-4">
-              <div className="flex flex-wrap gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-2">
-                    State/Territory
-                  </label>
-                  <select
-                    value={selectedState}
-                    onChange={(e) => setSelectedState(e.target.value)}
-                    className="px-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
-                  >
-                    {states.map((state) => (
-                      <option key={state.id} value={state.id}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
+            {/* Expanded Filters */}
+            {showFilters && (
+              <div className="pb-4 border-t border-slate-100 pt-4">
+                <div className="flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-2">
+                      State/Territory
+                    </label>
+                    <select
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      className="px-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                      {states.map((state) => (
+                        <option key={state.id} value={state.id}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
 
-      {/* Stats Bar */}
-      <section className="bg-slate-100/50 py-4 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
-            <div className="flex items-center gap-6">
-              <span className="text-slate-600">
-                <strong className="text-slate-900">{filteredGrants.length}</strong> grants found
-              </span>
-              {selectedCategory !== 'all' && (
-                <span className="flex items-center gap-1 text-slate-500">
-                  <span>{categories.find((c) => c.id === selectedCategory)?.icon}</span>
-                  {categories.find((c) => c.id === selectedCategory)?.description}
+        {/* Stats Bar */}
+        <section className="bg-slate-100/50 py-4 border-b border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+              <div className="flex items-center gap-6">
+                <span className="text-slate-600">
+                  <strong className="text-slate-900">{filteredGrants.length}</strong> grants found
                 </span>
+                {selectedCategory !== 'all' && (
+                  <span className="flex items-center gap-1 text-slate-500">
+                    <span>{categories.find((c) => c.id === selectedCategory)?.icon}</span>
+                    {categories.find((c) => c.id === selectedCategory)?.description}
+                  </span>
+                )}
+              </div>
+              {bookmarkedGrants.length > 0 && (
+                <Link
+                  href="#bookmarked"
+                  className="flex items-center gap-2 text-pink-600 hover:text-pink-700"
+                >
+                  <Bookmark className="w-4 h-4 fill-current" />
+                  {bookmarkedGrants.length} saved
+                </Link>
               )}
             </div>
-            {bookmarkedGrants.length > 0 && (
-              <Link
-                href="#bookmarked"
-                className="flex items-center gap-2 text-pink-600 hover:text-pink-700"
-              >
-                <Bookmark className="w-4 h-4 fill-current" />
-                {bookmarkedGrants.length} saved
-              </Link>
-            )}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
-          </div>
-        ) : (
-          <>
-            {/* Featured Grants */}
-            {featuredGrants.length > 0 && selectedCategory === 'all' && (
-              <section className="mb-12">
-                <div className="flex items-center gap-3 mb-6">
-                  <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
-                  <h2 className="text-2xl font-bold text-slate-900">Featured Grants</h2>
-                </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredGrants.map((grant) => (
-                    <div
-                      key={grant.id}
-                      className="relative group rounded-2xl p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 hover:border-amber-300 transition-all hover:shadow-lg"
-                    >
-                      <div className="absolute top-4 right-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
-                          <Star className="w-3 h-3 fill-current" />
-                          Featured
-                        </span>
-                      </div>
-                      <div
-                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold mb-4 ${getCategoryColor(grant.category)}`}
-                      >
-                        {getCategoryIcon(grant.category)}
-                        {categories.find((c) => c.id === grant.category)?.name}
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-2 pr-16">{grant.name}</h3>
-                      <p className="text-sm text-slate-600 mb-4">{grant.provider}</p>
-                      <div className="flex items-center gap-2 mb-4">
-                        <DollarSign className="w-5 h-5 text-emerald-600" />
-                        <span className="text-lg font-bold text-emerald-700">{grant.amount}</span>
-                      </div>
-                      <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-                        {grant.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <a
-                          href={grant.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm"
-                        >
-                          Learn More
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                        <button
-                          onClick={() => toggleBookmark(grant.id)}
-                          className={`p-2 rounded-lg transition-colors ${
-                            bookmarkedGrants.includes(grant.id)
-                              ? 'text-pink-600 bg-pink-50'
-                              : 'text-slate-400 hover:text-pink-600 hover:bg-pink-50'
-                          }`}
-                        >
-                          <Bookmark
-                            className={`w-5 h-5 ${bookmarkedGrants.includes(grant.id) ? 'fill-current' : ''}`}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* All Grants Grid */}
-            <section>
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">
-                {selectedCategory === 'all'
-                  ? 'All Grants'
-                  : categories.find((c) => c.id === selectedCategory)?.name}
-              </h2>
-
-              {filteredGrants.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl">
-                    🔍
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+            </div>
+          ) : (
+            <>
+              {/* Featured Grants */}
+              {featuredGrants.length > 0 && selectedCategory === 'all' && (
+                <section className="mb-12">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
+                    <h2 className="text-2xl font-bold text-slate-900">Featured Grants</h2>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">No grants found</h3>
-                  <p className="text-slate-500 mb-6">
-                    Try adjusting your search or filters to find more grants.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedCategory('all');
-                      setSelectedState('all');
-                    }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                    Clear filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredGrants
-                    .filter((g) => !g.featured || selectedCategory !== 'all')
-                    .map((grant) => (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {featuredGrants.map((grant) => (
                       <div
                         key={grant.id}
-                        className="group rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all hover:shadow-lg"
+                        className="relative group rounded-2xl p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 hover:border-amber-300 transition-all hover:shadow-lg"
                       >
-                        <div className="flex items-start justify-between mb-4">
-                          <div
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${getCategoryColor(grant.category)}`}
-                          >
-                            {getCategoryIcon(grant.category)}
-                            {categories.find((c) => c.id === grant.category)?.name}
-                          </div>
-                          {grant.state && (
-                            <span className="px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">
-                              {grant.state}
-                            </span>
-                          )}
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
+                            <Star className="w-3 h-3 fill-current" />
+                            Featured
+                          </span>
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-pink-600 transition-colors">
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold mb-4 ${getCategoryColor(
+                            grant.category,
+                          )}`}
+                        >
+                          {getCategoryIcon(grant.category)}
+                          {categories.find((c) => c.id === grant.category)?.name}
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-2 pr-16">
                           {grant.name}
                         </h3>
-                        <p className="text-sm text-slate-500 mb-3">{grant.provider}</p>
+                        <p className="text-sm text-slate-600 mb-4">{grant.provider}</p>
                         <div className="flex items-center gap-2 mb-4">
                           <DollarSign className="w-5 h-5 text-emerald-600" />
-                          <span className="font-bold text-emerald-700">{grant.amount}</span>
+                          <span className="text-lg font-bold text-emerald-700">{grant.amount}</span>
                         </div>
-                        <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+                        <p className="text-sm text-slate-600 mb-4 line-clamp-2">
                           {grant.description}
                         </p>
-
-                        {grant.eligibility && grant.eligibility.length > 0 && (
-                          <div className="mb-4">
-                            <p className="text-xs font-semibold text-slate-500 mb-2">
-                              Eligibility:
-                            </p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {grant.eligibility.slice(0, 3).map((req, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-xs"
-                                >
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                  {req}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div className="flex items-center justify-between">
                           <a
                             href={grant.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm"
                           >
-                            Apply Now
-                            <ArrowRight className="w-4 h-4" />
+                            Learn More
+                            <ExternalLink className="w-4 h-4" />
                           </a>
                           <button
                             onClick={() => toggleBookmark(grant.id)}
@@ -835,55 +763,222 @@ export default function GrantsPage() {
                         </div>
                       </div>
                     ))}
-                </div>
+                  </div>
+                </section>
               )}
-            </section>
 
-            {/* Help Section */}
-            <section className="mt-16">
-              <div
-                className="rounded-3xl p-8 md:p-12 text-center"
-                style={{
-                  background: `linear-gradient(135deg, ${accentPink}15 0%, ${accentPurple}15 100%)`,
-                }}
-              >
-                <div
-                  className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-4xl"
-                  style={{ background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})` }}
-                >
-                  <span className="text-white">💡</span>
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
-                  Need Help Finding the Right Grant?
+              {/* All Grants Grid */}
+              <section>
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                  {selectedCategory === 'all'
+                    ? 'All Grants'
+                    : categories.find((c) => c.id === selectedCategory)?.name}
                 </h2>
-                <p className="text-slate-600 mb-8 max-w-2xl mx-auto">
-                  Our team can help you identify the best funding opportunities for your business or
-                  project. Book a free consultation with one of our grant specialists.
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Link
-                    href="/member/financial-wellness"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
+
+                {filteredGrants.length === 0 ? (
+                  <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl">
+                      🔍
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">No grants found</h3>
+                    <p className="text-slate-500 mb-6">
+                      Try adjusting your search or filters to find more grants.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedCategory('all');
+                        setSelectedState('all');
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                      Clear filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredGrants
+                      .filter((g) => !g.featured || selectedCategory !== 'all')
+                      .map((grant) => (
+                        <div
+                          key={grant.id}
+                          className="group rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all hover:shadow-lg"
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${getCategoryColor(
+                                grant.category,
+                              )}`}
+                            >
+                              {getCategoryIcon(grant.category)}
+                              {categories.find((c) => c.id === grant.category)?.name}
+                            </div>
+                            {grant.state && (
+                              <span className="px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">
+                                {grant.state}
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-pink-600 transition-colors">
+                            {grant.name}
+                          </h3>
+                          <p className="text-sm text-slate-500 mb-3">{grant.provider}</p>
+                          <div className="flex items-center gap-2 mb-4">
+                            <DollarSign className="w-5 h-5 text-emerald-600" />
+                            <span className="font-bold text-emerald-700">{grant.amount}</span>
+                          </div>
+                          <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+                            {grant.description}
+                          </p>
+
+                          {grant.eligibility && grant.eligibility.length > 0 && (
+                            <div className="mb-4">
+                              <p className="text-xs font-semibold text-slate-500 mb-2">
+                                Eligibility:
+                              </p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {grant.eligibility.slice(0, 3).map((req, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-xs"
+                                  >
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                    {req}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <a
+                              href={grant.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm"
+                            >
+                              Apply Now
+                              <ArrowRight className="w-4 h-4" />
+                            </a>
+                            <button
+                              onClick={() => toggleBookmark(grant.id)}
+                              className={`p-2 rounded-lg transition-colors ${
+                                bookmarkedGrants.includes(grant.id)
+                                  ? 'text-pink-600 bg-pink-50'
+                                  : 'text-slate-400 hover:text-pink-600 hover:bg-pink-50'
+                              }`}
+                            >
+                              <Bookmark
+                                className={`w-5 h-5 ${bookmarkedGrants.includes(grant.id) ? 'fill-current' : ''}`}
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </section>
+
+              {/* Help Section */}
+              <section className="mt-16">
+                <div
+                  className="rounded-3xl p-8 md:p-12 text-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${accentPink}15 0%, ${accentPurple}15 100%)`,
+                  }}
+                >
+                  <div
+                    className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-4xl"
                     style={{
                       background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
                     }}
                   >
-                    Financial Wellness Hub
-                    <ArrowRight className="w-5 h-5" />
-                  </Link>
-                  <Link
-                    href="/business-suite"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-white text-slate-900 border border-slate-200 hover:border-slate-300 transition-all"
-                  >
-                    Business Suite
-                    <ChevronRight className="w-5 h-5" />
-                  </Link>
+                    <span className="text-white">💡</span>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+                    Need Help Finding the Right Grant?
+                  </h2>
+                  <p className="text-slate-600 mb-8 max-w-2xl mx-auto">
+                    Our team can help you identify the best funding opportunities for your business
+                    or project. Book a free consultation with one of our grant specialists.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <Link
+                      href="/member/financial-wellness"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
+                      }}
+                    >
+                      Financial Wellness Hub
+                      <ArrowRight className="w-5 h-5" />
+                    </Link>
+                    <Link
+                      href="/business-suite"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-white text-slate-900 border border-slate-200 hover:border-slate-300 transition-all"
+                    >
+                      Business Suite
+                      <ChevronRight className="w-5 h-5" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </section>
-          </>
-        )}
-      </main>
-    </div>
+              </section>
+            </>
+          )}
+        </main>
+      </div>
+
+      {/* Floating AI Button */}
+      <button
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-gradient-to-br from-amber-400 to-pink-500 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-pink-500"
+        style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}
+        aria-label="Open AI Assistant"
+        onClick={() => setShowAIModal(true)}
+      >
+        <KangarooLogo />
+        <span className="font-bold text-white text-base">AI</span>
+      </button>
+
+      {/* AI Modal (placeholder) */}
+      {showAIModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="gimbi-ai-title"
+        >
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-xl relative">
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-pink-500"
+              aria-label="Close AI Assistant"
+              onClick={() => setShowAIModal(false)}
+            >
+              ×
+            </button>
+            <div className="flex flex-col items-center">
+              <KangarooLogo />
+              <h2 id="gimbi-ai-title" className="mt-2 mb-4 text-xl font-bold text-amber-500">
+                Gimbi AI Assistant
+              </h2>
+              <p className="text-gray-700 text-center mb-4">
+                How can I help you with grants today?
+              </p>
+              {/* Placeholder for AI chat UI */}
+              <input
+                ref={aiInputRef}
+                type="text"
+                className="w-full px-4 py-2 rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                placeholder="Ask a question..."
+                aria-label="Ask a question"
+              />
+              <button className="mt-4 px-6 py-2 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 text-white font-bold shadow hover:scale-105 transition-all">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

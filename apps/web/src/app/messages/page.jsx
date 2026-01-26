@@ -254,6 +254,16 @@ export default function MessagesPage() {
             isRead: true,
           }));
           setMessages(formattedMessages);
+
+          // Mark messages as read via socket
+          try {
+            const ids = formattedMessages.map((m) => m.id);
+            if (ids.length && selectedConversation) {
+              socketService.markAsRead(selectedConversation.id, ids);
+            }
+          } catch (err) {
+            // ignore
+          }
         }
       } catch (err) {
         console.error('Error fetching messages:', err);
@@ -403,6 +413,31 @@ export default function MessagesPage() {
     if (!newMessage.trim() || !selectedConversation) return;
 
     setSendingMessage(true);
+    // Optimistic UI: create a temporary message id
+    const tempId = 'temp-' + Math.random().toString(36).slice(2, 9);
+
+    // Add optimistic message to UI
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: tempId,
+        senderId: 'me',
+        content: newMessage,
+        timestamp: formatTime(new Date()),
+        isRead: true,
+        sending: true,
+      },
+    ]);
+
+    // Emit via socket for real-time delivery
+    try {
+      if (selectedConversation) {
+        socketService.sendMessage(selectedConversation.id, newMessage);
+      }
+    } catch (emitErr) {
+      console.warn('Socket send failed:', emitErr);
+    }
+
     try {
       const response = await api(`/messages/conversations/${selectedConversation.id}/messages`, {
         method: 'POST',
@@ -411,19 +446,38 @@ export default function MessagesPage() {
 
       if (response.ok) {
         const message = response.data?.message || response.data;
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: message.id,
-            senderId: 'me',
-            content: message.content,
-            timestamp: formatTime(new Date(message.createdAt)),
-            isRead: true,
-          },
-        ]);
+        // Replace temp message with server message
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === tempId
+              ? {
+                  id: message.id,
+                  senderId: 'me',
+                  content: message.content,
+                  timestamp: formatTime(new Date(message.createdAt)),
+                  isRead: true,
+                }
+              : m,
+          ),
+        );
+
+        // Inform server we've read messages (optional)
+        try {
+          socketService.markAsRead(selectedConversation.id, [message.id]);
+        } catch (err) {
+          // ignore
+        }
+      } else {
+        // Mark the temp message as failed
+        setMessages((prev) =>
+          prev.map((m) => (m.id === tempId ? { ...m, failed: true, sending: false } : m)),
+        );
       }
     } catch (err) {
       console.error('Error sending message:', err);
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...m, failed: true, sending: false } : m)),
+      );
     } finally {
       setSendingMessage(false);
       setNewMessage('');

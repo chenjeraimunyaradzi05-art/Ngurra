@@ -1549,12 +1549,6 @@ export const mentorCirclesApi = {
     });
   },
 
-  async leaveCircle(circleId: string) {
-    return apiRequest(`/mentor-circles/${circleId}/leave`, {
-      method: 'POST',
-    });
-  },
-
   async getCircleResources(circleId: string) {
     return apiRequest(`/mentor-circles/${circleId}/resources`);
   },

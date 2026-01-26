@@ -4,18 +4,18 @@ const includeIntegration = process.env.RUN_JEST_INTEGRATION === '1';
 module.exports = {
   testEnvironment: 'node',
   rootDir: '.',
+  preset: 'ts-jest',
   testMatch: includeIntegration
     ? ['<rootDir>/tests/**/*.test.ts']
     : ['<rootDir>/tests/unit/**/*.test.ts'],
   testTimeout: 20000,
   setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.ts'],
-  extensionsToTreatAsEsm: ['.ts'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.jest.json',
-        useESM: true,
+        useESM: false,
       },
     ],
   },

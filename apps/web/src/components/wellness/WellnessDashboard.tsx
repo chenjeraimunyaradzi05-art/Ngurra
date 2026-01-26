@@ -451,6 +451,102 @@ function MindfulnessSection({
   );
 }
 
+// Goal Creation Modal
+function GoalModal({
+  isOpen,
+  onClose,
+  onCreate,
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreate: (data: { title: string; description?: string; targetDays: number }) => void;
+  isLoading: boolean;
+}) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [targetDays, setTargetDays] = useState(7);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create Goal</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Goal Title
+            </label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700"
+              placeholder="e.g., Daily walk"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Description (optional)
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 resize-none"
+              placeholder="Add a short note to stay motivated"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Target Days
+            </label>
+            <select
+              value={targetDays}
+              onChange={(e) => setTargetDays(parseInt(e.target.value, 10))}
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700"
+            >
+              {[7, 14, 21, 30].map((days) => (
+                <option key={days} value={days}>
+                  {days} days
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onCreate({ title: title.trim(), description: description.trim() || undefined, targetDays });
+              setTitle('');
+              setDescription('');
+              setTargetDays(7);
+            }}
+            disabled={!title.trim() || isLoading}
+            className="flex-1"
+          >
+            {isLoading ? 'Creating...' : 'Create'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Support Services Component
 function SupportServices({ services }: { services: SupportService[] }) {
   const emergencyServices = services.filter(s => s.isEmergency);
@@ -549,6 +645,8 @@ export function WellnessDashboard() {
   const [goals, setGoals] = useState<WellnessGoal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedExercise, setSelectedExercise] = useState<MindfulnessExercise | null>(null);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [isCreatingGoal, setIsCreatingGoal] = useState(false);
 
   // Load data
   const loadData = useCallback(async () => {
@@ -605,6 +703,19 @@ export function WellnessDashboard() {
       ));
     } catch (error) {
       console.error('Failed to complete goal:', error);
+    }
+  };
+
+  const handleCreateGoal = async (data: { title: string; description?: string; targetDays: number }) => {
+    setIsCreatingGoal(true);
+    try {
+      const goal = await wellnessApi.createGoal(data);
+      setGoals(prev => [goal, ...prev]);
+      setShowGoalModal(false);
+    } catch (error) {
+      console.error('Failed to create goal:', error);
+    } finally {
+      setIsCreatingGoal(false);
     }
   };
 
@@ -692,7 +803,7 @@ export function WellnessDashboard() {
           <WellnessGoals
             goals={goals}
             onComplete={handleCompleteGoal}
-            onCreate={() => {/* TODO: Show goal creation modal */}}
+            onCreate={() => setShowGoalModal(true)}
           />
 
           {/* Support Services */}
@@ -741,6 +852,13 @@ export function WellnessDashboard() {
           </div>
         </div>
       )}
+
+      <GoalModal
+        isOpen={showGoalModal}
+        onClose={() => setShowGoalModal(false)}
+        onCreate={handleCreateGoal}
+        isLoading={isCreatingGoal}
+      />
     </div>
   );
 }

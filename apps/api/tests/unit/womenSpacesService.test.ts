@@ -13,64 +13,77 @@ import {
   joinSupportCircle,
   flagPost,
 } from '../../src/services/womenSpaces';
-const mockPrisma = vi.hoisted(() => ({
-  womenSpace: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-  },
-  womenSpaceMember: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    upsert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
-  womenVerification: {
-    findUnique: vi.fn(),
-  },
-  womenSpacePost: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-    update: vi.fn(),
-  },
-  womenSpacePostLike: {
-    upsert: vi.fn(),
-    delete: vi.fn(),
-  },
-  womenSpaceComment: {
-    create: vi.fn(),
-  },
-  supportCircle: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-  },
-  supportCircleMember: {
-    create: vi.fn(),
-  },
-}));
+function createMockPrisma() {
+  return {
+    womenSpace: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+    womenSpaceMember: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    womenVerification: {
+      findUnique: jest.fn(),
+    },
+    womenSpacePost: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      update: jest.fn(),
+    },
+    womenSpacePostLike: {
+      upsert: jest.fn(),
+      delete: jest.fn(),
+    },
+    womenSpaceComment: {
+      create: jest.fn(),
+    },
+    supportCircle: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+    supportCircleMember: {
+      create: jest.fn(),
+    },
+  };
+}
 
-const logSecurityEvent = vi.hoisted(() => vi.fn());
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
 
-vi.mock('../../src/db', () => ({
-  prisma: mockPrisma,
-}));
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
-vi.mock('../../src/lib/securityAudit', () => ({
-  logSecurityEvent,
-  SecurityEventType: {
-    CONTENT_FLAGGED: 'CONTENT_FLAGGED',
-  },
-}));
+jest.mock('../../src/lib/securityAudit', () => {
+  const logSecurityEvent = jest.fn();
+  return {
+    logSecurityEvent,
+    SecurityEventType: {
+      CONTENT_FLAGGED: 'CONTENT_FLAGGED',
+    },
+  };
+});
+
+const { logSecurityEvent } = jest.requireMock('../../src/lib/securityAudit') as {
+  logSecurityEvent: jest.Mock;
+  SecurityEventType: { CONTENT_FLAGGED: string };
+};
 
 const spaceType = 'SUPPORT' as unknown as WomenSpaceType;
 
 describe('womenSpacesService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('creates a women space with defaults and admin membership', async () => {

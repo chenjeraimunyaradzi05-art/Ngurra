@@ -99,6 +99,12 @@ type MessagingStore = MessagingState & MessagingActions;
 let ws: WebSocket | null = null;
 let reconnectTimeout: NodeJS.Timeout | null = null;
 let typingTimeouts: Record<string, NodeJS.Timeout> = {};
+let shouldReconnect = true;
+
+function clearTypingTimeouts() {
+  Object.values(typingTimeouts).forEach((timeout) => clearTimeout(timeout));
+  typingTimeouts = {};
+}
 
 export const useMessagingStore = create<MessagingStore>()(
   subscribeWithSelector((set, get) => ({
@@ -119,6 +125,7 @@ export const useMessagingStore = create<MessagingStore>()(
       }
 
       set({ isConnecting: true, connectionError: null });
+      shouldReconnect = true;
 
       try {
         // Get WebSocket config from server
@@ -129,6 +136,13 @@ export const useMessagingStore = create<MessagingStore>()(
 
         // Get auth token for WebSocket
         const token = sessionStorage.getItem('accessToken');
+        if (!token) {
+          set({
+            isConnecting: false,
+            connectionError: 'Missing authentication token',
+          });
+          return;
+        }
         
         ws = new WebSocket(`${data.websocketUrl}?token=${token}`);
 
@@ -142,12 +156,14 @@ export const useMessagingStore = create<MessagingStore>()(
         };
 
         ws.onclose = () => {
-          set({ isConnected: false });
+          set({ isConnected: false, isConnecting: false });
           ws = null;
-          // Auto-reconnect after 3 seconds
-          reconnectTimeout = setTimeout(() => {
-            get().connect();
-          }, 3000);
+          if (shouldReconnect) {
+            // Auto-reconnect after 3 seconds
+            reconnectTimeout = setTimeout(() => {
+              get().connect();
+            }, 3000);
+          }
         };
 
         ws.onerror = () => {
@@ -171,6 +187,7 @@ export const useMessagingStore = create<MessagingStore>()(
     },
 
     disconnect: () => {
+      shouldReconnect = false;
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
         reconnectTimeout = null;
@@ -179,6 +196,7 @@ export const useMessagingStore = create<MessagingStore>()(
         ws.close();
         ws = null;
       }
+      clearTypingTimeouts();
       set({ isConnected: false, isConnecting: false });
     },
 

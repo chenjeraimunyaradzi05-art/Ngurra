@@ -5,6 +5,31 @@ import { z } from 'zod';
 
 const router = express.Router();
 
+// POST /member/applications - create a new application
+router.post('/', auth.authenticate, async (req, res) => {
+    const userId = (req as any).user?.id;
+    const jobId = req.body?.jobId ? String(req.body.jobId) : null;
+    if (!jobId) {
+        return void res.status(400).json({ error: 'jobId is required' });
+    }
+    try {
+        const application = await prisma.jobApplication.create({
+            data: {
+                userId,
+                jobId,
+                coverLetter: req.body?.coverLetter ? String(req.body.coverLetter) : null,
+                resumeId: req.body?.resumeId ? String(req.body.resumeId) : null,
+            }
+        });
+        return void res.status(201).json({ application });
+    }
+    catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('member create application error', err);
+        return void res.status(400).json({ error: 'Failed to create application' });
+    }
+});
+
 // GET /member/applications - list current user's applications
 router.get('/', auth.authenticate, async (req, res) => {
     const userId = (req as any).user?.id;

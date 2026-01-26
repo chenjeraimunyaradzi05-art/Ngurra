@@ -15,6 +15,115 @@ function isAdmin(req: any) {
 }
 
 /**
+ * GET /notifications
+ * List notifications for the current user
+ */
+router.get('/', auth.authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+    const page = Math.max(1, Number(req.query.page || 1));
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit || 20)));
+    const skip = (page - 1) * limit;
+
+    const notifications = await prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    });
+
+    res.json({ notifications });
+  } catch (error) {
+    console.error('[Notifications] List error:', error);
+    res.status(500).json({ error: 'Failed to load notifications' });
+  }
+});
+
+/**
+ * GET /notifications/count
+ * Get unread notification count
+ */
+router.get('/count', auth.authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+    const count = await prisma.notification.count({
+      where: { userId, read: false },
+    });
+
+    res.json({ count });
+  } catch (error) {
+    console.error('[Notifications] Count error:', error);
+    res.status(500).json({ error: 'Failed to load notification count' });
+  }
+});
+
+/**
+ * PATCH /notifications/:id
+ * Mark notification as read/unread
+ */
+router.patch('/:id', auth.authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+    const read = Boolean(req.body?.read);
+
+    const result = await prisma.notification.updateMany({
+      where: { id: req.params.id, userId },
+      data: { read },
+    });
+
+    if (result.count === 0) {
+      return void res.status(404).json({ error: 'Notification not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[Notifications] Update error:', error);
+    res.status(500).json({ error: 'Failed to update notification' });
+  }
+});
+
+/**
+ * POST /notifications/mark-all-read
+ * Mark all notifications as read
+ */
+router.post('/mark-all-read', auth.authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+    await prisma.notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[Notifications] Mark all read error:', error);
+    res.status(500).json({ error: 'Failed to mark all as read' });
+  }
+});
+
+/**
+ * DELETE /notifications/:id
+ * Delete a notification
+ */
+router.delete('/:id', auth.authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+    const result = await prisma.notification.deleteMany({
+      where: { id: req.params.id, userId },
+    });
+
+    if (result.count === 0) {
+      return void res.status(404).json({ error: 'Notification not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[Notifications] Delete error:', error);
+    res.status(500).json({ error: 'Failed to delete notification' });
+  }
+});
+
+/**
  * POST /notifications/register
  * Register a device token for push notifications
  */

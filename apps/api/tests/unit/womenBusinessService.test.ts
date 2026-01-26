@@ -12,50 +12,57 @@ import {
   updateGoalProgress,
   getBusinessStats,
 } from '../../src/services/womenBusiness';
-const mockPrisma = vi.hoisted(() => ({
+function createMockPrisma() {
+  return {
   womenBusiness: {
-    create: vi.fn(),
-    findFirst: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
+    create: jest.fn(),
+    findFirst: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
   },
   womenBusinessProduct: {
-    create: vi.fn(),
-    count: vi.fn(),
-    findMany: vi.fn(),
+    create: jest.fn(),
+    count: jest.fn(),
+    findMany: jest.fn(),
   },
   womenBusinessService: {
-    create: vi.fn(),
-    count: vi.fn(),
-    findMany: vi.fn(),
+    create: jest.fn(),
+    count: jest.fn(),
+    findMany: jest.fn(),
   },
   businessGoal: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
-    count: vi.fn(),
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
   },
   businessMilestone: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
-    count: vi.fn(),
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
   },
-}));
+  };
+}
 
-vi.mock('../../src/db', () => ({
-  prisma: mockPrisma,
-}));
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
+
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
 const businessType = 'SERVICE' as unknown as WomenBusinessType;
 const stage = 'IDEA' as unknown as BusinessStage;
 
 describe('womenBusinessService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('creates a business with defaults and unpublished state', async () => {

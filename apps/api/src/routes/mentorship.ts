@@ -8,6 +8,76 @@ import { queueEmail } from '../lib/emailQueue';
 
 const router = Router();
 
+// =============================================================================
+// Mentor Profile & Availability
+// =============================================================================
+
+router.get('/mentor/profile', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const userId = (req as any).user!.id;
+    const profile = await prisma.mentorProfile.findUnique({
+      where: { userId },
+    });
+    res.json({ profile });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put('/mentor/profile', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const userId = (req as any).user!.id;
+    const data: any = {
+      bio: req.body?.bio,
+      skills: Array.isArray(req.body?.skills) ? req.body.skills.join(',') : req.body?.skills,
+      availability: req.body?.availability,
+      maxCapacity: req.body?.maxMentees ? Number(req.body.maxMentees) : undefined,
+      title: req.body?.title,
+    };
+
+    const profile = await prisma.mentorProfile.upsert({
+      where: { userId },
+      create: { userId, ...data },
+      update: { ...data },
+    });
+
+    res.json({ profile });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put('/mentor/availability', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const userId = (req as any).user!.id;
+    const slots = Array.isArray(req.body?.slots) ? req.body.slots : [];
+    const timezone = String(req.body?.timezone || 'Australia/Sydney');
+
+    await prisma.mentorAvailabilitySlot.deleteMany({
+      where: { mentorId: userId },
+    });
+
+    if (slots.length > 0) {
+      await prisma.mentorAvailabilitySlot.createMany({
+        data: slots.map((slot: any) => ({
+          mentorId: userId,
+          dayOfWeek: Number(slot.dayOfWeek),
+          startTime: String(slot.startTime),
+          endTime: String(slot.endTime),
+          timezone,
+        })),
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Validation schemas
 const mentorshipRequestSchema = z.object({
   mentorId: z.string().uuid(),
@@ -708,6 +778,38 @@ router.patch('/:id', authenticate, validateRequest(z.object({ body: mentorshipUp
  * @desc Schedule a mentorship session
  * @access Private (Participants)
  */
+router.get('/:id/sessions', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { id } = req.params;
+    const userId = (req as any).user!.id;
+
+    const mentorship = await prisma.mentorship.findUnique({
+      where: { id },
+    });
+
+    if (!mentorship) {
+      throw new NotFoundError('Mentorship');
+    }
+
+    const isParticipant = mentorship.mentorId === userId || mentorship.menteeId === userId;
+    const isAdmin = (req as any).user?.userType === 'ADMIN' || (req as any).user?.role === 'ADMIN';
+
+    if (!isParticipant && !isAdmin) {
+      throw new ForbiddenError('You do not have access to this mentorship');
+    }
+
+    const sessions = await prisma.mentorshipSession.findMany({
+      where: { mentorshipId: id },
+      orderBy: { scheduledAt: 'desc' },
+    });
+
+    res.json({ sessions });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/:id/sessions', authenticate, validateRequest(z.object({ body: mentorshipSessionSchema })), async (req, res, next) => {
   try {
     const { prisma } = req.app.locals;
@@ -816,6 +918,73 @@ router.post('/:id/sessions', authenticate, validateRequest(z.object({ body: ment
     }
 
     res.status(201).json({ data: session });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /mentorship/:id/feedback
+ * @desc Submit feedback for a mentorship session
+ * @access Private (Participants)
+ */
+router.post('/:id/feedback', authenticate, async (req, res, next) => {
+  try {
+    const { prisma } = req.app.locals;
+    const { id } = req.params;
+    const userId = (req as any).user!.id;
+    const rating = Number(req.body?.rating);
+    const comment = req.body?.feedback ? String(req.body.feedback) : undefined;
+    const sessionId = req.body?.sessionId ? String(req.body.sessionId) : null;
+
+    if (!sessionId || Number.isNaN(rating) || rating < 1 || rating > 5) {
+      throw new BadRequestError('Invalid feedback payload');
+    }
+
+    const session = await prisma.mentorshipSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session || session.mentorshipId !== id) {
+      throw new NotFoundError('Mentorship session');
+    }
+
+    const mentorship = await prisma.mentorship.findUnique({
+      where: { id },
+    });
+
+    if (!mentorship) {
+      throw new NotFoundError('Mentorship');
+    }
+
+    const isParticipant = mentorship.mentorId === userId || mentorship.menteeId === userId;
+    if (!isParticipant) {
+      throw new ForbiddenError('You do not have access to this mentorship');
+    }
+
+    const toUserId = mentorship.mentorId === userId ? mentorship.menteeId : mentorship.mentorId;
+
+    const feedback = await prisma.sessionFeedback.upsert({
+      where: {
+        sessionId_fromUserId: {
+          sessionId,
+          fromUserId: userId,
+        },
+      },
+      create: {
+        sessionId,
+        fromUserId: userId,
+        toUserId,
+        rating,
+        comment,
+      },
+      update: {
+        rating,
+        comment,
+      },
+    });
+
+    res.status(201).json({ feedback });
   } catch (error) {
     next(error);
   }

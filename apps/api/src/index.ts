@@ -50,10 +50,11 @@ import { initializeScheduler, shutdownScheduler } from './lib/scheduler';
 
 console.log('✅ Application modules loaded successfully');
 
+// Create app instance (reused for server + tests)
+const app = createApp();
+
 // Initialize services and start server
 async function startServer() {
-    const app = createApp();
-
     // Create HTTP server from Express app
     const httpServer = http.createServer(app);
 
@@ -107,4 +108,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export { serverPromise as server, getIO };
-export default createApp;
+export default app;

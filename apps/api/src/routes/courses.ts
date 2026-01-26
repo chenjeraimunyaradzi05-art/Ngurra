@@ -589,43 +589,6 @@ router.get('/categories', async (req: Request, res: Response) => {
   }
 });
 
-// Get single course details
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const course = await prisma.course.findUnique({
-      where: { id: req.params.id },
-      include: {
-        institution: { select: { id: true, email: true, institutionProfile: true } },
-        _count: { select: { enrolments: true } }
-      }
-    });
-    
-    if (!course) {
-      return void res.status(404).json({ error: 'Course not found' });
-    }
-    
-    res.json({
-      course: {
-        id: course.id,
-        title: course.title,
-        description: course.description,
-        duration: course.duration,
-        qualification: course.qualification,
-        industry: course.industry,
-        location: course.location,
-        isOnline: course.isOnline,
-        price: course.price,
-        provider: course.institution?.institutionProfile?.institutionName || course.institution?.email || 'Unknown',
-        enrolmentCount: course._count?.enrolments || 0,
-        createdAt: course.createdAt
-      }
-    });
-  } catch (e) {
-    console.error('Fetch course error:', e);
-    res.status(500).json({ error: 'Failed to fetch course' });
-  }
-});
-
 // Alias for /my/enrolments - frontend calls /enrolments
 router.get('/enrolments', authenticateJWT, async (req: Request, res: Response) => {
   try {
@@ -1054,7 +1017,7 @@ router.post('/', authenticateJWT, async (req: Request, res: Response) => {
       }
     });
     
-    res.json({ course, message: 'Course created successfully' });
+    res.status(201).json({ course, message: 'Course created successfully' });
   } catch (e) {
     console.error('Create course error:', e);
     res.status(500).json({ error: 'Failed to create course' });
@@ -1483,6 +1446,42 @@ router.get('/recommendations/me', authenticateJWT, async (req: Request, res: Res
 // COURSE SYNC (Admin)
 // =============================================================================
 
+router.post('/admin/sync', authenticateJWT, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const result = await runCourseSync();
+    res.status(202).json(result);
+  } catch (e) {
+    console.error('Admin course sync error:', e);
+    res.status(500).json({ error: 'Failed to run course sync' });
+  }
+});
+
+router.get('/admin/enrolments', authenticateJWT, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const enrolments = await prisma.courseEnrolment.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+    res.json({ enrolments });
+  } catch (e) {
+    console.error('Admin enrolments error:', e);
+    res.status(500).json({ error: 'Failed to load enrolments' });
+  }
+});
+
+router.get('/admin/analytics', authenticateJWT, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const [totalCourses, totalEnrolments] = await Promise.all([
+      prisma.course.count(),
+      prisma.courseEnrolment.count(),
+    ]);
+    res.json({ totalCourses, totalEnrolments });
+  } catch (e) {
+    console.error('Admin course analytics error:', e);
+    res.status(500).json({ error: 'Failed to load analytics' });
+  }
+});
+
 router.post('/sync', authenticateJWT, requireAdmin, async (req: Request, res: Response) => {
   try {
     const result = await runCourseSync();
@@ -1490,6 +1489,43 @@ router.post('/sync', authenticateJWT, requireAdmin, async (req: Request, res: Re
   } catch (e) {
     console.error('Course sync error:', e);
     res.status(500).json({ error: 'Failed to run course sync' });
+  }
+});
+
+// Get single course details (placed last to avoid route conflicts)
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const course = await prisma.course.findUnique({
+      where: { id: req.params.id },
+      include: {
+        institution: { select: { id: true, email: true, institutionProfile: true } },
+        _count: { select: { enrolments: true } }
+      }
+    });
+    
+    if (!course) {
+      return void res.status(404).json({ error: 'Course not found' });
+    }
+    
+    res.json({
+      course: {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        duration: course.duration,
+        qualification: course.qualification,
+        industry: course.industry,
+        location: course.location,
+        isOnline: course.isOnline,
+        price: course.price,
+        provider: course.institution?.institutionProfile?.institutionName || course.institution?.email || 'Unknown',
+        enrolmentCount: course._count?.enrolments || 0,
+        createdAt: course.createdAt
+      }
+    });
+  } catch (e) {
+    console.error('Fetch course error:', e);
+    res.status(500).json({ error: 'Failed to fetch course' });
   }
 });
 

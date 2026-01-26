@@ -5,25 +5,34 @@
 
 import { jobPerformanceService } from '../../src/services/jobPerformanceService';
 
-const mockPrisma = vi.hoisted(() => ({
+function createMockPrisma() {
+  return {
   jobPerformance: {
-    findUnique: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
-    groupBy: vi.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
+    groupBy: jest.fn(),
   },
   job: {
-    update: vi.fn(),
-    findMany: vi.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
   },
-}));
+  };
+}
 
-vi.mock('../../src/db', () => ({ prisma: mockPrisma }));
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
+
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
 describe('jobPerformanceService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('creates a new performance row when none exists and increments job viewCount', async () => {

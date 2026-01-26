@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Loader2,
 } from 'lucide-react';
-import OptimizedImage from '@/components/OptimizedImage';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 

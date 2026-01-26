@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "CommonJS",
     "target": "ES2022",
-    "moduleResolution": "NodeNext",
-    "isolatedModules": true
+    "moduleResolution": "Node",
+    "isolatedModules": true,
+    "esModuleInterop": true
   }
 }

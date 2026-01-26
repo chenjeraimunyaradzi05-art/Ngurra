@@ -171,6 +171,102 @@ router.get('/matches', authenticate, async (req, res) => {
   }
 });
 
+// GET /jobs/:id - Job detail
+router.get('/:id', async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!job) {
+      return void res.status(404).json({ error: 'Job not found' });
+    }
+
+    res.json({ job });
+  } catch (error) {
+    console.error('Job detail error', error);
+    res.status(500).json({ error: 'Failed to load job' });
+  }
+});
+
+// POST /jobs - Create job (auth required)
+router.post('/', authenticate, async (req, res) => {
+  try {
+    const title = String(req.body?.title || '').trim();
+    const description = String(req.body?.description || '').trim();
+
+    if (!title || !description) {
+      return void res.status(400).json({ error: 'Title and description are required' });
+    }
+
+    const job = await prisma.job.create({
+      data: {
+        userId: req.user!.id,
+        title,
+        description,
+        location: req.body?.location ? String(req.body.location) : null,
+        employment: req.body?.employment ? String(req.body.employment) : (req.body?.employmentType ? String(req.body.employmentType) : null),
+        isActive: true,
+      },
+    });
+
+    res.status(201).json({ job });
+  } catch (error) {
+    console.error('Job create error', error);
+    res.status(500).json({ error: 'Failed to create job' });
+  }
+});
+
+// PATCH /jobs/:id - Update job (auth required)
+router.patch('/:id', authenticate, async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id } });
+    if (!job) {
+      return void res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (job.userId !== req.user!.id && req.user?.role !== 'ADMIN' && req.user?.userType !== 'ADMIN') {
+      return void res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const updated = await prisma.job.update({
+      where: { id: req.params.id },
+      data: {
+        ...(req.body?.title ? { title: String(req.body.title) } : {}),
+        ...(req.body?.description ? { description: String(req.body.description) } : {}),
+        ...(req.body?.location ? { location: String(req.body.location) } : {}),
+        ...(req.body?.employment ? { employment: String(req.body.employment) } : {}),
+        ...(req.body?.employmentType ? { employment: String(req.body.employmentType) } : {}),
+      },
+    });
+
+    res.json({ job: updated });
+  } catch (error) {
+    console.error('Job update error', error);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
+});
+
+// DELETE /jobs/:id - Delete job (auth required)
+router.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id } });
+    if (!job) {
+      return void res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (job.userId !== req.user!.id && req.user?.role !== 'ADMIN' && req.user?.userType !== 'ADMIN') {
+      return void res.status(403).json({ error: 'Forbidden' });
+    }
+
+    await prisma.job.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Job delete error', error);
+    res.status(500).json({ error: 'Failed to delete job' });
+  }
+});
+
 export default router;
 
 

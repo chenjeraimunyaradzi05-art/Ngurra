@@ -564,6 +564,73 @@ function SaveSearchModal({
   );
 }
 
+// Add To Shortlist Modal
+function AddToShortlistModal({
+  isOpen,
+  candidate,
+  shortlists,
+  selectedShortlistId,
+  onChangeShortlist,
+  onClose,
+  onConfirm,
+  isLoading,
+}: {
+  isOpen: boolean;
+  candidate: Candidate | null;
+  shortlists: Shortlist[];
+  selectedShortlistId: string;
+  onChangeShortlist: (id: string) => void;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}) {
+  if (!isOpen || !candidate) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          Add to Shortlist
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Select a shortlist for {candidate.firstName} {candidate.lastName}
+        </p>
+
+        {shortlists.length === 0 ? (
+          <div className="text-sm text-gray-500 mb-4">
+            No shortlists available yet. Create a shortlist to use this feature.
+          </div>
+        ) : (
+          <select
+            value={selectedShortlistId}
+            onChange={(e) => onChangeShortlist(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg dark:bg-gray-900 dark:border-gray-600 mb-4"
+          >
+            {shortlists.map((shortlist) => (
+              <option key={shortlist.id} value={shortlist.id}>
+                {shortlist.name}{shortlist.jobTitle ? ` • ${shortlist.jobTitle}` : ''}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Close
+          </Button>
+          <Button
+            onClick={onConfirm}
+            disabled={shortlists.length === 0 || !selectedShortlistId || isLoading}
+            className="flex-1"
+          >
+            {isLoading ? 'Adding...' : 'Add'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Main Component
 export function CandidateSearch() {
   const { user } = useAuth();
@@ -573,7 +640,7 @@ export function CandidateSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [totalResults, setTotalResults] = useState(0);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<SearchFilters>({
+  const defaultFilters: SearchFilters = {
     query: '',
     location: '',
     radius: 50,
@@ -585,9 +652,13 @@ export function CandidateSearch() {
     indigenousOnly: false,
     remoteOk: false,
     relocateOk: false,
-  });
+  };
+  const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
   const [contactCandidate, setContactCandidate] = useState<Candidate | null>(null);
   const [showSaveSearch, setShowSaveSearch] = useState(false);
+  const [shortlistCandidate, setShortlistCandidate] = useState<Candidate | null>(null);
+  const [selectedShortlistId, setSelectedShortlistId] = useState('');
+  const [isAddingToShortlist, setIsAddingToShortlist] = useState(false);
 
   const loadSavedSearches = useCallback(async () => {
     try {
@@ -612,12 +683,14 @@ export function CandidateSearch() {
     loadShortlists();
   }, [loadSavedSearches, loadShortlists]);
 
-  const handleSearch = async () => {
+  const handleSearch = async (nextFilters: SearchFilters = filters, nextPage: number = page) => {
     setIsLoading(true);
     try {
-      const { candidates: results, total } = await searchApi.searchCandidates(filters, page);
+      const { candidates: results, total } = await searchApi.searchCandidates(nextFilters, nextPage);
       setCandidates(results);
       setTotalResults(total);
+      setPage(nextPage);
+      setFilters(nextFilters);
     } catch (error) {
       console.error('Failed to search:', error);
     } finally {
@@ -626,19 +699,7 @@ export function CandidateSearch() {
   };
 
   const handleResetFilters = () => {
-    setFilters({
-      query: '',
-      location: '',
-      radius: 50,
-      skills: [],
-      experience: '',
-      education: '',
-      availability: '',
-      industries: [],
-      indigenousOnly: false,
-      remoteOk: false,
-      relocateOk: false,
-    });
+    handleSearch(defaultFilters, 1);
   };
 
   const handleSaveSearch = async (name: string) => {
@@ -652,14 +713,13 @@ export function CandidateSearch() {
   };
 
   const handleLoadSearch = (search: SavedSearch) => {
-    setFilters(search.filters);
-    handleSearch();
+    handleSearch(search.filters, 1);
   };
 
   const handleBookmark = async (candidateId: string) => {
     try {
       await searchApi.bookmarkCandidate(candidateId);
-      setCandidates(candidates.map(c =>
+      setCandidates(prev => prev.map(c =>
         c.id === candidateId ? { ...c, isBookmarked: !c.isBookmarked } : c
       ));
     } catch (error) {
@@ -671,12 +731,32 @@ export function CandidateSearch() {
     if (!contactCandidate) return;
     try {
       await searchApi.contactCandidate(contactCandidate.id, message);
-      setCandidates(candidates.map(c =>
+      setCandidates(prev => prev.map(c =>
         c.id === contactCandidate.id ? { ...c, isContacted: true } : c
       ));
       setContactCandidate(null);
     } catch (error) {
       console.error('Failed to contact:', error);
+    }
+  };
+
+  const handleOpenShortlist = (candidate: Candidate) => {
+    setShortlistCandidate(candidate);
+    const defaultId = shortlists[0]?.id || '';
+    setSelectedShortlistId(defaultId);
+  };
+
+  const handleAddToShortlist = async () => {
+    if (!shortlistCandidate || !selectedShortlistId) return;
+    setIsAddingToShortlist(true);
+    try {
+      await searchApi.addToShortlist(selectedShortlistId, shortlistCandidate.id);
+      await loadShortlists();
+      setShortlistCandidate(null);
+    } catch (error) {
+      console.error('Failed to add to shortlist:', error);
+    } finally {
+      setIsAddingToShortlist(false);
     }
   };
 
@@ -700,7 +780,7 @@ export function CandidateSearch() {
           <FiltersPanel
             filters={filters}
             onChange={(newFilters) => setFilters({ ...filters, ...newFilters })}
-            onSearch={handleSearch}
+            onSearch={() => handleSearch(filters, 1)}
             onReset={handleResetFilters}
           />
           <SavedSearchesSidebar
@@ -749,7 +829,7 @@ export function CandidateSearch() {
                     candidate={candidate}
                     onBookmark={() => handleBookmark(candidate.id)}
                     onContact={() => setContactCandidate(candidate)}
-                    onAddToShortlist={() => {/* TODO */}}
+                    onAddToShortlist={() => handleOpenShortlist(candidate)}
                   />
                 ))}
               </div>
@@ -760,7 +840,7 @@ export function CandidateSearch() {
                   <Button
                     variant="outline"
                     disabled={page === 1}
-                    onClick={() => { setPage(p => p - 1); handleSearch(); }}
+                    onClick={() => handleSearch(filters, page - 1)}
                   >
                     Previous
                   </Button>
@@ -770,7 +850,7 @@ export function CandidateSearch() {
                   <Button
                     variant="outline"
                     disabled={page >= Math.ceil(totalResults / 20)}
-                    onClick={() => { setPage(p => p + 1); handleSearch(); }}
+                    onClick={() => handleSearch(filters, page + 1)}
                   >
                     Next
                   </Button>
@@ -793,6 +873,17 @@ export function CandidateSearch() {
         isOpen={showSaveSearch}
         onClose={() => setShowSaveSearch(false)}
         onSave={handleSaveSearch}
+      />
+
+      <AddToShortlistModal
+        isOpen={!!shortlistCandidate}
+        candidate={shortlistCandidate}
+        shortlists={shortlists}
+        selectedShortlistId={selectedShortlistId}
+        onChangeShortlist={setSelectedShortlistId}
+        onClose={() => setShortlistCandidate(null)}
+        onConfirm={handleAddToShortlist}
+        isLoading={isAddingToShortlist}
       />
     </div>
   );

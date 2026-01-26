@@ -12,57 +12,64 @@ import {
   respondToMatch,
   rsvpToEvent,
 } from '../../src/services/wellness';
-const mockPrisma = vi.hoisted(() => ({
+function createMockPrisma() {
+  return {
   wellnessCheckIn: {
-    upsert: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
-    update: vi.fn(),
+    upsert: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
   },
   culturalEvent: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
+    create: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
   },
   culturalEventAttendee: {
-    upsert: vi.fn(),
-    count: vi.fn(),
-    findMany: vi.fn(),
+    upsert: jest.fn(),
+    count: jest.fn(),
+    findMany: jest.fn(),
   },
   dailyAffirmation: {
-    count: vi.fn(),
-    findFirst: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
+    count: jest.fn(),
+    findFirst: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
   },
   sisterMatch: {
-    findFirst: vi.fn(),
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
   },
-}));
+  };
+}
 
-vi.mock('../../src/db', () => ({
-  prisma: mockPrisma,
-}));
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
+
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
 const mood = 'CALM' as unknown as WellnessMood;
 
 describe('wellnessService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 
   it('creates a check-in with the day truncated to midnight', async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2024-05-01T10:00:00Z'));
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-01T10:00:00Z'));
 
     mockPrisma.wellnessCheckIn.upsert.mockResolvedValue({ id: 'check-1' });
 

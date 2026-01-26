@@ -567,6 +567,60 @@ function BookingModal({
   );
 }
 
+// Reschedule Modal
+function RescheduleModal({
+  session,
+  slot,
+  onClose,
+  onConfirm,
+  isLoading,
+}: {
+  session: Session | null;
+  slot: TimeSlot | null;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}) {
+  if (!session || !slot) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Reschedule Session</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+          <div className="p-3 bg-gray-50 dark:bg-gray-750 rounded-lg">
+            <div className="font-medium text-gray-900 dark:text-white">Current</div>
+            <div>{formatFullDate(session.startTime)}</div>
+            <div>{formatTime(session.startTime)} - {formatTime(session.endTime)}</div>
+          </div>
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="font-medium text-gray-900 dark:text-white">New</div>
+            <div>{formatFullDate(slot.startTime)}</div>
+            <div>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Cancel
+          </Button>
+          <Button onClick={onConfirm} disabled={isLoading} className="flex-1">
+            {isLoading ? 'Rescheduling...' : 'Confirm'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Main Component
 export function MentorCalendar({ mentorId }: { mentorId?: string }) {
   const { user } = useAuth();
@@ -577,6 +631,10 @@ export function MentorCalendar({ mentorId }: { mentorId?: string }) {
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [rescheduleSession, setRescheduleSession] = useState<Session | null>(null);
+  const [rescheduleSlot, setRescheduleSlot] = useState<TimeSlot | null>(null);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [isRescheduling, setIsRescheduling] = useState(false);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -668,6 +726,31 @@ export function MentorCalendar({ mentorId }: { mentorId?: string }) {
     }
   };
 
+  const handleStartReschedule = (session: Session) => {
+    const mentor = mentors.find(m => m.id === session.mentorId) || null;
+    setSelectedMentor(mentor);
+    setSelectedDate(new Date(session.startTime));
+    setRescheduleSession(session);
+    setRescheduleSlot(null);
+    setShowRescheduleModal(false);
+  };
+
+  const handleConfirmReschedule = async () => {
+    if (!rescheduleSession || !rescheduleSlot) return;
+    setIsRescheduling(true);
+    try {
+      const updated = await calendarApi.rescheduleSession(rescheduleSession.id, rescheduleSlot.id);
+      setSessions(prev => prev.map(s => (s.id === updated.id ? updated : s)));
+      setRescheduleSession(null);
+      setRescheduleSlot(null);
+      setShowRescheduleModal(false);
+    } catch (error) {
+      console.error('Failed to reschedule session:', error);
+    } finally {
+      setIsRescheduling(false);
+    }
+  };
+
   // Session filter
   const filteredSessions = sessions.filter(s => {
     if (activeTab === 'upcoming') {
@@ -734,8 +817,13 @@ export function MentorCalendar({ mentorId }: { mentorId?: string }) {
                 date={selectedDate}
                 slots={selectedDateSlots}
                 onSelectSlot={(slot) => {
-                  setSelectedSlot(slot);
-                  setShowBooking(true);
+                  if (rescheduleSession) {
+                    setRescheduleSlot(slot);
+                    setShowRescheduleModal(true);
+                  } else {
+                    setSelectedSlot(slot);
+                    setShowBooking(true);
+                  }
                 }}
               />
             </>
@@ -776,7 +864,7 @@ export function MentorCalendar({ mentorId }: { mentorId?: string }) {
                   key={session.id}
                   session={session}
                   onCancel={() => handleCancel(session.id)}
-                  onReschedule={() => {/* TODO */}}
+                  onReschedule={() => handleStartReschedule(session)}
                   onJoin={() => session.meetingUrl && window.open(session.meetingUrl, '_blank')}
                 />
               ))
@@ -802,6 +890,20 @@ export function MentorCalendar({ mentorId }: { mentorId?: string }) {
             setSelectedSlot(null);
           }}
           onBook={handleBook}
+        />
+      )}
+
+      {showRescheduleModal && (
+        <RescheduleModal
+          session={rescheduleSession}
+          slot={rescheduleSlot}
+          onClose={() => {
+            setShowRescheduleModal(false);
+            setRescheduleSlot(null);
+            setRescheduleSession(null);
+          }}
+          onConfirm={handleConfirmReschedule}
+          isLoading={isRescheduling}
         />
       )}
     </div>

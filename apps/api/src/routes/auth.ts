@@ -13,6 +13,7 @@ import { BadRequestError, UnauthorizedError, NotFoundError } from '../lib/errors
 import { forgotPasswordSchema, resetPasswordSchema } from '../lib/validation';
 import { emailService } from '../services/emailService';
 import { redisCache } from '../lib/redisCacheWrapper';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -42,9 +43,13 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  userType: z.enum(['MEMBER', 'COMPANY', 'MENTOR', 'TAFE']).default('MEMBER'),
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+  name: z.string().min(1, 'Name is required').optional(),
+  userType: z.enum(['MEMBER', 'COMPANY', 'MENTOR', 'TAFE', 'SEEKER']).default('MEMBER'),
+}).refine((data) => data.name || (data.firstName && data.lastName), {
+  message: 'Name is required',
+  path: ['name'],
 });
 
 const loginSchema = z.object({
@@ -78,7 +83,12 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       });
     }
 
-    const { email, password, firstName, lastName, userType } = validation.data;
+    const { email, password, firstName, lastName, name, userType } = validation.data;
+    const normalizedUserType = userType === 'SEEKER' ? 'MEMBER' : userType;
+    const resolvedName = name || `${firstName || ''} ${lastName || ''}`.trim();
+    const nameParts = resolvedName.split(' ').filter(Boolean);
+    const resolvedFirstName = nameParts[0] || 'User';
+    const resolvedLastName = nameParts.slice(1).join(' ');
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -99,10 +109,10 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
-        name: `${firstName} ${lastName}`,
-        userType: userType as any,
+        name: resolvedName,
+        userType: normalizedUserType as any,
         password: hashedPassword,
-        memberProfile: userType === 'MEMBER' ? {
+        memberProfile: normalizedUserType === 'MEMBER' ? {
           create: {
             phone: null,
             mobNation: null,
@@ -129,19 +139,23 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     // Generate token
     const token = generateToken(user);
 
+    const responseUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      profile: {
+        firstName: resolvedFirstName,
+        lastName: resolvedLastName,
+      },
+    };
+
     res.status(201).json({
       message: 'Registration successful',
+      user: responseUser,
+      token,
       data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          userType: user.userType,
-          profile: {
-            firstName,
-            lastName,
-          },
-        },
+        user: responseUser,
         token,
       },
     });
@@ -221,20 +235,24 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     const firstName = nameParts[0] || 'User';
     const lastName = nameParts.slice(1).join(' ') || '';
 
+    const responseUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      profile: {
+        firstName,
+        lastName,
+        avatar: user.avatarUrl,
+      },
+    };
+
     res.json({
       message: 'Login successful',
+      user: responseUser,
+      token,
       data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          userType: user.userType,
-          profile: {
-            firstName,
-            lastName,
-            avatar: user.avatarUrl,
-          },
-        },
+        user: responseUser,
         token,
       },
     });
@@ -402,9 +420,9 @@ router.post('/reset-password', async (req: Request, res: Response, next: NextFun
 /**
  * @route POST /auth/logout
  * @desc Logout user (client-side token removal)
- * @access Public
+ * @access Private
  */
-router.post('/logout', (_req: Request, res: Response) => {
+router.post('/logout', authenticate, (_req: Request, res: Response) => {
   // JWT is stateless, so logout is handled client-side
   // In production, you might want to blacklist tokens or use refresh tokens
   res.json({ message: 'Logout successful' });

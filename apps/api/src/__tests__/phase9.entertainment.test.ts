@@ -104,6 +104,7 @@ describe('Phase 9: Entertainment & Content Module', () => {
         await prisma.pulseChallenge.delete({ where: { id: testChallengeId } }).catch(() => {});
       }
       if (testUserId) {
+        await prisma.memberProfile.deleteMany({ where: { userId: testUserId } }).catch(() => {});
         await prisma.user.delete({ where: { id: testUserId } }).catch(() => {});
       }
     } catch (err) {

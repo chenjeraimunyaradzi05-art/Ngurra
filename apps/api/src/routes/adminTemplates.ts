@@ -6,6 +6,32 @@ import { z } from 'zod';
 
 const router = express.Router();
 
+// GET /admin/mentorships - list mentorships (admin)
+router.get('/mentorships', authenticate, requireAdmin, async (req, res) => {
+    try {
+        const mentorships = await prisma.mentorship.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 100,
+        });
+        return void res.json({ mentorships });
+    } catch (err) {
+        console.error('list mentorships error', err);
+        return void res.status(500).json({ error: 'Failed to fetch mentorships' });
+    }
+});
+
+// GET /admin/mentorships/analytics - mentorship analytics (admin)
+router.get('/mentorships/analytics', authenticate, requireAdmin, async (req, res) => {
+    try {
+        const total = await prisma.mentorship.count();
+        const active = await prisma.mentorship.count({ where: { status: 'active' } });
+        return void res.json({ total, active });
+    } catch (err) {
+        console.error('mentorship analytics error', err);
+        return void res.status(500).json({ error: 'Failed to fetch mentorship analytics' });
+    }
+});
+
 // GET /admin/email-templates - list templates
 router.get('/email-templates', authenticate, requireAdmin, async (req, res) => {
     try {

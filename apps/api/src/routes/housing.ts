@@ -176,6 +176,47 @@ router.post('/listings', authenticate, async (req, res) => {
   }
 });
 
+router.put('/listings/:id', authenticate, async (req, res) => {
+  try {
+    const updated = await prisma.womenHousingPortal.update({
+      where: { id: req.params.id, ownerId: req.user.id },
+      data: {
+        ...(req.body?.title ? { title: String(req.body.title) } : {}),
+        ...(req.body?.description ? { description: String(req.body.description) } : {}),
+        ...(req.body?.suburb ? { suburb: String(req.body.suburb) } : {}),
+        ...(req.body?.state ? { state: String(req.body.state) } : {}),
+        ...(req.body?.postcode ? { postcode: String(req.body.postcode) } : {}),
+        ...(req.body?.rentPerWeek ? { rentPerWeek: Number(req.body.rentPerWeek) } : {}),
+        ...(req.body?.bedrooms ? { bedrooms: Number(req.body.bedrooms) } : {}),
+        ...(req.body?.bathrooms ? { bathrooms: Number(req.body.bathrooms) } : {}),
+      },
+    });
+
+    res.json({ listing: updated });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return void res.status(404).json({ error: 'Listing not found' });
+    }
+    console.error('[Housing] Update listing error:', error);
+    res.status(400).json({ error: error?.message || 'Failed to update listing' });
+  }
+});
+
+router.delete('/listings/:id', authenticate, async (req, res) => {
+  try {
+    await prisma.womenHousingPortal.delete({
+      where: { id: req.params.id, ownerId: req.user.id },
+    });
+    res.json({ success: true });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return void res.status(404).json({ error: 'Listing not found' });
+    }
+    console.error('[Housing] Delete listing error:', error);
+    res.status(400).json({ error: error?.message || 'Failed to delete listing' });
+  }
+});
+
 router.post('/listings/:id/publish', authenticate, async (req, res) => {
   try {
     const listing = await publishListing(req.params.id, req.user.id);
@@ -243,6 +284,29 @@ router.post('/inquiries', authenticate, async (req, res) => {
     res.status(400).json({ error: error?.message || 'Failed to send inquiry' });
   }
 });
+
+router.post('/listings/:id/inquiry', authenticate, async (req, res) => {
+  try {
+    const message = String(req.body?.message || '').trim();
+    if (!message) {
+      return void res.status(400).json({ error: 'Message is required' });
+    }
+
+    const inquiry = await sendInquiry(req.user.id, {
+      listingId: req.params.id,
+      message,
+      moveInDate: req.body?.moveInDate ? new Date(req.body.moveInDate) : undefined,
+      occupants: req.body?.occupants ? Number(req.body.occupants) : undefined,
+      hasChildren: Boolean(req.body?.hasChildren),
+      hasPets: Boolean(req.body?.hasPets),
+    });
+
+    res.status(201).json({ inquiry });
+  } catch (error: any) {
+    console.error('[Housing] Send inquiry error:', error);
+    res.status(400).json({ error: error?.message || 'Failed to send inquiry' });
+  }
+});
  
 router.get('/inquiries/mine', authenticate, async (req, res) => {
   try {
@@ -286,7 +350,17 @@ router.post('/saved/:id', authenticate, async (req, res) => {
     res.json({ save });
   } catch (error: any) {
     console.error('[Housing] Save listing error:', error);
-    res.status(400).json({ error: error?.message || 'Failed to save listing' });
+    res.status(404).json({ error: error?.message || 'Listing not found' });
+  }
+});
+
+router.post('/listings/:id/save', authenticate, async (req, res) => {
+  try {
+    const save = await saveListing(req.user.id, req.params.id, req.body?.notes);
+    res.json({ save });
+  } catch (error: any) {
+    console.error('[Housing] Save listing error:', error);
+    res.status(404).json({ error: error?.message || 'Listing not found' });
   }
 });
 
@@ -303,10 +377,24 @@ router.delete('/saved/:id', authenticate, async (req, res) => {
 router.get('/saved', authenticate, async (req, res) => {
   try {
     const saves = await getSavedListings(req.user.id);
-    res.json({ saves });
+    res.json({ listings: saves, saves });
   } catch (error) {
     console.error('[Housing] Get saved listings error:', error);
     res.status(500).json({ error: 'Failed to load saved listings' });
+  }
+});
+
+router.get('/my-listings', authenticate, async (req, res) => {
+  try {
+    const listings = await prisma.womenHousingPortal.findMany({
+      where: { ownerId: req.user.id },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json({ listings });
+  } catch (error) {
+    console.error('[Housing] My listings error:', error);
+    res.status(500).json({ error: 'Failed to load listings' });
   }
 });
 
@@ -334,6 +422,20 @@ router.post('/profile', authenticate, async (req, res) => {
     res.json({ profile });
   } catch (error: any) {
     console.error('[Housing] Update seeker profile error:', error);
+    res.status(400).json({ error: error?.message || 'Failed to update profile' });
+  }
+});
+
+router.put('/profile', authenticate, async (req, res) => {
+  try {
+    const parsed = seekerSchema.parse(req.body || {});
+    const profile = await updateSeekerProfile(req.user.id, {
+      ...parsed,
+      desiredMoveDate: parsed.desiredMoveDate ? new Date(parsed.desiredMoveDate) : undefined,
+    } as any);
+    res.status(200).json({ profile });
+  } catch (error: any) {
+    console.error('[Housing] Update profile error:', error);
     res.status(400).json({ error: error?.message || 'Failed to update profile' });
   }
 });

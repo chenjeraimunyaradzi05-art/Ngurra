@@ -264,6 +264,12 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
     return sendError(res, err, req.requestId);
   }
 
+  // Handle AppError-style errors (statusCode/code)
+  if (typeof err.statusCode === 'number' && err.statusCode >= 400) {
+    // @ts-ignore
+    return sendError(res, err, req.requestId);
+  }
+
   // Default to internal error
   const error = Errors.internal(
     process.env.NODE_ENV === 'production' 

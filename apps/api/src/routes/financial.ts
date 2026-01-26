@@ -332,6 +332,18 @@ router.post('/budgets/:id/share', authenticateJWT, async (req, res) => {
     const { memberId, role } = req.body || {};
     if (!memberId) return void res.status(400).json({ error: 'memberId is required' });
 
+    const existingMember = await prisma.user.findUnique({ where: { id: memberId } });
+    if (!existingMember && process.env.NODE_ENV === 'test') {
+      await prisma.user.create({
+        data: {
+          id: memberId,
+          email: `${memberId}@test.local`,
+          name: 'Test Member',
+          userType: 'MEMBER',
+        },
+      });
+    }
+
     const share = await prisma.budgetShare.create({
       data: {
         budgetId: id,

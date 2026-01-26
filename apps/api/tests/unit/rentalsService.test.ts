@@ -14,39 +14,44 @@ import {
   upsertSeekerProfile,
 } from '../../src/services/rentals';
 
-const mockPrisma = vi.hoisted(() => ({
+const createMockPrisma = () => ({
   rentalListing: {
-    create: vi.fn(),
-    findFirst: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    count: vi.fn(),
+    create: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    count: jest.fn(),
   },
   rentalInquiry: {
-    findFirst: vi.fn(),
-    findUnique: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
+    findFirst: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
   },
   propertySeekerProfile: {
-    upsert: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
+    upsert: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
   },
-}));
+});
 
-vi.mock('../../src/db', () => ({
-  prisma: mockPrisma,
-}));
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
+
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
 const status = 'ACTIVE' as ListingStatus;
 const inquiryStatus = 'RESPONDED' as RentalInquiryStatus;
 
 describe('rentalsService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('creates rental listing in draft status', async () => {

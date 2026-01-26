@@ -13,48 +13,55 @@ import {
   respondToInquiry,
   updateSeekerProfile,
 } from '../../src/services/womenHousing';
-const mockPrisma = vi.hoisted(() => ({
+function createMockPrisma() {
+  return {
   womenHousingPortal: {
-    create: vi.fn(),
-    findFirst: vi.fn(),
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    count: vi.fn(),
+    create: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    count: jest.fn(),
   },
   womenHousingPhoto: {
-    count: vi.fn(),
-    createMany: vi.fn(),
-    findMany: vi.fn(),
+    count: jest.fn(),
+    createMany: jest.fn(),
+    findMany: jest.fn(),
   },
   womenHousingInquiry: {
-    findFirst: vi.fn(),
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    update: vi.fn(),
-    findMany: vi.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    findMany: jest.fn(),
   },
   womenHousingSave: {
-    upsert: vi.fn(),
-    delete: vi.fn(),
-    findMany: vi.fn(),
+    upsert: jest.fn(),
+    delete: jest.fn(),
+    findMany: jest.fn(),
   },
   womenHousingProfile: {
-    upsert: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
+    upsert: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
   },
-}));
+  };
+}
 
-vi.mock('../../src/db', () => ({
-  prisma: mockPrisma,
-}));
+jest.mock('../../src/db', () => {
+  const prisma = createMockPrisma();
+  return { prisma };
+});
+
+const { prisma: mockPrisma } = jest.requireMock('../../src/db') as {
+  prisma: ReturnType<typeof createMockPrisma>;
+};
 
 const housingType = 'APARTMENT' as unknown as HousingType;
 
 describe('womenHousingService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('creates a housing listing with women-only default and draft status', async () => {

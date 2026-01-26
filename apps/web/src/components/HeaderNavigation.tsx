@@ -4,26 +4,22 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from '@/components/ui/OptimizedImage';
 import { useRouter } from 'next/navigation';
-import { Space_Grotesk } from 'next/font/google';
 import { Menu, X, Sun, Moon, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SubscriptionBadge from './SubscriptionBadge';
 import { useTheme } from './ThemeProvider';
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['500', '700'],
-});
 
 const publicNavigation = [
   { name: 'Jobs', href: '/jobs' },
   { name: 'Courses', href: '/courses' },
   { name: 'Mentorship', href: '/mentorship' },
   { name: 'Community', href: '/community' },
+  { name: 'Social', href: '/social-feed' },
   { name: 'Housing', href: '/rentals' },
   { name: 'Resources', href: '/resources' },
+  { name: 'Grants', href: '/grants' },
+  { name: 'Business', href: '/business-suite' },
   { name: 'Events', href: '/events' },
-  { name: 'About', href: '/about' },
 ];
 
 function roleNavigation(userType: string) {
@@ -72,7 +68,7 @@ function ThemeIcon({ theme, mounted }: { theme: string; mounted: boolean }) {
   if (!mounted) {
     return <Sun className="h-5 w-5 opacity-50" />;
   }
-  
+
   if (theme === 'dark') {
     return <Moon className="h-5 w-5" />;
   }
@@ -84,9 +80,9 @@ function ThemeIcon({ theme, mounted }: { theme: string; mounted: boolean }) {
 
 export default function HeaderNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
-  
+
   const { resolvedTheme, setTheme, mounted } = useTheme();
 
   const handleLogout = () => {
@@ -98,22 +94,18 @@ export default function HeaderNavigation() {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
-  const handleSignIn = () => {
-    router.push('/signin');
-  };
-
-  const handleSignUp = () => {
-    router.push('/signup');
-  };
-
   const navItems = isAuthenticated && user ? roleNavigation(user.userType) : publicNavigation;
 
-  // Show loading state while hydrating
-  const showAuthButtons = !isLoading;
-
   return (
-    <header className="bg-white dark:bg-slate-900 cosmic:bg-cosmic-dark shadow-sm dark:shadow-slate-900/50 transition-colors duration-200" role="banner">
-      <nav id="navigation" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+    <header
+      className="bg-white dark:bg-slate-900 cosmic:bg-cosmic-dark shadow-sm dark:shadow-slate-900/50 transition-colors duration-200"
+      role="banner"
+    >
+      <nav
+        id="navigation"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        aria-label="Main navigation"
+      >
         <div className="flex w-full items-center justify-between border-b border-gray-200 dark:border-slate-800 py-4 lg:border-none">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
@@ -149,11 +141,15 @@ export default function HeaderNavigation() {
             >
               <ThemeIcon theme={resolvedTheme} mounted={mounted} />
             </button>
-            
+
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
                 <div className="hidden md:flex flex-col items-end">
-                  {user && <span className="text-sm font-bold text-gray-900 dark:text-white">{user.profile?.firstName || 'Member'}</span>}
+                  {user && (
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">
+                      {user.profile?.firstName || 'Member'}
+                    </span>
+                  )}
                 </div>
                 <SubscriptionBadge />
                 <button
@@ -181,7 +177,7 @@ export default function HeaderNavigation() {
             )}
           </div>
           <div className="lg:hidden">
-             <button
+            <button
               type="button"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"
@@ -200,11 +196,15 @@ export default function HeaderNavigation() {
         {mobileMenuOpen && (
           <div id="mobile-menu" className="py-3 flex flex-col gap-3 lg:hidden" role="menu">
             {navItems.map((link) => (
-              <Link key={link.name} href={link.href} className="text-sm font-medium text-gray-900 hover:text-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-sm px-2 py-1 transition-colors duration-150">
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-gray-900 hover:text-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-sm px-2 py-1 transition-colors duration-150"
+              >
                 {link.name}
               </Link>
             ))}
-             {isAuthenticated ? (
+            {isAuthenticated ? (
               <button
                 onClick={handleLogout}
                 className="mt-4 w-full text-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white hover:bg-indigo-700"

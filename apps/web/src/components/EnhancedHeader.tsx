@@ -4,11 +4,11 @@ import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from '@/components/ui/OptimizedImage';
 import { useRouter, usePathname } from 'next/navigation';
-import { 
-  Menu, 
-  X, 
-  Search, 
-  ChevronDown, 
+import {
+  Menu,
+  X,
+  Search,
+  ChevronDown,
   Sparkles,
   Briefcase,
   GraduationCap,
@@ -18,21 +18,23 @@ import {
   Home,
   Settings,
   LogOut,
-  User
+  User,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SubscriptionBadge from './SubscriptionBadge';
 import { NotificationDropdown } from './NotificationDropdown';
 import { SearchBar, GlobalSearch } from './SearchBar';
 import { Avatar } from './ui/Avatar';
-import { Dropdown, DropdownItem, DropdownDivider, DropdownLabel } from './ui/Dropdown';
+import { Dropdown, DropdownItem, DropdownDivider } from './ui/Dropdown';
 
 const publicNavigation = [
   { name: 'Jobs', href: '/jobs', icon: <Briefcase className="w-4 h-4" /> },
   { name: 'Courses', href: '/courses', icon: <GraduationCap className="w-4 h-4" /> },
   { name: 'Mentorship', href: '/mentorship', icon: <Users className="w-4 h-4" /> },
   { name: 'Community', href: '/community', icon: <Sparkles className="w-4 h-4" /> },
+  { name: 'Social', href: '/social-feed', icon: <Users className="w-4 h-4" /> },
   { name: 'Resources', href: '/resources', icon: <BookOpen className="w-4 h-4" /> },
+  { name: 'Grants', href: '/grants', icon: <BookOpen className="w-4 h-4" /> },
   { name: 'Business', href: '/business-suite', icon: <Briefcase className="w-4 h-4" /> },
 ];
 
@@ -42,7 +44,11 @@ function roleNavigation(userType: string) {
     return [
       { name: 'Dashboard', href: '/member/dashboard', icon: <Home className="w-4 h-4" /> },
       { name: 'My Mentors', href: '/member/mentorship', icon: <Users className="w-4 h-4" /> },
-      { name: 'Applications', href: '/member/applications', icon: <Briefcase className="w-4 h-4" /> },
+      {
+        name: 'Applications',
+        href: '/member/applications',
+        icon: <Briefcase className="w-4 h-4" />,
+      },
       { name: 'Messages', href: '/member/messages', icon: <BookOpen className="w-4 h-4" /> },
     ];
   if (t === 'mentor')
@@ -116,15 +122,16 @@ export default function EnhancedHeader() {
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center gap-1">
                 {navItems.slice(0, 6).map((link) => (
-                  <Link 
-                    key={link.name} 
-                    href={link.href} 
+                  <Link
+                    key={link.name}
+                    href={link.href}
                     className={`
                       flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
                       transition-colors
-                      ${isActiveLink(link.href)
-                        ? 'text-[#FFD700] bg-[#FFD700]/10'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                      ${
+                        isActiveLink(link.href)
+                          ? 'text-[#FFD700] bg-[#FFD700]/10'
+                          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                       }
                     `}
                   >
@@ -158,9 +165,13 @@ export default function EnhancedHeader() {
                   <Dropdown
                     trigger={
                       <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <Avatar 
-                          src={undefined} 
-                          name={user?.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim() : user?.email || 'User'} 
+                        <Avatar
+                          src={undefined}
+                          name={
+                            user?.profile?.firstName
+                              ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim()
+                              : user?.email || 'User'
+                          }
                           size="sm"
                           status="online"
                         />
@@ -171,7 +182,9 @@ export default function EnhancedHeader() {
                   >
                     <div className="px-4 py-3">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user?.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim() : 'User'}
+                        {user?.profile?.firstName
+                          ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim()
+                          : 'User'}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                         {user?.email}
@@ -188,7 +201,11 @@ export default function EnhancedHeader() {
                       Settings
                     </DropdownItem>
                     <DropdownDivider />
-                    <DropdownItem onClick={handleLogout} icon={<LogOut className="w-4 h-4" />} danger>
+                    <DropdownItem
+                      onClick={handleLogout}
+                      icon={<LogOut className="w-4 h-4" />}
+                      danger
+                    >
                       Logout
                     </DropdownItem>
                   </Dropdown>
@@ -217,15 +234,16 @@ export default function EnhancedHeader() {
           {mobileMenuOpen && (
             <div className="lg:hidden py-4 space-y-2 border-t border-gray-200 dark:border-gray-800">
               {navItems.map((link) => (
-                <Link 
-                  key={link.name} 
+                <Link
+                  key={link.name}
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)} 
+                  onClick={() => setMobileMenuOpen(false)}
                   className={`
                     flex items-center gap-3 px-3 py-3 rounded-lg text-base font-medium
-                    ${isActiveLink(link.href)
-                      ? 'text-[#FFD700] bg-[#FFD700]/10'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ${
+                      isActiveLink(link.href)
+                        ? 'text-[#FFD700] bg-[#FFD700]/10'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
                 >
@@ -234,9 +252,7 @@ export default function EnhancedHeader() {
                 </Link>
               ))}
 
-              {!isAuthenticated && (
-                <></>
-              )}
+              {!isAuthenticated && <></>}
 
               {isAuthenticated && (
                 <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-800">

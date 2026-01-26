@@ -4,15 +4,15 @@ import React from 'react';
 import { SafeExit } from '@/components/security/SafeExit';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  BookOpen, 
-  Users, 
-  MessageSquare, 
-  Bell, 
-  Settings, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  BookOpen,
+  Users,
+  MessageSquare,
+  Bell,
+  Settings,
+  LogOut,
   User,
   Heart,
   Award,
@@ -21,7 +21,7 @@ import {
   Sparkles,
   Calendar,
   PiggyBank,
-  Building2
+  Building2,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -48,17 +48,17 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   const communityNavItems = [
     { href: '/member/mentorship-community', label: 'Mentorship Community', icon: Users },
+    { href: '/social-feed', label: 'Social Feed', icon: MessageSquare },
     { href: '/member/messages', label: 'Messages', icon: MessageSquare },
     { href: '/member/notifications', label: 'Notifications', icon: Bell },
     { href: '/member/wellness', label: 'Wellness', icon: Heart },
     { href: '/member/financial-wellness', label: 'Financial Wellness', icon: PiggyBank },
+    { href: '/grants', label: 'Grants & Funding', icon: Award },
     { href: '/events', label: 'Events', icon: Calendar },
     { href: '/business-suite', label: 'Business Suite', icon: Building2 },
   ];
 
-  const bottomNavItems = [
-    { href: '/member/setup', label: 'Settings', icon: Settings },
-  ];
+  const bottomNavItems = [{ href: '/member/setup', label: 'Settings', icon: Settings }];
 
   const renderNavSection = (items: typeof mainNavItems, title?: string) => (
     <div className="space-y-1">
@@ -75,8 +75,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             key={item.href}
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              isActive 
-                ? 'bg-emerald-600/20 text-emerald-400 border-l-2 border-emerald-500' 
+              isActive
+                ? 'bg-emerald-600/20 text-emerald-400 border-l-2 border-emerald-500'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
             }`}
           >
@@ -110,11 +110,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-white truncate">
-                {user?.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim() : 'Member'}
+                {user?.profile?.firstName
+                  ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim()
+                  : 'Member'}
               </div>
-              <div className="text-xs text-slate-400 truncate">
-                {user?.email}
-              </div>
+              <div className="text-xs text-slate-400 truncate">{user?.email}</div>
             </div>
           </div>
         </div>
@@ -150,16 +150,16 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               </div>
               <span>Ngurra</span>
             </Link>
-            
+
             <div className="flex items-center gap-2">
-              <Link 
-                href="/member/notifications" 
+              <Link
+                href="/member/notifications"
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"
               >
                 <Bell className="w-5 h-5" />
               </Link>
-              <Link 
-                href="/member/messages" 
+              <Link
+                href="/member/messages"
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"
               >
                 <MessageSquare className="w-5 h-5" />
@@ -169,9 +169,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </header>
 
         {/* Page Content */}
-        <main className="min-h-screen pb-20 lg:pb-0">
-          {children}
-        </main>
+        <main className="min-h-screen pb-20 lg:pb-0">{children}</main>
 
         <SafeExit />
 
@@ -192,9 +190,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   key={item.href}
                   href={item.href}
                   className={`flex flex-col items-center gap-1 p-2 rounded-lg min-w-[60px] ${
-                    isActive 
-                      ? 'text-emerald-400' 
-                      : 'text-slate-400'
+                    isActive ? 'text-emerald-400' : 'text-slate-400'
                   }`}
                 >
                   <Icon className="w-5 h-5" />

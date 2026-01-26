@@ -228,6 +228,9 @@ const DEFAULT_FILTERS = {
   status: 'ACTIVE',
   petFriendly: false,
   furnished: false,
+  hasFloorPlan: false,
+  agentVerified: false,
+  parking: '',
 };
 
 // Mortgage Calculator Component
@@ -713,6 +716,11 @@ function PropertyCard({
           {listing.floorPlan && (
             <span className="px-2 py-1 rounded-full text-xs bg-sky-500/20 text-sky-400">
               📐 Floor Plan
+            </span>
+          )}
+          {listing.agent?.verified && (
+            <span className="px-2 py-1 rounded-full text-xs bg-emerald-500/30 text-emerald-500 flex items-center gap-1">
+              <ShieldCheck className="w-4 h-4 inline" /> Verified Agent
             </span>
           )}
         </div>
@@ -1259,7 +1267,51 @@ export default function RentalsPage() {
                         />
                         <span className="text-sm text-gray-300">🪑 Furnished</span>
                       </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.hasFloorPlan}
+                          onChange={(e) =>
+                            setFilters((prev) => ({ ...prev, hasFloorPlan: e.target.checked }))
+                          }
+                          className="w-4 h-4 rounded border-gray-600 text-sky-500 focus:ring-sky-500/50"
+                        />
+                        <span className="text-sm text-sky-400">📐 Floor Plan</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.agentVerified}
+                          onChange={(e) =>
+                            setFilters((prev) => ({ ...prev, agentVerified: e.target.checked }))
+                          }
+                          className="w-4 h-4 rounded border-gray-600 text-emerald-500 focus:ring-emerald-500/50"
+                        />
+                        <span className="text-sm text-emerald-400">
+                          <ShieldCheck className="w-4 h-4 inline mr-1" /> Verified Agent
+                        </span>
+                      </label>
                     </div>
+                  </div>
+
+                  {/* Parking */}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Parking</label>
+                    <select
+                      value={filters.parking}
+                      onChange={(e) => setFilters((prev) => ({ ...prev, parking: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/50"
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      <option value="">Any</option>
+                      <option value="0">0</option>
+                      <option value="1">1+</option>
+                      <option value="2">2+</option>
+                      <option value="3">3+</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -1688,6 +1740,9 @@ export default function RentalsPage() {
                     { title: 'Housing NSW', link: 'https://www.facs.nsw.gov.au/housing' },
                     { title: 'Aboriginal Housing Victoria', link: 'https://www.ahvic.org.au' },
                     { title: 'Indigenous Business Australia', link: 'https://www.iba.gov.au' },
+                    { title: 'First Nations Legal Service', link: 'https://www.fnls.org.au' },
+                    { title: 'National Shelter', link: 'https://www.shelter.org.au' },
+                    { title: 'Ask Izzy (Crisis Support)', link: 'https://askizzy.org.au' },
                   ].map((resource, i) => (
                     <li key={i}>
                       <a

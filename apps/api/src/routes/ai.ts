@@ -3,6 +3,8 @@ import express from 'express';
 import { prisma } from '../db';
 import { askAI } from '../lib/ai';
 import { buildRAGContext, formatRAGContextForPrompt } from '../lib/rag';
+import authenticateJWT from '../middleware/auth';
+import { moderateText } from '../lib/contentModeration';
 
 const router = express.Router();
 
@@ -619,6 +621,107 @@ router.get('/opportunity-radar', async (req, res) => {
     catch (err) {
         console.error('OpportunityRadar error', err);
         res.status(500).json({ error: 'OpportunityRadar failed' });
+    }
+});
+
+// ----- AI Conversations & Messages -----
+// GET /ai/conversations - list user's conversations
+router.get('/conversations', authenticateJWT, async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const conversations = await prisma.aiConversation.findMany({
+            where: { userId },
+            orderBy: { updatedAt: 'desc' },
+            include: { messages: { orderBy: { createdAt: 'desc' }, take: 1 } },
+        });
+        return void res.json({ ok: true, conversations });
+    }
+    catch (err) {
+        console.error('List conversations error', err);
+        return void res.status(500).json({ error: 'Failed to list conversations' });
+    }
+});
+
+// POST /ai/conversations - create a new conversation
+router.post('/conversations', authenticateJWT, async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const { title } = req.body || {};
+        const conv = await prisma.aiConversation.create({ data: { userId, title } });
+        return void res.json({ ok: true, conversation: conv });
+    }
+    catch (err) {
+        console.error('Create conversation error', err);
+        return void res.status(500).json({ error: 'Failed to create conversation' });
+    }
+});
+
+// GET /ai/conversations/:id - get conversation with messages
+router.get('/conversations/:id', authenticateJWT, async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const id = req.params.id;
+        const conv = await prisma.aiConversation.findFirst({ where: { id, userId }, include: { messages: { orderBy: { createdAt: 'asc' } } } });
+        if (!conv) return void res.status(404).json({ error: 'Not found' });
+        return void res.json({ ok: true, conversation: conv });
+    }
+    catch (err) {
+        console.error('Get conversation error', err);
+        return void res.status(500).json({ error: 'Failed to fetch conversation' });
+    }
+});
+
+// POST /ai/conversations/:id/messages - append a message and get assistant response
+router.post('/conversations/:id/messages', authenticateJWT, async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const id = req.params.id;
+        const { role = 'user', content = '', meta = {} } = req.body || {};
+
+        if (!content || typeof content !== 'string') return void res.status(400).json({ error: 'Missing content' });
+
+        // Basic moderation
+        const moderation = moderateText(content);
+        if (moderation.flagged) {
+            return void res.status(400).json({ error: 'Message content blocked', moderation });
+        }
+
+        // Create user message
+        const userMessage = await prisma.aiMessage.create({ data: { conversationId: id, role, content, meta: { ...meta } } });
+        await prisma.aiConversation.update({ where: { id }, data: { lastMessageAt: new Date(), updatedAt: new Date() } });
+
+        // Fetch recent messages to build context
+        const contextMessages = await prisma.aiMessage.findMany({ where: { conversationId: id }, orderBy: { createdAt: 'asc' } });
+        const convoText = contextMessages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+
+        // Build prompt for assistant using existing concierge prompt as a base
+        const prompt = `You are Athena, an AI career concierge. Continue the conversation below in a culturally-safe, strengths-based, and practical way. Do not invent qualifications or assume cultural identity.
+
+Conversation history:
+${convoText}
+
+Assistant:`;
+
+        const aiResult = await askAI(prompt, { userId, feature: 'conversation' });
+        if (aiResult && aiResult.status === 429) return void res.status(429).json({ error: 'rate_limited' });
+
+        // If safety triggered, record assistant note but mark source
+        if (aiResult && aiResult.source === 'safety') {
+            const assistantMessage = await prisma.aiMessage.create({ data: { conversationId: id, role: 'assistant', content: aiResult.text || '[Content removed]', meta: { source: 'safety' } } });
+            await prisma.aiConversation.update({ where: { id }, data: { lastMessageAt: new Date(), updatedAt: new Date() } });
+            return void res.json({ ok: true, source: 'safety', assistantMessage });
+        }
+
+        // Normal assistant response
+        const assistantText = (aiResult && aiResult.text) ? aiResult.text : 'Sorry, I don\'t have an answer right now.';
+        const assistantMessage = await prisma.aiMessage.create({ data: { conversationId: id, role: 'assistant', content: assistantText, meta: { source: aiResult?.source || 'ai' } } });
+        await prisma.aiConversation.update({ where: { id }, data: { lastMessageAt: new Date(), updatedAt: new Date() } });
+
+        return void res.json({ ok: true, userMessage, assistantMessage });
+    }
+    catch (err) {
+        console.error('Append message error', err);
+        return void res.status(500).json({ error: 'Failed to append message' });
     }
 });
 

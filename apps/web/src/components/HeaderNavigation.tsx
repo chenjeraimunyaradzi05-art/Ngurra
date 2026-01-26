@@ -4,21 +4,29 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from '@/components/ui/OptimizedImage';
 import { useRouter } from 'next/navigation';
+import { Space_Grotesk } from 'next/font/google';
 import { Menu, X, Sun, Moon, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SubscriptionBadge from './SubscriptionBadge';
 import { useTheme } from './ThemeProvider';
+
+// eslint-disable-next-line no-unused-vars
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+});
 
 const publicNavigation = [
   { name: 'Jobs', href: '/jobs' },
   { name: 'Courses', href: '/courses' },
   { name: 'Mentorship', href: '/mentorship' },
   { name: 'Community', href: '/community' },
+  { name: 'Social', href: '/connections' },
   { name: 'Housing', href: '/rentals' },
+  { name: 'Business', href: '/business-suite' },
+  { name: 'Grants', href: '/grants' },
   { name: 'Resources', href: '/resources' },
   { name: 'Events', href: '/events' },
-  { name: 'Grants', href: '/grants' },
-  { name: 'About', href: '/about' },
 ];
 
 function roleNavigation(userType: string) {
@@ -26,25 +34,25 @@ function roleNavigation(userType: string) {
   if (t === 'member')
     return [
       { name: 'Dashboard', href: '/member/dashboard' },
-      { name: 'Messages', href: '/messages' },
-      { name: 'Connections', href: '/connections' },
-      { name: 'Business Suite', href: '/business-suite' },
-      { name: 'Grants', href: '/grants' },
+      { name: 'My Mentors', href: '/member/mentorship' },
+      { name: 'Applications', href: '/member/applications' },
+      { name: 'Social', href: '/connections' },
       { name: 'Housing', href: '/rentals' },
+      { name: 'Business', href: '/business-suite' },
+      { name: 'Grants', href: '/grants' },
+      { name: 'Career', href: '/career' },
+      { name: 'Messages', href: '/member/messages' },
       { name: 'Settings', href: '/settings' },
     ];
   if (t === 'mentor')
     return [
       { name: 'Mentor Hub', href: '/mentor/dashboard' },
-      { name: 'Messages', href: '/messages' },
-      { name: 'Connections', href: '/connections' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Settings', href: '/settings' },
     ];
   if (t === 'tafe' || t === 'institution')
     return [
       { name: 'TAFE', href: '/tafe/dashboard' },
-      { name: 'Messages', href: '/messages' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Settings', href: '/settings' },
     ];
@@ -52,7 +60,6 @@ function roleNavigation(userType: string) {
     return [
       { name: 'Dashboard', href: '/company/dashboard' },
       { name: 'Jobs', href: '/company/jobs' },
-      { name: 'Messages', href: '/messages' },
       { name: 'Housing', href: '/rentals' },
       { name: 'Billing', href: '/company/billing' },
       { name: 'Settings', href: '/settings' },

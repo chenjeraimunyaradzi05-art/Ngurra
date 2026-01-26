@@ -47,13 +47,18 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   ];
 
   const communityNavItems = [
+    { href: '/connections', label: 'Social Network', icon: Users },
     { href: '/member/mentorship-community', label: 'Mentorship Community', icon: Users },
     { href: '/member/messages', label: 'Messages', icon: MessageSquare },
     { href: '/member/notifications', label: 'Notifications', icon: Bell },
     { href: '/member/wellness', label: 'Wellness', icon: Heart },
-    { href: '/member/financial-wellness', label: 'Financial Wellness', icon: PiggyBank },
     { href: '/events', label: 'Events', icon: Calendar },
+  ];
+
+  const businessNavItems = [
     { href: '/business-suite', label: 'Business Suite', icon: Building2 },
+    { href: '/grants', label: 'Grants & Funding', icon: PiggyBank },
+    { href: '/member/financial-wellness', label: 'Financial Wellness', icon: PiggyBank },
   ];
 
   const bottomNavItems = [{ href: '/member/setup', label: 'Settings', icon: Settings }];
@@ -122,6 +127,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           {renderNavSection(mainNavItems)}
           {renderNavSection(growthNavItems, 'Career Growth')}
           {renderNavSection(communityNavItems, 'Community')}
+          {renderNavSection(businessNavItems, 'Business & Funding')}
         </nav>
 
         {/* Bottom Section */}

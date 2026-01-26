@@ -15,8 +15,8 @@ const isProduction = NODE_ENV === 'production';
 const isTest = NODE_ENV === 'test' || process.env.SES_TEST_CAPTURE === '1';
 const isDevelopment = NODE_ENV === 'development';
 
-// Rate limit multiplier for tests (avoid flakiness)
-const RATE_MULTIPLIER = isTest ? 100 : 1;
+// Rate limit multiplier - higher for tests and development for better DX
+const RATE_MULTIPLIER = isTest ? 100 : isDevelopment ? 10 : 1;
 
 /**
  * Redis client for rate limiting (production only)
@@ -289,7 +289,7 @@ export function globalRateLimiter() {
   
   return rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: isTest ? 100000 : 300,
+    max: isTest ? 100000 : 5000, // Increased from 300 to 5000 for better UX
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => {

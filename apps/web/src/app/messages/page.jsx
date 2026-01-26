@@ -1,7 +1,7 @@
 'use client';
 
 import api from '@/lib/apiClient';
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { socketService } from '@/lib/socket';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,21 +17,23 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [, setLoading] = useState(true);
+  // eslint-disable-next-line no-unused-vars
+  const [loading, setLoading] = useState(true);
   const [sendingMessage, setSendingMessage] = useState(false);
   const messagesEndRef = useRef(null);
   const myUserId = user?.id || null;
 
   // Real-time state
   const [typingUsers, setTypingUsers] = useState({}); // { conversationId: [userIds] }
-  const [, setOnlineUsers] = useState(new Set());
+  // eslint-disable-next-line no-unused-vars
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const [isConnected, setIsConnected] = useState(false);
   const typingTimeoutRef = useRef(null);
   const lastTypingEmitRef = useRef(0);
 
   // Theme colors
-  const accentPrimary = '#4F46E5';
-  const accentSecondary = '#0EA5E9';
+  const accentPink = '#E91E8C';
+  const accentPurple = '#8B5CF6';
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -379,11 +381,7 @@ export default function MessagesPage() {
 
   // Use API data or fallback to mock data
   const displayConversations = conversations.length > 0 ? conversations : mockConversations;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const displayMessages = useMemo(
-    () => (messages.length > 0 ? messages : selectedConversation ? mockMessages : []),
-    [messages, selectedConversation],
-  );
+  const displayMessages = messages.length > 0 ? messages : selectedConversation ? mockMessages : [];
 
   const filteredConversations = displayConversations.filter((c) =>
     c.participant.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -439,7 +437,7 @@ export default function MessagesPage() {
   return (
     <div
       className="min-h-screen pt-16"
-      style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0F2FE 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}
     >
       <div className="h-[calc(100vh-4rem)] flex">
         {/* Conversations List */}
@@ -452,7 +450,7 @@ export default function MessagesPage() {
           <div className="p-4 border-b border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <span style={{ color: accentPrimary }}>💬</span> Messages
+                <span style={{ color: accentPink }}>💬</span> Messages
               </h1>
               <button className="p-2 rounded-full hover:bg-slate-100 transition-colors">✏️</button>
             </div>
@@ -465,7 +463,7 @@ export default function MessagesPage() {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 text-sm transition-all"
+                className="w-full pl-10 pr-4 py-2 rounded-full bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 text-sm transition-all"
               />
             </div>
           </div>
@@ -483,7 +481,7 @@ export default function MessagesPage() {
                   key={convo.id}
                   onClick={() => setSelectedConversation(convo)}
                   className={`w-full p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors border-b border-slate-100 ${
-                    selectedConversation?.id === convo.id ? 'bg-indigo-50' : ''
+                    selectedConversation?.id === convo.id ? 'bg-pink-50' : ''
                   }`}
                 >
                   {/* Avatar */}
@@ -492,7 +490,7 @@ export default function MessagesPage() {
                       className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
                       style={{
                         background:
-                          'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                          'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
                       }}
                     >
                       {convo.participant.avatar}
@@ -510,7 +508,7 @@ export default function MessagesPage() {
                           {convo.participant.name}
                         </span>
                         {convo.participant.isVerified && (
-                          <span className="text-xs" style={{ color: accentPrimary }}>
+                          <span className="text-xs" style={{ color: accentPink }}>
                             {getTrustBadge(convo.participant.trustLevel).icon}
                           </span>
                         )}
@@ -524,7 +522,7 @@ export default function MessagesPage() {
                   {convo.unreadCount > 0 && (
                     <div
                       className="w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center"
-                      style={{ background: accentPrimary }}
+                      style={{ background: accentPink }}
                     >
                       {convo.unreadCount}
                     </div>
@@ -555,7 +553,7 @@ export default function MessagesPage() {
                     className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
                     style={{
                       background:
-                        'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                        'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
                     }}
                   >
                     {selectedConversation.participant.avatar}
@@ -571,7 +569,7 @@ export default function MessagesPage() {
                       {selectedConversation.participant.name}
                     </h2>
                     {selectedConversation.participant.isVerified && (
-                      <span className="text-sm" style={{ color: accentPrimary }}>
+                      <span className="text-sm" style={{ color: accentPink }}>
                         {getTrustBadge(selectedConversation.participant.trustLevel).icon}
                       </span>
                     )}
@@ -600,13 +598,13 @@ export default function MessagesPage() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
                 {/* Safety Banner */}
-                <div className="mx-auto max-w-md p-3 rounded-lg bg-indigo-50 border border-indigo-200 text-center">
+                <div className="mx-auto max-w-md p-3 rounded-lg bg-pink-50 border border-pink-200 text-center">
                   <p className="text-sm text-slate-600">
-                    <span style={{ color: accentPrimary }}>🛡️</span> Safety Mode is ON.
+                    <span style={{ color: accentPink }}>🛡️</span> Safety Mode is ON.
                     <Link
                       href="/settings/safety"
                       className="hover:underline ml-1"
-                      style={{ color: accentPrimary }}
+                      style={{ color: accentPink }}
                     >
                       Adjust settings
                     </Link>
@@ -627,7 +625,7 @@ export default function MessagesPage() {
                       style={
                         message.senderId === 'me'
                           ? {
-                              background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                              background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                             }
                           : {}
                       }
@@ -687,7 +685,7 @@ export default function MessagesPage() {
                     placeholder="Type a message..."
                     value={newMessage}
                     onChange={handleInputChange}
-                    className="flex-1 px-4 py-2.5 rounded-full bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="flex-1 px-4 py-2.5 rounded-full bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all"
                   />
                   <button
                     type="submit"
@@ -696,7 +694,7 @@ export default function MessagesPage() {
                     style={
                       newMessage.trim() && !sendingMessage
                         ? {
-                            background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                            background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                           }
                         : { background: '#E2E8F0', color: '#94A3B8' }
                     }
@@ -715,7 +713,7 @@ export default function MessagesPage() {
                 <button
                   className="px-6 py-2 rounded-full text-sm text-white"
                   style={{
-                    background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                    background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                   }}
                 >
                   Start New Conversation

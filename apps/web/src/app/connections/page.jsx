@@ -163,7 +163,6 @@ export default function ConnectionsPage() {
       following: 4,
       pending: mockPending.length,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchConnections = useCallback(async () => {
@@ -271,7 +270,6 @@ export default function ConnectionsPage() {
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyMockData, authLoading, isAuthenticated]);
 
   useEffect(() => {
@@ -279,21 +277,16 @@ export default function ConnectionsPage() {
   }, [fetchConnections]);
 
   const trustBadges = {
-    verified: { icon: '✓', color: 'text-indigo-500', bg: 'bg-indigo-100', label: 'Verified' },
-    trusted: { icon: '⭐', color: 'text-sky-500', bg: 'bg-sky-100', label: 'Trusted' },
-    established: {
-      icon: '💎',
-      color: 'text-indigo-500',
-      bg: 'bg-indigo-100',
-      label: 'Established',
-    },
+    verified: { icon: '✓', color: 'text-pink-500', bg: 'bg-pink-100', label: 'Verified' },
+    trusted: { icon: '⭐', color: 'text-purple-500', bg: 'bg-purple-100', label: 'Trusted' },
+    established: { icon: '💎', color: 'text-pink-500', bg: 'bg-pink-100', label: 'Established' },
     basic: { icon: '👤', color: 'text-slate-400', bg: 'bg-slate-100', label: 'Member' },
-    new: { icon: '🌱', color: 'text-sky-400', bg: 'bg-sky-100', label: 'New' },
+    new: { icon: '🌱', color: 'text-purple-400', bg: 'bg-purple-100', label: 'New' },
   };
 
   // Theme colors
-  const accentPrimary = '#4F46E5';
-  const accentSecondary = '#0EA5E9';
+  const accentPink = '#E91E8C';
+  const accentPurple = '#8B5CF6';
 
   const getDataForTab = () => {
     switch (activeTab) {
@@ -320,20 +313,20 @@ export default function ConnectionsPage() {
   return (
     <div
       className="min-h-screen pt-24 pb-20 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0F2FE 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}
     >
       {/* Decorative halos */}
       <div
         className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full pointer-events-none"
         style={{
-          background: `radial-gradient(circle, ${accentPrimary}22 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${accentPink}22 0%, transparent 70%)`,
           filter: 'blur(40px)',
         }}
       />
       <div
         className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
         style={{
-          background: `radial-gradient(circle, ${accentSecondary}22 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${accentPurple}22 0%, transparent 70%)`,
           filter: 'blur(40px)',
         }}
       />
@@ -355,8 +348,8 @@ export default function ConnectionsPage() {
             href="/connections/find"
             className="px-4 py-2 rounded-full text-white font-medium text-sm transition-all hover:scale-[1.02]"
             style={{
-              background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
-              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+              background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
+              boxShadow: '0 4px 12px rgba(233, 30, 140, 0.3)',
             }}
           >
             Find People
@@ -373,7 +366,7 @@ export default function ConnectionsPage() {
               style={
                 activeTab === tab.id
                   ? {
-                      background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                      background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                       color: 'white',
                     }
                   : { background: 'white', border: '1px solid #E2E8F0', color: '#64748B' }
@@ -396,7 +389,7 @@ export default function ConnectionsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${activeTab}...`}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all"
             />
           </div>
         </div>
@@ -404,7 +397,7 @@ export default function ConnectionsPage() {
         {/* People List */}
         {authLoading || loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-10 h-10 rounded-full animate-spin border-4 border-indigo-200 border-t-indigo-500" />
+            <div className="w-10 h-10 rounded-full animate-spin border-4 border-pink-200 border-t-pink-500" />
           </div>
         ) : (
           <div className="space-y-3">
@@ -422,7 +415,7 @@ export default function ConnectionsPage() {
               filteredData.map((person) => (
                 <div
                   key={person.id}
-                  className="bg-white border border-slate-200 rounded-xl p-4 hover:border-indigo-300 transition-colors"
+                  className="bg-white border border-slate-200 rounded-xl p-4 hover:border-pink-300 transition-colors"
                   style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}
                 >
                   <div className="flex items-center gap-4">
@@ -432,7 +425,7 @@ export default function ConnectionsPage() {
                         className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                         style={{
                           background:
-                            'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                            'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
                         }}
                       >
                         {person.avatar}
@@ -444,7 +437,7 @@ export default function ConnectionsPage() {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/profile/${person.id}`}
-                          className="font-medium text-slate-800 hover:text-indigo-600 transition-colors"
+                          className="font-medium text-slate-800 hover:text-pink-600 transition-colors"
                         >
                           {person.name}
                         </Link>
@@ -480,7 +473,7 @@ export default function ConnectionsPage() {
                         <>
                           <Link
                             href={`/messages?user=${person.id}`}
-                            className="p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+                            className="p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-pink-100 hover:text-pink-600 transition-colors"
                           >
                             💬
                           </Link>
@@ -497,7 +490,7 @@ export default function ConnectionsPage() {
                             person.isFollowingBack
                               ? { background: '#F1F5F9', color: '#64748B' }
                               : {
-                                  background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                                  background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                                   color: 'white',
                                 }
                           }
@@ -517,7 +510,7 @@ export default function ConnectionsPage() {
                           <button
                             className="px-4 py-2 rounded-full text-sm font-medium text-white"
                             style={{
-                              background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                              background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                             }}
                           >
                             Accept
@@ -586,7 +579,7 @@ export default function ConnectionsPage() {
                       className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
                       style={{
                         background:
-                          'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                          'linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
                       }}
                     >
                       {person.avatar}
@@ -599,7 +592,7 @@ export default function ConnectionsPage() {
                     <button
                       className="px-3 py-1.5 rounded-full text-sm text-white font-medium"
                       style={{
-                        background: `linear-gradient(135deg, ${accentPrimary} 0%, ${accentSecondary} 100%)`,
+                        background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
                       }}
                     >
                       Connect

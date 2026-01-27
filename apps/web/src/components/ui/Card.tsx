@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable no-undef */
 
-import type { ElementType } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import Link from 'next/link';
 
 type CardVariant =
@@ -15,7 +15,7 @@ type CardVariant =
   | 'ngurra-dark' // Ngurra dark variant
   | 'aura'; // Gradient CTA style
 
-type CardNode = string | number | boolean | null | undefined | JSX.Element | CardNode[];
+type CardNode = ReactNode;
 
 interface CardProps {
   children: CardNode;

@@ -24,6 +24,9 @@ import {
 } from 'lucide-react';
 
 // Theme colors
+const darkBg1 = '#1A0F2E';
+const darkBg2 = '#2D1B69';
+const darkBg3 = '#3D1A2A';
 const accentPink = '#E91E8C';
 const accentPurple = '#8B5CF6';
 
@@ -494,15 +497,15 @@ export default function GrantsPage() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'federal':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
       case 'state':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
       case 'aboriginal':
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
       case 'private':
-        return 'bg-purple-100 text-purple-700';
+        return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'bg-white/10 text-white/70 border border-white/20';
     }
   };
 
@@ -523,7 +526,22 @@ export default function GrantsPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50">
+      <div
+        className="min-h-screen relative"
+        style={{
+          background: `linear-gradient(135deg, ${darkBg1} 0%, ${darkBg2} 50%, ${darkBg3} 100%)`,
+          fontFamily: "'Space Grotesk', sans-serif",
+        }}
+      >
+        {/* Dot Pattern Overlay */}
+        <div
+          className="fixed inset-0 pointer-events-none opacity-30"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+
         {/* Hero Section */}
         <section
           className="relative py-16 md:py-24"
@@ -568,7 +586,10 @@ export default function GrantsPage() {
         </section>
 
         {/* Category Tabs */}
-        <section className="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <section
+          className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/10"
+          style={{ backgroundColor: 'rgba(26, 15, 46, 0.9)' }}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
               {categories.map((cat) => (
@@ -578,7 +599,7 @@ export default function GrantsPage() {
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                     selectedCategory === cat.id
                       ? 'text-white shadow-lg'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'
                   }`}
                   style={
                     selectedCategory === cat.id
@@ -596,9 +617,14 @@ export default function GrantsPage() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ml-auto ${
                   showFilters
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'text-white'
+                    : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'
                 }`}
+                style={
+                  showFilters
+                    ? { background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})` }
+                    : {}
+                }
               >
                 <Filter className="w-4 h-4" />
                 Filters
@@ -607,19 +633,19 @@ export default function GrantsPage() {
 
             {/* Expanded Filters */}
             {showFilters && (
-              <div className="pb-4 border-t border-slate-100 pt-4">
+              <div className="pb-4 border-t border-white/10 pt-4">
                 <div className="flex flex-wrap gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-2">
+                    <label className="block text-xs font-medium text-white/60 mb-2">
                       State/Territory
                     </label>
                     <select
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
-                      className="px-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                     >
                       {states.map((state) => (
-                        <option key={state.id} value={state.id}>
+                        <option key={state.id} value={state.id} className="bg-slate-900 text-white">
                           {state.name}
                         </option>
                       ))}
@@ -632,15 +658,15 @@ export default function GrantsPage() {
         </section>
 
         {/* Stats Bar */}
-        <section className="bg-slate-100/50 py-4 border-b border-slate-200">
+        <section className="py-4 border-b border-white/10 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
               <div className="flex items-center gap-6">
-                <span className="text-slate-600">
-                  <strong className="text-slate-900">{filteredGrants.length}</strong> grants found
+                <span className="text-white/70">
+                  <strong className="text-white">{filteredGrants.length}</strong> grants found
                 </span>
                 {selectedCategory !== 'all' && (
-                  <span className="flex items-center gap-1 text-slate-500">
+                  <span className="flex items-center gap-1 text-white/50">
                     <span>{categories.find((c) => c.id === selectedCategory)?.icon}</span>
                     {categories.find((c) => c.id === selectedCategory)?.description}
                   </span>
@@ -649,7 +675,7 @@ export default function GrantsPage() {
               {bookmarkedGrants.length > 0 && (
                 <Link
                   href="#bookmarked"
-                  className="flex items-center gap-2 text-pink-600 hover:text-pink-700"
+                  className="flex items-center gap-2 text-pink-400 hover:text-pink-300"
                 >
                   <Bookmark className="w-4 h-4 fill-current" />
                   {bookmarkedGrants.length} saved
@@ -660,10 +686,10 @@ export default function GrantsPage() {
         </section>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-pink-400" />
             </div>
           ) : (
             <>
@@ -671,17 +697,18 @@ export default function GrantsPage() {
               {featuredGrants.length > 0 && selectedCategory === 'all' && (
                 <section className="mb-12">
                   <div className="flex items-center gap-3 mb-6">
-                    <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
-                    <h2 className="text-2xl font-bold text-slate-900">Featured Grants</h2>
+                    <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
+                    <h2 className="text-2xl font-bold text-white">Featured Grants</h2>
                   </div>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {featuredGrants.map((grant) => (
                       <div
                         key={grant.id}
-                        className="relative group rounded-2xl p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 hover:border-amber-300 transition-all hover:shadow-lg"
+                        className="relative group rounded-2xl p-6 backdrop-blur-xl border-2 border-amber-500/40 hover:border-amber-400/60 transition-all hover:shadow-lg hover:shadow-amber-500/10"
+                        style={{ backgroundColor: 'rgba(251, 191, 36, 0.1)' }}
                       >
                         <div className="absolute top-4 right-4">
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30">
                             <Star className="w-3 h-3 fill-current" />
                             Featured
                           </span>
@@ -694,15 +721,13 @@ export default function GrantsPage() {
                           {getCategoryIcon(grant.category)}
                           {categories.find((c) => c.id === grant.category)?.name}
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2 pr-16">
-                          {grant.name}
-                        </h3>
-                        <p className="text-sm text-slate-600 mb-4">{grant.provider}</p>
+                        <h3 className="text-lg font-bold text-white mb-2 pr-16">{grant.name}</h3>
+                        <p className="text-sm text-white/60 mb-4">{grant.provider}</p>
                         <div className="flex items-center gap-2 mb-4">
-                          <DollarSign className="w-5 h-5 text-emerald-600" />
-                          <span className="text-lg font-bold text-emerald-700">{grant.amount}</span>
+                          <DollarSign className="w-5 h-5 text-emerald-400" />
+                          <span className="text-lg font-bold text-emerald-400">{grant.amount}</span>
                         </div>
-                        <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                        <p className="text-sm text-white/70 mb-4 line-clamp-2">
                           {grant.description}
                         </p>
                         <div className="flex items-center justify-between">
@@ -710,7 +735,7 @@ export default function GrantsPage() {
                             href={grant.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm"
+                            className="inline-flex items-center gap-2 text-pink-400 hover:text-pink-300 font-medium text-sm"
                           >
                             Learn More
                             <ExternalLink className="w-4 h-4" />
@@ -719,8 +744,8 @@ export default function GrantsPage() {
                             onClick={() => toggleBookmark(grant.id)}
                             className={`p-2 rounded-lg transition-colors ${
                               bookmarkedGrants.includes(grant.id)
-                                ? 'text-pink-600 bg-pink-50'
-                                : 'text-slate-400 hover:text-pink-600 hover:bg-pink-50'
+                                ? 'text-pink-400 bg-pink-500/20'
+                                : 'text-white/40 hover:text-pink-400 hover:bg-pink-500/20'
                             }`}
                           >
                             <Bookmark
@@ -736,19 +761,22 @@ export default function GrantsPage() {
 
               {/* All Grants Grid */}
               <section>
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                <h2 className="text-2xl font-bold text-white mb-6">
                   {selectedCategory === 'all'
                     ? 'All Grants'
                     : categories.find((c) => c.id === selectedCategory)?.name}
                 </h2>
 
                 {filteredGrants.length === 0 ? (
-                  <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-3xl">
+                  <div
+                    className="text-center py-16 rounded-2xl border border-white/10 backdrop-blur-xl"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+                  >
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/10 flex items-center justify-center text-3xl">
                       🔍
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">No grants found</h3>
-                    <p className="text-slate-500 mb-6">
+                    <h3 className="text-lg font-bold text-white mb-2">No grants found</h3>
+                    <p className="text-white/60 mb-6">
                       Try adjusting your search or filters to find more grants.
                     </p>
                     <button
@@ -757,7 +785,7 @@ export default function GrantsPage() {
                         setSelectedCategory('all');
                         setSelectedState('all');
                       }}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
                     >
                       <X className="w-4 h-4" />
                       Clear filters
@@ -770,7 +798,8 @@ export default function GrantsPage() {
                       .map((grant) => (
                         <div
                           key={grant.id}
-                          className="group rounded-2xl p-6 bg-white border border-slate-200 hover:border-slate-300 transition-all hover:shadow-lg"
+                          className="group rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all hover:shadow-lg hover:shadow-purple-500/10 backdrop-blur-xl"
+                          style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
                         >
                           <div className="flex items-start justify-between mb-4">
                             <div
@@ -782,35 +811,35 @@ export default function GrantsPage() {
                               {categories.find((c) => c.id === grant.category)?.name}
                             </div>
                             {grant.state && (
-                              <span className="px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">
+                              <span className="px-2 py-1 rounded bg-white/10 text-white/70 text-xs font-medium border border-white/20">
                                 {grant.state}
                               </span>
                             )}
                           </div>
-                          <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-pink-600 transition-colors">
+                          <h3 className="text-lg font-bold text-white mb-2 group-hover:text-pink-400 transition-colors">
                             {grant.name}
                           </h3>
-                          <p className="text-sm text-slate-500 mb-3">{grant.provider}</p>
+                          <p className="text-sm text-white/50 mb-3">{grant.provider}</p>
                           <div className="flex items-center gap-2 mb-4">
-                            <DollarSign className="w-5 h-5 text-emerald-600" />
-                            <span className="font-bold text-emerald-700">{grant.amount}</span>
+                            <DollarSign className="w-5 h-5 text-emerald-400" />
+                            <span className="font-bold text-emerald-400">{grant.amount}</span>
                           </div>
-                          <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+                          <p className="text-sm text-white/70 mb-4 line-clamp-3">
                             {grant.description}
                           </p>
 
                           {grant.eligibility && grant.eligibility.length > 0 && (
                             <div className="mb-4">
-                              <p className="text-xs font-semibold text-slate-500 mb-2">
+                              <p className="text-xs font-semibold text-white/50 mb-2">
                                 Eligibility:
                               </p>
                               <div className="flex flex-wrap gap-1.5">
                                 {grant.eligibility.slice(0, 3).map((req, idx) => (
                                   <span
                                     key={idx}
-                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-xs"
+                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/10 text-white/70 text-xs border border-white/20"
                                   >
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                                     {req}
                                   </span>
                                 ))}
@@ -818,12 +847,12 @@ export default function GrantsPage() {
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                          <div className="flex items-center justify-between pt-4 border-t border-white/10">
                             <a
                               href={grant.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm"
+                              className="inline-flex items-center gap-2 text-pink-400 hover:text-pink-300 font-medium text-sm"
                             >
                               Apply Now
                               <ArrowRight className="w-4 h-4" />
@@ -832,8 +861,8 @@ export default function GrantsPage() {
                               onClick={() => toggleBookmark(grant.id)}
                               className={`p-2 rounded-lg transition-colors ${
                                 bookmarkedGrants.includes(grant.id)
-                                  ? 'text-pink-600 bg-pink-50'
-                                  : 'text-slate-400 hover:text-pink-600 hover:bg-pink-50'
+                                  ? 'text-pink-400 bg-pink-500/20'
+                                  : 'text-white/40 hover:text-pink-400 hover:bg-pink-500/20'
                               }`}
                             >
                               <Bookmark
@@ -850,9 +879,9 @@ export default function GrantsPage() {
               {/* Help Section */}
               <section className="mt-16">
                 <div
-                  className="rounded-3xl p-8 md:p-12 text-center"
+                  className="rounded-3xl p-8 md:p-12 text-center border border-white/10 backdrop-blur-xl"
                   style={{
-                    background: `linear-gradient(135deg, ${accentPink}15 0%, ${accentPurple}15 100%)`,
+                    background: `linear-gradient(135deg, ${accentPink}20 0%, ${accentPurple}20 100%)`,
                   }}
                 >
                   <div
@@ -863,17 +892,17 @@ export default function GrantsPage() {
                   >
                     <span className="text-white">💡</span>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                     Need Help Finding the Right Grant?
                   </h2>
-                  <p className="text-slate-600 mb-8 max-w-2xl mx-auto">
+                  <p className="text-white/70 mb-8 max-w-2xl mx-auto">
                     Our team can help you identify the best funding opportunities for your business
                     or project. Book a free consultation with one of our grant specialists.
                   </p>
                   <div className="flex flex-wrap justify-center gap-4">
                     <Link
                       href="/member/financial-wellness"
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-pink-500/30"
                       style={{
                         background: `linear-gradient(135deg, ${accentPink}, ${accentPurple})`,
                       }}
@@ -883,7 +912,7 @@ export default function GrantsPage() {
                     </Link>
                     <Link
                       href="/business-suite"
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-white text-slate-900 border border-slate-200 hover:border-slate-300 transition-all"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all"
                     >
                       Business Suite
                       <ChevronRight className="w-5 h-5" />

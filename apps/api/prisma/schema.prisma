@@ -63,17 +63,36 @@ model User {
 
   // Authentication fields
   password            String?
-  failedLoginAttempts Int      @default(0)
-  twoFactorEnabled    Boolean  @default(false)
+  failedLoginAttempts Int     @default(0)
+  twoFactorEnabled    Boolean @default(false)
 
   // Profile display fields (for leaderboard/gamification)
   name      String?
   avatarUrl String?
 
+  // Extended profile fields (nullable, opt-in)
+  pronouns              String?
+  religion              String?
+  sexuality             String?
+  birthYear             Int?
+  likes                 Json?
+  hobbies               Json?
+  movies                Json?
+  music                 Json?
+  sports                Json?
+  numberOfKids          Int?
+  relationshipStatus    String?
+  trades                Json?
+  educationLevel        String?
+  previousEmployment    Json?
+  driversLicenceType    String?
+  housingSituation      String?
+  indigenousStatus      Boolean? @default(false)
+  indigenousAffiliation String?
+
   // Gamification fields
   totalPoints Int @default(0)
   level       Int @default(1)
-
 
   // Optional one-to-one type-specific profiles
   memberProfile      MemberProfile?
@@ -84,6 +103,7 @@ model User {
   mentorProfile      MentorProfile?
   // Relations
   uploadedFiles      UploadedFile[]
+  profileMedia       Media[]              @relation("UserProfileMedia")
   jobs               Job[]
   applications       JobApplication[]
   savedJobs          SavedJob[]
@@ -94,8 +114,8 @@ model User {
   userSkills       UserSkill[]
   courseEnrolments CourseEnrolment[]
 
-  institutionCourses Course[]        @relation("InstitutionCourses")
-  coursePayments     CoursePayment[] @relation("CoursePaymentsUser")
+  institutionCourses Course[]         @relation("InstitutionCourses")
+  coursePayments     CoursePayment[]  @relation("CoursePaymentsUser")
   notifications      Notification[]
   aiConversations    AiConversation[]
 
@@ -116,21 +136,24 @@ model User {
   womenSpacePosts       WomenSpacePost[]
   womenSpaceComments    WomenSpaceComment[]
   womenSpacePostLikes   WomenSpacePostLike[]
-  
-  facilitatedCircles    SupportCircle[] @relation("CircleFacilitator")
+
+  facilitatedCircles       SupportCircle[]       @relation("CircleFacilitator")
   supportCircleMemberships SupportCircleMember[]
-  
-  housingListingsOwned  WomenHousingPortal[] @relation("HousingOwner")
-  housingInquiriesSent  WomenHousingInquiry[] @relation("HousingSeeker")
-  housingSaves          WomenHousingSave[] @relation("HousingSaves")
-  housingProfile        WomenHousingProfile? @relation("HousingProfile")
-  
-  businessesOwned       WomenBusiness[] @relation("BusinessOwner")
-  
-  wellnessCheckIns      WellnessCheckIn[]
-  culturalEventsOrganized CulturalEvent[]
+
+  housingListingsOwned WomenHousingPortal[]  @relation("HousingOwner")
+  housingInquiriesSent WomenHousingInquiry[] @relation("HousingSeeker")
+  housingSaves         WomenHousingSave[]    @relation("HousingSaves")
+  housingProfile       WomenHousingProfile?  @relation("HousingProfile")
+
+  businessesOwned   WomenBusiness[]    @relation("BusinessOwner")
+  propertiesOwned   Property[]
+  emergencyContacts EmergencyContact[]
+  panicEvents       PanicEvent[]
+
+  wellnessCheckIns         WellnessCheckIn[]
+  culturalEventsOrganized  CulturalEvent[]
   culturalEventAttendances CulturalEventAttendee[]
-  
+
   sisterMatchesInitiated SisterMatch[] @relation("SisterMatch1")
   sisterMatchesReceived  SisterMatch[] @relation("SisterMatch2")
 
@@ -139,65 +162,65 @@ model User {
   userStreak       UserStreak?
 
   // Referral relations
-  referralsAsReferrer Referral[] @relation("ReferrerUser")
-  referralsAsReferee  Referral[] @relation("RefereeUser")
+  referralsAsReferrer Referral[]       @relation("ReferrerUser")
+  referralsAsReferee  Referral[]       @relation("RefereeUser")
   referralRewards     ReferralReward[]
 
   // Additional Phase 1 Relations
   listingPartnershipIntentions ListingPartnershipIntention[]
-  mortgageQuotes MortgageQuote[]
-  businessBudgets BusinessBudget[]
-  userSubscriptions UserSubscription[]
-  grantApplications GrantApplication[]
-  scholarshipApplications ScholarshipApplication[]
-  legalDocuments LegalDocument[]
-  wellbeingProfile WellbeingProfile?
+  mortgageQuotes               MortgageQuote[]
+  businessBudgets              BusinessBudget[]
+  userSubscriptions            UserSubscription[]
+  grantApplications            GrantApplication[]
+  scholarshipApplications      ScholarshipApplication[]
+  legalDocuments               LegalDocument[]
+  wellbeingProfile             WellbeingProfile?
 
   // Phase 4: Financial Wellness
-  budgetPlans          BudgetPlan[]
-  budgetEntries        BudgetEntry[]
-  savingsGoals         SavingsGoal[]
-  budgetAlerts         BudgetAlert[]
-  budgetEnvelopes      BudgetEnvelope[]
+  budgetPlans            BudgetPlan[]
+  budgetEntries          BudgetEntry[]
+  savingsGoals           SavingsGoal[]
+  budgetAlerts           BudgetAlert[]
+  budgetEnvelopes        BudgetEnvelope[]
   financialSubscriptions FinancialSubscription[]
-  billItems            BillItem[]
-  debtAccounts         DebtAccount[]
-  debtPayments         DebtPayment[]
-  bankConnections      BankConnection[]
-  budgetSharesOwned    BudgetShare[] @relation("BudgetShareOwner")
-  budgetSharesReceived BudgetShare[] @relation("BudgetShareMember")
+  billItems              BillItem[]
+  debtAccounts           DebtAccount[]
+  debtPayments           DebtPayment[]
+  bankConnections        BankConnection[]
+  budgetSharesOwned      BudgetShare[]           @relation("BudgetShareOwner")
+  budgetSharesReceived   BudgetShare[]           @relation("BudgetShareMember")
 
   // Phase 9: Entertainment & Content
-  shortVideos          ShortVideo[] @relation("ShortVideoAuthor")
+  shortVideos ShortVideo[] @relation("ShortVideoAuthor")
 
   // Phase 10: Public Sector & Government
-  procurementAlerts    ProcurementAlert[]
-  procurementBids      ProcurementBid[]
-  civicAlerts          CivicAlert[]
-  civicSubmissions     CivicSubmission[]
-  civicPetitionSignatures CivicPetitionSignature[]
+  procurementAlerts        ProcurementAlert[]
+  procurementBids          ProcurementBid[]
+  civicAlerts              CivicAlert[]
+  civicSubmissions         CivicSubmission[]
+  civicPetitionSignatures  CivicPetitionSignature[]
   procurementOpportunities ProcurementOpportunity[]
   civicOpportunities       CivicOpportunity[]
 
   // OAuth tokens
-  oAuthTokens          OAuthToken[]
+  oAuthTokens OAuthToken[]
 
   @@index([totalPoints])
 }
 
 // OAuth Token storage for calendar integrations
 model OAuthToken {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider     String   // 'google' or 'outlook'
-  accessToken  String   @db.Text
-  refreshToken String?  @db.Text
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider     String // 'google' or 'outlook'
+  accessToken  String    @db.Text
+  refreshToken String?   @db.Text
   expiresAt    DateTime?
   scope        String?
   email        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@unique([userId, provider])
   @@index([userId])
@@ -237,15 +260,15 @@ model MemberProfile {
 
 /// Member Foundation & Financial Wellness Preferences (captured during signup)
 model MemberFoundationPreference {
-  id       String @id @default(cuid())
-  memberId String @unique
+  id       String        @id @default(cuid())
+  memberId String        @unique
   member   MemberProfile @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   // Business & Entrepreneurship interests
-  businessFoundation     Boolean @default(false) // Basics of starting a business
-  legalStartups          Boolean @default(false) // Legal requirements for startups
-  businessFormation      Boolean @default(false) // Company structures, ABN, registration
-  basicAccountingBudget  Boolean @default(false) // Accounting & budgeting essentials
+  businessFoundation    Boolean @default(false) // Basics of starting a business
+  legalStartups         Boolean @default(false) // Legal requirements for startups
+  businessFormation     Boolean @default(false) // Company structures, ABN, registration
+  basicAccountingBudget Boolean @default(false) // Accounting & budgeting essentials
 
   // Asset & Investment interests
   mortgagesHomeOwnership Boolean @default(false) // Mortgages & home buying
@@ -254,17 +277,17 @@ model MemberFoundationPreference {
   financialWellbeing     Boolean @default(false) // General financial wellness
 
   // Job Matching & Pre-Apply
-  enableJobAlerts        Boolean @default(true)  // Receive job match notifications
-  enablePreApply         Boolean @default(false) // Opt into pre-apply queue
-  preApplyResumeId       String?                 // UploadedFile reference for resume
-  preApplyParsedData     String?                 // JSON of AI-parsed resume data
+  enableJobAlerts    Boolean @default(true) // Receive job match notifications
+  enablePreApply     Boolean @default(false) // Opt into pre-apply queue
+  preApplyResumeId   String? // UploadedFile reference for resume
+  preApplyParsedData String? // JSON of AI-parsed resume data
 
   // Preferred job criteria for pre-apply matching
-  preApplyLocations      String? // JSON array of preferred locations
-  preApplyEmployment     String? // JSON array: FULL_TIME, PART_TIME, etc.
-  preApplySalaryMin      Int?
-  preApplySalaryMax      Int?
-  preApplyIndustries     String? // JSON array of industries
+  preApplyLocations  String? // JSON array of preferred locations
+  preApplyEmployment String? // JSON array: FULL_TIME, PART_TIME, etc.
+  preApplySalaryMin  Int?
+  preApplySalaryMax  Int?
+  preApplyIndustries String? // JSON array of industries
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -356,23 +379,23 @@ enum RentalInquiryStatus {
 }
 
 model BankAccount {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  provider  BankProvider @default(PLAID)
-  type      BankAccountType @default(DEPOSITORY)
+  provider BankProvider    @default(PLAID)
+  type     BankAccountType @default(DEPOSITORY)
 
   // Provider identifiers (never expose publicly)
   providerAccountId String?
   providerItemId    String?
 
-  name      String?
-  mask      String?
-  currency  String  @default("AUD")
-  currentBalance Decimal? @db.Decimal(12, 2)
-  availableBalance Decimal? @db.Decimal(12, 2)
-  lastSyncedAt DateTime?
+  name             String?
+  mask             String?
+  currency         String    @default("AUD")
+  currentBalance   Decimal?  @db.Decimal(12, 2)
+  availableBalance Decimal?  @db.Decimal(12, 2)
+  lastSyncedAt     DateTime?
 
   // Store sensitive tokens encrypted at rest (app-level)
   accessTokenEncrypted String?
@@ -387,29 +410,29 @@ model BankAccount {
 }
 
 model BankTransaction {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bankAccountId String
   bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
 
   providerTransactionId String?
-  name          String
-  merchantName  String?
-  amount        Decimal @db.Decimal(12, 2)
-  currency      String  @default("AUD")
-  pending       Boolean @default(false)
-  authorizedAt  DateTime?
-  postedAt      DateTime?
+  name                  String
+  merchantName          String?
+  amount                Decimal   @db.Decimal(12, 2)
+  currency              String    @default("AUD")
+  pending               Boolean   @default(false)
+  authorizedAt          DateTime?
+  postedAt              DateTime?
 
-  category      String?
-  subcategory   String?
-  notes         String?
-  tags          String[] @default([])
+  category    String?
+  subcategory String?
+  notes       String?
+  tags        String[] @default([])
 
   // Provider raw payload (kept for reconciliation/debug)
-  raw           Json?
+  raw Json?
 
   budgetEntries BudgetEntry[]
 
@@ -422,12 +445,12 @@ model BankTransaction {
 }
 
 model BusinessCashbook {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name      String   @default("My Cashbook")
-  currency  String   @default("AUD")
+  name     String @default("My Cashbook")
+  currency String @default("AUD")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -438,17 +461,17 @@ model BusinessCashbook {
 }
 
 model BusinessCashbookEntry {
-  id        String   @id @default(cuid())
+  id         String           @id @default(cuid())
   cashbookId String
   cashbook   BusinessCashbook @relation(fields: [cashbookId], references: [id], onDelete: Cascade)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type      CashbookEntryType
-  amount    Decimal @db.Decimal(12, 2)
-  currency  String  @default("AUD")
-  category  String?
+  type        CashbookEntryType
+  amount      Decimal           @db.Decimal(12, 2)
+  currency    String            @default("AUD")
+  category    String?
   description String?
 
   occurredAt DateTime
@@ -461,19 +484,19 @@ model BusinessCashbookEntry {
 }
 
 model AgentProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  displayName String?
-  agencyName  String?
-  phone       String?
-  websiteUrl  String?
-  bio         String?
+  displayName   String?
+  agencyName    String?
+  phone         String?
+  websiteUrl    String?
+  bio           String?
   licenseNumber String?
 
   // Optional service regions
-  regions     String[]
+  regions String[]
 
   housingListings WomenHousingListing[] @relation("AgentHousingListings")
 
@@ -482,11 +505,11 @@ model AgentProfile {
 }
 
 model WomenHousingListing {
-  id        String   @id @default(cuid())
+  id          String @id @default(cuid())
   ownerUserId String
-  owner      User     @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  owner       User   @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
 
-  status    ListingStatus @default(DRAFT)
+  status ListingStatus @default(DRAFT)
 
   title       String
   description String?
@@ -500,11 +523,11 @@ model WomenHousingListing {
   longitude    Float?
 
   // Property
-  propertyType String?
-  bedrooms     Int?
-  bathrooms    Int?
-  parking      Int?
-  landSizeM2   Int?
+  propertyType   String?
+  bedrooms       Int?
+  bathrooms      Int?
+  parking        Int?
+  landSizeM2     Int?
   buildingSizeM2 Int?
 
   // Pricing (allow ranges in future)
@@ -514,10 +537,10 @@ model WomenHousingListing {
   currency     String   @default("AUD")
 
   // Optional agent association
-  agentUserId  String?
-  agent        AgentProfile? @relation("AgentHousingListings", fields: [agentUserId], references: [userId])
+  agentUserId String?
+  agent       AgentProfile? @relation("AgentHousingListings", fields: [agentUserId], references: [userId])
 
-  photos     WomenListingPhoto[]
+  photos WomenListingPhoto[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -528,13 +551,13 @@ model WomenHousingListing {
 }
 
 model WomenListingPhoto {
-  id        String   @id @default(cuid())
+  id        String              @id @default(cuid())
   listingId String
   listing   WomenHousingListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   url       String
-  sortOrder Int      @default(0)
-  isPrimary Boolean  @default(false)
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
 
   createdAt DateTime @default(now())
 
@@ -542,11 +565,11 @@ model WomenListingPhoto {
 }
 
 model RentalListing {
-  id        String   @id @default(cuid())
+  id          String @id @default(cuid())
   ownerUserId String
-  owner      User     @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  owner       User   @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
 
-  status    ListingStatus @default(DRAFT)
+  status ListingStatus @default(DRAFT)
 
   title       String
   description String?
@@ -558,14 +581,14 @@ model RentalListing {
   latitude     Float?
   longitude    Float?
 
-  weeklyRent   Decimal? @db.Decimal(12, 2)
-  bond         Decimal? @db.Decimal(12, 2)
-  currency     String   @default("AUD")
+  weeklyRent    Decimal?  @db.Decimal(12, 2)
+  bond          Decimal?  @db.Decimal(12, 2)
+  currency      String    @default("AUD")
   availableFrom DateTime?
 
-  bedrooms     Int?
-  bathrooms    Int?
-  parking      Int?
+  bedrooms  Int?
+  bathrooms Int?
+  parking   Int?
 
   inquiries RentalInquiry[]
 
@@ -578,15 +601,15 @@ model RentalListing {
 }
 
 model RentalInquiry {
-  id        String   @id @default(cuid())
+  id              String        @id @default(cuid())
   rentalListingId String
   rentalListing   RentalListing @relation(fields: [rentalListingId], references: [id], onDelete: Cascade)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  status    RentalInquiryStatus @default(NEW)
-  message   String?
+  status  RentalInquiryStatus @default(NEW)
+  message String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -596,9 +619,9 @@ model RentalInquiry {
 }
 
 model PropertySeekerProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Preferences
   budgetMin Decimal? @db.Decimal(12, 2)
@@ -609,10 +632,10 @@ model PropertySeekerProfile {
   preferredStates  String[]
   propertyTypes    String[]
 
-  bedroomsMin Int?
+  bedroomsMin  Int?
   bathroomsMin Int?
 
-  notes     String?
+  notes String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -663,24 +686,24 @@ enum GenderSelfId {
 
 /// Step 101-105: Women-only discussion space categories
 enum WomenSpaceType {
-  GENERAL         // General women's discussion
-  CAREER          // Career advice & support
-  BUSINESS        // Business owners network
-  HOUSING         // Housing & accommodation
-  WELLNESS        // Health & wellness
-  CULTURAL        // Cultural & community
-  MENTORSHIP      // Mentoring circles
-  SISTERHOOD      // Sisterhood support
-  FIRST_NATIONS   // First Nations women only
-  ELDERS          // Elder women wisdom
+  GENERAL // General women's discussion
+  CAREER // Career advice & support
+  BUSINESS // Business owners network
+  HOUSING // Housing & accommodation
+  WELLNESS // Health & wellness
+  CULTURAL // Cultural & community
+  MENTORSHIP // Mentoring circles
+  SISTERHOOD // Sisterhood support
+  FIRST_NATIONS // First Nations women only
+  ELDERS // Elder women wisdom
 }
 
 /// Step 106: Discussion space visibility
 enum SpaceVisibility {
-  PUBLIC          // Visible to all verified women
-  FIRST_NATIONS   // Only First Nations verified
-  INVITE_ONLY     // Invite-only space
-  ELDER_LED       // Elder-led space
+  PUBLIC // Visible to all verified women
+  FIRST_NATIONS // Only First Nations verified
+  INVITE_ONLY // Invite-only space
+  ELDER_LED // Elder-led space
 }
 
 /// Step 107: Post moderation status
@@ -694,106 +717,106 @@ enum ModerationStatus {
 
 /// Steps 101-110: Women-only discussion spaces
 model WomenSpace {
-  id          String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   name        String
   description String?
   spaceType   WomenSpaceType
   visibility  SpaceVisibility @default(PUBLIC)
-  
+
   // Cover image
   coverImageUrl String?
-  iconEmoji     String?  // Emoji icon for the space
-  
+  iconEmoji     String? // Emoji icon for the space
+
   // Space settings
-  isActive      Boolean  @default(true)
-  isPinned      Boolean  @default(false)
-  
+  isActive Boolean @default(true)
+  isPinned Boolean @default(false)
+
   // Membership
-  memberCount   Int      @default(0)
-  
+  memberCount Int @default(0)
+
   // Moderation
-  requiresApproval Boolean @default(false)
+  requiresApproval Boolean  @default(false)
   moderatorIds     String[] // Array of user IDs
-  
+
   // Cultural protocol
   hasWelcomeToCountry Boolean @default(false)
   acknowledgesCountry String? // E.g., "Gadigal Country"
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  posts       WomenSpacePost[]
-  members     WomenSpaceMember[]
-  
+  posts   WomenSpacePost[]
+  members WomenSpaceMember[]
+
   @@index([spaceType, isActive])
   @@index([visibility])
 }
 
 /// Step 111-115: Space membership
 model WomenSpaceMember {
-  id        String   @id @default(cuid())
-  spaceId   String
-  space     WomenSpace @relation(fields: [spaceId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  role      String   @default("member") // member, moderator, elder, admin
-  
+  id      String     @id @default(cuid())
+  spaceId String
+  space   WomenSpace @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role String @default("member") // member, moderator, elder, admin
+
   // Engagement
-  joinedAt  DateTime @default(now())
+  joinedAt   DateTime  @default(now())
   lastSeenAt DateTime?
-  postCount Int      @default(0)
-  
+  postCount  Int       @default(0)
+
   // Notifications
   notifyNewPosts Boolean @default(true)
   notifyMentions Boolean @default(true)
-  
-  isMuted   Boolean  @default(false)
-  
+
+  isMuted Boolean @default(false)
+
   @@unique([spaceId, userId])
   @@index([userId])
 }
 
 /// Steps 116-120: Discussion posts
 model WomenSpacePost {
-  id        String   @id @default(cuid())
-  spaceId   String
-  space     WomenSpace @relation(fields: [spaceId], references: [id], onDelete: Cascade)
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
+  id       String     @id @default(cuid())
+  spaceId  String
+  space    WomenSpace @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   // Content
-  content   String   // Markdown content
-  
+  content String // Markdown content
+
   // Media attachments
   imageUrls String[]
-  
+
   // Engagement
-  likeCount    Int   @default(0)
-  commentCount Int   @default(0)
-  
+  likeCount    Int @default(0)
+  commentCount Int @default(0)
+
   // Moderation
-  status    ModerationStatus @default(APPROVED)
+  status        ModerationStatus @default(APPROVED)
   flaggedReason String?
   moderatedBy   String?
   moderatedAt   DateTime?
-  
+
   // Features
-  isPinned  Boolean  @default(false)
+  isPinned       Boolean @default(false)
   isAnnouncement Boolean @default(false)
-  
+
   // Anonymous posting for sensitive topics
   isAnonymous Boolean @default(false)
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  comments  WomenSpaceComment[]
-  likes     WomenSpacePostLike[]
-  
+  comments WomenSpaceComment[]
+  likes    WomenSpacePostLike[]
+
   @@index([spaceId, createdAt])
   @@index([authorId])
   @@index([status])
@@ -801,95 +824,95 @@ model WomenSpacePost {
 
 /// Step 121: Post comments
 model WomenSpaceComment {
-  id        String   @id @default(cuid())
-  postId    String
-  post      WomenSpacePost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  parentId  String?  // For nested replies
-  parent    WomenSpaceComment? @relation("CommentReplies", fields: [parentId], references: [id])
-  replies   WomenSpaceComment[] @relation("CommentReplies")
-  
-  content   String
-  
-  likeCount Int      @default(0)
-  
-  status    ModerationStatus @default(APPROVED)
-  
+  id       String         @id @default(cuid())
+  postId   String
+  post     WomenSpacePost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  parentId String? // For nested replies
+  parent   WomenSpaceComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  WomenSpaceComment[] @relation("CommentReplies")
+
+  content String
+
+  likeCount Int @default(0)
+
+  status ModerationStatus @default(APPROVED)
+
   isAnonymous Boolean @default(false)
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([postId, createdAt])
   @@index([authorId])
 }
 
 /// Step 122: Post likes
 model WomenSpacePostLike {
-  id        String   @id @default(cuid())
-  postId    String
-  post      WomenSpacePost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String         @id @default(cuid())
+  postId String
+  post   WomenSpacePost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  
+
   @@unique([postId, userId])
   @@index([userId])
 }
 
 /// Steps 123-125: Support circles (peer support groups)
 model SupportCircle {
-  id          String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   name        String
   description String?
-  topic       String   // career, housing, wellness, etc.
-  
+  topic       String // career, housing, wellness, etc.
+
   // Circle settings
-  maxMembers  Int      @default(8)
-  isOpen      Boolean  @default(true)
-  
+  maxMembers Int     @default(8)
+  isOpen     Boolean @default(true)
+
   // Facilitator
   facilitatorId String
   facilitator   User   @relation("CircleFacilitator", fields: [facilitatorId], references: [id])
-  
+
   // Schedule
-  meetingDay   String?  // monday, tuesday, etc.
-  meetingTime  String?  // HH:mm format
-  timezone     String?  @default("Australia/Sydney")
+  meetingDay    String? // monday, tuesday, etc.
+  meetingTime   String? // HH:mm format
+  timezone      String?   @default("Australia/Sydney")
   nextMeetingAt DateTime?
-  
+
   // Virtual meeting
-  meetingUrl   String?
-  
-  memberCount  Int     @default(0)
-  
-  isActive     Boolean @default(true)
-  
+  meetingUrl String?
+
+  memberCount Int @default(0)
+
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  members   SupportCircleMember[]
-  
+
+  members SupportCircleMember[]
+
   @@index([topic, isOpen])
   @@index([facilitatorId])
 }
 
 model SupportCircleMember {
-  id        String   @id @default(cuid())
-  circleId  String
-  circle    SupportCircle @relation(fields: [circleId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  role      String   @default("member") // member, co-facilitator
-  
-  joinedAt  DateTime @default(now())
-  attendanceCount Int @default(0)
-  
+  id       String        @id @default(cuid())
+  circleId String
+  circle   SupportCircle @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role String @default("member") // member, co-facilitator
+
+  joinedAt        DateTime @default(now())
+  attendanceCount Int      @default(0)
+
   @@unique([circleId, userId])
   @@index([userId])
 }
@@ -910,14 +933,14 @@ enum HousingListingStatus {
 
 /// Step 127: Housing type
 enum HousingType {
-  SHARE_HOUSE     // Room in shared house
-  WHOLE_HOUSE     // Entire house
-  APARTMENT       // Apartment/unit
-  GRANNY_FLAT     // Granny flat
-  STUDIO          // Studio apartment
-  TRANSITIONAL    // Transitional housing
-  EMERGENCY       // Emergency accommodation
-  AGED_CARE       // Aged care/senior living
+  SHARE_HOUSE // Room in shared house
+  WHOLE_HOUSE // Entire house
+  APARTMENT // Apartment/unit
+  GRANNY_FLAT // Granny flat
+  STUDIO // Studio apartment
+  TRANSITIONAL // Transitional housing
+  EMERGENCY // Emergency accommodation
+  AGED_CARE // Aged care/senior living
 }
 
 /// Step 128: Safety features enum
@@ -936,84 +959,84 @@ enum SafetyFeature {
 
 /// Steps 129-140: Women's housing listings (enhanced)
 model WomenHousingPortal {
-  id        String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Listing owner
-  ownerId   String
-  owner     User     @relation("HousingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  
+  ownerId String
+  owner   User   @relation("HousingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
   // Basic info
-  title     String
+  title       String
   description String
-  
+
   housingType HousingType
   status      HousingListingStatus @default(DRAFT)
-  
+
   // Location
-  address     String?
-  suburb      String
-  state       String
-  postcode    String
-  country     String   @default("Australia")
-  
+  address  String?
+  suburb   String
+  state    String
+  postcode String
+  country  String  @default("Australia")
+
   // Coordinates for map
-  latitude    Float?
-  longitude   Float?
-  
+  latitude  Float?
+  longitude Float?
+
   // Pricing
-  rentPerWeek Decimal
-  bondAmount  Decimal?
-  billsIncluded Boolean @default(false)
-  
+  rentPerWeek   Decimal
+  bondAmount    Decimal?
+  billsIncluded Boolean  @default(false)
+
   // Property details
-  bedrooms    Int
-  bathrooms   Int
-  parking     Int      @default(0)
-  
+  bedrooms  Int
+  bathrooms Int
+  parking   Int @default(0)
+
   // Availability
-  availableFrom DateTime
+  availableFrom  DateTime
   minLeaseMonths Int?
   maxLeaseMonths Int?
-  
+
   // Preferences (who is welcome)
-  womenOnly       Boolean @default(true)
-  firstNationsPreferred Boolean @default(false)
-  childrenAllowed Boolean @default(true)
-  petsAllowed     Boolean @default(false)
-  smokingAllowed  Boolean @default(false)
+  womenOnly             Boolean  @default(true)
+  firstNationsPreferred Boolean  @default(false)
+  childrenAllowed       Boolean  @default(true)
+  petsAllowed           Boolean  @default(false)
+  smokingAllowed        Boolean  @default(false)
   accessibilityFeatures String[] // wheelchair, hearing, etc.
-  
+
   // Safety
-  safetyFeatures  SafetyFeature[]
-  safetyNotes     String?
-  
+  safetyFeatures SafetyFeature[]
+  safetyNotes    String?
+
   // Cultural considerations
-  culturalNotes   String?
+  culturalNotes        String?
   nearCulturalServices Boolean @default(false)
-  
+
   // Contact
-  contactMethod   String   @default("in_app") // in_app, email, phone
-  contactPhone    String?
-  contactEmail    String?
-  
+  contactMethod String  @default("in_app") // in_app, email, phone
+  contactPhone  String?
+  contactEmail  String?
+
   // Stats
-  viewCount       Int      @default(0)
-  inquiryCount    Int      @default(0)
-  savedCount      Int      @default(0)
-  
+  viewCount    Int @default(0)
+  inquiryCount Int @default(0)
+  savedCount   Int @default(0)
+
   // Verification
-  isVerified      Boolean  @default(false)
-  verifiedAt      DateTime?
-  verifiedBy      String?
-  
+  isVerified Boolean   @default(false)
+  verifiedAt DateTime?
+  verifiedBy String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
   photos    WomenHousingPhoto[]
   inquiries WomenHousingInquiry[]
   saves     WomenHousingSave[]
-  
+
   @@index([status, suburb])
   @@index([ownerId])
   @@index([housingType])
@@ -1022,109 +1045,109 @@ model WomenHousingPortal {
 
 /// Step 141: Housing photos
 model WomenHousingPhoto {
-  id        String   @id @default(cuid())
+  id        String             @id @default(cuid())
   listingId String
   listing   WomenHousingPortal @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  
+
   url       String
   caption   String?
-  order     Int      @default(0)
-  isPrimary Boolean  @default(false)
-  
+  order     Int     @default(0)
+  isPrimary Boolean @default(false)
+
   createdAt DateTime @default(now())
-  
+
   @@index([listingId])
 }
 
 /// Steps 142-145: Housing inquiries
 model WomenHousingInquiry {
-  id        String   @id @default(cuid())
+  id        String             @id @default(cuid())
   listingId String
   listing   WomenHousingPortal @relation(fields: [listingId], references: [id], onDelete: Cascade)
   seekerId  String
-  seeker    User     @relation("HousingSeeker", fields: [seekerId], references: [id], onDelete: Cascade)
-  
-  message   String
-  
+  seeker    User               @relation("HousingSeeker", fields: [seekerId], references: [id], onDelete: Cascade)
+
+  message String
+
   // Seeker info
-  moveInDate DateTime?
-  occupants  Int      @default(1)
-  hasChildren Boolean @default(false)
-  hasPets    Boolean  @default(false)
-  
+  moveInDate  DateTime?
+  occupants   Int       @default(1)
+  hasChildren Boolean   @default(false)
+  hasPets     Boolean   @default(false)
+
   // Status
-  status    String   @default("pending") // pending, responded, accepted, declined
-  
+  status String @default("pending") // pending, responded, accepted, declined
+
   // Response
   responseMessage String?
   respondedAt     DateTime?
-  
+
   createdAt DateTime @default(now())
-  
+
   @@index([listingId, status])
   @@index([seekerId])
 }
 
 /// Step 146: Saved listings
 model WomenHousingSave {
-  id        String   @id @default(cuid())
+  id        String             @id @default(cuid())
   listingId String
   listing   WomenHousingPortal @relation(fields: [listingId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation("HousingSaves", fields: [userId], references: [id], onDelete: Cascade)
-  
-  notes     String?
-  
+  user      User               @relation("HousingSaves", fields: [userId], references: [id], onDelete: Cascade)
+
+  notes String?
+
   createdAt DateTime @default(now())
-  
+
   @@unique([listingId, userId])
   @@index([userId])
 }
 
 /// Steps 147-150: Housing seeker profile (enhanced)
 model WomenHousingProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation("HousingProfile", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation("HousingProfile", fields: [userId], references: [id], onDelete: Cascade)
+
   // Seeking preferences
-  seekingType     HousingType[]
-  minBudget       Decimal?
-  maxBudget       Decimal?
+  seekingType      HousingType[]
+  minBudget        Decimal?
+  maxBudget        Decimal?
   preferredSuburbs String[]
   preferredStates  String[]
-  
+
   // Personal situation
-  occupants       Int      @default(1)
-  hasChildren     Boolean  @default(false)
-  childrenAges    String?  // e.g., "3, 7"
-  hasPets         Boolean  @default(false)
-  petDetails      String?
-  
+  occupants    Int     @default(1)
+  hasChildren  Boolean @default(false)
+  childrenAges String? // e.g., "3, 7"
+  hasPets      Boolean @default(false)
+  petDetails   String?
+
   // Employment
-  employmentStatus String?  // employed, seeking, student, retired, etc.
+  employmentStatus String? // employed, seeking, student, retired, etc.
   incomeRange      String?
-  
+
   // Special needs
-  needsAccessibility Boolean @default(false)
+  needsAccessibility Boolean  @default(false)
   accessibilityNeeds String[]
-  
+
   // Urgency
-  urgency         String   @default("flexible") // urgent, soon, flexible
+  urgency         String    @default("flexible") // urgent, soon, flexible
   desiredMoveDate DateTime?
-  
+
   // Bio
-  bio             String?
-  
+  bio String?
+
   // Verification for trust
-  hasReferences   Boolean  @default(false)
-  
+  hasReferences Boolean @default(false)
+
   // Privacy
-  isSearchable    Boolean  @default(true)
-  
+  isSearchable Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([urgency])
 }
 
@@ -1155,69 +1178,69 @@ enum WomenBusinessType {
 
 /// Steps 153-160: Women's business profile
 model WomenBusiness {
-  id        String   @id @default(cuid())
-  ownerId   String
-  owner     User     @relation("BusinessOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  
+  id      String @id @default(cuid())
+  ownerId String
+  owner   User   @relation("BusinessOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
   // Basic info
-  name      String
-  tagline   String?
+  name        String
+  tagline     String?
   description String?
-  
+
   businessType WomenBusinessType
-  stage        BusinessStage @default(IDEA)
-  
+  stage        BusinessStage     @default(IDEA)
+
   // Registration
   abn          String?
   acn          String?
   registeredAt DateTime?
-  
+
   // Industry
-  industry     String
-  subIndustry  String?
-  
+  industry    String
+  subIndustry String?
+
   // Location
   suburb       String?
   state        String?
   postcode     String?
   isOnlineOnly Boolean @default(false)
-  
+
   // Branding
-  logoUrl      String?
-  coverUrl     String?
-  brandColors  String?  // JSON array of hex colors
-  
+  logoUrl     String?
+  coverUrl    String?
+  brandColors String? // JSON array of hex colors
+
   // Contact
-  website      String?
-  email        String?
-  phone        String?
-  
+  website String?
+  email   String?
+  phone   String?
+
   // Social
   instagramUrl String?
   facebookUrl  String?
   linkedinUrl  String?
   tiktokUrl    String?
-  
+
   // First Nations business
   isFirstNationsBusiness Boolean @default(false)
   supplyNationCertified  Boolean @default(false)
-  
+
   // Stats
-  followerCount Int     @default(0)
-  productCount  Int     @default(0)
-  
-  isPublished  Boolean  @default(false)
-  
+  followerCount Int @default(0)
+  productCount  Int @default(0)
+
+  isPublished Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  products      WomenBusinessProduct[]
-  services      WomenBusinessService[]
-  goals         BusinessGoal[]
-  milestones    BusinessMilestone[]
+  products   WomenBusinessProduct[]
+  services   WomenBusinessService[]
+  goals      BusinessGoal[]
+  milestones BusinessMilestone[]
   // Note: Cashbook entries are linked via BusinessCashbook model
-  
+
   @@index([ownerId])
   @@index([industry])
   @@index([isFirstNationsBusiness])
@@ -1225,95 +1248,95 @@ model WomenBusiness {
 
 /// Steps 161-165: Products/services
 model WomenBusinessProduct {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   businessId String
   business   WomenBusiness @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  
-  name       String
+
+  name        String
   description String?
-  
-  price      Decimal?
-  currency   String   @default("AUD")
-  
-  imageUrl   String?
-  
-  category   String?
-  tags       String[]
-  
-  isActive   Boolean  @default(true)
-  
+
+  price    Decimal?
+  currency String   @default("AUD")
+
+  imageUrl String?
+
+  category String?
+  tags     String[]
+
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([businessId])
 }
 
 model WomenBusinessService {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   businessId String
   business   WomenBusiness @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  
-  name       String
+
+  name        String
   description String?
-  
-  priceFrom  Decimal?
-  priceTo    Decimal?
-  priceUnit  String?  // per hour, per project, etc.
-  currency   String   @default("AUD")
-  
-  duration   String?  // e.g., "1 hour", "2-3 days"
-  
-  category   String?
-  
-  isActive   Boolean  @default(true)
-  
+
+  priceFrom Decimal?
+  priceTo   Decimal?
+  priceUnit String? // per hour, per project, etc.
+  currency  String   @default("AUD")
+
+  duration String? // e.g., "1 hour", "2-3 days"
+
+  category String?
+
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([businessId])
 }
 
 /// Steps 166-170: Business goals & milestones
 model BusinessGoal {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   businessId String
   business   WomenBusiness @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  
-  title      String
+
+  title       String
   description String?
-  
-  category   String   // revenue, customers, product, marketing, etc.
-  
-  targetValue Decimal?
+
+  category String // revenue, customers, product, marketing, etc.
+
+  targetValue  Decimal?
   currentValue Decimal?
-  unit        String?  // $, customers, products, etc.
-  
-  targetDate  DateTime?
-  
-  status      String   @default("active") // active, completed, abandoned
+  unit         String? // $, customers, products, etc.
+
+  targetDate DateTime?
+
+  status      String    @default("active") // active, completed, abandoned
   completedAt DateTime?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([businessId, status])
 }
 
 model BusinessMilestone {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   businessId String
   business   WomenBusiness @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  
-  title      String
+
+  title       String
   description String?
-  
+
   achievedAt DateTime @default(now())
-  
+
   // Celebration
   isCelebrated Boolean @default(false)
-  
+
   createdAt DateTime @default(now())
-  
+
   @@index([businessId])
 }
 
@@ -1335,158 +1358,158 @@ enum WellnessMood {
 
 /// Steps 177-185: Daily wellness check-in
 model WellnessCheckIn {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Date (one per day)
-  date      DateTime @db.Date
-  
+  date DateTime @db.Date
+
   // Mood
-  mood      WellnessMood
-  moodNote  String?
-  
+  mood     WellnessMood
+  moodNote String?
+
   // Energy level 1-5
   energyLevel Int?
-  
+
   // Sleep hours
-  sleepHours  Float?
+  sleepHours   Float?
   sleepQuality Int? // 1-5
-  
+
   // Stress 1-5
   stressLevel Int?
-  
+
   // Gratitude
-  gratitude   String?
-  
+  gratitude String?
+
   // Goals for the day
-  dailyGoals  String[]
+  dailyGoals     String[]
   goalsCompleted String[]
-  
+
   // Self-care activities done
   selfCareActivities String[]
-  
+
   // Connection
   connectedWithSomeone Boolean @default(false)
   connectionNote       String?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@unique([userId, date])
   @@index([userId, date])
 }
 
 /// Steps 186-190: Cultural calendar & events
 model CulturalEvent {
-  id          String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   title       String
   description String?
-  
+
   // Event type
-  eventType   String   // ceremony, celebration, workshop, gathering, naidoc, etc.
-  
+  eventType String // ceremony, celebration, workshop, gathering, naidoc, etc.
+
   // Timing
-  startDate   DateTime
-  endDate     DateTime?
-  isAllDay    Boolean  @default(false)
-  timezone    String   @default("Australia/Sydney")
-  
+  startDate DateTime
+  endDate   DateTime?
+  isAllDay  Boolean   @default(false)
+  timezone  String    @default("Australia/Sydney")
+
   // Location
-  location    String?
-  isOnline    Boolean  @default(false)
-  meetingUrl  String?
-  
+  location   String?
+  isOnline   Boolean @default(false)
+  meetingUrl String?
+
   // Cultural context
-  nation      String?  // Associated nation/mob
-  isRestricted Boolean @default(false) // Some ceremonies are restricted
+  nation          String? // Associated nation/mob
+  isRestricted    Boolean @default(false) // Some ceremonies are restricted
   restrictionNote String?
-  
+
   // Organizer
   organizerId String?
-  organizer   User?    @relation(fields: [organizerId], references: [id])
-  
+  organizer   User?   @relation(fields: [organizerId], references: [id])
+
   // Attendance
-  attendeeCount Int    @default(0)
+  attendeeCount Int  @default(0)
   maxAttendees  Int?
-  
-  isPublic    Boolean  @default(true)
-  
+
+  isPublic Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  attendees   CulturalEventAttendee[]
-  
+
+  attendees CulturalEventAttendee[]
+
   @@index([startDate])
   @@index([eventType])
 }
 
 model CulturalEventAttendee {
-  id        String   @id @default(cuid())
-  eventId   String
-  event     CulturalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  status    String   @default("going") // going, maybe, interested
-  
+  id      String        @id @default(cuid())
+  eventId String
+  event   CulturalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status String @default("going") // going, maybe, interested
+
   createdAt DateTime @default(now())
-  
+
   @@unique([eventId, userId])
   @@index([userId])
 }
 
 /// Steps 191-195: Affirmations & daily inspiration
 model DailyAffirmation {
-  id          String   @id @default(cuid())
-  
-  content     String
-  author      String?
-  
-  category    String   // strength, culture, career, wellness, sisterhood
-  
+  id String @id @default(cuid())
+
+  content String
+  author  String?
+
+  category String // strength, culture, career, wellness, sisterhood
+
   // Cultural relevance
   isFirstNations Boolean @default(false)
-  nation        String?
-  
-  isActive    Boolean  @default(true)
-  
+  nation         String?
+
+  isActive Boolean @default(true)
+
   // Usage tracking
-  viewCount   Int      @default(0)
-  likeCount   Int      @default(0)
-  
+  viewCount Int @default(0)
+  likeCount Int @default(0)
+
   createdAt DateTime @default(now())
-  
+
   @@index([category, isActive])
 }
 
 /// Steps 196-200: Sister matching for peer support
 model SisterMatch {
-  id          String   @id @default(cuid())
-  
-  user1Id     String
-  user1       User     @relation("SisterMatch1", fields: [user1Id], references: [id], onDelete: Cascade)
-  user2Id     String
-  user2       User     @relation("SisterMatch2", fields: [user2Id], references: [id], onDelete: Cascade)
-  
+  id String @id @default(cuid())
+
+  user1Id String
+  user1   User   @relation("SisterMatch1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2Id String
+  user2   User   @relation("SisterMatch2", fields: [user2Id], references: [id], onDelete: Cascade)
+
   // Match context
-  matchReason String?  // career, housing, wellness, business, etc.
-  
+  matchReason String? // career, housing, wellness, business, etc.
+
   // Status
-  status      String   @default("pending") // pending, accepted, declined, ended
-  
+  status String @default("pending") // pending, accepted, declined, ended
+
   // Initiator
   initiatedBy String
-  
+
   // Accepted
-  acceptedAt  DateTime?
-  
+  acceptedAt DateTime?
+
   // Last interaction
   lastInteractionAt DateTime?
-  
+
   createdAt DateTime @default(now())
-  
+
   @@unique([user1Id, user2Id])
   @@index([user1Id, status])
   @@index([user2Id, status])
@@ -1642,30 +1665,30 @@ model Job {
 
   savedBy SavedJob[]
 
-  jobSkills JobSkill[]
+  jobSkills          JobSkill[]
   // Performance metrics for daily engagement tracking
   performanceMetrics JobPerformance[]
 }
 
 /// JobPerformance: Daily engagement metrics for job listings (Phase 3 Analytics)
 model JobPerformance {
-  id             String   @id @default(cuid())
-  jobId          String
-  job            Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  date           DateTime @db.Date // The date for this performance record
-  views          Int      @default(0) // Number of times job was viewed
-  uniqueViews    Int      @default(0) // Unique visitor views
-  clicks         Int      @default(0) // Click-through to apply
-  applications   Int      @default(0) // Number of applications submitted
-  saves          Int      @default(0) // Number of times job was saved
-  shares         Int      @default(0) // Number of times job was shared
-  searchImpressions Int   @default(0) // Times shown in search results
-  recommendationImpressions Int @default(0) // Times shown in recommendations
-  avgTimeOnPage  Float?   // Average time spent viewing (seconds)
-  bounceRate     Float?   // Percentage that left without action
-  conversionRate Float?   // applications / views percentage
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                        String   @id @default(cuid())
+  jobId                     String
+  job                       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  date                      DateTime @db.Date // The date for this performance record
+  views                     Int      @default(0) // Number of times job was viewed
+  uniqueViews               Int      @default(0) // Unique visitor views
+  clicks                    Int      @default(0) // Click-through to apply
+  applications              Int      @default(0) // Number of applications submitted
+  saves                     Int      @default(0) // Number of times job was saved
+  shares                    Int      @default(0) // Number of times job was shared
+  searchImpressions         Int      @default(0) // Times shown in search results
+  recommendationImpressions Int      @default(0) // Times shown in recommendations
+  avgTimeOnPage             Float? // Average time spent viewing (seconds)
+  bounceRate                Float? // Percentage that left without action
+  conversionRate            Float? // applications / views percentage
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   @@unique([jobId, date])
   @@index([jobId])
@@ -1696,15 +1719,15 @@ model JobApplication {
 
 /// Pre-Apply Queue Entry: Tracks users who want early notification when matching jobs are posted
 model PreApplyQueueEntry {
-  id        String   @id @default(cuid())
-  userId    String
-  jobId     String
-  matchScore Float   @default(0) // 0-100 match percentage based on profile/resume
+  id         String    @id @default(cuid())
+  userId     String
+  jobId      String
+  matchScore Float     @default(0) // 0-100 match percentage based on profile/resume
   notifiedAt DateTime? // When user was notified about this job
   appliedAt  DateTime? // When user actually applied (if they did)
-  dismissed  Boolean  @default(false) // User dismissed this match
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  dismissed  Boolean   @default(false) // User dismissed this match
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@unique([userId, jobId])
   @@index([userId, notifiedAt])
@@ -1757,15 +1780,15 @@ model AiResource {
 
 // AI conversation storage for assistant histories
 model AiConversation {
-  id           String     @id @default(cuid())
-  userId       String?
-  user         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title        String?
+  id            String    @id @default(cuid())
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String?
   lastMessageAt DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  messages     AiMessage[]
+  messages AiMessage[]
 
   @@index([userId])
   @@index([createdAt])
@@ -1775,7 +1798,7 @@ model AiMessage {
   id             String         @id @default(cuid())
   conversationId String
   conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  role           String         // 'user' | 'assistant' | 'system'
+  role           String // 'user' | 'assistant' | 'system'
   content        String         @db.Text
   meta           Json?
   createdAt      DateTime       @default(now())
@@ -1838,24 +1861,24 @@ model AnalyticsEvent {
 
 /// Mentor-mentee session scheduling and tracking
 model MentorSession {
-  id          String    @id @default(cuid())
-  mentorId    String
-  menteeId    String
-  scheduledAt DateTime
-  duration    Int // minutes
-  status      String    @default("SCHEDULED") // SCHEDULED, CONFIRMED, COMPLETED, CANCELLED
-  topic       String? // Session topic/focus area
-  location    String? // Physical location or video link
-  notes       String?
-  feedback    String?
-  rating      Int? // 1-5
-  videoUrl    String? // Jitsi/Zoom link
+  id             String        @id @default(cuid())
+  mentorId       String
+  menteeId       String
+  scheduledAt    DateTime
+  duration       Int // minutes
+  status         String        @default("SCHEDULED") // SCHEDULED, CONFIRMED, COMPLETED, CANCELLED
+  topic          String? // Session topic/focus area
+  location       String? // Physical location or video link
+  notes          String?
+  feedback       String?
+  rating         Int? // 1-5
+  videoUrl       String? // Jitsi/Zoom link
   // Phase 2: LiveKit Video Session
-  videoSessionId String? @unique
+  videoSessionId String?       @unique
   videoSession   VideoSession? @relation(fields: [videoSessionId], references: [id])
-  completedAt DateTime? // When session was marked complete
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  completedAt    DateTime? // When session was marked complete
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   mentor User @relation("MentorSessions", fields: [mentorId], references: [id])
   mentee User @relation("MenteeSessions", fields: [menteeId], references: [id])
@@ -1916,15 +1939,15 @@ model CourseEnrolment {
   dueDate        DateTime?
   nextLesson     String?
   certificateUrl String?
-  lessonProgress Json?     // Stores array of {id, title, completedAt} for each lesson
+  lessonProgress Json? // Stores array of {id, title, completedAt} for each lesson
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
 
-  notes        CourseNote[]
-  quizResults  CourseQuizResult[]
+  notes       CourseNote[]
+  quizResults CourseQuizResult[]
 
   @@unique([userId, courseId])
 }
@@ -3172,14 +3195,14 @@ model LiveStream {
   endedAt     DateTime?
 
   // Settings
-  visibility      String  @default("public") // public, followers, private
-  allowChat       Boolean @default(true)
-  allowQuestions  Boolean @default(true)
-  allowReactions  Boolean @default(true)
-  allowCoHosts    Boolean @default(false)
-  womenOnly       Boolean @default(false)
-  isRecorded      Boolean @default(false)
-  maxViewers      Int?
+  visibility     String  @default("public") // public, followers, private
+  allowChat      Boolean @default(true)
+  allowQuestions Boolean @default(true)
+  allowReactions Boolean @default(true)
+  allowCoHosts   Boolean @default(false)
+  womenOnly      Boolean @default(false)
+  isRecorded     Boolean @default(false)
+  maxViewers     Int?
 
   // Media
   thumbnailUrl String?
@@ -3232,15 +3255,15 @@ model StreamCoHost {
 
 /// Stream viewers
 model StreamViewer {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   streamId String
   userId   String?
   guestId  String? // Anonymous viewer ID
 
   // Watch time tracking
-  joinedAt   DateTime @default(now())
-  leftAt     DateTime?
-  watchTime  Int      @default(0) // seconds
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+  watchTime Int       @default(0) // seconds
 
   // Engagement
   chatCount     Int @default(0)
@@ -3254,11 +3277,11 @@ model StreamViewer {
 
 /// Stream chat messages
 model StreamChatMessage {
-  id       String  @id @default(cuid())
+  id       String @id @default(cuid())
   streamId String
   userId   String
   content  String
-  type     String  @default("text") // text, emoji, tip, system
+  type     String @default("text") // text, emoji, tip, system
 
   // Moderation
   isPinned  Boolean @default(false)
@@ -3279,11 +3302,11 @@ model StreamChatMessage {
 
 /// Stream Q&A questions
 model StreamQuestion {
-  id       String  @id @default(cuid())
+  id       String @id @default(cuid())
   streamId String
   userId   String
   question String
-  status   String  @default("pending") // pending, approved, answered, dismissed
+  status   String @default("pending") // pending, approved, answered, dismissed
 
   // Voting
   upvotes Int @default(0)
@@ -3934,10 +3957,10 @@ model ReferralCode {
   userId     String    @unique
   code       String    @unique // e.g., NG-ABC123
   usageCount Int       @default(0)
-  maxUsages  Int?      // Optional limit on uses
+  maxUsages  Int? // Optional limit on uses
   isActive   Boolean   @default(true)
   expiresAt  DateTime? // Optional expiration
-  campaignId String?   // Link to campaign
+  campaignId String? // Link to campaign
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
@@ -3947,9 +3970,9 @@ model ReferralCode {
 
 model Referral {
   id              String    @id @default(cuid())
-  referrerId      String    // User who referred
-  refereeId       String    // User who was referred (matches schema)
-  referredId      String?   // Alias for refereeId (for backward compat)
+  referrerId      String // User who referred
+  refereeId       String // User who was referred (matches schema)
+  referredId      String? // Alias for refereeId (for backward compat)
   referralCodeId  String
   status          String    @default("PENDING") // PENDING, SIGNED_UP, HIRED, ACTIVE, EXPIRED
   creditsEarned   Int       @default(0)
@@ -3959,9 +3982,9 @@ model Referral {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  referralCode ReferralCode  @relation(fields: [referralCodeId], references: [id])
-  referrer     User          @relation("ReferrerUser", fields: [referrerId], references: [id])
-  referee      User          @relation("RefereeUser", fields: [refereeId], references: [id])
+  referralCode ReferralCode @relation(fields: [referralCodeId], references: [id])
+  referrer     User         @relation("ReferrerUser", fields: [referrerId], references: [id])
+  referee      User         @relation("RefereeUser", fields: [refereeId], references: [id])
 }
 
 /// Referral campaigns for tracking marketing efforts
@@ -3973,7 +3996,7 @@ model ReferralCampaign {
   endDate     DateTime?
   isActive    Boolean   @default(true)
   bonusAmount Int       @default(0) // Extra credits for this campaign
-  metadata    String?   // JSON for additional config
+  metadata    String? // JSON for additional config
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -3983,16 +4006,16 @@ model ReferralCampaign {
 
 /// Referral rewards tracking
 model ReferralReward {
-  id           String   @id @default(cuid())
-  userId       String
-  referralId   String?
-  campaignId   String?
-  rewardType   String   // SIGNUP_BONUS, HIRED_BONUS, MILESTONE
-  amount       Int      // Credits or dollar value
-  status       String   @default("PENDING") // PENDING, APPROVED, PAID
-  paidAt       DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         String    @id @default(cuid())
+  userId     String
+  referralId String?
+  campaignId String?
+  rewardType String // SIGNUP_BONUS, HIRED_BONUS, MILESTONE
+  amount     Int // Credits or dollar value
+  status     String    @default("PENDING") // PENDING, APPROVED, PAID
+  paidAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   user     User              @relation(fields: [userId], references: [id])
   campaign ReferralCampaign? @relation(fields: [campaignId], references: [id])
@@ -5400,47 +5423,47 @@ model UserStreak {
 
 /// Video Session for Mentorship and Interviews (LiveKit)
 model VideoSession {
-  id            String   @id @default(cuid())
-  roomId        String   @unique // LiveKit Room Name
-  roomSid       String?  @unique // LiveKit Room SID
+  id            String  @id @default(cuid())
+  roomId        String  @unique // LiveKit Room Name
+  roomSid       String? @unique // LiveKit Room SID
   hostId        String
   participantId String?
-  status        String   @default("SCHEDULED") // SCHEDULED, ACTIVE, COMPLETED, CANCELLED
-  
-  startedAt     DateTime?
-  endedAt       DateTime?
-  duration      Int?     // in seconds
-  recordingUrl  String?
+  status        String  @default("SCHEDULED") // SCHEDULED, ACTIVE, COMPLETED, CANCELLED
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  startedAt    DateTime?
+  endedAt      DateTime?
+  duration     Int? // in seconds
+  recordingUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  mentorSession   MentorSession?
-  interview       Interview?
+  mentorSession MentorSession?
+  interview     Interview?
 }
 
 /// Structured Interview Tracking
 model Interview {
-  id              String   @id @default(cuid())
-  applicationId   String
-  application     JobApplication @relation(fields: [applicationId], references: [id])
-  
-  videoSessionId  String?  @unique
-  videoSession    VideoSession? @relation(fields: [videoSessionId], references: [id])
-  
-  scheduledAt     DateTime
-  duration        Int      @default(30) // minutes
-  type            String   @default("VIDEO") // VIDEO, PHONE, IN_PERSON
-  location        String?  // Physical location if IN_PERSON
-  
-  status          String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED, NO_SHOW
-  feedback        String?  // Interviewer notes
-  rating          Int?     // 1-5 score
+  id            String         @id @default(cuid())
+  applicationId String
+  application   JobApplication @relation(fields: [applicationId], references: [id])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  videoSessionId String?       @unique
+  videoSession   VideoSession? @relation(fields: [videoSessionId], references: [id])
+
+  scheduledAt DateTime
+  duration    Int      @default(30) // minutes
+  type        String   @default("VIDEO") // VIDEO, PHONE, IN_PERSON
+  location    String? // Physical location if IN_PERSON
+
+  status   String  @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED, NO_SHOW
+  feedback String? // Interviewer notes
+  rating   Int? // 1-5 score
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([applicationId])
 }
 
@@ -5451,39 +5474,39 @@ model Plan {
   description     String?
   stripeProductId String   @unique // prod_...
   stripePriceId   String   @unique // price_...
-  price           Int      // in cents
+  price           Int // in cents
   interval        String   @default("month") // month, year
   currency        String   @default("aud")
   features        String[]
   isActive        Boolean  @default(true)
   type            String   @default("COMPANY") // COMPANY, TAFE, GOVERNMENT
-  
-  subscriptions   Subscription[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 /// Active Tenant Subscriptions
 model Subscription {
-  id              String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Owner link
-  companyId       String?
-  company         CompanyProfile? @relation(fields: [companyId], references: [id])
-  
-  planId          String
-  plan            Plan     @relation(fields: [planId], references: [id])
-  
+  companyId String?
+  company   CompanyProfile? @relation(fields: [companyId], references: [id])
+
+  planId String
+  plan   Plan   @relation(fields: [planId], references: [id])
+
   stripeSubscriptionId String @unique // sub_...
   stripeCustomerId     String // cus_...
-  
-  status               String // active, past_due, canceled, incomplete, trialing
-  currentPeriodStart   DateTime
-  currentPeriodEnd     DateTime
-  cancelAtPeriodEnd    Boolean @default(false)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  status             String // active, past_due, canceled, incomplete, trialing
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([companyId])
   @@index([status])
@@ -5494,14 +5517,14 @@ model Subscription {
 // ==========================================
 
 model ListingPartnershipIntention {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listingId String
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId   String
   listingType String // HOUSING, BUSINESS
-  message   String?
-  status    String   @default("PENDING")
-  
+  message     String?
+  status      String  @default("PENDING")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -5509,17 +5532,17 @@ model ListingPartnershipIntention {
 }
 
 model MortgageQuote {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   amount         Decimal
   deposit        Decimal
   termYears      Int
   interestRate   Decimal
   monthlyPayment Decimal
   lenderName     String
-  status         String @default("DRAFT")
+  status         String  @default("DRAFT")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5528,22 +5551,22 @@ model MortgageQuote {
 }
 
 model PropertySeekerMatch {
-  id              String   @id @default(cuid())
+  id              String  @id @default(cuid())
   seekerProfileId String
   listingId       String
   score           Float
-  isViewed        Boolean  @default(false)
-  
+  isViewed        Boolean @default(false)
+
   createdAt DateTime @default(now())
 }
 
 model WomenSocialConnection {
-  id        String   @id @default(cuid())
-  userAId   String
-  userBId   String
-  status    String   @default("PENDING")
-  type      String   @default("FRIEND") // FRIEND, MENTOR, SISTER
-  
+  id      String @id @default(cuid())
+  userAId String
+  userBId String
+  status  String @default("PENDING")
+  type    String @default("FRIEND") // FRIEND, MENTOR, SISTER
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -5551,30 +5574,30 @@ model WomenSocialConnection {
 }
 
 model BusinessBudget {
-  id        String   @id @default(cuid())
+  id         String  @id @default(cuid())
   businessId String?
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  name       String
-  period     String // MONTHLY, QUARTERLY, YEARLY
-  currency   String @default("AUD")
-  
-  items      BusinessBudgetItem[]
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String
+  period   String // MONTHLY, QUARTERLY, YEARLY
+  currency String @default("AUD")
+
+  items BusinessBudgetItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BusinessBudgetItem {
-  id        String   @id @default(cuid())
-  budgetId  String
-  budget    BusinessBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  
-  category  String
-  amount    Decimal
-  type      String // INCOME, EXPENSE
-  
+  id       String         @id @default(cuid())
+  budgetId String
+  budget   BusinessBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  category String
+  amount   Decimal
+  type     String // INCOME, EXPENSE
+
   createdAt DateTime @default(now())
 }
 
@@ -5586,23 +5609,23 @@ model BundleOffer {
   currency    String   @default("AUD")
   items       String[]
   isActive    Boolean  @default(true)
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model UserSubscription {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  planId      String?
-  role        String?
-  
-  status      String   @default("active")
-  startsAt    DateTime @default(now())
-  endsAt      DateTime?
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  planId String?
+  role   String?
+
+  status   String    @default("active")
+  startsAt DateTime  @default(now())
+  endsAt   DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -5614,14 +5637,14 @@ model UserSubscription {
 // ==========================================
 
 model BudgetPlan {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name      String   @default("My Budget")
-  period    BudgetPeriod @default(MONTHLY)
+  name      String         @default("My Budget")
+  period    BudgetPeriod   @default(MONTHLY)
   template  BudgetTemplate @default(CUSTOM)
-  currency  String  @default("AUD")
+  currency  String         @default("AUD")
   startDate DateTime?
   endDate   DateTime?
 
@@ -5638,21 +5661,21 @@ model BudgetPlan {
 }
 
 model BudgetCategory {
-  id        String   @id @default(cuid())
-  budgetId  String
-  budget    BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  id       String     @id @default(cuid())
+  budgetId String
+  budget   BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
-  name      String
-  type      BudgetEntryType
-  limitAmount Decimal? @db.Decimal(12, 2)
-  isEssential Boolean @default(false)
-  isCultural  Boolean @default(false)
-  isChild     Boolean @default(false)
-  isCar       Boolean @default(false)
-  isHome      Boolean @default(false)
-  isSubscription Boolean @default(false)
+  name           String
+  type           BudgetEntryType
+  limitAmount    Decimal?        @db.Decimal(12, 2)
+  isEssential    Boolean         @default(false)
+  isCultural     Boolean         @default(false)
+  isChild        Boolean         @default(false)
+  isCar          Boolean         @default(false)
+  isHome         Boolean         @default(false)
+  isSubscription Boolean         @default(false)
 
-  entries   BudgetEntry[]
+  entries BudgetEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5661,27 +5684,27 @@ model BudgetCategory {
 }
 
 model BudgetEntry {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  budgetId  String
-  budget    BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  budgetId String
+  budget   BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
   categoryId String?
-  category  BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  category   BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
-  type      BudgetEntryType
-  source    BudgetEntrySource @default(MANUAL)
-  amount    Decimal @db.Decimal(12, 2)
-  currency  String  @default("AUD")
-  occurredAt DateTime
-  description String?
+  type         BudgetEntryType
+  source       BudgetEntrySource  @default(MANUAL)
+  amount       Decimal            @db.Decimal(12, 2)
+  currency     String             @default("AUD")
+  occurredAt   DateTime
+  description  String?
   merchantName String?
-  isRecurring Boolean @default(false)
-  cadence   RecurrenceCadence?
-  isJoint   Boolean @default(false)
-  tags      String[] @default([])
+  isRecurring  Boolean            @default(false)
+  cadence      RecurrenceCadence?
+  isJoint      Boolean            @default(false)
+  tags         String[]           @default([])
 
   bankTransactionId String?
   bankTransaction   BankTransaction? @relation(fields: [bankTransactionId], references: [id], onDelete: SetNull)
@@ -5694,16 +5717,16 @@ model BudgetEntry {
 }
 
 model SavingsGoal {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name      String
-  targetAmount Decimal @db.Decimal(12, 2)
-  currentAmount Decimal @db.Decimal(12, 2) @default(0)
-  currency  String @default("AUD")
-  dueDate   DateTime?
-  status    String @default("ACTIVE")
+  name          String
+  targetAmount  Decimal   @db.Decimal(12, 2)
+  currentAmount Decimal   @default(0) @db.Decimal(12, 2)
+  currency      String    @default("AUD")
+  dueDate       DateTime?
+  status        String    @default("ACTIVE")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5712,17 +5735,17 @@ model SavingsGoal {
 }
 
 model BudgetEnvelope {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  budgetId  String
-  budget    BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  budgetId String
+  budget   BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
-  name      String
-  amount    Decimal @db.Decimal(12, 2)
-  spentAmount Decimal @db.Decimal(12, 2) @default(0)
-  currency  String @default("AUD")
+  name        String
+  amount      Decimal @db.Decimal(12, 2)
+  spentAmount Decimal @default(0) @db.Decimal(12, 2)
+  currency    String  @default("AUD")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5732,17 +5755,17 @@ model BudgetEnvelope {
 }
 
 model BudgetAlert {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  budgetId  String?
-  budget    BudgetPlan? @relation(fields: [budgetId], references: [id], onDelete: SetNull)
+  budgetId String?
+  budget   BudgetPlan? @relation(fields: [budgetId], references: [id], onDelete: SetNull)
 
-  type      String
-  severity  String
-  message   String
-  readAt    DateTime?
+  type     String
+  severity String
+  message  String
+  readAt   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5751,15 +5774,15 @@ model BudgetAlert {
 }
 
 model BudgetShare {
-  id        String   @id @default(cuid())
-  budgetId  String
-  budget    BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  id       String     @id @default(cuid())
+  budgetId String
+  budget   BudgetPlan @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
-  ownerId   String
-  owner     User     @relation("BudgetShareOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+  owner   User   @relation("BudgetShareOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  memberId  String
-  member    User     @relation("BudgetShareMember", fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String
+  member   User   @relation("BudgetShareMember", fields: [memberId], references: [id], onDelete: Cascade)
 
   role      String   @default("VIEWER")
   createdAt DateTime @default(now())
@@ -5769,16 +5792,16 @@ model BudgetShare {
 }
 
 model FinancialSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name      String
-  amount    Decimal @db.Decimal(12, 2)
-  currency  String @default("AUD")
+  amount    Decimal           @db.Decimal(12, 2)
+  currency  String            @default("AUD")
   cadence   RecurrenceCadence @default(MONTHLY)
   nextDueAt DateTime?
-  status    String @default("ACTIVE")
+  status    String            @default("ACTIVE")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5787,17 +5810,17 @@ model FinancialSubscription {
 }
 
 model BillItem {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name      String
-  amount    Decimal @db.Decimal(12, 2)
-  currency  String @default("AUD")
-  dueDate   DateTime
-  cadence   RecurrenceCadence?
-  status    String @default("DUE")
-  isPaid    Boolean @default(false)
+  name     String
+  amount   Decimal            @db.Decimal(12, 2)
+  currency String             @default("AUD")
+  dueDate  DateTime
+  cadence  RecurrenceCadence?
+  status   String             @default("DUE")
+  isPaid   Boolean            @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5806,20 +5829,20 @@ model BillItem {
 }
 
 model DebtAccount {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type      DebtType @default(OTHER)
-  lender    String
-  balance   Decimal @db.Decimal(12, 2)
-  interestRate Decimal? @db.Decimal(5, 2)
-  minimumPayment Decimal? @db.Decimal(12, 2)
-  dueDay    Int?
-  strategy  DebtStrategy @default(CUSTOM)
-  currency  String @default("AUD")
+  type           DebtType     @default(OTHER)
+  lender         String
+  balance        Decimal      @db.Decimal(12, 2)
+  interestRate   Decimal?     @db.Decimal(5, 2)
+  minimumPayment Decimal?     @db.Decimal(12, 2)
+  dueDay         Int?
+  strategy       DebtStrategy @default(CUSTOM)
+  currency       String       @default("AUD")
 
-  payments  DebtPayment[]
+  payments DebtPayment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -5828,16 +5851,16 @@ model DebtAccount {
 }
 
 model DebtPayment {
-  id        String   @id @default(cuid())
-  debtId    String
-  debt      DebtAccount @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  id     String      @id @default(cuid())
+  debtId String
+  debt   DebtAccount @relation(fields: [debtId], references: [id], onDelete: Cascade)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  amount    Decimal @db.Decimal(12, 2)
-  currency  String @default("AUD")
-  paidAt    DateTime @default(now())
+  amount   Decimal  @db.Decimal(12, 2)
+  currency String   @default("AUD")
+  paidAt   DateTime @default(now())
 
   createdAt DateTime @default(now())
 
@@ -5846,12 +5869,12 @@ model DebtPayment {
 }
 
 model BankConnection {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  provider  BankProvider @default(PLAID)
-  status    String @default("CONNECTED")
+  provider     BankProvider @default(PLAID)
+  status       String       @default("CONNECTED")
   lastSyncedAt DateTime?
   errorMessage String?
 
@@ -5862,30 +5885,30 @@ model BankConnection {
 }
 
 model GrantProgram {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   provider    String
   description String?
   amountMin   Decimal?
   amountMax   Decimal?
   deadline    DateTime?
-  
-  isActive    Boolean  @default(true)
-  
+
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   applications GrantApplication[]
 }
 
 model GrantApplication {
-  id        String   @id @default(cuid())
-  grantId   String
-  grant     GrantProgram @relation(fields: [grantId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  status    String   @default("DRAFT")
+  id      String       @id @default(cuid())
+  grantId String
+  grant   GrantProgram @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status         String  @default("DRAFT")
   submissionData String?
 
   createdAt DateTime @default(now())
@@ -5893,28 +5916,28 @@ model GrantApplication {
 }
 
 model Scholarship {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   provider    String
   description String
   value       String
   deadline    DateTime?
-  
+
   applications ScholarshipApplication[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ScholarshipApplication {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   scholarshipId String
   scholarship   Scholarship @relation(fields: [scholarshipId], references: [id], onDelete: Cascade)
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  status        String   @default("SUBMITTED")
-  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status String @default("SUBMITTED")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -5925,14 +5948,14 @@ model ScholarshipApplication {
 // ==========================================
 
 model ProcurementAgency {
-  id          String   @id @default(cuid())
-  name        String
-  level       String   @default("FEDERAL") // FEDERAL, STATE, LOCAL
-  website     String?
-  description String?
+  id           String   @id @default(cuid())
+  name         String
+  level        String   @default("FEDERAL") // FEDERAL, STATE, LOCAL
+  website      String?
+  description  String?
   contactEmail String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   opportunities ProcurementOpportunity[]
 
@@ -5940,24 +5963,24 @@ model ProcurementAgency {
 }
 
 model ProcurementOpportunity {
-  id            String   @id @default(cuid())
-  title         String
-  description   String?
-  agencyId      String
-  agency        ProcurementAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  category      String? // ICT, Construction, Services, etc.
-  location      String?
-  valueMin      Decimal?
-  valueMax      Decimal?
-  deadline      DateTime?
-  status        String   @default("OPEN") // OPEN, CLOSED, ARCHIVED
-  tags          String[]
-  indigenousTargets String?
-  supplyNationRequired Boolean @default(false)
-  createdById   String?
-  createdBy     User?    @relation(fields: [createdById], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                   String            @id @default(cuid())
+  title                String
+  description          String?
+  agencyId             String
+  agency               ProcurementAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  category             String? // ICT, Construction, Services, etc.
+  location             String?
+  valueMin             Decimal?
+  valueMax             Decimal?
+  deadline             DateTime?
+  status               String            @default("OPEN") // OPEN, CLOSED, ARCHIVED
+  tags                 String[]
+  indigenousTargets    String?
+  supplyNationRequired Boolean           @default(false)
+  createdById          String?
+  createdBy            User?             @relation(fields: [createdById], references: [id])
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   documentRequirements ProcurementDocumentRequirement[]
   bids                 ProcurementBid[]
@@ -5968,68 +5991,68 @@ model ProcurementOpportunity {
 }
 
 model ProcurementDocumentRequirement {
-  id            String   @id @default(cuid())
+  id            String                 @id @default(cuid())
   opportunityId String
   opportunity   ProcurementOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
   title         String
   description   String?
-  required      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  required      Boolean                @default(true)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
 
   @@index([opportunityId])
 }
 
 model ProcurementBid {
-  id            String   @id @default(cuid())
+  id            String                 @id @default(cuid())
   opportunityId String
   opportunity   ProcurementOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status        String   @default("DRAFT") // DRAFT, SUBMITTED, UNDER_REVIEW, WON, LOST
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status        String                 @default("DRAFT") // DRAFT, SUBMITTED, UNDER_REVIEW, WON, LOST
   proposalUrl   String?
   notes         String?
   submittedAt   DateTime?
-  partners      String?  // JSON array of partner orgs
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  partners      String? // JSON array of partner orgs
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
 
   @@index([userId])
   @@index([opportunityId])
 }
 
 model ProcurementAlert {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  keywords  String?
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keywords   String?
   categories String[]
-  locations String[]
-  minValue  Decimal?
-  maxValue  Decimal?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  locations  String[]
+  minValue   Decimal?
+  maxValue   Decimal?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([userId])
 }
 
 model CivicOpportunity {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  type        String   @default("VOLUNTEER") // VOLUNTEER, COMMITTEE, CONSULTATION, MEETING
+  id           String    @id @default(cuid())
+  title        String
+  description  String?
+  type         String    @default("VOLUNTEER") // VOLUNTEER, COMMITTEE, CONSULTATION, MEETING
   organization String?
-  location    String?
-  startDate   DateTime?
-  endDate     DateTime?
-  deadline    DateTime?
-  isActive    Boolean  @default(true)
-  tags        String[]
-  createdById String?
-  createdBy   User?    @relation(fields: [createdById], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  location     String?
+  startDate    DateTime?
+  endDate      DateTime?
+  deadline     DateTime?
+  isActive     Boolean   @default(true)
+  tags         String[]
+  createdById  String?
+  createdBy    User?     @relation(fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   submissions CivicSubmission[]
 
@@ -6039,17 +6062,17 @@ model CivicOpportunity {
 }
 
 model CivicSubmission {
-  id            String   @id @default(cuid())
+  id            String           @id @default(cuid())
   opportunityId String
   opportunity   CivicOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type          String   @default("SUBMISSION") // SUBMISSION, FEEDBACK
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          String           @default("SUBMISSION") // SUBMISSION, FEEDBACK
   content       String?
-  status        String   @default("SUBMITTED")
-  submittedAt   DateTime @default(now())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  status        String           @default("SUBMITTED")
+  submittedAt   DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   @@index([userId])
   @@index([opportunityId])
@@ -6069,14 +6092,14 @@ model CivicAlert {
 }
 
 model CivicPetition {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  url         String?
-  isActive    Boolean  @default(true)
-  signatureCount Int  @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  url            String?
+  isActive       Boolean  @default(true)
+  signatureCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   signatures CivicPetitionSignature[]
 
@@ -6084,65 +6107,65 @@ model CivicPetition {
 }
 
 model CivicPetitionSignature {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   petitionId String
   petition   CivicPetition @relation(fields: [petitionId], references: [id], onDelete: Cascade)
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
 
   @@unique([petitionId, userId])
   @@index([userId])
 }
 
 model LegalDocument {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  title     String
-  type      String
-  content   String?
-  fileUrl   String?
-  status    String   @default("DRAFT")
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title   String
+  type    String
+  content String?
+  fileUrl String?
+  status  String  @default("DRAFT")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model TafeProgram {
-  id          String   @id @default(cuid())
-  code        String   @unique
+  id          String  @id @default(cuid())
+  code        String  @unique
   name        String
   description String?
-  provider    String   @default("TAFE NSW")
+  provider    String  @default("TAFE NSW")
   location    String?
-  
-  courses     TafeCourse[]
-  
+
+  courses TafeCourse[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model TafeCourse {
-  id          String   @id @default(cuid())
-  programId   String
-  program     TafeProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
-  
-  name        String
-  code        String?
-  
+  id        String      @id @default(cuid())
+  programId String
+  program   TafeProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  name String
+  code String?
+
   createdAt DateTime @default(now())
 }
 
 model WellbeingProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   goals     String[]
   interests String[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -6154,66 +6177,66 @@ model WellbeingProfile {
 
 /// Phase 9 Step 801: Short video (Pulse) data model
 model ShortVideo {
-  id          String   @id @default(cuid())
-  authorId    String
-  author      User     @relation("ShortVideoAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  
+  id       String @id @default(cuid())
+  authorId String
+  author   User   @relation("ShortVideoAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
   // Video content
-  videoUrl    String   // Processed video URL
+  videoUrl     String // Processed video URL
   thumbnailUrl String?
-  originalUrl String?  // Original upload URL
-  duration    Int      // Duration in seconds (max 60)
-  
+  originalUrl  String? // Original upload URL
+  duration     Int // Duration in seconds (max 60)
+
   // Metadata
-  caption     String?  @db.VarChar(500)
-  hashtags    String[] // Extracted hashtags
-  mentions    String[] // @mentioned usernames
-  
+  caption  String?  @db.VarChar(500)
+  hashtags String[] // Extracted hashtags
+  mentions String[] // @mentioned usernames
+
   // Audio/Music
-  audioId     String?
-  audio       PulseAudio? @relation(fields: [audioId], references: [id])
-  audioStartTime Int?   // Start time in seconds
-  
+  audioId        String?
+  audio          PulseAudio? @relation(fields: [audioId], references: [id])
+  audioStartTime Int? // Start time in seconds
+
   // Features
-  visibility  String   @default("public") // public, followers, private
-  allowDuet   Boolean  @default(true)
-  allowStitch Boolean  @default(true)
+  visibility    String  @default("public") // public, followers, private
+  allowDuet     Boolean @default(true)
+  allowStitch   Boolean @default(true)
   allowComments Boolean @default(true)
-  
+
   // Duet/Stitch references
-  duetSourceId   String?
-  duetSource     ShortVideo? @relation("VideoDuets", fields: [duetSourceId], references: [id])
-  duets          ShortVideo[] @relation("VideoDuets")
-  
+  duetSourceId String?
+  duetSource   ShortVideo?  @relation("VideoDuets", fields: [duetSourceId], references: [id])
+  duets        ShortVideo[] @relation("VideoDuets")
+
   stitchSourceId String?
-  stitchSource   ShortVideo? @relation("VideoStitches", fields: [stitchSourceId], references: [id])
+  stitchSource   ShortVideo?  @relation("VideoStitches", fields: [stitchSourceId], references: [id])
   stitches       ShortVideo[] @relation("VideoStitches")
-  
+
   // Engagement metrics
-  viewCount     Int      @default(0)
-  likeCount     Int      @default(0)
-  commentCount  Int      @default(0)
-  shareCount    Int      @default(0)
-  saveCount     Int      @default(0)
-  
+  viewCount    Int @default(0)
+  likeCount    Int @default(0)
+  commentCount Int @default(0)
+  shareCount   Int @default(0)
+  saveCount    Int @default(0)
+
   // Processing status
-  status      String   @default("processing") // processing, ready, failed
-  
+  status String @default("processing") // processing, ready, failed
+
   // Moderation
-  isActive    Boolean  @default(true)
-  isSpam      Boolean  @default(false)
-  isFeatured  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  isActive   Boolean @default(true)
+  isSpam     Boolean @default(false)
+  isFeatured Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  likes       ShortVideoLike[]
-  comments    ShortVideoComment[]
-  saves       ShortVideoSave[]
-  views       ShortVideoView[]
-  challenges  ChallengeEntry[]
-  
+  likes      ShortVideoLike[]
+  comments   ShortVideoComment[]
+  saves      ShortVideoSave[]
+  views      ShortVideoView[]
+  challenges ChallengeEntry[]
+
   @@index([authorId, createdAt])
   @@index([status, visibility])
   @@index([likeCount])
@@ -6222,199 +6245,306 @@ model ShortVideo {
 
 /// Phase 9 Step 806: Audio/music tracks for short videos
 model PulseAudio {
-  id          String   @id @default(cuid())
-  title       String
-  artistName  String
-  audioUrl    String
-  duration    Int      // Duration in seconds
-  coverUrl    String?
-  
+  id         String  @id @default(cuid())
+  title      String
+  artistName String
+  audioUrl   String
+  duration   Int // Duration in seconds
+  coverUrl   String?
+
   // Licensing
-  isOriginal  Boolean  @default(false)
-  uploaderId  String?
-  
+  isOriginal Boolean @default(false)
+  uploaderId String?
+
   // Usage stats
-  useCount    Int      @default(0)
-  
-  isActive    Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  
-  videos      ShortVideo[]
-  
+  useCount Int @default(0)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  videos ShortVideo[]
+
   @@index([title])
   @@index([useCount])
 }
 
 /// Short video likes
 model ShortVideoLike {
-  id        String   @id @default(cuid())
-  videoId   String
-  video     ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  userId    String
-  
+  id      String     @id @default(cuid())
+  videoId String
+  video   ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userId  String
+
   createdAt DateTime @default(now())
-  
+
   @@unique([videoId, userId])
   @@index([userId])
 }
 
 /// Short video comments
 model ShortVideoComment {
-  id        String   @id @default(cuid())
-  videoId   String
-  video     ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  authorId  String
-  
-  content   String   @db.VarChar(500)
-  
+  id       String     @id @default(cuid())
+  videoId  String
+  video    ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  authorId String
+
+  content String @db.VarChar(500)
+
   // Reply support
-  parentId  String?
-  parent    ShortVideoComment? @relation("CommentReplies", fields: [parentId], references: [id])
-  replies   ShortVideoComment[] @relation("CommentReplies")
-  
-  likeCount Int      @default(0)
-  
-  isActive  Boolean  @default(true)
-  
+  parentId String?
+  parent   ShortVideoComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  ShortVideoComment[] @relation("CommentReplies")
+
+  likeCount Int @default(0)
+
+  isActive Boolean @default(true)
+
   createdAt DateTime @default(now())
-  
+
   @@index([videoId, createdAt])
   @@index([authorId])
 }
 
 /// Short video saves/bookmarks
 model ShortVideoSave {
-  id        String   @id @default(cuid())
-  videoId   String
-  video     ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  userId    String
-  
+  id      String     @id @default(cuid())
+  videoId String
+  video   ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userId  String
+
   createdAt DateTime @default(now())
-  
+
   @@unique([videoId, userId])
   @@index([userId])
 }
 
 /// Short video views for analytics
 model ShortVideoView {
-  id        String   @id @default(cuid())
-  videoId   String
-  video     ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  userId    String?  // Null for anonymous views
-  
-  watchTime Int      // Seconds watched
-  completed Boolean  @default(false) // Watched to end
-  
+  id      String     @id @default(cuid())
+  videoId String
+  video   ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userId  String? // Null for anonymous views
+
+  watchTime Int // Seconds watched
+  completed Boolean @default(false) // Watched to end
+
   createdAt DateTime @default(now())
-  
+
   @@index([videoId, createdAt])
   @@index([userId])
 }
 
 /// Phase 9 Step 822: Challenges/trends
 model PulseChallenge {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  hashtag     String   @unique // #challengeName
+  hashtag     String  @unique // #challengeName
   description String?
-  
+
   // Challenge media
   bannerUrl   String?
-  demoVideoId String?  // Example video
-  
+  demoVideoId String? // Example video
+
   // Rules
-  rules       String?
-  audioId     String?  // Required audio (if any)
-  
+  rules   String?
+  audioId String? // Required audio (if any)
+
   // Timing
-  startDate   DateTime
-  endDate     DateTime?
-  
+  startDate DateTime
+  endDate   DateTime?
+
   // Stats
   participantCount Int @default(0)
-  viewCount   Int      @default(0)
-  
+  viewCount        Int @default(0)
+
   // Sponsorship
-  sponsorId   String?
+  sponsorId        String?
   prizeDescription String?
-  
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  
-  entries     ChallengeEntry[]
-  
+
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  entries ChallengeEntry[]
+
   @@index([hashtag])
   @@index([startDate, endDate])
 }
 
 /// Challenge participation entries
 model ChallengeEntry {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   challengeId String
   challenge   PulseChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   videoId     String
-  video       ShortVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video       ShortVideo     @relation(fields: [videoId], references: [id], onDelete: Cascade)
   userId      String
-  
-  rank        Int?     // Final rank if competition
-  isWinner    Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  
+
+  rank     Int? // Final rank if competition
+  isWinner Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
   @@unique([challengeId, videoId])
   @@index([userId])
 }
 
 /// Phase 9 Step 823: Creator analytics
 model CreatorAnalytics {
-  id          String   @id @default(cuid())
-  userId      String
-  date        DateTime @db.Date
-  
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
   // Daily metrics
-  views       Int      @default(0)
-  likes       Int      @default(0)
-  comments    Int      @default(0)
-  shares      Int      @default(0)
-  followers   Int      @default(0)
-  profileViews Int     @default(0)
-  
+  views        Int @default(0)
+  likes        Int @default(0)
+  comments     Int @default(0)
+  shares       Int @default(0)
+  followers    Int @default(0)
+  profileViews Int @default(0)
+
   // Engagement rate
   engagementRate Float?
-  
-  createdAt   DateTime @default(now())
-  
+
+  createdAt DateTime @default(now())
+
   @@unique([userId, date])
   @@index([userId])
 }
 
 /// Phase 9 Step 824-825: Creator monetization
 model CreatorFund {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  
+  id     String @id @default(cuid())
+  userId String @unique
+
   // Eligibility
-  isEligible  Boolean  @default(false)
-  appliedAt   DateTime?
-  approvedAt  DateTime?
-  
+  isEligible Boolean   @default(false)
+  appliedAt  DateTime?
+  approvedAt DateTime?
+
   // Earnings
-  totalEarnings Int    @default(0) // In cents
-  pendingPayout Int    @default(0)
-  lastPayoutAt DateTime?
-  
+  totalEarnings Int       @default(0) // In cents
+  pendingPayout Int       @default(0)
+  lastPayoutAt  DateTime?
+
   // Performance metrics
-  lifetimeViews Int    @default(0)
+  lifetimeViews     Int @default(0)
   lifetimeFollowers Int @default(0)
-  
+
   // Payout info
-  payoutMethod String?
+  payoutMethod  String?
   payoutDetails String? // Encrypted
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+// ------------------------------------------
+// New Models: Media, Property, Business, Ratings, Panic & Emergency
+// ------------------------------------------
+
+model Media {
+  id           String   @id @default(cuid())
+  url          String
+  type         String // IMAGE | VIDEO
+  thumbnailUrl String?
+  width        Int?
+  height       Int?
+  duration     Int? // for video (ms)
+  blurb        String?
+  uploadedBy   String?
+  uploadedAt   DateTime @default(now())
+  public       Boolean  @default(false)
+  moderation   String? // pending | approved | rejected
+
+  // relations
+  business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
+  property   Property? @relation(fields: [propertyId], references: [id])
+  propertyId String?
+  user       User?     @relation("UserProfileMedia", fields: [userId], references: [id])
+  userId     String?
+
+  @@index([uploadedAt])
+}
+
+model Property {
+  id             String   @id @default(cuid())
+  ownerId        String
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  address        String?
+  postcode       String?
+  city           String?
+  country        String?
+  isSafeHousing  Boolean? @default(false)
+  culturallySafe Boolean? @default(false)
+  media          Media[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([ownerId])
+}
+
+model Business {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  website     String?
+  category    String?
+  address     String?
+  contacts    Json?
+  media       Media[]
+  ratings     WorkplaceRating[]
+  createdAt   DateTime          @default(now())
+
+  @@index([name])
+}
+
+model WorkplaceRating {
+  id                       String   @id @default(cuid())
+  businessId               String
+  userId                   String
+  safetyScore              Int? // 0-5
+  genderEquityScore        Int?
+  accessibilityScore       Int?
+  indigenousInclusionScore Int?
+  summary                  String?
+  createdAt                DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model EmergencyContact {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  method      String // SMS | EMAIL | PUSH
+  destination String
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PanicEvent {
+  id               String    @id @default(cuid())
+  userId           String
+  triggeredAt      DateTime  @default(now())
+  location         Json? // optional geohint (user opt-in)
+  notifiedTo       Json? // list of contacts notified
+  shortMessage     String? // intentionally vague
+  retentionUntil   DateTime?
+  encryptedPayload String? // optional encrypted details
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, triggeredAt])
+}

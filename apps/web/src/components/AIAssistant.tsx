@@ -6,15 +6,44 @@ import { useAuth } from '@/hooks/useAuth';
 
 const KangarooLogo = () => (
   <svg
-    width="28"
-    height="28"
-    viewBox="0 0 32 32"
+    width="32"
+    height="32"
+    viewBox="0 0 48 48"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    aria-hidden
+    aria-hidden="true"
+    className="drop-shadow-md"
   >
-    <circle cx="16" cy="16" r="16" fill="#F59E0B" />
-    <path d="M10 20c2-4 6-7 10-7 2 0 3 2 2 4-1 2-4 3-6 3l-2 4-4-4z" fill="#fff" />
+    {/* Background circle with gradient */}
+    <defs>
+      <linearGradient id="kangaroo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+    </defs>
+    <circle cx="24" cy="24" r="23" fill="url(#kangaroo-bg)" stroke="#fff" strokeWidth="2" />
+    {/* Kangaroo silhouette */}
+    <g fill="#fff">
+      {/* Body */}
+      <ellipse cx="26" cy="28" rx="8" ry="10" />
+      {/* Head */}
+      <circle cx="30" cy="16" r="6" />
+      {/* Ears */}
+      <ellipse cx="27" cy="11" rx="2" ry="4" transform="rotate(-15 27 11)" />
+      <ellipse cx="33" cy="11" rx="2" ry="4" transform="rotate(15 33 11)" />
+      {/* Snout */}
+      <ellipse cx="34" cy="17" rx="3" ry="2" />
+      {/* Eye */}
+      <circle cx="29" cy="15" r="1.5" fill="#F59E0B" />
+      {/* Tail */}
+      <path d="M18 32 Q12 30 10 24 Q9 22 11 22 Q14 24 18 28 Z" />
+      {/* Front leg */}
+      <ellipse cx="28" cy="36" rx="2" ry="4" />
+      {/* Back leg */}
+      <ellipse cx="22" cy="36" rx="3" ry="5" />
+      {/* Baby joey pouch hint */}
+      <ellipse cx="28" cy="26" rx="3" ry="4" fill="#F59E0B" opacity="0.3" />
+    </g>
   </svg>
 );
 

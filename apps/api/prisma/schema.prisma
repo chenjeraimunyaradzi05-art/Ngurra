@@ -6498,8 +6498,8 @@ model Business {
   category    String?
   address     String?
   contacts    Json?
-  ownerId     String?
-  owner       User?             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User              @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   media       Media[]
   ratings     WorkplaceRating[]
   createdAt   DateTime          @default(now())

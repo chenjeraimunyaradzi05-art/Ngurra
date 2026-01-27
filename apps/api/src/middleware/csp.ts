@@ -39,6 +39,8 @@ const defaultDirectives = {
     "'self'",
     "https://api.ngurrapathways.com.au",
     "wss://api.ngurrapathways.com.au",
+    "https://api.ngurrapathways.life",
+    "wss://api.ngurrapathways.life",
     "https://*.sentry.io",
     "https://www.google-analytics.com",
     "https://api.stripe.com",

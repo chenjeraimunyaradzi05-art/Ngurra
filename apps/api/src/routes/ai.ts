@@ -1,12 +1,29 @@
 // @ts-nocheck
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../db';
 import { askAI } from '../lib/ai';
 import { buildRAGContext, formatRAGContextForPrompt } from '../lib/rag';
-import authenticateJWT from '../middleware/auth';
+import authenticateJWT, { optionalAuth } from '../middleware/auth';
 import { moderateText } from '../lib/contentModeration';
 
 const router = express.Router();
+
+// Rate limiter for AI endpoints to prevent abuse (stricter than general API)
+const aiRateLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute window
+    max: 10, // 10 requests per minute for AI endpoints
+    message: { error: 'Too many AI requests, please try again later' },
+    keyGenerator: (req) => req.user?.id || req.ip || 'anonymous',
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// Apply rate limiting to all AI routes
+router.use(aiRateLimiter);
+
+// Most AI endpoints require authentication to prevent abuse
+// Some public endpoints use optionalAuth for anonymous users with stricter limits
 
 function normalizeText(value: any) {
     return String(value || '')
@@ -37,10 +54,11 @@ function extractKeywords(text: string, limit = 25) {
 }
 
 // AI endpoints use askAI helper (provider integration, caching, rate-limiting and safety)
-// POST /ai/concierge - RAG-enhanced AI concierge with user context
-router.post('/concierge', async (req, res) => {
+// POST /ai/concierge - RAG-enhanced AI concierge with user context (requires auth)
+router.post('/concierge', authenticateJWT, async (req, res) => {
     try {
-        const { userId, context } = req.body || {};
+        const userId = req.user?.id;
+        const { context } = req.body || {};
         
         // Build RAG context with user data, jobs, courses, and community resources
         const ragContext = await buildRAGContext(userId, context || 'General dashboard visit');
@@ -193,8 +211,8 @@ Format each suggestion on a new line starting with a number.`;
     }
 });
 
-// POST /ai/match-explanation - explain why a candidate matches a job
-router.post('/match-explanation', async (req, res) => {
+// POST /ai/match-explanation - explain why a candidate matches a job (requires auth)
+router.post('/match-explanation', authenticateJWT, async (req, res) => {
     try {
         const { jobId, candidateId, matchScore } = req.body;
         if (!jobId || !candidateId)
@@ -230,12 +248,13 @@ router.post('/match-explanation', async (req, res) => {
     }
 });
 
-// POST /ai/resume-optimize - suggest improvements for a resume/profile
-router.post('/resume-optimize', async (req, res) => {
+// POST /ai/resume-optimize - suggest improvements for a resume/profile (requires auth)
+router.post('/resume-optimize', authenticateJWT, async (req, res) => {
     try {
-        const { userId, targetJobId } = req.body;
+        const userId = req.user?.id;
+        const { targetJobId } = req.body;
         if (!userId)
-            return void res.status(400).json({ error: 'Missing userId' });
+            return void res.status(400).json({ error: 'Authentication required' });
         const profile = await prisma.memberProfile.findUnique({
             where: { userId },
             include: { user: { include: { userSkills: { include: { skill: true } } } } },
@@ -271,10 +290,11 @@ router.post('/resume-optimize', async (req, res) => {
     }
 });
 
-// POST /ai/job-description - generate or improve a job description
-router.post('/job-description', async (req, res) => {
+// POST /ai/job-description - generate or improve a job description (requires auth)
+router.post('/job-description', authenticateJWT, async (req, res) => {
     try {
-        const { title, skills, industry, existingDescription, userId } = req.body;
+        const userId = req.user?.id;
+        const { title, skills, industry, existingDescription } = req.body;
         if (!title)
             return void res.status(400).json({ error: 'Missing job title' });
         const prompt = existingDescription
@@ -309,8 +329,8 @@ router.post('/job-description', async (req, res) => {
     }
 });
 
-// POST /ai/extract-skills - extract skills from text (resume/job desc)
-router.post('/extract-skills', async (req, res) => {
+// POST /ai/extract-skills - extract skills from text (resume/job desc) (requires auth)
+router.post('/extract-skills', authenticateJWT, async (req, res) => {
     try {
         const { text } = req.body;
         if (!text)
@@ -345,10 +365,11 @@ router.post('/extract-skills', async (req, res) => {
     }
 });
 
-// POST /ai/wellness - simple wellness check and suggested resources
-router.post('/wellness', async (req, res) => {
+// POST /ai/wellness - simple wellness check and suggested resources (requires auth)
+router.post('/wellness', authenticateJWT, async (req, res) => {
     try {
-        const { userId, area } = req.body || {};
+        const userId = req.user?.id;
+        const { area } = req.body || {};
         // Build prompt for AI server
         const areaLabel = area || 'general wellness';
         const prompt = `You are a culturally-safe wellness coach for Aboriginal and Torres Strait Islander community members. Provide 3-5 practical, supportive wellness tips for: ${areaLabel}. Always include crisis resources if discussing mental health or suicide. Keep advice culturally appropriate and non-judgmental.`;
@@ -448,10 +469,11 @@ router.post('/wellness', async (req, res) => {
     }
 });
 
-// POST /ai/resume-enhancer - improve a resume against a target role/description
-router.post('/resume-enhancer', async (req, res) => {
+// POST /ai/resume-enhancer - improve a resume against a target role/description (requires auth)
+router.post('/resume-enhancer', authenticateJWT, async (req, res) => {
     try {
-        const { userId, resumeText, targetJobTitle, jobDescription } = req.body || {};
+        const userId = req.user?.id;
+        const { resumeText, targetJobTitle, jobDescription } = req.body || {};
         const resume = String(resumeText || '').trim();
         const jobTitle = String(targetJobTitle || '').trim();
         const jd = String(jobDescription || '').trim();
@@ -509,10 +531,11 @@ router.post('/resume-enhancer', async (req, res) => {
     }
 });
 
-// POST /ai/interview-prep - generate interview questions and feedback on an answer
-router.post('/interview-prep', async (req, res) => {
+// POST /ai/interview-prep - generate interview questions and feedback on an answer (requires auth)
+router.post('/interview-prep', authenticateJWT, async (req, res) => {
     try {
-        const { userId, jobTitle, jobDescription, question, answer } = req.body || {};
+        const userId = req.user?.id;
+        const { jobTitle, jobDescription, question, answer } = req.body || {};
 
         const title = String(jobTitle || '').trim();
         const jd = String(jobDescription || '').trim();

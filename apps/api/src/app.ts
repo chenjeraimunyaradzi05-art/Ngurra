@@ -146,7 +146,7 @@ export function createApp() {
       trustProxyValue === 'false' ? false : 
       /^\d+$/.test(trustProxyValue) ? parseInt(trustProxyValue, 10) : trustProxyValue);
 
-    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,https://ngurrapathways.com.au,https://www.ngurrapathways.com.au').split(',').map((s) => s.trim()).filter(Boolean);
+    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,https://ngurrapathways.com.au,https://www.ngurrapathways.com.au,https://ngurrapathways.life,https://www.ngurrapathways.life').split(',').map((s) => s.trim()).filter(Boolean);
     const nodeEnv = String(process.env.NODE_ENV || 'development').toLowerCase();
     const sesTestCapture = String(process.env.SES_TEST_CAPTURE || '').toLowerCase();
 

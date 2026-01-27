@@ -1,6 +1,6 @@
 [build]
   base      = "."
-  command   = "npm install && npm --prefix apps/web run build"
+  command   = "npm ci && npm --prefix apps/web ci && npm --prefix apps/web run build"
   publish   = "apps/web/.next"
   functions = "netlify/functions"
 
@@ -17,7 +17,7 @@
 # =============================================================================
 [context.production]
   base    = "."
-  command = "npm install && npm --prefix apps/web run build"
+  command = "npm ci && npm --prefix apps/web ci && npm --prefix apps/web run build"
 
 [context.production.environment]
   NEXT_PUBLIC_API_URL = "https://ngurra-web-production.up.railway.app"
@@ -30,7 +30,7 @@
 # =============================================================================
 [context.staging]
   base    = "."
-  command = "npm install && npm --prefix apps/web run build"
+  command = "npm ci && npm --prefix apps/web ci && npm --prefix apps/web run build"
 
 [context.staging.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
@@ -43,7 +43,7 @@
 # =============================================================================
 [context.deploy-preview]
   base    = "."
-  command = "npm install && npm --prefix apps/web run build"
+  command = "npm ci && npm --prefix apps/web ci && npm --prefix apps/web run build"
 
 [context.deploy-preview.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
@@ -56,7 +56,7 @@
 # =============================================================================
 [context.branch-deploy]
   base    = "."
-  command = "npm install && npm --prefix apps/web run build"
+  command = "npm ci && npm --prefix apps/web ci && npm --prefix apps/web run build"
 
 [context.branch-deploy.environment]
   NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"

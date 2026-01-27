@@ -11,7 +11,7 @@ const CookieConsent = dynamic(() => import('../components/CookieConsent'));
 const ConnectionBannerWrapper = dynamic(() => import('../components/ConnectionBannerWrapper'));
 import { SkipLinks } from '../components/ui/SkipLinks';
 import type { ReactNode } from 'react';
-const AIAssistant = dynamic(() => import('../components/AIAssistant'));
+const AIAssistant = dynamic(() => import('../components/AIAssistant'), { ssr: false });
 
 import Script from 'next/script';
 import { Metadata, Viewport } from 'next';

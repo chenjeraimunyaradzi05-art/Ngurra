@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import { API_BASE } from '@/lib/apiBase';
 import { useAuth } from '@/hooks/useAuth';
@@ -108,10 +110,12 @@ export default function AIAssistant() {
         if (!res.ok) throw new Error('AI service error');
         const d = await res.json();
         if (d && d.assistantMessage) {
-          const text = d.assistantMessage.content || d.assistantMessage.text || 'No response';
+          // Handle safety-filtered responses differently
+          const isSafetyFiltered = d.source === 'safety';
+          const text = isSafetyFiltered
+            ? (d.assistantMessage.content || 'Content removed due to safety.')
+            : (d.assistantMessage.content || d.assistantMessage.text || 'No response');
           setMessages((prev) => [...prev, { role: 'ai', text }]);
-        } else if (d && d.source === 'safety' && d.assistantMessage) {
-          setMessages((prev) => [...prev, { role: 'ai', text: d.assistantMessage.content || 'Content removed due to safety.' }]);
         } else {
           setMessages((prev) => [...prev, { role: 'ai', text: "Sorry, I couldn't find anything. Try rephrasing." }]);
         }

@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 'use client';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
-type BreadcrumbNode = string | number | boolean | null | undefined | JSX.Element | BreadcrumbNode[];
+type BreadcrumbNode = ReactNode;
 
 interface BreadcrumbItem {
   label: string;

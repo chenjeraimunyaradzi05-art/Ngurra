@@ -11,15 +11,32 @@ import {
   MapPin,
   Award,
   ArrowRight,
-  Loader2,
+  Calendar,
+  Clock,
+  Video,
+  CheckCircle2,
+  Sparkles,
+  TrendingUp,
+  Filter,
+  X,
 } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-// Theme colors
-const accentPink = '#E91E8C';
-const accentPurple = '#8B5CF6';
+// Platform theme colors - consistent with globals.css
+const colors = {
+  primary: '#21808D', // teal-500
+  primaryHover: '#1D7480', // teal-600
+  primaryLight: 'rgba(33, 128, 141, 0.08)',
+  gold: '#D4AF37',
+  goldLight: 'rgba(212, 175, 55, 0.1)',
+  emerald: '#10B981',
+  amber: '#F59E0B',
+  slate: '#64748B',
+  text: '#13343B', // slate-900
+  textSecondary: '#626C71', // slate-500
+};
 
 // Helper to check if URL is a Cloudinary public ID
 function isCloudinaryPublicId(url) {
@@ -27,16 +44,16 @@ function isCloudinaryPublicId(url) {
   return !url.startsWith('http') && !url.startsWith('/');
 }
 
-// Categories
+// Categories with platform-aligned styling
 const categories = [
-  { id: 'all', label: 'All Mentors', icon: '🌟' },
-  { id: 'Technology', label: 'Technology', icon: '💻' },
-  { id: 'Business', label: 'Business', icon: '💼' },
-  { id: 'Healthcare', label: 'Healthcare', icon: '🏥' },
-  { id: 'Education', label: 'Education', icon: '🎓' },
-  { id: 'Trades', label: 'Trades', icon: '🔧' },
-  { id: 'Creative', label: 'Creative', icon: '🎨' },
-  { id: 'Government', label: 'Government', icon: '🏛️' },
+  { id: 'all', label: 'All Mentors', icon: '✨', color: colors.primary },
+  { id: 'Technology', label: 'Technology', icon: '💻', color: '#6366F1' },
+  { id: 'Business', label: 'Business', icon: '💼', color: '#8B5CF6' },
+  { id: 'Healthcare', label: 'Healthcare', icon: '🏥', color: '#EC4899' },
+  { id: 'Education', label: 'Education', icon: '🎓', color: '#F59E0B' },
+  { id: 'Trades', label: 'Trades', icon: '🔧', color: '#EF4444' },
+  { id: 'Creative', label: 'Creative', icon: '🎨', color: '#14B8A6' },
+  { id: 'Government', label: 'Government', icon: '🏛️', color: '#6B7280' },
 ];
 
 // Seed mentors
@@ -150,23 +167,32 @@ const upcomingCircles = [
   {
     id: '1',
     title: 'Breaking into Tech',
-    mentor: 'Sarah Mitchell',
-    date: 'This Thursday, 5pm',
+    mentor: 'James Kamilaroi',
+    mentorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop',
+    date: 'Thu, 30 Jan',
+    time: '5:00 PM AEDT',
     spots: 4,
+    total: 12,
   },
   {
     id: '2',
     title: 'Indigenous Business 101',
-    mentor: 'James Kamilaroi',
-    date: 'Next Monday, 6pm',
+    mentor: 'David Murri',
+    mentorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop',
+    date: 'Mon, 3 Feb',
+    time: '6:00 PM AEDT',
     spots: 6,
+    total: 15,
   },
   {
     id: '3',
     title: 'Healthcare Career Paths',
     mentor: 'Dr. Emily Noongar',
-    date: 'Saturday, 10am',
+    mentorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=64&h=64&fit=crop',
+    date: 'Sat, 1 Feb',
+    time: '10:00 AM AEDT',
     spots: 3,
+    total: 10,
   },
 ];
 
@@ -268,331 +294,442 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-      >
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: accentPink }} />
-          <p className="text-slate-600 font-medium">Loading mentors...</p>
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div
+              className="absolute inset-0 rounded-full animate-spin border-4 border-transparent border-t-[#21808D]"
+              style={{ animationDuration: '1s' }}
+            />
+            <div
+              className="absolute inset-2 rounded-full animate-spin border-4 border-transparent border-t-[#D4AF37]"
+              style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Users className="w-6 h-6 text-[#21808D]" />
+            </div>
+          </div>
+          <p className="text-[var(--color-text-secondary)] font-medium">Loading mentors...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-    >
+    <div className="min-h-screen bg-[var(--color-background)]">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        {/* Background decoration */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
-            className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-30"
+            className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-30"
             style={{
-              background: `radial-gradient(circle, ${accentPink}30, transparent 70%)`,
-              filter: 'blur(60px)',
+              background: `radial-gradient(circle, ${colors.primaryLight}, transparent 70%)`,
             }}
           />
           <div
-            className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full opacity-20"
-            style={{
-              background: `radial-gradient(circle, ${accentPurple}30, transparent 70%)`,
-              filter: 'blur(60px)',
-            }}
+            className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full opacity-20"
+            style={{ background: `radial-gradient(circle, ${colors.goldLight}, transparent 70%)` }}
           />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm mb-8">
-            <Link href="/" className="text-slate-500 hover:text-pink-600 transition-colors">
+          <nav className="flex items-center gap-2 text-sm mb-6" aria-label="Breadcrumb">
+            <Link
+              href="/"
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+            >
               Home
             </Link>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
-            <span className="text-pink-600 font-medium">Mentorship</span>
+            <ChevronRight className="w-4 h-4 text-[var(--color-text-secondary)]" />
+            <span className="text-[var(--color-primary)] font-medium">Mentorship</span>
           </nav>
 
           {/* Hero Content */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm mb-6 bg-pink-50 border border-pink-200">
-              <Heart className="w-4 h-4" style={{ color: accentPink }} />
-              <span className="text-pink-600 font-semibold">First Nations Mentorship Program</span>
+          <div className="max-w-4xl mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm mb-4 bg-[var(--color-secondary)] border border-[var(--color-border)]">
+              <Heart className="w-4 h-4 text-[var(--color-primary)]" />
+              <span className="text-[var(--color-text)] font-medium">
+                First Nations Mentorship Program
+              </span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
-              <span className="text-slate-900">Connect with Mentors Who </span>
-              <span style={{ color: accentPink }}>Understand Your Journey</span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--color-text)] mb-4 leading-tight">
+              Connect with Mentors Who{' '}
+              <span className="text-[var(--color-primary)]">Understand Your Journey</span>
             </h1>
 
-            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+            <p className="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl leading-relaxed">
               Get guidance from experienced First Nations professionals who share your background
               and can help you navigate your career path with cultural understanding.
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg">
-                <div className="text-3xl font-bold" style={{ color: accentPink }}>
-                  150+
+            {/* Stats Row */}
+            <div className="flex flex-wrap gap-6 mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)] flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
-                <div className="text-sm text-slate-500">Active Mentors</div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg">
-                <div className="text-3xl font-bold" style={{ color: accentPurple }}>
-                  2,500+
+                <div>
+                  <div className="text-2xl font-bold text-[var(--color-text)]">150+</div>
+                  <div className="text-sm text-[var(--color-text-secondary)]">Active Mentors</div>
                 </div>
-                <div className="text-sm text-slate-500">Sessions Completed</div>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg">
-                <div className="text-3xl font-bold text-emerald-500">4.9★</div>
-                <div className="text-sm text-slate-500">Average Rating</div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[#D4AF37] flex items-center justify-center">
+                  <Video className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--color-text)]">2,500+</div>
+                  <div className="text-sm text-[var(--color-text-secondary)]">
+                    Sessions Completed
+                  </div>
+                </div>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg">
-                <div className="text-3xl font-bold text-amber-500">85%</div>
-                <div className="text-sm text-slate-500">Career Advancement</div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--color-text)]">4.9★</div>
+                  <div className="text-sm text-[var(--color-text-secondary)]">Average Rating</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-amber-500 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[var(--color-text)]">85%</div>
+                  <div className="text-sm text-[var(--color-text-secondary)]">
+                    Career Advancement
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Search */}
-          <div className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 max-w-3xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search mentors by name, expertise, or industry..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-100 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
-              />
+            {/* Search Bar */}
+            <div className="flex gap-3 max-w-2xl">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-secondary)]" />
+                <input
+                  type="text"
+                  placeholder="Search by name, expertise, or industry..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-focus-ring)] text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] transition-all"
+                />
+              </div>
+              <button
+                onClick={() => {}}
+                className="px-4 py-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-all flex items-center gap-2"
+              >
+                <Filter className="w-5 h-5" />
+                <span className="hidden sm:inline">Filters</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Categories Bar */}
+      <section className="sticky top-0 z-20 bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-1 py-3 overflow-x-auto scrollbar-hide">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                  activeCategory === cat.id
+                    ? 'bg-[var(--color-primary)] text-white shadow-md'
+                    : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-secondary)] hover:text-[var(--color-text)]'
+                }`}
+              >
+                <span className="text-base">{cat.icon}</span>
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Sidebar */}
-          <aside className="lg:col-span-3">
-            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg sticky top-24">
-              {/* Categories */}
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">
-                Categories
-              </h3>
-              <div className="space-y-1 mb-6">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
-                      activeCategory === cat.id
-                        ? 'bg-pink-50 text-pink-600 border border-pink-200'
-                        : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span className="text-lg">{cat.icon}</span>
-                    {cat.label}
-                  </button>
-                ))}
+          <aside className="lg:col-span-3 order-2 lg:order-1">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              {/* How It Works */}
+              <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-card-border)]">
+                <h3 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[var(--color-primary)]" />
+                  How It Works
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      1
+                    </div>
+                    <div>
+                      <div className="font-semibold text-[var(--color-text)] text-sm">
+                        Find Your Mentor
+                      </div>
+                      <div className="text-xs text-[var(--color-text-secondary)]">
+                        Browse by industry & expertise
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <div className="font-semibold text-[var(--color-text)] text-sm">
+                        Book a Session
+                      </div>
+                      <div className="text-xs text-[var(--color-text-secondary)]">
+                        Schedule 45-60min video calls
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <div className="font-semibold text-[var(--color-text)] text-sm">
+                        Grow Together
+                      </div>
+                      <div className="text-xs text-[var(--color-text-secondary)]">
+                        Build lasting relationships
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Become a Mentor CTA */}
-              <div className="pt-5 border-t border-slate-100">
-                <h3 className="font-bold text-slate-900 mb-2">Share Your Experience</h3>
-                <p className="text-sm text-slate-500 mb-4">
-                  Help the next generation by becoming a mentor.
+              <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#1a6b76] rounded-2xl p-5 text-white">
+                <Heart className="w-8 h-8 mb-3 opacity-80" />
+                <h3 className="font-bold text-lg mb-2">Share Your Experience</h3>
+                <p className="text-sm opacity-90 mb-4 leading-relaxed">
+                  Help the next generation of Indigenous professionals by becoming a mentor.
                 </p>
                 <Link
                   href="/mentor/signup"
-                  className="block text-center py-3 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-                  }}
+                  className="block text-center py-2.5 rounded-xl text-sm font-bold bg-white text-[var(--color-primary)] hover:bg-white/90 transition-colors"
                 >
                   Become a Mentor
                 </Link>
+              </div>
+
+              {/* Success Story */}
+              <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-card-border)]">
+                <div className="flex items-center gap-2 mb-3">
+                  <Award className="w-5 h-5 text-[#D4AF37]" />
+                  <span className="font-bold text-[var(--color-text)]">Success Story</span>
+                </div>
+                <blockquote className="text-sm italic text-[var(--color-text-secondary)] mb-3 leading-relaxed">
+                  &quot;My mentor James helped me land my first tech job. From remote community to
+                  software engineer in 18 months!&quot;
+                </blockquote>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[#D4AF37]" />
+                  <div>
+                    <div className="text-sm font-semibold text-[var(--color-text)]">Kirra M.</div>
+                    <div className="text-xs text-[var(--color-text-secondary)]">
+                      Software Engineer
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-6">
-            {/* How It Works */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-lg mb-8">
-              <h2 className="text-xl font-bold text-slate-900 mb-6">How It Works</h2>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-2xl bg-pink-50 border border-pink-100">
-                    🔍
-                  </div>
-                  <h3 className="text-sm font-bold" style={{ color: accentPink }}>
-                    1. Find
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">Browse by industry & expertise</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-2xl bg-purple-50 border border-purple-100">
-                    📅
-                  </div>
-                  <h3 className="text-sm font-bold" style={{ color: accentPurple }}>
-                    2. Book
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">Schedule 45-60min sessions</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center text-2xl bg-emerald-50 border border-emerald-100">
-                    🚀
-                  </div>
-                  <h3 className="text-sm font-bold text-emerald-600">3. Grow</h3>
-                  <p className="text-xs text-slate-500 mt-1">Build lasting relationships</p>
-                </div>
+          <main className="lg:col-span-6 order-1 lg:order-2">
+            {/* Section Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-[var(--color-text)]">
+                  {activeCategory === 'all' ? 'Featured Mentors' : `${activeCategory} Mentors`}
+                </h2>
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  {filteredMentors.length} mentor{filteredMentors.length !== 1 ? 's' : ''} available
+                </p>
               </div>
             </div>
 
             {/* Mentors Grid */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900">
-                {activeCategory === 'all' ? 'Featured Mentors' : `${activeCategory} Mentors`}
-              </h2>
-              <span className="text-sm text-slate-500 font-medium">
-                {filteredMentors.length} mentors
-              </span>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="space-y-4">
               {filteredMentors.map((mentor) => (
-                <div
+                <article
                   key={mentor.id}
-                  className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg hover:shadow-xl hover:border-pink-200 transition-all duration-300"
+                  className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-card-border)] hover:border-[var(--color-primary)] hover:shadow-lg transition-all duration-300 group"
                 >
-                  <div className="flex gap-4 mb-4">
-                    <div className="relative">
+                  <div className="flex gap-4">
+                    {/* Avatar */}
+                    <div className="relative flex-shrink-0">
                       <Image
                         src={mentor.avatar || defaultAvatar}
                         alt={mentor.name || 'Mentor'}
-                        width={64}
-                        height={64}
+                        width={80}
+                        height={80}
                         cloudinary={isCloudinaryPublicId(mentor.avatar)}
-                        className="w-16 h-16 rounded-2xl object-cover border-2 border-pink-200"
-                        sizes="64px"
+                        className="w-20 h-20 rounded-xl object-cover border-2 border-[var(--color-card-border)] group-hover:border-[var(--color-primary)] transition-colors"
+                        sizes="80px"
                       />
                       {mentor.verified && (
-                        <div
-                          className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs text-white shadow-lg"
-                          style={{
-                            background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-                          }}
-                        >
-                          ✓
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[var(--color-primary)] flex items-center justify-center shadow-md">
+                          <CheckCircle2 className="w-4 h-4 text-white" />
                         </div>
                       )}
                     </div>
+
+                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-slate-900 truncate">{mentor.name}</h3>
-                      <p className="text-sm text-slate-500 truncate">{mentor.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="flex items-center gap-1 text-sm">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-bold text-[var(--color-text)] text-lg truncate">
+                          {mentor.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-sm flex-shrink-0">
                           <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                          <span className="font-semibold text-slate-900">{mentor.rating}</span>
-                        </span>
-                        <span className="text-xs text-slate-400">({mentor.reviews} reviews)</span>
+                          <span className="font-semibold text-[var(--color-text)]">
+                            {mentor.rating}
+                          </span>
+                          <span className="text-[var(--color-text-secondary)]">
+                            ({mentor.reviews})
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-[var(--color-text-secondary)] mb-2 truncate">
+                        {mentor.title}
+                      </p>
+
+                      {/* Expertise Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {mentor.expertise?.slice(0, 3).map((skill, i) => (
+                          <span
+                            key={i}
+                            className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-secondary)] text-[var(--color-text)] font-medium"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+
+                      <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2 mb-4 leading-relaxed">
+                        {mentor.bio}
+                      </p>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-3 border-t border-[var(--color-card-border-inner)]">
+                        <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {mentor.location}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Video className="w-3.5 h-3.5" />
+                            {mentor.sessions} sessions
+                          </span>
+                          <span className="text-emerald-600 font-semibold">{mentor.price}</span>
+                        </div>
+                        <button
+                          onClick={() => handleBookSession(mentor)}
+                          className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md"
+                          style={{ backgroundColor: colors.primary }}
+                        >
+                          Book Session
+                        </button>
                       </div>
                     </div>
                   </div>
-
-                  {/* Expertise Tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {mentor.expertise?.slice(0, 3).map((skill, i) => (
-                      <span
-                        key={i}
-                        className="text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
-                    {mentor.bio}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <div className="flex items-center gap-3 text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {mentor.location}
-                      </span>
-                      <span className="text-emerald-600 font-semibold">{mentor.price}</span>
-                    </div>
-                    <button
-                      onClick={() => handleBookSession(mentor)}
-                      className="px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg hover:scale-[1.02]"
-                      style={{
-                        background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-                      }}
-                    >
-                      Book Session
-                    </button>
-                  </div>
-                </div>
+                </article>
               ))}
 
               {filteredMentors.length === 0 && (
-                <div className="col-span-2 text-center py-16 bg-white rounded-2xl border border-slate-100">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
-                    <span className="text-3xl">🔍</span>
+                <div className="text-center py-16 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-card-border)]">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--color-secondary)] flex items-center justify-center">
+                    <Search className="w-8 h-8 text-[var(--color-text-secondary)]" />
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-2">No mentors found</h3>
-                  <p className="text-slate-500 text-sm mb-4">Try adjusting your filters</p>
+                  <h3 className="font-semibold text-[var(--color-text)] mb-2">No mentors found</h3>
+                  <p className="text-[var(--color-text-secondary)] text-sm mb-4">
+                    Try adjusting your search or filters
+                  </p>
                   <button
                     onClick={() => {
                       setActiveCategory('all');
                       setSearchQuery('');
                     }}
-                    className="text-sm font-semibold text-pink-600 hover:text-pink-700"
+                    className="text-sm font-semibold text-[var(--color-primary)] hover:underline"
                   >
-                    Clear filters
+                    Clear all filters
                   </button>
                 </div>
               )}
             </div>
 
             {/* View All Link */}
-            <div className="text-center mt-8">
-              <Link
-                href="/mentorship/browse"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200"
-              >
-                View All 150+ Mentors
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+            {filteredMentors.length > 0 && (
+              <div className="text-center mt-8">
+                <Link
+                  href="/mentorship/browse"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondary-hover)] border border-[var(--color-border)]"
+                >
+                  View All 150+ Mentors
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
           </main>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-3">
-            <div className="space-y-5 sticky top-24">
-              {/* Mentorship Circles */}
-              <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-lg">
-                <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <Users className="w-5 h-5" style={{ color: accentPink }} />
+          <aside className="lg:col-span-3 order-3">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              {/* Group Mentorship Circles */}
+              <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-card-border)]">
+                <h3 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[var(--color-primary)]" />
                   Group Mentorship Circles
                 </h3>
                 <div className="space-y-3">
                   {upcomingCircles.map((circle) => (
                     <div
                       key={circle.id}
-                      className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-pink-200 transition-colors"
+                      className="p-4 rounded-xl bg-[var(--color-secondary)] border border-[var(--color-card-border-inner)] hover:border-[var(--color-primary)] transition-colors cursor-pointer"
                     >
-                      <h4 className="font-semibold text-slate-900 text-sm mb-1">{circle.title}</h4>
-                      <p className="text-xs text-slate-500 mb-2">with {circle.mentor}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-pink-600 font-medium">{circle.date}</span>
-                        <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-                          {circle.spots} spots left
+                      <div className="flex items-start gap-3 mb-2">
+                        <img
+                          src={circle.mentorAvatar}
+                          alt={circle.mentor}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-[var(--color-text)] text-sm truncate">
+                            {circle.title}
+                          </h4>
+                          <p className="text-xs text-[var(--color-text-secondary)]">
+                            with {circle.mentor}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-3 text-[var(--color-text-secondary)]">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {circle.date}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {circle.time}
+                          </span>
+                        </div>
+                        <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold dark:bg-emerald-900/30 dark:text-emerald-400">
+                          {circle.spots} spots
                         </span>
                       </div>
                     </div>
@@ -600,21 +737,23 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                 </div>
                 <Link
                   href="/mentorship/circles"
-                  className="block mt-4 text-center py-2.5 rounded-xl text-sm font-semibold text-pink-600 hover:bg-pink-50 transition-colors"
+                  className="block mt-4 text-center py-2.5 rounded-xl text-sm font-semibold text-[var(--color-primary)] hover:bg-[var(--color-secondary)] transition-colors"
                 >
                   View All Circles →
                 </Link>
               </div>
 
-              {/* Sponsor Card */}
-              <div className="rounded-2xl p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100">
+              {/* CareerTrackers Sponsor */}
+              <div className="rounded-2xl p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 dark:from-emerald-900/20 dark:to-teal-900/20 dark:border-emerald-800">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] px-2 py-1 rounded bg-emerald-100 text-emerald-700 font-bold uppercase">
+                  <span className="text-[10px] px-2 py-1 rounded bg-emerald-100 text-emerald-700 font-bold uppercase dark:bg-emerald-900/50 dark:text-emerald-400">
                     Sponsored
                   </span>
                 </div>
-                <h3 className="font-bold text-emerald-900 mb-2">CareerTrackers Program</h3>
-                <p className="text-sm text-emerald-800 mb-4 leading-relaxed">
+                <h3 className="font-bold text-emerald-900 dark:text-emerald-100 mb-2">
+                  CareerTrackers Program
+                </h3>
+                <p className="text-sm text-emerald-800 dark:text-emerald-200 mb-4 leading-relaxed">
                   Paid internships with Australia&apos;s top companies. Mentorship included.
                   Applications now open for 2025.
                 </p>
@@ -626,17 +765,24 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                 </Link>
               </div>
 
-              {/* Success Story */}
-              <div className="rounded-2xl p-5 bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-100">
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <Award className="w-5 h-5" style={{ color: accentPink }} />
-                  Success Story
+              {/* Quick Stats */}
+              <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-card-border)]">
+                <h3 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-[#D4AF37]" />
+                  This Month
                 </h3>
-                <blockquote className="text-sm italic text-slate-700 mb-3 leading-relaxed">
-                  &quot;My mentor Jarrah helped me land my first tech job. From a remote community
-                  to Google in 18 months!&quot;
-                </blockquote>
-                <p className="text-xs text-slate-500">— Kirra M., Software Engineer</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-3 rounded-xl bg-[var(--color-secondary)]">
+                    <div className="text-2xl font-bold text-[var(--color-primary)]">127</div>
+                    <div className="text-xs text-[var(--color-text-secondary)]">
+                      Sessions Booked
+                    </div>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-[var(--color-secondary)]">
+                    <div className="text-2xl font-bold text-[#D4AF37]">23</div>
+                    <div className="text-xs text-[var(--color-text-secondary)]">New Mentors</div>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
@@ -646,55 +792,68 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
       {/* Booking Modal */}
       {selectedMentor && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={() => {
             setSelectedMentor(null);
             setBookingStep(0);
           }}
         >
           <div
-            className="w-full max-w-md rounded-2xl p-6 bg-white shadow-2xl"
+            className="w-full max-w-md rounded-2xl p-6 bg-[var(--color-surface)] shadow-2xl border border-[var(--color-border)]"
             onClick={(e) => e.stopPropagation()}
           >
             {bookingStep === 1 && (
               <>
-                <div className="flex items-center gap-4 mb-6">
-                  <Image
-                    src={selectedMentor.avatar || defaultAvatar}
-                    alt={selectedMentor.name || 'Mentor'}
-                    width={56}
-                    height={56}
-                    cloudinary={isCloudinaryPublicId(selectedMentor.avatar)}
-                    className="w-14 h-14 rounded-2xl object-cover border-2 border-pink-200"
-                  />
-                  <div>
-                    <h3 className="font-bold text-slate-900">{selectedMentor.name}</h3>
-                    <p className="text-sm text-slate-500">{selectedMentor.title}</p>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src={selectedMentor.avatar || defaultAvatar}
+                      alt={selectedMentor.name || 'Mentor'}
+                      width={56}
+                      height={56}
+                      cloudinary={isCloudinaryPublicId(selectedMentor.avatar)}
+                      className="w-14 h-14 rounded-xl object-cover border-2 border-[var(--color-card-border)]"
+                    />
+                    <div>
+                      <h3 className="font-bold text-[var(--color-text)]">{selectedMentor.name}</h3>
+                      <p className="text-sm text-[var(--color-text-secondary)]">
+                        {selectedMentor.title}
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      setSelectedMentor(null);
+                      setBookingStep(0);
+                    }}
+                    className="p-2 rounded-lg hover:bg-[var(--color-secondary)] text-[var(--color-text-secondary)]"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
 
-                <h4 className="font-bold text-slate-900 mb-4">Book a Session</h4>
+                <h4 className="font-bold text-[var(--color-text)] mb-4">Book a Session</h4>
 
                 <div className="space-y-4 mb-6">
                   <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    <label className="text-sm font-medium text-[var(--color-text)] mb-2 block">
                       Preferred Date
                     </label>
                     <input
                       type="date"
                       value={bookingData.date}
                       onChange={(e) => setBookingData({ ...bookingData, date: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 border-2 border-slate-200 text-slate-900 focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                      className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    <label className="text-sm font-medium text-[var(--color-text)] mb-2 block">
                       Preferred Time
                     </label>
                     <select
                       value={bookingData.time}
                       onChange={(e) => setBookingData({ ...bookingData, time: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 border-2 border-slate-200 text-slate-900 focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                      className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
                     >
                       <option value="">Select a time</option>
                       <option value="09:00">9:00 AM</option>
@@ -703,10 +862,11 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                       <option value="14:00">2:00 PM</option>
                       <option value="15:00">3:00 PM</option>
                       <option value="16:00">4:00 PM</option>
+                      <option value="17:00">5:00 PM</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">
+                    <label className="text-sm font-medium text-[var(--color-text)] mb-2 block">
                       What would you like to discuss?
                     </label>
                     <textarea
@@ -714,7 +874,7 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                       onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
                       rows={3}
                       placeholder="Introduce yourself and share your goals..."
-                      className="w-full px-4 py-3 rounded-xl text-sm resize-none bg-slate-50 border-2 border-slate-200 text-slate-900 focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                      className="w-full px-4 py-3 rounded-xl text-sm resize-none bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-focus-ring)]"
                     />
                   </div>
                 </div>
@@ -725,7 +885,7 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                       setSelectedMentor(null);
                       setBookingStep(0);
                     }}
-                    className="flex-1 py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+                    className="flex-1 py-3 rounded-xl text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-secondary)]"
                   >
                     Cancel
                   </button>
@@ -733,9 +893,7 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
                     onClick={() => setBookingStep(2)}
                     disabled={!bookingData.date || !bookingData.time}
                     className="flex-1 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-                    }}
+                    style={{ backgroundColor: colors.primary }}
                   >
                     Continue
                   </button>
@@ -745,41 +903,50 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
 
             {bookingStep === 2 && (
               <>
-                <h4 className="font-bold text-slate-900 mb-6">Confirm Booking</h4>
-                <div className="rounded-xl p-5 mb-6 bg-pink-50 border border-pink-100">
-                  <div className="space-y-2 text-sm">
-                    <p className="text-slate-700">
-                      <span className="font-semibold">Mentor:</span> {selectedMentor.name}
-                    </p>
-                    <p className="text-slate-700">
-                      <span className="font-semibold">Date:</span>{' '}
-                      {new Date(bookingData.date).toLocaleDateString('en-AU', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </p>
-                    <p className="text-slate-700">
-                      <span className="font-semibold">Time:</span> {bookingData.time}
-                    </p>
-                    <p className="text-emerald-600 font-semibold">Price: Free</p>
+                <h4 className="font-bold text-[var(--color-text)] mb-6">Confirm Booking</h4>
+                <div className="rounded-xl p-5 mb-6 bg-[var(--color-secondary)] border border-[var(--color-card-border)]">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-text-secondary)]">Mentor</span>
+                      <span className="font-semibold text-[var(--color-text)]">
+                        {selectedMentor.name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-text-secondary)]">Date</span>
+                      <span className="font-semibold text-[var(--color-text)]">
+                        {new Date(bookingData.date).toLocaleDateString('en-AU', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-text-secondary)]">Time</span>
+                      <span className="font-semibold text-[var(--color-text)]">
+                        {bookingData.time}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-3 border-t border-[var(--color-card-border-inner)]">
+                      <span className="text-[var(--color-text-secondary)]">Price</span>
+                      <span className="font-bold text-emerald-600">Free</span>
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
                   <button
                     onClick={() => setBookingStep(1)}
-                    className="flex-1 py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+                    className="flex-1 py-3 rounded-xl text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-secondary)]"
                   >
                     Back
                   </button>
                   <button
                     onClick={handleConfirmBooking}
                     className="flex-1 py-3 rounded-xl text-sm font-bold text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)`,
-                    }}
+                    style={{ backgroundColor: colors.primary }}
                   >
                     Confirm Booking
                   </button>
@@ -789,11 +956,11 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
 
             {bookingStep === 3 && (
               <div className="text-center py-8">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-4xl bg-emerald-100">
-                  ✅
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center dark:bg-emerald-900/30">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                 </div>
                 <h4 className="font-bold text-xl mb-2 text-emerald-600">Booking Confirmed!</h4>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--color-text-secondary)]">
                   You&apos;ll receive a confirmation email with the meeting link shortly.
                 </p>
               </div>
@@ -805,8 +972,10 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
       {/* CTA Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div
-          className="relative overflow-hidden rounded-3xl p-8 md:p-12"
-          style={{ background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)` }}
+          className="relative overflow-hidden rounded-2xl p-8 md:p-12"
+          style={{
+            background: `linear-gradient(135deg, ${colors.primary} 0%, #1a6b76 50%, #D4AF37 100%)`,
+          }}
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/2" />
@@ -816,16 +985,16 @@ export default function MentorshipClient({ initialMentors, hasPrefetched }) {
           <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
               <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                Ready to give back?
+                Ready to Give Back?
               </h3>
-              <p className="text-white/80 text-lg">
-                Share your experience and help guide the next generation of Indigenous
-                professionals.
+              <p className="text-white/90 text-lg max-w-lg">
+                Share your experience and help guide the next generation of Indigenous professionals
+                on their career journey.
               </p>
             </div>
             <Link
               href="/mentor/signup"
-              className="flex items-center gap-2 px-8 py-4 bg-white rounded-xl font-bold text-pink-600 hover:bg-pink-50 transition-colors shadow-lg"
+              className="flex items-center gap-2 px-8 py-4 bg-white rounded-xl font-bold text-[var(--color-primary)] hover:bg-white/90 transition-colors shadow-lg whitespace-nowrap"
             >
               <Heart className="w-5 h-5" />
               Become a Mentor

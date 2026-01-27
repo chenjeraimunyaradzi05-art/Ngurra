@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { Space_Grotesk } from 'next/font/google';
+import PostComposer from '@/components/social/PostComposer';
 import {
   Users,
   UserPlus,
@@ -79,214 +80,20 @@ export default function ConnectionsPage() {
     requests: 0,
   });
 
-  // Mock data for fallback
-  const mockConnections: Person[] = [
-    {
-      id: '1',
-      name: 'Sarah Mitchell',
-      role: 'Software Developer',
-      company: 'First Nations Dev Corp',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop',
-      trustLevel: 'verified',
-      mutualConnections: 23,
-      location: 'Sydney, NSW',
-      isOnline: true,
-    },
-    {
-      id: '2',
-      name: 'James Kurrumarra',
-      role: 'Community Manager',
-      company: 'Indigenous Business Network',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
-      trustLevel: 'trusted',
-      mutualConnections: 15,
-      location: 'Darwin, NT',
-      isOnline: true,
-    },
-    {
-      id: '3',
-      name: 'Elder Mary Tungatalum',
-      role: 'Cultural Advisor',
-      company: 'Community Council',
-      avatarUrl: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop',
-      trustLevel: 'verified',
-      mutualConnections: 45,
-      location: 'Alice Springs, NT',
-      isOnline: false,
-    },
-    {
-      id: '4',
-      name: 'David Williams',
-      role: 'Project Manager',
-      company: 'Rio Tinto',
-      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
-      trustLevel: 'established',
-      mutualConnections: 8,
-      location: 'Perth, WA',
-      isOnline: false,
-    },
-    {
-      id: '5',
-      name: 'Lisa Parkinson',
-      role: 'HR Director',
-      company: 'Inclusive Hiring Co',
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
-      trustLevel: 'trusted',
-      mutualConnections: 12,
-      location: 'Melbourne, VIC',
-      isOnline: true,
-    },
-    {
-      id: '6',
-      name: 'Michael Chen',
-      role: 'Data Analyst',
-      company: 'Analytics Corp',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop',
-      trustLevel: 'basic',
-      mutualConnections: 3,
-      location: 'Brisbane, QLD',
-      isOnline: false,
-    },
-  ];
-
-  const mockFollowers: Person[] = [
-    {
-      id: '7',
-      name: 'Emma Wilson',
-      role: 'Computer Science Student',
-      company: 'University of Sydney',
-      avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop',
-      trustLevel: 'new',
-      isFollowingBack: false,
-      location: 'Sydney, NSW',
-    },
-    {
-      id: '8',
-      name: 'Tom Brown',
-      role: 'Career Changer',
-      avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop',
-      trustLevel: 'basic',
-      isFollowingBack: true,
-      location: 'Adelaide, SA',
-    },
-    {
-      id: '9',
-      name: 'Jessica Lee',
-      role: 'Junior Developer',
-      company: 'Tech Startup',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop',
-      trustLevel: 'basic',
-      isFollowingBack: false,
-      location: 'Melbourne, VIC',
-    },
-  ];
-
-  const mockRequests: Person[] = [
-    {
-      id: '10',
-      name: 'Alex Johnson',
-      role: 'Tech Recruiter',
-      company: 'Talent Partners',
-      avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop',
-      trustLevel: 'established',
-      type: 'received',
-      time: '2 hours ago',
-      mutualConnections: 5,
-    },
-    {
-      id: '11',
-      name: 'Nina Patel',
-      role: 'Community Leader',
-      avatarUrl: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop',
-      trustLevel: 'trusted',
-      type: 'received',
-      time: '1 day ago',
-      mutualConnections: 12,
-    },
-    {
-      id: '12',
-      name: 'Robert Kim',
-      role: 'Senior Mentor',
-      company: 'Career Mentors',
-      avatarUrl: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop',
-      trustLevel: 'verified',
-      type: 'sent',
-      time: '3 days ago',
-      mutualConnections: 8,
-    },
-  ];
-
-  const mockSuggestions: Person[] = [
-    {
-      id: '101',
-      name: 'Rachel Green',
-      role: 'UX Designer',
-      company: 'Design Studio',
-      avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop',
-      mutualConnections: 7,
-      location: 'Sydney, NSW',
-    },
-    {
-      id: '102',
-      name: 'Marcus Johnson',
-      role: 'Career Coach',
-      company: 'Indigenous Careers',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop',
-      mutualConnections: 12,
-      location: 'Brisbane, QLD',
-    },
-    {
-      id: '103',
-      name: 'Amy Wong',
-      role: 'Tech Lead',
-      company: 'Canva',
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop',
-      mutualConnections: 5,
-      location: 'Sydney, NSW',
-    },
-    {
-      id: '104',
-      name: 'Daniel Torres',
-      role: 'Entrepreneur',
-      company: 'First Nations Ventures',
-      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
-      mutualConnections: 9,
-      location: 'Melbourne, VIC',
-    },
-    {
-      id: '105',
-      name: 'Kylie Mundine',
-      role: 'Policy Advisor',
-      company: 'NIAA',
-      avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop',
-      mutualConnections: 18,
-      location: 'Canberra, ACT',
-    },
-    {
-      id: '106',
-      name: 'Jake Patterson',
-      role: 'Mining Engineer',
-      company: 'BHP',
-      avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop',
-      mutualConnections: 4,
-      location: 'Perth, WA',
-    },
-  ];
-
   const fetchData = useCallback(async () => {
     if (authLoading) return;
     if (!isAuthenticated) {
-      // Use mock data for non-authenticated users
-      setConnections(mockConnections);
-      setFollowers(mockFollowers);
-      setFollowing(mockConnections.slice(0, 4));
-      setRequests(mockRequests);
-      setSuggestions(mockSuggestions);
+      // Show empty state for non-authenticated users
+      setConnections([]);
+      setFollowers([]);
+      setFollowing([]);
+      setRequests([]);
+      setSuggestions([]);
       setStats({
-        connections: mockConnections.length,
-        followers: mockFollowers.length,
-        following: 4,
-        requests: mockRequests.filter((r) => r.type === 'received').length,
+        connections: 0,
+        followers: 0,
+        following: 0,
+        requests: 0,
       });
       setLoading(false);
       return;
@@ -316,11 +123,11 @@ export default function ConnectionsPage() {
           location: c.location,
           isOnline: c.isOnline,
         }));
-        setConnections(mapped.length > 0 ? mapped : mockConnections);
-        setStats((prev) => ({ ...prev, connections: mapped.length || mockConnections.length }));
+        setConnections(mapped);
+        setStats((prev) => ({ ...prev, connections: mapped.length }));
       } else {
-        setConnections(mockConnections);
-        setStats((prev) => ({ ...prev, connections: mockConnections.length }));
+        setConnections([]);
+        setStats((prev) => ({ ...prev, connections: 0 }));
       }
 
       // Process followers
@@ -335,11 +142,11 @@ export default function ConnectionsPage() {
           isFollowingBack: !!f.isFollowingBack,
           location: f.location,
         }));
-        setFollowers(mapped.length > 0 ? mapped : mockFollowers);
-        setStats((prev) => ({ ...prev, followers: mapped.length || mockFollowers.length }));
+        setFollowers(mapped);
+        setStats((prev) => ({ ...prev, followers: mapped.length }));
       } else {
-        setFollowers(mockFollowers);
-        setStats((prev) => ({ ...prev, followers: mockFollowers.length }));
+        setFollowers([]);
+        setStats((prev) => ({ ...prev, followers: 0 }));
       }
 
       // Process following
@@ -353,11 +160,11 @@ export default function ConnectionsPage() {
           trustLevel: f.trustLevel || 'basic',
           location: f.location,
         }));
-        setFollowing(mapped.length > 0 ? mapped : mockConnections.slice(0, 4));
-        setStats((prev) => ({ ...prev, following: mapped.length || 4 }));
+        setFollowing(mapped);
+        setStats((prev) => ({ ...prev, following: mapped.length }));
       } else {
-        setFollowing(mockConnections.slice(0, 4));
-        setStats((prev) => ({ ...prev, following: 4 }));
+        setFollowing([]);
+        setStats((prev) => ({ ...prev, following: 0 }));
       }
 
       // Process requests
@@ -385,11 +192,11 @@ export default function ConnectionsPage() {
           mutualConnections: p.mutualConnections || 0,
         }));
         const merged = [...received, ...sent];
-        setRequests(merged.length > 0 ? merged : mockRequests);
-        setStats((prev) => ({ ...prev, requests: received.length || mockRequests.filter((r) => r.type === 'received').length }));
+        setRequests(merged);
+        setStats((prev) => ({ ...prev, requests: received.length }));
       } else {
-        setRequests(mockRequests);
-        setStats((prev) => ({ ...prev, requests: mockRequests.filter((r) => r.type === 'received').length }));
+        setRequests([]);
+        setStats((prev) => ({ ...prev, requests: 0 }));
       }
 
       // Process suggestions
@@ -403,22 +210,22 @@ export default function ConnectionsPage() {
           mutualConnections: s.mutualConnections || 0,
           location: s.location,
         }));
-        setSuggestions(mapped.length > 0 ? mapped : mockSuggestions);
+        setSuggestions(mapped);
       } else {
-        setSuggestions(mockSuggestions);
+        setSuggestions([]);
       }
     } catch (err) {
       console.error('Failed to fetch connections:', err);
-      setConnections(mockConnections);
-      setFollowers(mockFollowers);
-      setFollowing(mockConnections.slice(0, 4));
-      setRequests(mockRequests);
-      setSuggestions(mockSuggestions);
+      setConnections([]);
+      setFollowers([]);
+      setFollowing([]);
+      setRequests([]);
+      setSuggestions([]);
       setStats({
-        connections: mockConnections.length,
-        followers: mockFollowers.length,
-        following: 4,
-        requests: mockRequests.filter((r) => r.type === 'received').length,
+        connections: 0,
+        followers: 0,
+        following: 0,
+        requests: 0,
       });
     } finally {
       setLoading(false);
@@ -663,6 +470,17 @@ export default function ConnectionsPage() {
                 </button>
               );
             })}
+          </div>
+
+          {/* Create Post Section */}
+          <div className="mb-8">
+            <PostComposer
+              placeholder="Share something with your network..."
+              compact={true}
+              onPostCreated={() => {
+                // Optionally refresh feed or show toast
+              }}
+            />
           </div>
         </div>
 

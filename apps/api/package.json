@@ -37,6 +37,7 @@
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --force",
     "db:studio": "prisma studio",
+    "backfill:owners": "node scripts/backfill-business-owners.js --file=apps/api/data/business-owner-mapping.json --dry-run",
     "clean": "rimraf dist node_modules/.cache coverage",
     "audit": "npm audit --audit-level=high",
     "prepare": "prisma generate"

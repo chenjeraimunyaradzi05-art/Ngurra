@@ -109,7 +109,7 @@ export function Card({
         className={combinedClasses}
         suppressHydrationWarning={suppressHydrationWarning}
       >
-        {children}
+        <>{children}</>
       </Link>
     );
   }

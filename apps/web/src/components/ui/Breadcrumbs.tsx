@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 'use client';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import React from 'react';
 
-type BreadcrumbNode = ReactNode;
+type BreadcrumbNode = React.ReactNode;
 
 interface BreadcrumbItem {
   label: string;
@@ -75,8 +75,10 @@ export function Breadcrumbs({
                 </span>
               ) : (
                 <Link href={item.href} className={`flex items-center gap-1.5 ${styles.link}`}>
-                  {item.icon}
-                  {item.label}
+                  <>
+                    {item.icon}
+                    {item.label}
+                  </>
                 </Link>
               )}
             </li>

@@ -146,6 +146,7 @@ model User {
   housingProfile       WomenHousingProfile?  @relation("HousingProfile")
 
   businessesOwned   WomenBusiness[]    @relation("BusinessOwner")
+  ownedBusinesses   Business[]
   propertiesOwned   Property[]
   emergencyContacts EmergencyContact[]
   panicEvents       PanicEvent[]
@@ -6497,11 +6498,14 @@ model Business {
   category    String?
   address     String?
   contacts    Json?
+  ownerId     String?
+  owner       User?             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   media       Media[]
   ratings     WorkplaceRating[]
   createdAt   DateTime          @default(now())
 
   @@index([name])
+  @@index([ownerId])
 }
 
 model WorkplaceRating {

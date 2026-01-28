@@ -103,10 +103,22 @@ export default function SignUpPage() {
         }),
       });
 
-      const data = await response.json();
+      const rawBody = await response.text();
+      let data: any = null;
+      try {
+        data = rawBody ? JSON.parse(rawBody) : null;
+      } catch {
+        data = { __raw: rawBody };
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Registration failed');
+        const message =
+          data?.message || data?.error || data?.__raw || `Registration failed (${response.status})`;
+        throw new Error(message);
+      }
+
+      if (!data?.data?.token || !data?.data?.user) {
+        throw new Error('Registration succeeded but response was incomplete. Please try again.');
       }
 
       setToken(data.data.token);

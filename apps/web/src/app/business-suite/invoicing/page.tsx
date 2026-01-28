@@ -235,7 +235,11 @@ export default function InvoicingPage() {
                   {filteredInvoices.map((invoice) => {
                     const StatusIcon = getStatusIcon(invoice.status);
                     return (
-                      <div key={invoice.id} className="grid grid-cols-12 gap-4 p-4 hover:bg-white/5 items-center">
+                      <Link 
+                        key={invoice.id} 
+                        href={`/business-suite/invoicing/${invoice.id}`}
+                        className="grid grid-cols-12 gap-4 p-4 hover:bg-white/5 items-center"
+                      >
                         <div className="col-span-2 text-white font-medium">
                           {invoice.invoiceNumber}
                         </div>
@@ -256,11 +260,14 @@ export default function InvoicingPage() {
                           {formatCurrency(invoice.total)}
                         </div>
                         <div className="col-span-1 flex justify-end">
-                          <button className="p-2 rounded-lg hover:bg-white/10">
+                          <button 
+                            className="p-2 rounded-lg hover:bg-white/10"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <MoreVertical className="w-4 h-4 text-white/40" />
                           </button>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

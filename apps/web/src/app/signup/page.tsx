@@ -18,12 +18,15 @@ export default function SignUpPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    gender: '',
+    inviteCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isFemale, setIsFemale] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -40,7 +43,7 @@ export default function SignUpPage() {
     { label: 'Contains uppercase letter', met: /[A-Z]/.test(formData.password) },
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -70,6 +73,12 @@ export default function SignUpPage() {
       return;
     }
 
+    // Enforce Female Only - both checkbox AND dropdown must confirm female identity
+    if (!isFemale || formData.gender !== 'FEMALE') {
+       setError('Ngurra Pathways is a culturally safe space for First Nations women. Please confirm your identity as a woman to proceed.');
+       return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -82,6 +91,8 @@ export default function SignUpPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           userType: 'MEMBER',
+          gender: formData.gender,
+          inviteCode: formData.inviteCode,
         }),
       });
 
@@ -147,6 +158,22 @@ export default function SignUpPage() {
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
+          
+          {/* Women-Only Gate Notice */}
+          <div className="mb-8 bg-pink-50 dark:bg-pink-900/10 border-l-4 border-pink-500 p-4 rounded-r-lg">
+            <h3 className="text-pink-800 dark:text-pink-200 font-bold flex items-center gap-2 mb-2">
+              <Lock className="w-4 h-4" /> Women-Only Safe Space
+            </h3>
+            <p className="text-sm text-pink-700 dark:text-pink-300">
+              Ngurra Pathways is a culturally safe digital ecosystem exclusively for First Nations women. 
+            </p>
+            <ul className="mt-2 space-y-1 text-xs text-pink-600 dark:text-pink-400 list-disc pl-4">
+              <li><strong>Self-Attestation Required:</strong> You must verify your identity as a woman.</li>
+              <li><strong>Verification:</strong> Accounts may require verification or paid subscription to access sensitive areas.</li>
+              <li><strong>Invitation:</strong> If you have an invitation code, please enter it below for expedited access.</li>
+            </ul>
+          </div>
+
           {success && (
             <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
               <p className="text-sm text-emerald-700 dark:text-emerald-300">Account created. Redirecting…</p>
@@ -190,6 +217,67 @@ export default function SignUpPage() {
                   className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                   placeholder="Last"
                 />
+              </div>
+            </div>
+
+            {/* Gender Identity Enforcement */}
+            <div className="bg-white dark:bg-slate-800 rounded-lg space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="bg-pink-50 dark:bg-pink-900/10 border border-pink-100 dark:border-pink-900/30 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Gender Identity *
+                  </label>
+                  <div className="space-y-3">
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                      required
+                    >
+                      <option value="">Select your identity...</option>
+                      <option value="FEMALE">Female / Woman / Tiddas</option>
+                      <option value="MALE">Male</option>
+                      <option value="NON_BINARY">Non-binary</option>
+                      <option value="PREFER_NOT_SAY">Prefer not to say</option>
+                    </select>
+                    
+                    <div className="flex items-start">
+                       <input
+                        id="isFemale"
+                        type="checkbox"
+                        checked={isFemale}
+                        onChange={(e) => setIsFemale(e.target.checked)}
+                        className="h-4 w-4 mt-1 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="isFemale" className="ml-2 text-xs text-gray-600 dark:text-gray-400">
+                        I verify that I identify as a woman and understand this is a safe space for women.
+                      </label>
+                    </div>
+                  </div>
+                 </div>
+
+                 <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-lg p-4">
+                    <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Invitation Code (Optional)
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        id="inviteCode"
+                        name="inviteCode"
+                        type="text"
+                        value={formData.inviteCode}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                        placeholder="ENTER-CODE"
+                      />
+                    </div>
+                     <p className="mt-2 text-xs text-purple-700 dark:text-purple-400">
+                      Have an invite? Enter it here to fast-track your verification.
+                    </p>
+                 </div>
               </div>
             </div>
 

@@ -124,6 +124,7 @@ import legalDocumentsRouter from './routes/legal-documents';
 import cashbookRouter from './routes/cashbook';
 import financeRouter from './routes/finance';
 import marketplaceRouter from './routes/marketplace';
+import invoicesRouter from './routes/invoices';
 import liveStreamingRouter from './routes/live-streaming';
 import authRouter from './routes/auth';
 import culturalRouter from './routes/cultural';
@@ -410,6 +411,7 @@ export function createApp() {
         base.use('/cashbook', cashbookRouter);
         base.use('/finance', financeRouter);
         base.use('/marketplace', marketplaceRouter);
+        base.use('/invoices', invoicesRouter);
         // Phase 6: Certifications and credentials tracking
         base.use('/certifications', certificationsRouter);
         // Phase 8.4: Live streaming and audio rooms

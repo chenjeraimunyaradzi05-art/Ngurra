@@ -1495,8 +1495,25 @@ router.post('/sync', authenticateJWT, requireAdmin, async (req: Request, res: Re
 // Get single course details (placed last to avoid route conflicts)
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const course = await prisma.course.findUnique({
-      where: { id: req.params.id },
+    const rawId = String(req.params.id || '').trim();
+    const slugBase = rawId.replace(/[-_]+/g, ' ').trim();
+    const slugWithoutPrefix = slugBase.replace(/^course\s+/i, '').trim();
+    const titleCandidates = Array.from(
+      new Set([slugBase, slugWithoutPrefix].filter(Boolean))
+    );
+
+    const course = await prisma.course.findFirst({
+      where: {
+        OR: [
+          { id: rawId },
+          ...titleCandidates.map((candidate) => ({
+            title: { equals: candidate, mode: 'insensitive' }
+          })),
+          ...titleCandidates.map((candidate) => ({
+            title: { contains: candidate, mode: 'insensitive' }
+          }))
+        ]
+      },
       include: {
         institution: { select: { id: true, email: true, institutionProfile: true } },
         _count: { select: { enrolments: true } }

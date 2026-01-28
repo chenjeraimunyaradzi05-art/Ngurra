@@ -47,6 +47,8 @@ const registerSchema = z.object({
   lastName: z.string().min(1, 'Last name is required').optional(),
   name: z.string().min(1, 'Name is required').optional(),
   userType: z.enum(['MEMBER', 'COMPANY', 'MENTOR', 'TAFE', 'SEEKER']).default('MEMBER'),
+  gender: z.string().optional(),
+  inviteCode: z.string().optional(),
 }).refine((data) => data.name || (data.firstName && data.lastName), {
   message: 'Name is required',
   path: ['name'],
@@ -83,12 +85,30 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       });
     }
 
-    const { email, password, firstName, lastName, name, userType } = validation.data;
+    const { email, password, firstName, lastName, name, userType, gender, inviteCode } = validation.data;
     const normalizedUserType = userType === 'SEEKER' ? 'MEMBER' : userType;
     const resolvedName = name || `${firstName || ''} ${lastName || ''}`.trim();
     const nameParts = resolvedName.split(' ').filter(Boolean);
     const resolvedFirstName = nameParts[0] || 'User';
     const resolvedLastName = nameParts.slice(1).join(' ');
+
+    // ENFORCE FEMALE ONLY POLICY
+    if (gender && gender !== 'FEMALE') {
+       return void res.status(403).json({
+         error: 'Access Restricted',
+         message: 'Ngurra Pathways is currently restricted to female registration only for cultural safety reasons.'
+       });
+    }
+    
+    // Check Invite Code (Simple Check for now, integration with Invitation model later)
+    // If an invite code is provided, we will mark the user as 'VERIFIED' or similar later.
+    // For now, if they provide a code that looks like a VIP code, we might auto-approve.
+    // But per requirements, they might still need subscription.
+    // We will just log it for now as the Invitation model is being deployed.
+    if (inviteCode) {
+         // TODO: Check Validation against Invitation model
+         console.log(`User registered with invite code: ${inviteCode}`);
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

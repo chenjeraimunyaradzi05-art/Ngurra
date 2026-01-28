@@ -484,6 +484,82 @@ model BusinessCashbookEntry {
   @@index([userId])
 }
 
+// Business Invoicing System
+model BusinessInvoice {
+  id            String  @id @default(cuid())
+  userId        String
+  invoiceNumber String  @unique
+  
+  // Client details
+  clientName    String
+  clientEmail   String?
+  clientPhone   String?
+  clientAddress String?
+  clientAbn     String?
+  
+  // Invoice dates
+  issueDate     DateTime @default(now())
+  dueDate       DateTime
+  sentAt        DateTime?
+  paidAt        DateTime?
+  
+  // Amounts (stored in cents)
+  subtotal      Float    @default(0)
+  taxAmount     Float    @default(0)
+  totalAmount   Float    @default(0)
+  currency      String   @default("AUD")
+  
+  // Status: DRAFT, SENT, VIEWED, PAID, OVERDUE, CANCELLED
+  status        String   @default("DRAFT")
+  
+  // Additional info
+  notes              String?
+  termsAndConditions String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  lineItems     BusinessInvoiceLineItem[]
+  payments      BusinessInvoicePayment[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model BusinessInvoiceLineItem {
+  id          String          @id @default(cuid())
+  invoiceId   String
+  invoice     BusinessInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Float   @default(0)
+  amount      Float   @default(0)
+  taxRate     Float   @default(10) // GST percentage
+  sortOrder   Int     @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([invoiceId])
+}
+
+model BusinessInvoicePayment {
+  id        String          @id @default(cuid())
+  invoiceId String
+  invoice   BusinessInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  amount    Float
+  method    String  @default("BANK_TRANSFER") // BANK_TRANSFER, CREDIT_CARD, CASH, CHEQUE, PAYPAL, OTHER
+  reference String?
+  paidAt    DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  
+  @@index([invoiceId])
+}
+
 model AgentProfile {
   id     String @id @default(cuid())
   userId String @unique

@@ -6,7 +6,7 @@ import api from '@/lib/apiClient';
 import {
   DollarSign, Plus, ArrowLeft, TrendingUp, TrendingDown,
   Calendar, Filter, MoreVertical, Edit2, Trash2, Search,
-  ChevronDown, BarChart3, ArrowUpRight, ArrowDownRight
+  ChevronDown, BarChart3, ArrowUpRight, ArrowDownRight, ChevronRight
 } from 'lucide-react';
 
 type CashbookEntry = {
@@ -207,6 +207,15 @@ export default function CashbookPage() {
                     <option key={book.id} value={book.id}>{book.name}</option>
                   ))}
                 </select>
+              )}
+              {selectedCashbook && (
+                <Link
+                  href={`/business-suite/cashbook/${selectedCashbook.id}`}
+                  className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm hover:bg-white/10 flex items-center gap-2"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                  View Details
+                </Link>
               )}
               <button
                 onClick={() => setShowNewCashbook(true)}

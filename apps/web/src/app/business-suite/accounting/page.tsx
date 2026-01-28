@@ -265,20 +265,21 @@ export default function AccountingPage() {
             {activeTab === 'reports' && (
               <div className="grid md:grid-cols-2 gap-4">
                 {reports.map((report) => (
-                  <div
+                  <Link
                     key={report.id}
-                    className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+                    href={`/business-suite/accounting/reports/${report.id}`}
+                    className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-white font-medium mb-1">{report.name}</h3>
+                        <h3 className="text-white font-medium mb-1 group-hover:text-purple-400 transition-colors">{report.name}</h3>
                         <p className="text-white/60 text-sm">{report.description}</p>
                       </div>
                       <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                        <Download className="w-4 h-4 text-white/60" />
+                        <BarChart3 className="w-4 h-4 text-white/60" />
                       </button>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

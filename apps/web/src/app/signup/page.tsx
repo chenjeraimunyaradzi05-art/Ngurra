@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
@@ -11,7 +11,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser, setToken } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -47,7 +47,7 @@ export default function SignUpPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       void handleSubmit();
@@ -73,10 +73,12 @@ export default function SignUpPage() {
       return;
     }
 
-    // Enforce Female Only - both checkbox AND dropdown must confirm female identity
-    if (!isFemale || formData.gender !== 'FEMALE') {
-       setError('Ngurra Pathways is a culturally safe space for First Nations women. Please confirm your identity as a woman to proceed.');
-       return;
+    // Enforce Female Only
+    if (!isFemale && formData.gender !== 'FEMALE') {
+      setError(
+        'Ngurra Pathways is a culturally safe space for First Nations women. Registration is currently restricted to women only.',
+      );
+      return;
     }
 
     setIsLoading(true);
@@ -136,9 +138,7 @@ export default function SignUpPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Create Account
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Join Ngurra Pathways today
-            </p>
+            <p className="text-gray-600 dark:text-gray-400">Join Ngurra Pathways today</p>
           </div>
 
           <div className="mb-6 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 p-4">
@@ -158,25 +158,37 @@ export default function SignUpPage() {
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
-          
+
           {/* Women-Only Gate Notice */}
           <div className="mb-8 bg-pink-50 dark:bg-pink-900/10 border-l-4 border-pink-500 p-4 rounded-r-lg">
             <h3 className="text-pink-800 dark:text-pink-200 font-bold flex items-center gap-2 mb-2">
               <Lock className="w-4 h-4" /> Women-Only Safe Space
             </h3>
             <p className="text-sm text-pink-700 dark:text-pink-300">
-              Ngurra Pathways is a culturally safe digital ecosystem exclusively for First Nations women. 
+              Ngurra Pathways is a culturally safe digital ecosystem exclusively for First Nations
+              women.
             </p>
             <ul className="mt-2 space-y-1 text-xs text-pink-600 dark:text-pink-400 list-disc pl-4">
-              <li><strong>Self-Attestation Required:</strong> You must verify your identity as a woman.</li>
-              <li><strong>Verification:</strong> Accounts may require verification or paid subscription to access sensitive areas.</li>
-              <li><strong>Invitation:</strong> If you have an invitation code, please enter it below for expedited access.</li>
+              <li>
+                <strong>Self-Attestation Required:</strong> You must verify your identity as a
+                woman.
+              </li>
+              <li>
+                <strong>Verification:</strong> Accounts may require verification or paid
+                subscription to access sensitive areas.
+              </li>
+              <li>
+                <strong>Invitation:</strong> If you have an invitation code, please enter it below
+                for expedited access.
+              </li>
             </ul>
           </div>
 
           {success && (
             <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-              <p className="text-sm text-emerald-700 dark:text-emerald-300">Account created. Redirecting…</p>
+              <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                Account created. Redirecting…
+              </p>
             </div>
           )}
 
@@ -184,7 +196,10 @@ export default function SignUpPage() {
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   First Name
                 </label>
                 <div className="relative">
@@ -203,7 +218,10 @@ export default function SignUpPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Last Name
                 </label>
                 <input
@@ -223,7 +241,7 @@ export default function SignUpPage() {
             {/* Gender Identity Enforcement */}
             <div className="bg-white dark:bg-slate-800 rounded-lg space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div className="bg-pink-50 dark:bg-pink-900/10 border border-pink-100 dark:border-pink-900/30 rounded-lg p-4">
+                <div className="bg-pink-50 dark:bg-pink-900/10 border border-pink-100 dark:border-pink-900/30 rounded-lg p-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Gender Identity *
                   </label>
@@ -241,48 +259,58 @@ export default function SignUpPage() {
                       <option value="NON_BINARY">Non-binary</option>
                       <option value="PREFER_NOT_SAY">Prefer not to say</option>
                     </select>
-                    
+
                     <div className="flex items-start">
-                       <input
+                      <input
                         id="isFemale"
                         type="checkbox"
                         checked={isFemale}
                         onChange={(e) => setIsFemale(e.target.checked)}
                         className="h-4 w-4 mt-1 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
                       />
-                      <label htmlFor="isFemale" className="ml-2 text-xs text-gray-600 dark:text-gray-400">
-                        I verify that I identify as a woman and understand this is a safe space for women.
+                      <label
+                        htmlFor="isFemale"
+                        className="ml-2 text-xs text-gray-600 dark:text-gray-400"
+                      >
+                        I verify that I identify as a woman and understand this is a safe space for
+                        women.
                       </label>
                     </div>
                   </div>
-                 </div>
+                </div>
 
-                 <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-lg p-4">
-                    <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Invitation Code (Optional)
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        id="inviteCode"
-                        name="inviteCode"
-                        type="text"
-                        value={formData.inviteCode}
-                        onChange={handleChange}
-                        onKeyDown={handleKeyDown}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                        placeholder="ENTER-CODE"
-                      />
-                    </div>
-                     <p className="mt-2 text-xs text-purple-700 dark:text-purple-400">
-                      Have an invite? Enter it here to fast-track your verification.
-                    </p>
-                 </div>
+                <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-lg p-4">
+                  <label
+                    htmlFor="inviteCode"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
+                    Invitation Code (Optional)
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      id="inviteCode"
+                      name="inviteCode"
+                      type="text"
+                      value={formData.inviteCode}
+                      onChange={handleChange}
+                      onKeyDown={handleKeyDown}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                      placeholder="ENTER-CODE"
+                    />
+                  </div>
+                  <p className="mt-2 text-xs text-purple-700 dark:text-purple-400">
+                    Have an invite? Enter it here to fast-track your verification.
+                  </p>
+                </div>
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -302,7 +330,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -330,15 +361,24 @@ export default function SignUpPage() {
               <div className="mt-2 space-y-1">
                 {passwordRequirements.map((req, i) => (
                   <div key={i} className="flex items-center gap-2 text-xs">
-                    <CheckCircle className={`h-4 w-4 ${req.met ? 'text-green-500' : 'text-gray-300'}`} />
-                    <span className={req.met ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}>{req.label}</span>
+                    <CheckCircle
+                      className={`h-4 w-4 ${req.met ? 'text-green-500' : 'text-gray-300'}`}
+                    />
+                    <span
+                      className={req.met ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}
+                    >
+                      {req.label}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -367,9 +407,13 @@ export default function SignUpPage() {
               />
               <label htmlFor="terms" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                 I agree to the{' '}
-                <Link href="/terms" className="text-purple-600 hover:text-purple-700">Terms of Service</Link>
-                {' '}and{' '}
-                <Link href="/privacy" className="text-purple-600 hover:text-purple-700">Privacy Policy</Link>
+                <Link href="/terms" className="text-purple-600 hover:text-purple-700">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-purple-600 hover:text-purple-700">
+                  Privacy Policy
+                </Link>
               </label>
             </div>
 
@@ -403,7 +447,10 @@ export default function SignUpPage() {
           {/* Sign In Link */}
           <p className="text-center text-gray-600 dark:text-gray-400">
             Already have an account?{' '}
-            <Link href="/signin" className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-semibold">
+            <Link
+              href="/signin"
+              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-semibold"
+            >
               Sign in
             </Link>
           </p>

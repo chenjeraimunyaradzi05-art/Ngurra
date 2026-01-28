@@ -73,11 +73,16 @@ export default function SignUpPage() {
       return;
     }
 
-    // Enforce Female Only
-    if (!isFemale && formData.gender !== 'FEMALE') {
+    // Enforce Female Only - must select FEMALE and check the attestation box
+    if (formData.gender !== 'FEMALE') {
       setError(
-        'Ngurra Pathways is a culturally safe space for First Nations women. Registration is currently restricted to women only.',
+        'Ngurra Pathways is a culturally safe space for First Nations women. Please select "Female / Woman / Tiddas" to continue.',
       );
+      return;
+    }
+
+    if (!isFemale) {
+      setError('Please verify that you identify as a woman by checking the attestation checkbox.');
       return;
     }
 
@@ -123,7 +128,14 @@ export default function SignUpPage() {
         }
       }, 500);
     } catch (err: any) {
-      setError(err.message || 'An error occurred during registration');
+      console.error('Registration error:', err);
+      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+        setError(
+          'Unable to connect to server. Please check your internet connection or try again later.',
+        );
+      } else {
+        setError(err.message || 'An unexpected error occurred during registration');
+      }
     } finally {
       setIsLoading(false);
     }

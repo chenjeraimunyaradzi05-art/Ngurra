@@ -73,16 +73,11 @@ export default function SignUpPage() {
       return;
     }
 
-    // Enforce Female Only - must select FEMALE and check the attestation box
-    if (formData.gender !== 'FEMALE') {
+    // Enforce Female Only
+    if (!isFemale && formData.gender !== 'FEMALE') {
       setError(
-        'Ngurra Pathways is a culturally safe space for First Nations women. Please select "Female / Woman / Tiddas" to continue.',
+        'Ngurra Pathways is a culturally safe space for First Nations women. Registration is currently restricted to women only.',
       );
-      return;
-    }
-
-    if (!isFemale) {
-      setError('Please verify that you identify as a woman by checking the attestation checkbox.');
       return;
     }
 
@@ -103,30 +98,10 @@ export default function SignUpPage() {
         }),
       });
 
-      const rawBody = await response.text();
-      let data: any = null;
-      try {
-        data = rawBody ? JSON.parse(rawBody) : null;
-      } catch {
-        data = { __raw: rawBody };
-      }
+      const data = await response.json();
 
       if (!response.ok) {
-        const rawText = typeof data?.__raw === 'string' ? data.__raw : '';
-        const looksLikeHtml =
-          rawText.trim().startsWith('<!DOCTYPE html>') || rawText.includes('<html');
-        if (looksLikeHtml) {
-          throw new Error(
-            'Registration service is unavailable. Please start the web app with the API proxy or set NEXT_PUBLIC_API_URL to the API server.',
-          );
-        }
-        const message =
-          data?.message || data?.error || data?.__raw || `Registration failed (${response.status})`;
-        throw new Error(message);
-      }
-
-      if (!data?.data?.token || !data?.data?.user) {
-        throw new Error('Registration succeeded but response was incomplete. Please try again.');
+        throw new Error(data.message || data.error || 'Registration failed');
       }
 
       setToken(data.data.token);
@@ -148,14 +123,7 @@ export default function SignUpPage() {
         }
       }, 500);
     } catch (err: any) {
-      console.error('Registration error:', err);
-      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-        setError(
-          'Unable to connect to server. Please check your internet connection or try again later.',
-        );
-      } else {
-        setError(err.message || 'An unexpected error occurred during registration');
-      }
+      setError(err.message || 'An error occurred during registration');
     } finally {
       setIsLoading(false);
     }

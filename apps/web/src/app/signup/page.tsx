@@ -112,6 +112,14 @@ export default function SignUpPage() {
       }
 
       if (!response.ok) {
+        const rawText = typeof data?.__raw === 'string' ? data.__raw : '';
+        const looksLikeHtml =
+          rawText.trim().startsWith('<!DOCTYPE html>') || rawText.includes('<html');
+        if (looksLikeHtml) {
+          throw new Error(
+            'Registration service is unavailable. Please start the web app with the API proxy or set NEXT_PUBLIC_API_URL to the API server.',
+          );
+        }
         const message =
           data?.message || data?.error || data?.__raw || `Registration failed (${response.status})`;
         throw new Error(message);

@@ -51,6 +51,8 @@ const cspDirectives = {
     'https://*.ngurrapathways.life',
     'https://*.gimbi.com.au', // Backend API
     'https://*.netlify.app', // Deploy previews
+    'https://*.up.railway.app', // Railway backend
+    'wss://*.up.railway.app', // Railway WebSocket
     'https://api.stripe.com',
     'wss://*.ngurrapathways.life', // WebSocket connections
     'wss://*.gimbi.com.au', // WebSocket connections

@@ -12,7 +12,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 
 # Copy package files
-COPY apps/api/package.json apps/api/package-lock.json* ./
+COPY apps/api/package.json ./
 
 # Copy prisma schema
 COPY apps/api/prisma ./prisma

@@ -112,14 +112,14 @@ export default function PostDetailPage() {
     };
   }
 
-  // Mock post data
+  // Fallback post data — references real programs and organisations
   const mockPost: Post = {
     id: params.postId as string,
-    authorName: 'Jarrah Williams',
+    authorName: 'Community Member',
     authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
-    authorTitle: 'Software Developer @ Atlassian',
+    authorTitle: 'Software Engineer at Atlassian',
     trustLevel: 'trusted',
-    content: 'From a remote community in the Kimberley to coding at one of Australia\'s biggest tech companies. It took 4 years, countless rejections, and amazing mentors.\n\nTo anyone thinking it\'s too late or too hard—keep going. The path is there, even when you can\'t see it. 💎\n\n#FirstNationsInTech #CareerJourney',
+    content: 'Started my career through a CareerTrackers internship while studying at UTS. Four years later, I\'m building products at one of Australia\'s biggest tech companies.\n\nTo anyone thinking it\'s too late or too hard — keep going. The path is there, even when you can\'t see it. 💎\n\n#FirstNationsInTech #CareerTrackers #CareerJourney',
     mediaUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=500&fit=crop',
     reactions: { like: 891, love: 423, support: 267, celebrate: 345 },
     commentCount: 234,
@@ -128,33 +128,33 @@ export default function PostDetailPage() {
     comments: [
       {
         id: '1',
-        authorName: 'Sarah Mitchell',
+        authorName: 'Community Member',
         authorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
-        content: 'This is so inspiring! Your journey gives me hope. I\'m currently studying IT and sometimes wonder if I\'ll ever make it. Thank you for sharing! 🙏',
+        content: 'This is so inspiring! I\'m currently studying IT at TAFE Queensland and sometimes wonder if I\'ll make it. Thank you for sharing! 🙏',
         createdAt: '2 hours ago',
         likes: 45
       },
       {
         id: '2',
-        authorName: 'Michael Torres',
+        authorName: 'Community Member',
         authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
-        content: 'Brother, you\'re an inspiration to so many of us. The path you\'ve carved makes it easier for those of us coming behind. 💪',
+        content: 'You\'re an inspiration to so many of us. The path you\'ve carved makes it easier for those coming behind. 💪',
         createdAt: '3 hours ago',
         likes: 67
       },
       {
         id: '3',
-        authorName: 'Emma Watson',
+        authorName: 'Community Member',
         authorAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
-        content: 'Would love to hear more about your mentors and how you found them. I\'m looking for guidance in tech!',
+        content: 'Would love to hear more about the CareerTrackers program and how you found your mentors. I\'m looking for guidance in tech!',
         createdAt: '4 hours ago',
         likes: 23
       },
       {
         id: '4',
-        authorName: 'David Chen',
+        authorName: 'Community Member',
         authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
-        content: 'Jarrah, we worked together on that hackathon project back in 2023! So proud to see how far you\'ve come. Keep shining! ✨',
+        content: 'We were in the same CareerTrackers cohort back in 2022! So proud to see how far you\'ve come. Keep shining! ✨',
         createdAt: '5 hours ago',
         likes: 89
       }

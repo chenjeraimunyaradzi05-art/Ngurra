@@ -30,31 +30,31 @@ export default function SearchClient() {
     { id: 'posts', label: 'Posts', icon: '📝' }
   ];
 
-  // Mock search results
+  // Search results seeded from real Australian institutions and programs
   const mockResults = {
     jobs: [
-      { id: 1, type: 'job', title: 'Senior Software Developer', company: 'First Nations Dev Corp', location: 'Sydney', salary: '$120k-$150k' },
-      { id: 2, type: 'job', title: 'Community Engagement Officer', company: 'Indigenous Business Network', location: 'Melbourne', salary: '$85k-$100k' },
-      { id: 3, type: 'job', title: 'Project Manager', company: 'Inclusive Corp', location: 'Remote', salary: '$110k-$130k' }
+      { id: 1, type: 'job', title: 'Mobile Plant Operator (Entry Pathway)', company: 'BHP', location: 'Pilbara, WA (FIFO)', salary: '$90k-$125k' },
+      { id: 2, type: 'job', title: 'Customer Service Consultant', company: 'Telstra', location: 'Sydney, NSW (Hybrid)', salary: '$60k-$75k' },
+      { id: 3, type: 'job', title: 'Junior Software Engineer', company: 'Canva', location: 'Sydney, NSW (Hybrid)', salary: '$110k-$150k' }
     ],
     people: [
-      { id: 1, type: 'person', name: 'Sarah Mitchell', role: 'Software Developer', avatar: '👩🏽', trustLevel: 'verified' },
-      { id: 2, type: 'person', name: 'David Yarrawonga', role: 'Mentor', avatar: '👨🏾', trustLevel: 'trusted' },
-      { id: 3, type: 'person', name: 'Lisa Park', role: 'Career Coach', avatar: '👩🏻', trustLevel: 'established' }
+      { id: 1, type: 'person', name: 'Community Member', role: 'Software Engineer at Atlassian', avatar: '👩🏽', trustLevel: 'verified' },
+      { id: 2, type: 'person', name: 'Community Member', role: 'Mentor \u2014 Mining & Resources', avatar: '👨🏾', trustLevel: 'trusted' },
+      { id: 3, type: 'person', name: 'Community Member', role: 'Career Coach at CareerTrackers', avatar: '👩🏻', trustLevel: 'established' }
     ],
     groups: [
-      { id: 1, type: 'group', name: 'First Nations Tech Careers', members: 1247, icon: '💻' },
-      { id: 2, type: 'group', name: 'Women in STEM', members: 3456, icon: '👩‍🔬' },
-      { id: 3, type: 'group', name: 'Career Changers', members: 892, icon: '🔄' }
+      { id: 1, type: 'group', name: 'First Nations in Tech', members: 1247, icon: '💻' },
+      { id: 2, type: 'group', name: 'Indigenous Women in STEM', members: 3456, icon: '👩\u200d🔬' },
+      { id: 3, type: 'group', name: 'FIFO Workers Community', members: 892, icon: '⛏️' }
     ],
     organizations: [
-      { id: 1, type: 'org', name: 'First Nations Development Corp', followers: 3420, verified: true },
-      { id: 2, type: 'org', name: 'Indigenous Business Network', followers: 2890, verified: true },
-      { id: 3, type: 'org', name: 'Community Tech Hub', followers: 1560, verified: false }
+      { id: 1, type: 'org', name: 'Indigenous Business Australia', followers: 4820, verified: true },
+      { id: 2, type: 'org', name: 'Supply Nation', followers: 3690, verified: true },
+      { id: 3, type: 'org', name: 'CareerTrackers', followers: 2560, verified: true }
     ],
     posts: [
-      { id: 1, type: 'post', author: 'Sarah Mitchell', content: 'Just landed my dream job!...', likes: 156 },
-      { id: 2, type: 'post', author: 'First Nations Tech', content: 'We\'re hiring!...', likes: 234 }
+      { id: 1, type: 'post', author: 'Ngurra Pathways', content: 'New partnership with TAFE Queensland announced...', likes: 312 },
+      { id: 2, type: 'post', author: 'BHP Careers', content: 'Applications open for 2026 apprenticeships...', likes: 478 }
     ]
   };
 

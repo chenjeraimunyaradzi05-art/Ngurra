@@ -181,52 +181,52 @@ function LeftSidebar() {
 
 function RightSidebar() {
   const feedItems = [
-    { id: 1, user: 'Sarah M.', avatar: 'SM', action: 'landed a new role', detail: 'Software Developer at BHP', time: '2h ago', type: 'achievement' },
-    { id: 2, user: 'Community', avatar: '🎉', action: 'New event', detail: 'Indigenous Tech Meetup - Sydney', time: '4h ago', type: 'event' },
-    { id: 3, user: 'James K.', avatar: 'JK', action: 'shared an article', detail: 'Building Careers in Country', time: '5h ago', type: 'post' },
-    { id: 4, user: 'Mentor Match', avatar: '🤝', action: 'New mentor available', detail: 'Tech & Engineering', time: '6h ago', type: 'mentor' },
-    { id: 5, user: 'Emily W.', avatar: 'EW', action: 'completed a course', detail: 'Project Management Certificate', time: '8h ago', type: 'achievement' },
+    { id: 1, user: 'CareerTrackers', avatar: 'CT', action: 'New internship cohort open', detail: 'Apply for 2026 Summer Internships', time: '1h ago', type: 'event' },
+    { id: 2, user: 'BHP Careers', avatar: 'BH', action: 'Hiring now', detail: 'Mobile Plant Operator — Pilbara, WA (FIFO)', time: '3h ago', type: 'achievement' },
+    { id: 3, user: 'TAFE NSW', avatar: '🎓', action: 'Enrolments open', detail: 'Cert IV in Cyber Security — Fee-free places', time: '5h ago', type: 'post' },
+    { id: 4, user: 'Supply Nation', avatar: '🤝', action: 'New procurement opportunity', detail: 'Connect your Indigenous business to buyers', time: '6h ago', type: 'mentor' },
+    { id: 5, user: 'Telstra', avatar: 'TL', action: 'Graduate program open', detail: 'Applications close 30 March 2026', time: '8h ago', type: 'achievement' },
   ];
 
   const quickLinks = [
-    { icon: Users, label: 'My Network', href: '/connections', count: 42 },
-    { icon: BookOpen, label: 'Saved Posts', href: '/bookmarks', count: 8 },
-    { icon: Heart, label: 'Following', href: '/following', count: 15 },
+    { icon: Users, label: 'My Network', href: '/connections', count: 0 },
+    { icon: BookOpen, label: 'Saved Posts', href: '/bookmarks', count: 0 },
+    { icon: Heart, label: 'Following', href: '/following', count: 0 },
   ];
 
   return (
     <aside className="space-y-4 w-full overflow-hidden" suppressHydrationWarning>
-      {/* User Profile Card */}
+      {/* Welcome / Sign In Card */}
       <Card variant="ngurra" padding="md" suppressHydrationWarning>
         <div className="flex items-center gap-2 mb-3">
           <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold shrink-0 text-sm" style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 55%, #6366f1 100%)' }}>
-            JD
+            NP
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">John Doe</div>
-            <div className="text-xs truncate text-slate-600 dark:text-slate-400">Software Engineer</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">Welcome</div>
+            <div className="text-xs truncate text-slate-600 dark:text-slate-400">Sign in to track your journey</div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-0 text-center mb-3">
           <div className="rounded-l-lg p-1.5 bg-slate-100 dark:bg-white/5">
-            <div className="text-[9px] text-slate-500 dark:text-slate-500">Views</div>
-            <div className="text-xs font-bold text-slate-900 dark:text-white">128</div>
+            <div className="text-[9px] text-slate-500 dark:text-slate-500">Jobs</div>
+            <div className="text-xs font-bold text-slate-900 dark:text-white">500+</div>
           </div>
           <div className="p-1.5 bg-slate-100 dark:bg-white/5">
-            <div className="text-[9px] text-slate-500 dark:text-slate-500">Saved</div>
-            <div className="text-xs font-bold text-slate-900 dark:text-white">12</div>
+            <div className="text-[9px] text-slate-500 dark:text-slate-500">Mentors</div>
+            <div className="text-xs font-bold text-slate-900 dark:text-white">120+</div>
           </div>
           <div className="rounded-r-lg p-1.5 bg-slate-100 dark:bg-white/5">
-            <div className="text-[9px] text-slate-500 dark:text-slate-500">Applied</div>
-            <div className="text-xs font-bold text-slate-900 dark:text-white">5</div>
+            <div className="text-[9px] text-slate-500 dark:text-slate-500">Partners</div>
+            <div className="text-xs font-bold text-slate-900 dark:text-white">85+</div>
           </div>
         </div>
         <Link 
-          href="/profile" 
+          href="/signin" 
           className="block w-full py-2 text-center text-xs font-semibold text-white rounded-lg transition-all hover:opacity-90 hover:scale-[1.02]"
           style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 55%, #6366f1 100%)' }}
         >
-          View Profile
+          Sign In
         </Link>
       </Card>
 

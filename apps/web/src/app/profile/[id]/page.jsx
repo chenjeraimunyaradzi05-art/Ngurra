@@ -13,27 +13,27 @@ export default function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('posts');
   const [connectionStatus, setConnectionStatus] = useState('none'); // none, pending, connected
 
-  // Mock user data
+  // Community member profile — representative data at real institutions
   const user = {
     id: params.id,
-    name: 'Sarah Mitchell',
-    headline: 'Software Developer | First Nations Tech Advocate | Community Mentor',
-    avatar: '�🏽',
+    name: 'Community Member',
+    headline: 'CareerTrackers Alumni | Software Engineer at Canva | Mentor',
+    avatar: '👩🏽',
     coverImage: null,
     location: 'Sydney, NSW',
     trustLevel: 'verified',
-    connectionCount: 847,
-    followerCount: 1234,
-    postCount: 89,
-    bio: 'Passionate about creating pathways for First Nations people in technology. Software developer by day, community mentor by heart. Always learning, always growing.',
-    currentRole: 'Senior Developer at First Nations Development Corp',
-    education: 'Bachelor of Computer Science, University of Sydney',
+    connectionCount: 214,
+    followerCount: 387,
+    postCount: 24,
+    bio: 'Started through a CareerTrackers internship, completed a Bachelor of IT at UTS, and now building products at Canva. Passionate about mentoring the next generation of First Nations technologists.',
+    currentRole: 'Software Engineer at Canva',
+    education: 'Bachelor of Information Technology, University of Technology Sydney',
     skills: ['JavaScript', 'React', 'Node.js', 'Python', 'Community Building', 'Mentoring'],
     interests: ['Technology', 'Indigenous Business', 'Education', 'Career Development'],
-    badges: ['Tech Pioneer', 'Community Helper', 'Mentor', '100+ Connections'],
+    badges: ['Tech Pioneer', 'Community Helper', 'Mentor'],
     isVerified: true,
-    safetyMode: 'enhanced', // For displaying safety indicators
-    dmPolicy: 'connections' // How DMs are accepted
+    safetyMode: 'enhanced',
+    dmPolicy: 'connections'
   };
 
   const trustBadges = {
@@ -55,7 +55,7 @@ export default function UserProfilePage() {
   const mockPosts = [
     {
       id: 1,
-      content: "Just wrapped up an amazing mentoring session with some brilliant young coders! The future of First Nations tech is bright 🌟 #FirstNationsTech #Mentoring",
+      content: "Just finished mentoring a group of CareerTrackers interns on their first React project. Seeing the next generation of First Nations developers build with confidence is incredible 🌟 #CareerTrackers #FirstNationsInTech",
       likes: 156,
       comments: 34,
       time: '5 hours ago',
@@ -63,14 +63,14 @@ export default function UserProfilePage() {
     },
     {
       id: 2,
-      content: "Great news! Our team shipped a major feature today that will help thousands of job seekers connect with culturally safe employers. So proud of what we've built together 💪",
+      content: "Huge shout-out to the team at Canva for supporting Indigenous STEM pathways. Our RAP commitments are turning into real action — proud to be part of this work 💪",
       likes: 234,
       comments: 45,
       time: '2 days ago'
     },
     {
       id: 3,
-      content: "Reminder: The tech industry needs diverse voices. If you're thinking about a career change, now is the time. DM me if you want to chat about breaking into tech!",
+      content: "Applications are open for the 2026 BHP Indigenous Apprenticeship Program in the Pilbara. If you know someone keen on a trades career, share this post!",
       likes: 189,
       comments: 67,
       time: '1 week ago'
@@ -78,16 +78,16 @@ export default function UserProfilePage() {
   ];
 
   const mockConnections = [
-    { id: 1, name: 'James K.', role: 'Community Manager', avatar: '👨🏿', trustLevel: 'trusted' },
-    { id: 2, name: 'Elder Mary T.', role: 'Community Elder', avatar: '👩🏽', trustLevel: 'verified' },
-    { id: 3, name: 'David W.', role: 'Software Engineer', avatar: '👨🏽', trustLevel: 'established' },
-    { id: 4, name: 'Lisa P.', role: 'HR Manager', avatar: '👩🏻', trustLevel: 'trusted' }
+    { id: 1, name: 'Community Member', role: 'Program Manager at CareerTrackers', avatar: '👨🏿', trustLevel: 'trusted' },
+    { id: 2, name: 'Community Member', role: 'Nurse at Royal Darwin Hospital', avatar: '👩🏽', trustLevel: 'verified' },
+    { id: 3, name: 'Community Member', role: 'Engineer at Rio Tinto', avatar: '👨🏽', trustLevel: 'established' },
+    { id: 4, name: 'Community Member', role: 'HR Advisor at Telstra', avatar: '👩🏻', trustLevel: 'trusted' }
   ];
 
   const mockGroups = [
-    { id: 1, name: 'First Nations Tech Careers', members: 1247, icon: '💻' },
-    { id: 2, name: 'Women in STEM', members: 3456, icon: '👩‍🔬' },
-    { id: 3, name: 'Career Changers', members: 892, icon: '🔄' }
+    { id: 1, name: 'First Nations in Tech', members: 1247, icon: '💻' },
+    { id: 2, name: 'Indigenous Women in STEM', members: 3456, icon: '👩‍🔬' },
+    { id: 3, name: 'FIFO Workers Community', members: 892, icon: '⛏️' }
   ];
 
   const handleConnect = () => {

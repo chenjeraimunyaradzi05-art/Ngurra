@@ -28,29 +28,29 @@ interface GlobalSearchProps extends SearchBarProps {
   onClose: () => void;
 }
 
-// Mock recent searches
+// Suggested searches
 const recentSearches = [
-  'Indigenous community liaison',
-  'Software developer Sydney',
-  'Mining jobs WA',
-  'Graduate programs',
+  'Indigenous ranger programs NT',
+  'BHP traineeships Pilbara',
+  'TAFE NSW fee-free courses',
+  'CareerTrackers internships 2026',
 ];
 
-// Mock popular searches
+// Popular searches
 const popularSearches = [
-  { query: 'Indigenous designated roles', count: 1234 },
-  { query: 'Remote work opportunities', count: 856 },
-  { query: 'RAP certified employers', count: 645 },
-  { query: 'Entry level positions', count: 523 },
+  { query: 'Indigenous identified positions', count: 1840 },
+  { query: 'FIFO entry level mining WA', count: 1265 },
+  { query: 'RAP certified employers', count: 978 },
+  { query: 'Government graduate programs 2026', count: 743 },
 ];
 
-// Mock quick results
+// Quick results
 const quickResults: SearchResult[] = [
-  { id: '1', type: 'job', title: 'Indigenous Community Liaison Officer', subtitle: 'Rio Tinto • Perth, WA', href: '/jobs/indigenous-community-liaison-officer' },
-  { id: '2', type: 'job', title: 'First Nations Software Developer', subtitle: 'Atlassian • Sydney, NSW', href: '/jobs/first-nations-software-developer' },
-  { id: '3', type: 'company', title: 'BHP', subtitle: 'Mining & Resources', href: '/employers/bhp' },
-  { id: '4', type: 'course', title: 'Certificate IV in Business', subtitle: 'TAFE NSW • Online', href: '/courses/cert-iv-business' },
-  { id: '5', type: 'mentor', title: 'Sarah Thompson', subtitle: 'Senior Indigenous Advisor', href: '/mentorship/mentors/sarah-thompson' },
+  { id: '1', type: 'job', title: 'Mobile Plant Operator (Entry Pathway)', subtitle: 'BHP • Pilbara, WA (FIFO)', href: '/jobs/mobile-plant-operator-bhp' },
+  { id: '2', type: 'job', title: 'Customer Service Consultant', subtitle: 'Telstra • Sydney, NSW (Hybrid)', href: '/jobs/customer-service-consultant-telstra' },
+  { id: '3', type: 'company', title: 'Rio Tinto', subtitle: 'Mining & Resources', href: '/employers/rio-tinto' },
+  { id: '4', type: 'course', title: 'Certificate IV in Cyber Security', subtitle: 'TAFE Queensland • Online', href: '/courses/cert-iv-cyber-security' },
+  { id: '5', type: 'mentor', title: 'Find a Mentor', subtitle: 'Browse mentors by industry', href: '/mentorship' },
 ];
 
 function getResultIcon(type: SearchResult['type']) {

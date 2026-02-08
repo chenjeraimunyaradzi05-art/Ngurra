@@ -3,7 +3,7 @@
  * Zero-downtime deployment with health checks and automatic rollback
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import Redis from 'ioredis';
 import logger from './logger';
 
@@ -58,12 +58,15 @@ export async function performHealthCheck() {
     checks: {},
   };
 
-  // Database check
+  // Database check (uses shared prisma client, with timeout)
   try {
-    const prisma = new PrismaClient();
-    await prisma.$queryRaw`SELECT 1`;
-    await prisma.$disconnect();
-    checks.checks.database = { status: 'healthy', latencyMs: 0 };
+    const dbStart = Date.now();
+    await Promise.race([
+      prisma.$queryRaw`SELECT 1`,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('DB health check timeout (5s)')), 5000)),
+    ]);
+    const dbLatency = Date.now() - dbStart;
+    checks.checks.database = { status: 'healthy', latencyMs: dbLatency };
   } catch (error: any) {
     checks.checks.database = { status: 'unhealthy', error: error.message };
     checks.status = 'unhealthy';
@@ -219,8 +222,6 @@ export function getDeploymentInfo() {
  */
 export async function checkMigrationStatus() {
   try {
-    const prisma = new PrismaClient();
-    
     // Check for pending migrations (Prisma-specific)
     // In production, use prisma migrate deploy status
     const migrations: any[] = await prisma.$queryRaw`
@@ -228,8 +229,6 @@ export async function checkMigrationStatus() {
       ORDER BY finished_at DESC 
       LIMIT 5
     `.catch(() => []) as any[];
-    
-    await prisma.$disconnect();
 
     return {
       status: 'ok',

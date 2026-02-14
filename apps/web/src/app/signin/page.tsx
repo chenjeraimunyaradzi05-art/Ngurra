@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { API_BASE } from '@/lib/apiBase';
+import { setAuthSessionCookie } from '@/lib/authSession';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -18,15 +19,20 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [returnTo] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get('returnTo') || '/member/dashboard';
+    }
+    return '/member/dashboard';
+  });
 
   useEffect(() => {
+    // Clean URL without losing the captured returnTo
     if (typeof window === 'undefined') return;
     if (window.location.search) {
       window.history.replaceState({}, '', '/signin');
-    } else if (searchParams?.toString()) {
-      router.replace('/signin');
     }
-  }, [searchParams, router]);
+  }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -58,8 +64,11 @@ export default function SignInPage() {
         throw new Error(data.message || data.error || 'Login failed');
       }
 
-      // Store token
+      // Store token in memory (secure)
       setToken(data.data.token);
+
+      // Set auth-session cookie for middleware route protection
+      setAuthSessionCookie();
 
       // Update auth store
       setUser({
@@ -72,9 +81,9 @@ export default function SignInPage() {
       // Redirect to dashboard
       setSuccess(true);
       
-      // Use router.push with a small delay to ensure state is persisted
+      // Redirect to returnTo destination (from middleware) or default dashboard
       setTimeout(() => {
-        router.push('/member/dashboard');
+        router.push(returnTo);
       }, 100);
     } catch (err: any) {
       console.error('Sign in error:', err);

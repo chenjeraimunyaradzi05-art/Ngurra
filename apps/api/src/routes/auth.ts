@@ -39,6 +39,45 @@ function getJwtSecret(): string {
 const JWT_SECRET = getJwtSecret();
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
+// Account lockout: track failed login attempts per email (in-memory)
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const failedAttempts = new Map<string, { count: number; firstAttempt: number }>();
+
+function recordFailedAttempt(email: string): void {
+  const now = Date.now();
+  const record = failedAttempts.get(email);
+  if (!record || now - record.firstAttempt > LOCKOUT_WINDOW_MS) {
+    failedAttempts.set(email, { count: 1, firstAttempt: now });
+  } else {
+    record.count++;
+  }
+}
+
+function isAccountLocked(email: string): boolean {
+  const record = failedAttempts.get(email);
+  if (!record) return false;
+  if (Date.now() - record.firstAttempt > LOCKOUT_WINDOW_MS) {
+    failedAttempts.delete(email);
+    return false;
+  }
+  return record.count >= MAX_FAILED_ATTEMPTS;
+}
+
+function clearFailedAttempts(email: string): void {
+  failedAttempts.delete(email);
+}
+
+// Cleanup stale lockout entries every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [email, record] of failedAttempts) {
+    if (now - record.firstAttempt > LOCKOUT_WINDOW_MS) {
+      failedAttempts.delete(email);
+    }
+  }
+}, 10 * 60 * 1000);
+
 // Validation schemas
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -151,11 +190,6 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       },
     });
 
-    // Store password hash in existing User.password column
-    await prisma.$executeRaw`
-      UPDATE "User" SET "password" = ${hashedPassword} WHERE id = ${user.id}
-    `;
-
     // Generate token
     const token = generateToken(user);
 
@@ -169,6 +203,15 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
         lastName: resolvedLastName,
       },
     };
+
+    // Set HttpOnly cookie for session recovery on page reload
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/',
+    });
 
     res.status(201).json({
       message: 'Registration successful',
@@ -200,6 +243,15 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     }
 
     const { email, password } = validation.data;
+    const normalizedEmail = email.toLowerCase();
+
+    // Check account lockout
+    if (isAccountLocked(normalizedEmail)) {
+      return void res.status(429).json({
+        error: 'Account temporarily locked',
+        message: 'Too many failed login attempts. Please try again in 15 minutes.',
+      });
+    }
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -220,6 +272,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     });
 
     if (!user) {
+      recordFailedAttempt(normalizedEmail);
       return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
@@ -233,6 +286,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     const passwordHash = credentials[0]?.password || null;
 
     if (!passwordHash) {
+      recordFailedAttempt(normalizedEmail);
       return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
@@ -241,11 +295,15 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
 
     const isValidPassword = await bcrypt.compare(password, passwordHash);
     if (!isValidPassword) {
+      recordFailedAttempt(normalizedEmail);
       return void res.status(401).json({
         error: 'Invalid credentials',
         message: 'Email or password is incorrect.',
       });
     }
+
+    // Clear failed attempts on successful login
+    clearFailedAttempts(normalizedEmail);
 
     // Generate token
     const token = generateToken(user);
@@ -266,6 +324,15 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
         avatar: user.avatarUrl,
       },
     };
+
+    // Set HttpOnly cookie for session recovery on page reload
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/',
+    });
 
     res.json({
       message: 'Login successful',
@@ -288,12 +355,18 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
  */
 router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Extract token from Authorization header or cookie (session recovery)
+    let token: string | null = null;
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return void res.status(401).json({ error: 'No token provided' });
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (req.cookies?.token) {
+      token = req.cookies.token;
     }
 
-    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return void res.status(401).json({ error: 'No token provided' });
+    }
 
     let decoded: any;
     try {
@@ -327,12 +400,16 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
     const firstName = nameParts[0] || 'User';
     const lastName = nameParts.slice(1).join(' ') || '';
 
+    // Issue a fresh token so the client can restore its in-memory token after page reload
+    const freshToken = generateToken(user);
+
     res.json({
       data: {
         id: user.id,
         email: user.email,
         name: user.name,
         userType: user.userType,
+        token: freshToken,
         profile: {
           firstName,
           lastName,
@@ -443,8 +520,13 @@ router.post('/reset-password', async (req: Request, res: Response, next: NextFun
  * @access Private
  */
 router.post('/logout', authenticate, (_req: Request, res: Response) => {
-  // JWT is stateless, so logout is handled client-side
-  // In production, you might want to blacklist tokens or use refresh tokens
+  // Clear the HttpOnly session cookie
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
   res.json({ message: 'Logout successful' });
 });
 

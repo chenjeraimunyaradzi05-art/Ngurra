@@ -796,10 +796,7 @@ export function ResourceLibrary() {
 
   if (isLoading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-      >
+      <div className="ngurra-page flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-slate-600 font-medium">Loading resources...</p>
@@ -809,10 +806,7 @@ export function ResourceLibrary() {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-    >
+    <div className="ngurra-page">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">

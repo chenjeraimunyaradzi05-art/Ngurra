@@ -185,27 +185,27 @@ For urgent safety concerns, contact: safety@ngurrapathways.com.au`,
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-slate-950 py-12 px-6">
+    <div className="ngurra-page py-12 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h1 className="ngurra-h1 mb-4">
             Terms of Service
           </h1>
-          <p className="text-slate-400">
+          <p className="ngurra-muted">
             Last updated: {new Date().toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
 
         {/* Table of Contents */}
-        <nav className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-12">
-          <h2 className="text-lg font-semibold text-white mb-4">Contents</h2>
+        <nav className="ngurra-card p-6 mb-12">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Contents</h2>
           <ul className="grid md:grid-cols-2 gap-2">
             {SECTIONS.map((section, i) => (
               <li key={i}>
                 <a
                   href={`#section-${i + 1}`}
-                  className="text-sm text-blue-400 hover:text-blue-300 hover:underline"
+                  className="text-sm ngurra-link hover:underline"
                 >
                   {section.title}
                 </a>
@@ -218,10 +218,10 @@ export default function TermsPage() {
         <div className="space-y-12">
           {SECTIONS.map((section, i) => (
             <section key={i} id={`section-${i + 1}`} className="scroll-mt-8">
-              <h2 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 pb-2 ngurra-divider">
                 {section.title}
               </h2>
-              <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+              <div className="ngurra-text text-sm leading-relaxed whitespace-pre-line">
                 {section.content}
               </div>
             </section>
@@ -229,28 +229,28 @@ export default function TermsPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-slate-700 text-center">
-          <p className="text-slate-400 text-sm mb-4">
+        <div className="mt-16 pt-8 ngurra-divider text-center">
+          <p className="ngurra-muted text-sm mb-4">
             By using Ngurra Pathways, you acknowledge that you have read, understood, and agree to these Terms of Service.
           </p>
           <div className="flex gap-4 justify-center">
             <Link
               href="/privacy"
-              className="text-sm text-blue-400 hover:text-blue-300"
+              className="text-sm ngurra-link"
             >
               Privacy Policy
             </Link>
-            <span className="text-slate-600">|</span>
+            <span className="text-slate-400 dark:text-slate-600">|</span>
             <Link
               href="/help"
-              className="text-sm text-blue-400 hover:text-blue-300"
+              className="text-sm ngurra-link"
             >
               Help Centre
             </Link>
-            <span className="text-slate-600">|</span>
+            <span className="text-slate-400 dark:text-slate-600">|</span>
             <Link
               href="/about"
-              className="text-sm text-blue-400 hover:text-blue-300"
+              className="text-sm ngurra-link"
             >
               About Us
             </Link>

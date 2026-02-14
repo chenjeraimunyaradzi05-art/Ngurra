@@ -3,7 +3,7 @@
 /**
  * Real-time Chat Component
  * 
- * Full-featured chat interface with WebSocket support for live messaging.
+ * Full-featured chat interface with Socket.io support for live messaging.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';

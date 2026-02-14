@@ -105,17 +105,11 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-6" style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}>
+    <div className="ngurra-page py-12 px-6">
       {/* Decorative Halos */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div 
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-40"
-          style={{ background: `radial-gradient(circle, ${accentPink}33 0%, transparent 70%)`, filter: 'blur(40px)' }}
-        />
-        <div 
-          className="absolute top-1/3 -left-40 w-80 h-80 rounded-full opacity-30"
-          style={{ background: `radial-gradient(circle, ${accentPurple}33 0%, transparent 70%)`, filter: 'blur(40px)' }}
-        />
+      <div className="ngurra-halos">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">

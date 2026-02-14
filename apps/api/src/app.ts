@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import compression from 'compression';
 import helmet from 'helmet';
@@ -197,6 +198,7 @@ export function createApp() {
 
     // JSON parser for all other routes
     app.use(express.json());
+    app.use(cookieParser());
 
     // Test-mode fast paths to avoid long DB waits in integration tests
     if (nodeEnv === 'test') {
@@ -266,8 +268,8 @@ export function createApp() {
     app.use(securitySanitize); // Sanitize input (XSS prevention)
 
     const mountRoutes = (base: any) => {
-        // Authentication routes (public)
-        base.use('/auth', authRouter);
+        // Authentication routes (public) - rate limited to prevent brute force
+        base.use('/auth', limiters.sensitive, authRouter);
         // Mount member routes
         base.use('/member', membersRouter);
         base.use('/uploads', limiters.uploads, uploadsRouter);

@@ -8,6 +8,13 @@ import { prisma } from '../db';
 
 const router = Router();
 
+ const searchUsersSchema = z.object({
+   query: z.object({
+     q: z.string().optional(),
+     limit: z.string().optional(),
+   }),
+ });
+
 /**
  * @route GET /users/me
  * @desc Get current user profile
@@ -110,6 +117,139 @@ router.patch('/me', auth.authenticate, validateRequest(updateProfileSchema), asy
     next(error);
   }
 });
+
+ /**
+  * @route GET /users/search
+  * @desc Search users for messaging (minimal identity)
+  * @access Private
+  */
+ router.get('/search', auth.authenticate, validateRequest(searchUsersSchema), async (req, res, next) => {
+   try {
+     const userId = req.user!.id;
+     const q = String(req.query.q || '').trim();
+
+     if (!q || q.length < 2) {
+       return void res.json({ users: [] });
+     }
+
+     const limitRaw = parseInt(String(req.query.limit || '10'), 10);
+     const limit = Number.isFinite(limitRaw) ? Math.min(20, Math.max(1, limitRaw)) : 10;
+     const isEmailQuery = q.includes('@');
+
+     const where: any = {
+       id: { not: userId },
+     };
+
+     if (isEmailQuery) {
+       where.email = { equals: q, mode: 'insensitive' };
+     } else {
+       where.OR = [
+         { name: { contains: q, mode: 'insensitive' } },
+         { email: { contains: q, mode: 'insensitive' } },
+         { companyProfile: { is: { companyName: { contains: q, mode: 'insensitive' } } } },
+         { mentorProfile: { is: { name: { contains: q, mode: 'insensitive' } } } },
+         { governmentProfile: { is: { agencyName: { contains: q, mode: 'insensitive' } } } },
+         { institutionProfile: { is: { institutionName: { contains: q, mode: 'insensitive' } } } },
+       ];
+     }
+
+     const candidates = await prisma.user.findMany({
+       where,
+       take: isEmailQuery ? 1 : limit,
+       orderBy: isEmailQuery ? undefined : { createdAt: 'desc' },
+       select: {
+         id: true,
+         email: true,
+         name: true,
+         avatarUrl: true,
+         userType: true,
+         companyProfile: { select: { companyName: true, logo: true } },
+         mentorProfile: { select: { name: true, avatar: true, avatarUrl: true } },
+         governmentProfile: { select: { agencyName: true } },
+         institutionProfile: { select: { institutionName: true } },
+       },
+     });
+
+     const candidateIds = candidates.map((u: any) => u.id);
+     if (candidateIds.length === 0) {
+       return void res.json({ users: [] });
+     }
+
+     const [safetySettings, blocks, connections] = await Promise.all([
+       prisma.userSafetySettings.findMany({
+         where: { userId: { in: candidateIds } },
+         select: { userId: true, showInSearch: true, hideFromNonConnections: true },
+       }),
+       prisma.userBlock.findMany({
+         where: {
+           OR: [
+             { blockerId: userId, blockedId: { in: candidateIds } },
+             { blockedId: userId, blockerId: { in: candidateIds } },
+           ],
+         },
+         select: { blockerId: true, blockedId: true },
+       }),
+       prisma.userConnection.findMany({
+         where: {
+           status: 'accepted',
+           OR: [
+             { requesterId: userId, addresseeId: { in: candidateIds } },
+             { addresseeId: userId, requesterId: { in: candidateIds } },
+           ],
+         },
+         select: { requesterId: true, addresseeId: true },
+       }),
+     ]);
+
+     const settingsByUserId = new Map((safetySettings || []).map((s: any) => [s.userId, s]));
+
+     const blockedIds = new Set<string>();
+     for (const b of blocks || []) {
+       if (b.blockerId === userId) blockedIds.add(b.blockedId);
+       if (b.blockedId === userId) blockedIds.add(b.blockerId);
+     }
+
+     const connectedIds = new Set<string>();
+     for (const c of connections || []) {
+       connectedIds.add(c.requesterId === userId ? c.addresseeId : c.requesterId);
+     }
+
+     const users = candidates
+       .filter((u: any) => !blockedIds.has(u.id))
+       .filter((u: any) => {
+         const settings = settingsByUserId.get(u.id);
+         if (settings?.showInSearch === false) return false;
+         if (settings?.hideFromNonConnections === true && !connectedIds.has(u.id)) return false;
+         return true;
+       })
+       .map((u: any) => {
+         const name =
+           u.name ||
+           u.companyProfile?.companyName ||
+           u.mentorProfile?.name ||
+           u.governmentProfile?.agencyName ||
+           u.institutionProfile?.institutionName ||
+           (u.email ? u.email.split('@')[0] : 'User');
+
+         const avatar =
+           u.avatarUrl ||
+           u.mentorProfile?.avatar ||
+           u.mentorProfile?.avatarUrl ||
+           u.companyProfile?.logo ||
+           null;
+
+         return {
+           id: u.id,
+           name,
+           avatar,
+         };
+       });
+
+     res.json({ users });
+   } catch (error) {
+     next(error);
+   }
+ });
 
 /**
  * @route GET /users/:id

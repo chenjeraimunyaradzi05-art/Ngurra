@@ -117,10 +117,10 @@ export default function TafeCourseManagement() {
 
   if (!token) {
     return (
-      <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}>
+      <div className="ngurra-page">
         <div className="max-w-5xl mx-auto py-12 px-4">
-          <h1 className="text-3xl font-bold mb-4 text-slate-900">Course Management</h1>
-          <p className="text-slate-600">Please log in to manage courses.</p>
+          <h1 className="ngurra-h1 mb-4">Course Management</h1>
+          <p className="ngurra-text">Please log in to manage courses.</p>
         </div>
       </div>
     );
@@ -129,12 +129,9 @@ export default function TafeCourseManagement() {
   return (
     <div className="min-h-screen">
       {/* === HERO SECTION === */}
-      <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8" style={{
-        background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)',
-      }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(circle at 15% 30%, rgba(236, 72, 153, 0.2), transparent 55%), radial-gradient(circle at 85% 0%, rgba(99, 102, 241, 0.18), transparent 40%)',
-        }} />
+      <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50/40 to-purple-50/40 dark:from-slate-900 dark:to-slate-800">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
 
         <div className="relative max-w-5xl mx-auto">
           <Link href="/tafe/dashboard" className="text-pink-600 hover:text-pink-700 text-sm mb-4 inline-flex items-center gap-1 font-medium">

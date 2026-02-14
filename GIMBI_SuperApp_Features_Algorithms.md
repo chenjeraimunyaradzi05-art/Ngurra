@@ -287,7 +287,7 @@ Video A: First Nations woman shares business success story
 - Opportunity: 7/10 (mentions mentorship, funding options)
 - First Nations: 10/10 (verified First Nations creator, business focus)
 - Safety: 9/10 (verified account, high trust)
-- **Final Score: 7.9/10 → HIGH PRIORITY**
+- **Final Score: 7.7/10 → HIGH PRIORITY**
 
 Video B: Celebrity lifestyle (no economic value)
 - Engagement: 9/10 (95% completion, viral shares)
@@ -295,12 +295,12 @@ Video B: Celebrity lifestyle (no economic value)
 - Opportunity: 0/10 (no economic value)
 - First Nations: 1/10 (no cultural/community benefit)
 - Safety: 7/10 (verified celebrity, some complaints)
-- **Final Score: 3.8/10 → DOWNRANKED**
+- **Final Score: 4.2/10 → DOWNRANKED**
 
-Result: Video A ranked 2x higher despite lower raw engagement
+Result: Video A ranked ~2x higher despite lower raw engagement
 ```
 
-**Stage 3: Filtering & Ranking**
+**Stage 3: Filtering & Delivery**
 
 **Hard Filters (Remove entirely):**
 - Hate speech, harassment, misinformation
@@ -599,8 +599,8 @@ Example:
 Role: Project Manager, Sydney, 8+ years, Bachelor's
   - All women: AU$125,000 median (n=500)
   - First Nations women: AU$108,000 median (n=45)
-  - **Total gap: AU$17,000 (-13.6%)**
-  - **Intersectional gap: AU$17,000 (-13.6% additional)**
+  - **Gap vs. all women: AU$17,000 (-13.6%)**
+  - **Note: This is the intersectional (gender + race) gap First Nations women face**
 
 Stage 3: Negotiation Coaching
 - User inputs their offer (salary, benefits, equity, flexibility)
@@ -955,7 +955,7 @@ Stage 4: Feed Construction & Delivery
 - SimClusters for community discovery
 - Real-graph for mentor/mentee compatibility
 - Advanced safety filters (harassment, misinformation)
-- Advanced first Nations verification system
+- Advanced First Nations verification system
 
 **Phase 4+ (Year 2): SCALING 🚀**
 - Serve 1M+ concurrent users

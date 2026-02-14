@@ -155,19 +155,12 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Celestial background overlay */}
-      <div 
-        className="fixed inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 90% 80%, rgba(80, 200, 120, 0.12) 0%, transparent 40%),
-            radial-gradient(circle at 50% 50%, rgba(228, 91, 138, 0.1) 0%, transparent 50%)
-          `
-        }}
-        aria-hidden="true"
-      />
+    <div className="ngurra-page relative">
+      {/* Decorative halos */}
+      <div className="ngurra-halos">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
+      </div>
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 text-center relative z-10">
@@ -178,13 +171,10 @@ export default function PricingPage() {
           <Sparkles className="w-5 h-5" style={{ color: '#B76E79' }} />
         </div>
 
-        <h1 
-          className="text-4xl sm:text-5xl font-bold mb-6 text-gradient-gold"
-          style={{ textShadow: '0 0 40px rgba(255, 215, 0, 0.3)' }}
-        >
+        <h1 className="ngurra-h1 text-4xl sm:text-5xl mb-6">
           Simple, Transparent Pricing
         </h1>
-        <p className="text-xl max-w-2xl mx-auto mb-10" style={{ color: 'rgba(248, 246, 255, 0.8)' }}>
+        <p className="text-xl max-w-2xl mx-auto mb-10 ngurra-text">
           Connect with talented First Nations candidates and build a more inclusive workforce. 
           Choose the plan that fits your noble purpose. ✨
         </p>
@@ -276,7 +266,7 @@ export default function PricingPage() {
                   >
                     <Icon className="w-5 h-5" style={{ color: tier.color }} />
                   </div>
-                  <h3 className="text-lg font-bold" style={{ color: '#F8F6FF' }}>{tier.name}</h3>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">{tier.name}</h3>
                 </div>
 
                 <div className="mb-5">
@@ -284,7 +274,7 @@ export default function PricingPage() {
                   <span className="text-sm ml-1" style={{ color: 'rgba(248, 246, 255, 0.6)' }}>{getPeriod(tier)}</span>
                 </div>
 
-                <p className="text-sm mb-6" style={{ color: 'rgba(248, 246, 255, 0.7)' }}>{tier.description}</p>
+                <p className="text-sm mb-6 ngurra-text">{tier.description}</p>
 
                 <ul className="space-y-3 mb-6">
                   {tier.features.map((feature, idx) => (
@@ -365,7 +355,7 @@ export default function PricingPage() {
                     <p className="text-sm" style={{ color: '#B76E79' }}>Custom annual contracts from $5,000/month</p>
                   </div>
                 </div>
-                <p className="mb-6" style={{ color: 'rgba(248, 246, 255, 0.8)' }}>{RAP_TIER.description}</p>
+                <p className="mb-6 ngurra-text">{RAP_TIER.description}</p>
                 <Link
                   href={RAP_TIER.ctaHref}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300"

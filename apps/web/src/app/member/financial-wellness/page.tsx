@@ -352,14 +352,14 @@ export default function FinancialWellnessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-white flex items-center justify-center">
         <RefreshCw className="w-6 h-6 animate-spin text-emerald-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white px-6 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-white px-6 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-6 md:p-8 mb-6">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10" />

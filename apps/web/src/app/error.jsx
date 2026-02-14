@@ -76,17 +76,17 @@ export default function Error({ error, reset }) {
         </div>
 
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-white mb-3">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
           Something went wrong
         </h1>
 
         {/* Description */}
-        <p className="text-slate-300 mb-2">
+        <p className="text-gray-600 dark:text-slate-300 mb-2">
           We encountered an unexpected error. Don&apos;t worry, your data is safe.
         </p>
 
         {reportSent && (
-          <p className="text-sm text-slate-400 mb-6">
+          <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
             This error has been automatically reported to our team.
           </p>
         )}
@@ -139,7 +139,7 @@ export default function Error({ error, reset }) {
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-600 px-6 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-slate-600 px-6 py-3 text-sm font-medium text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -149,9 +149,9 @@ export default function Error({ error, reset }) {
         </div>
 
         {/* Help text */}
-        <p className="mt-8 text-xs text-slate-500">
+        <p className="mt-8 text-xs text-gray-500 dark:text-slate-500">
           If this problem persists, please{' '}
-          <a href="/contact" className="text-blue-400 hover:text-blue-300 underline">
+          <a href="/contact" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 underline">
             contact support
           </a>
         </p>

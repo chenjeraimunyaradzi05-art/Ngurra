@@ -53,12 +53,9 @@ export default function RentalSeekersPage() {
   return (
     <div className="min-h-screen">
       {/* === HERO SECTION === */}
-      <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8" style={{
-        background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)',
-      }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.2), transparent 55%), radial-gradient(circle at 85% 0%, rgba(99, 102, 241, 0.18), transparent 40%)',
-        }} />
+      <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50/40 to-purple-50/40 dark:from-slate-900 dark:to-slate-800">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
 
         <div className="relative max-w-6xl mx-auto">
           <div className="mb-4">

@@ -55,6 +55,10 @@ playwright-report/
 # Local test output artifacts
 test-output.txt
 
+apps/api/api-dev-test.txt
+apps/web/dev-output.txt
+apps/web/dev-test.txt
+
 # Prisma
 apps/api/prisma/dev.db*
 apps/api/prisma/*.db*

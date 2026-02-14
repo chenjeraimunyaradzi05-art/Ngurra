@@ -12,7 +12,7 @@ import CulturalCalendar from '@/components/CulturalCalendar';
 
 export default function CulturalEventsPage() {
   return (
-    <div className="min-h-screen bg-slate-950 py-8 px-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm" aria-label="Breadcrumb">

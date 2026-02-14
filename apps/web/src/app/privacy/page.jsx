@@ -151,39 +151,39 @@ export default function PrivacyPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16">
+      <div className="ngurra-page max-w-4xl mx-auto px-4 py-16">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-700 border-t-blue-500" />
-          <span className="text-slate-400">Loading privacy & data settings…</span>
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-300 dark:border-slate-700 border-t-purple-500" />
+          <span className="ngurra-muted">Loading privacy & data settings…</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="ngurra-page max-w-4xl mx-auto px-4 py-8">
       <nav className="mb-6 text-sm" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-2 text-slate-400">
-          <li><Link href="/" className="hover:text-blue-400 transition-colors">Home</Link></li>
-          <li><span className="text-slate-600">/</span></li>
-          <li className="text-white">Privacy & Data</li>
+        <ol className="flex items-center gap-2 ngurra-muted">
+          <li><Link href="/" className="ngurra-link">Home</Link></li>
+          <li><span className="text-slate-400 dark:text-slate-600">/</span></li>
+          <li className="text-slate-900 dark:text-white">Privacy & Data</li>
         </ol>
       </nav>
 
-      <h1 className="text-3xl font-bold mb-2">Privacy & Data</h1>
-      <p className="text-slate-300 mb-8">
+      <h1 className="ngurra-h1 mb-2">Privacy & Data</h1>
+      <p className="ngurra-text mb-8">
         Manage your consent choices, export your data, and request account deletion.
       </p>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-900/30 border border-red-800 rounded-lg text-red-200 text-sm">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg text-red-700 dark:text-red-200 text-sm">
           {error}
         </div>
       )}
 
-      <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-1">Consent Preferences</h2>
-        <p className="text-slate-400 text-sm mb-4">Last updated: {consentUpdatedLabel}</p>
+      <section className="ngurra-card p-6 mb-6">
+        <h2 className="ngurra-h2 text-xl mb-1">Consent Preferences</h2>
+        <p className="ngurra-muted text-sm mb-4">Last updated: {consentUpdatedLabel}</p>
 
         <div className="space-y-3">
           {[
@@ -193,10 +193,10 @@ export default function PrivacyPage() {
             ['marketingCommunications', 'Marketing communications', 'Receive product updates and opportunities.'],
             ['thirdPartySharing', 'Third-party sharing', 'Allow sharing with trusted partners (opt-in only).'],
           ].map(([key, title, desc]) => (
-            <label key={key} className="flex items-start justify-between gap-4 border border-slate-800 rounded-lg p-4">
+            <label key={key} className="flex items-start justify-between gap-4 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
               <div>
                 <div className="font-medium">{title}</div>
-                <div className="text-sm text-slate-400">{desc}</div>
+                <div className="text-sm ngurra-muted">{desc}</div>
               </div>
               <input
                 type="checkbox"
@@ -209,12 +209,12 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-2">Community Data Benefit Agreement</h2>
-        <p className="text-slate-300 mb-4">{cdba?.description || 'Anonymized, aggregated insights can help benefit community outcomes.'}</p>
+      <section className="ngurra-card p-6 mb-6">
+        <h2 className="ngurra-h2 text-xl mb-2">Community Data Benefit Agreement</h2>
+        <p className="ngurra-text mb-4">{cdba?.description || 'Anonymized, aggregated insights can help benefit community outcomes.'}</p>
 
         {cdba?.benefits?.length ? (
-          <div className="text-sm text-slate-300 space-y-1">
+          <div className="text-sm ngurra-text space-y-1">
             {cdba.benefits.map((b) => (
               <div key={b}>• {b}</div>
             ))}
@@ -222,9 +222,9 @@ export default function PrivacyPage() {
         ) : null}
       </section>
 
-      <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-2">Export Your Data</h2>
-        <p className="text-slate-400 text-sm mb-4">
+      <section className="ngurra-card p-6 mb-6">
+        <h2 className="ngurra-h2 text-xl mb-2">Export Your Data</h2>
+        <p className="ngurra-muted text-sm mb-4">
           Request a portable export of your profile and activity. When ready, you can download it.
         </p>
 
@@ -233,7 +233,7 @@ export default function PrivacyPage() {
             type="button"
             disabled={exporting}
             onClick={() => requestExport('json')}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg"
+            className="ngurra-btn-primary px-4 py-2 rounded-lg"
           >
             Request JSON Export
           </button>
@@ -241,21 +241,21 @@ export default function PrivacyPage() {
             type="button"
             disabled={exporting}
             onClick={() => requestExport('csv')}
-            className="px-4 py-2 border border-slate-700 hover:bg-slate-800 disabled:opacity-50 rounded-lg"
+            className="ngurra-btn-secondary px-4 py-2 rounded-lg"
           >
             Request CSV Export
           </button>
         </div>
 
         {exportId && (
-          <div className="border border-slate-800 rounded-lg p-4">
-            <div className="text-sm text-slate-300 mb-2">Export ID: <span className="text-slate-200">{exportId}</span></div>
-            <div className="text-sm text-slate-400 mb-4">Status: {exportStatus?.status || 'unknown'}</div>
+          <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+            <div className="text-sm ngurra-text mb-2">Export ID: <span className="text-slate-900 dark:text-slate-200">{exportId}</span></div>
+            <div className="text-sm ngurra-muted mb-4">Status: {exportStatus?.status || 'unknown'}</div>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
                 onClick={refreshExportStatus}
-                className="px-4 py-2 border border-slate-700 hover:bg-slate-800 rounded-lg"
+                className="ngurra-btn-secondary px-4 py-2 rounded-lg"
               >
                 Refresh Status
               </button>
@@ -272,9 +272,9 @@ export default function PrivacyPage() {
         )}
       </section>
 
-      <section className="bg-slate-900/40 border border-red-900/40 rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-2">Account Deletion</h2>
-        <p className="text-slate-400 text-sm mb-4">
+      <section className="ngurra-card border-red-200 dark:border-red-900/40 p-6">
+        <h2 className="ngurra-h2 text-xl mb-2">Account Deletion</h2>
+        <p className="ngurra-muted text-sm mb-4">
           You can request deletion of your account. A grace period applies, and you can cancel within that window.
         </p>
 
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
               type="email"
               value={confirmEmail}
               onChange={(e) => setConfirmEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="ngurra-input"
               placeholder="you@example.com"
             />
           </div>
@@ -295,7 +295,7 @@ export default function PrivacyPage() {
               type="text"
               value={deleteReason}
               onChange={(e) => setDeleteReason(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="ngurra-input"
               placeholder="Your reason"
             />
           </div>

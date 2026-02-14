@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { clearTokens, setAccessToken } from '@/lib/tokenStore';
 
 export interface User {
   id: string;
@@ -39,10 +40,16 @@ export const useAuthStore = create<AuthState>()(
       }),
       
       setToken: (token) => {
+        if (token) {
+          setAccessToken(token);
+        } else {
+          clearTokens();
+        }
         set({ token });
       },
       
       logout: () => {
+        clearTokens();
         set({ user: null, token: null, isAuthenticated: false });
       },
       
@@ -55,7 +62,6 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         user: state.user, 
-        token: state.token,
         isAuthenticated: state.isAuthenticated 
       }),
       onRehydrateStorage: () => (state) => {

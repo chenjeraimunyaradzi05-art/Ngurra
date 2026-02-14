@@ -116,7 +116,18 @@ export default async function api<T = any>(endpoint: string, options: ApiOptions
       
       clearTimeout(timeoutId);
 
-      // Auth disabled: no refresh token handling
+      // Handle 401 - attempt token refresh once
+      if (res.status === 401 && attempt === 0) {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          headers.set('Authorization', `Bearer ${newToken}`);
+          attempt++;
+          continue;
+        }
+        // Refresh failed — notify session expired
+        if (onSessionExpired) onSessionExpired();
+        return { ok: false, status: 401, error: 'Session expired. Please log in again.' };
+      }
 
       const data = await res.json().catch(() => null);
       

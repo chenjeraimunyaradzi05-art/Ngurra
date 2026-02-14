@@ -1030,7 +1030,7 @@ export default function RentalsPage() {
                 </button>
               ) : (
                 <Link
-                  href="/auth/login"
+                  href="/signin?returnTo=/rentals"
                   className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02]"
                   style={{
                     background: `linear-gradient(135deg, ${colors.pink}, ${colors.purple})`,

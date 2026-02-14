@@ -134,7 +134,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}>
+      <div className="ngurra-page flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-pink-200 border-t-pink-600" />
       </div>
     );
@@ -142,27 +142,21 @@ export default function ProfilePage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}>
-        <div className="text-center bg-white border border-slate-200 rounded-2xl p-8" style={{ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' }}>
-          <h1 className="text-2xl font-bold text-slate-800 mb-4">Please Sign In</h1>
-          <p className="text-slate-500 mb-6">Authentication is disabled.</p>
+      <div className="ngurra-page flex items-center justify-center px-4">
+        <div className="text-center ngurra-card p-8">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Please Sign In</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">Authentication is disabled.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-12 px-4" style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}>
+    <div className="ngurra-page py-12 px-4">
       {/* Decorative Halos */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div 
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-40"
-          style={{ background: `radial-gradient(circle, ${accentPink}33 0%, transparent 70%)`, filter: 'blur(40px)' }}
-        />
-        <div 
-          className="absolute top-1/3 -left-40 w-80 h-80 rounded-full opacity-30"
-          style={{ background: `radial-gradient(circle, ${accentPurple}33 0%, transparent 70%)`, filter: 'blur(40px)' }}
-        />
+      <div className="ngurra-halos">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
       </div>
 
       <div className="max-w-3xl mx-auto relative z-10">

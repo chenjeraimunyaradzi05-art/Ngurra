@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
@@ -236,9 +237,12 @@ function SearchResultCard({ result, onClick }: { result: SearchResult; onClick: 
               {' '}
               <span 
                 dangerouslySetInnerHTML={{ 
-                  __html: result.highlights[0].snippet.replace(
-                    /<em>/g, '<mark class="bg-yellow-200 dark:bg-yellow-800 rounded">'
-                  ).replace(/<\/em>/g, '</mark>') 
+                  __html: DOMPurify.sanitize(
+                    result.highlights[0].snippet.replace(
+                      /<em>/g, '<mark class="bg-yellow-200 dark:bg-yellow-800 rounded">'
+                    ).replace(/<\/em>/g, '</mark>'),
+                    { ALLOWED_TAGS: ['mark'], ALLOWED_ATTR: ['class'] }
+                  )
                 }} 
               />
             </div>

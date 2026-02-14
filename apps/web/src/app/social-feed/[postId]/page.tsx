@@ -48,7 +48,7 @@ interface Post {
 export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
@@ -218,7 +218,7 @@ export default function PostDetailPage() {
       const newCommentObj: Comment = {
         id: tempId,
         authorName: user?.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim() : 'You',
-        authorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+        authorAvatar: user?.profile?.avatar || null,
         content: contentToSubmit,
         createdAt: 'Just now',
         likes: 0
@@ -268,11 +268,26 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleReaction = (type: string) => {
+  const handleReaction = async (type: string) => {
+    // Optimistic update
     setPost(prev => prev ? {
       ...prev,
       reactions: { ...prev.reactions, [type]: (prev.reactions[type] || 0) + 1 }
     } : null);
+
+    const postId = String((params as any)?.postId ?? '');
+    const res = await api(`/social-feed/posts/${postId}/react`, {
+      method: 'POST',
+      body: { type },
+    });
+
+    if (!res.ok) {
+      // Roll back
+      setPost(prev => prev ? {
+        ...prev,
+        reactions: { ...prev.reactions, [type]: Math.max(0, (prev.reactions[type] || 0) - 1) }
+      } : null);
+    }
   };
 
   const getTrustBadge = (level: string) => {
@@ -288,22 +303,18 @@ export default function PostDetailPage() {
 
   if (loading) {
     return (
-      <div className={`${spaceGrotesk.className} min-h-screen flex items-center justify-center`} style={{ 
-        background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)'
-      }}>
-        <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-amber-400 animate-spin" />
+      <div className={`${spaceGrotesk.className} ngurra-page flex items-center justify-center`}>
+        <div className="w-12 h-12 rounded-full border-4 border-slate-200 dark:border-white/20 border-t-purple-500 dark:border-t-amber-400 animate-spin" />
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className={`${spaceGrotesk.className} min-h-screen flex items-center justify-center`} style={{ 
-        background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)'
-      }}>
+      <div className={`${spaceGrotesk.className} ngurra-page flex items-center justify-center`}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Post not found</h1>
-          <Link href="/social-feed" className="text-amber-400 hover:underline">
+          <h1 className="ngurra-h1 text-2xl mb-4">Post not found</h1>
+          <Link href="/social-feed" className="ngurra-link">
             Back to feed
           </Link>
         </div>
@@ -312,12 +323,10 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className={`${spaceGrotesk.className} min-h-screen`} style={{ 
-      background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)'
-    }}>
+    <div className={`${spaceGrotesk.className} ngurra-page`}>
       {/* Dot pattern overlay */}
       <div 
-        className="fixed inset-0 opacity-10 pointer-events-none"
+        className="fixed inset-0 opacity-[0.04] dark:opacity-10 pointer-events-none"
         style={{
           backgroundImage: `
             radial-gradient(circle at 20% 30%, #FFD700 1.5px, transparent 1.5px),
@@ -333,15 +342,15 @@ export default function PostDetailPage() {
         <div className="flex items-center gap-4 mb-6">
           <button 
             onClick={() => router.back()}
-            className="p-2 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold text-white">Post</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Post</h1>
         </div>
 
         {/* Post */}
-        <article className="rounded-xl overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 mb-6">
+        <article className="rounded-xl overflow-hidden bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none mb-6">
           {/* Post Header */}
           <div className="p-4 flex items-start gap-3">
             <div className="relative">
@@ -359,7 +368,7 @@ export default function PostDetailPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-white/10 flex items-center justify-center text-white font-semibold">
+                  <div className="w-full h-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-white font-semibold">
                     {(post.authorName || 'C')[0]}
                   </div>
                 )}
@@ -374,20 +383,20 @@ export default function PostDetailPage() {
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-semibold text-white">{post.authorName}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{post.authorName}</h3>
               </div>
-              <p className="text-sm text-gray-400">{post.authorTitle}</p>
-              <p className="text-xs text-gray-500">{post.createdAt}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{post.authorTitle}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{post.createdAt}</p>
             </div>
             
-            <button className="p-2 rounded-lg text-gray-500 hover:bg-white/5">
+            <button className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </div>
 
           {/* Content */}
           <div className="px-4 pb-4">
-            <p className="text-gray-200 whitespace-pre-line leading-relaxed text-lg">{post.content}</p>
+            <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed text-lg">{post.content}</p>
           </div>
 
           {/* Media */}
@@ -404,7 +413,7 @@ export default function PostDetailPage() {
           )}
 
           {/* Reactions Summary */}
-          <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-400 border-t border-white/10">
+          <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-white/10">
             <div className="flex items-center gap-1">
               <span>👍</span>
               <span>❤️</span>
@@ -420,23 +429,23 @@ export default function PostDetailPage() {
           </div>
 
           {/* Actions */}
-          <div className="px-4 py-3 flex justify-around border-t border-white/10">
+          <div className="px-4 py-3 flex justify-around border-t border-gray-200 dark:border-white/10">
             <button
               onClick={() => handleReaction('like')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-400 hover:bg-white/5 hover:text-amber-400 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
             >
               <Heart className="w-5 h-5" />
               <span className="text-sm">Like</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-amber-400 bg-white/5">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-white/5">
               <MessageCircle className="w-5 h-5" />
               <span className="text-sm">Comment</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-400 hover:bg-white/5 hover:text-amber-400 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
               <Share2 className="w-5 h-5" />
               <span className="text-sm">Share</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-400 hover:bg-white/5 hover:text-amber-400 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
               <Bookmark className="w-5 h-5" />
               <span className="text-sm">Save</span>
             </button>
@@ -444,42 +453,54 @@ export default function PostDetailPage() {
         </article>
 
         {/* Comment Input */}
-        <div className="rounded-xl bg-white/5 backdrop-blur-md border border-white/10 p-4 mb-6">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
-              {user?.profile?.firstName?.[0] || user?.email?.[0] || 'U'}
-            </div>
-            <div className="flex-1 flex gap-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
-                placeholder="Write a comment..."
-                className="flex-1 bg-white/5 text-white placeholder-gray-500 rounded-lg px-4 py-2 border border-white/10 focus:outline-none focus:border-amber-500/50"
-              />
-              <button
-                onClick={handleSubmitComment}
-                disabled={!newComment.trim() || submittingComment}
-                className="p-2 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-500 hover:to-emerald-400 transition-all disabled:opacity-50"
-              >
-                <Send className="w-5 h-5" />
-              </button>
+        {isAuthenticated ? (
+          <div className="rounded-xl bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none p-4 mb-6">
+            <div className="flex gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
+                {user?.profile?.firstName?.[0] || user?.email?.[0] || 'U'}
+              </div>
+              <div className="flex-1 flex gap-2">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
+                  placeholder="Write a comment..."
+                  className="flex-1 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg px-4 py-2 border border-gray-200 dark:border-white/10 focus:outline-none focus:border-amber-500/50"
+                />
+                <button
+                  onClick={handleSubmitComment}
+                  disabled={!newComment.trim() || submittingComment}
+                  className="p-2 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-500 hover:to-emerald-400 transition-all disabled:opacity-50"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="rounded-xl bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none p-4 mb-6 text-center">
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Sign in to join the conversation</p>
+            <a href={`/signin?returnTo=/social-feed/${params.postId}`} className="inline-block px-4 py-1.5 rounded-lg text-sm font-medium bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-500 hover:to-emerald-400 transition-all">
+              Sign In
+            </a>
+          </div>
+        )}
 
         {/* Comments */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-amber-400" />
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-amber-500 dark:text-amber-400" />
             Comments ({post.comments.length})
           </h2>
           
+          {post.comments.length === 0 && (
+            <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-6">No comments yet. Be the first to share your thoughts!</p>
+          )}
           {post.comments.map((comment) => (
             <div 
               key={comment.id}
-              className="rounded-xl bg-white/5 backdrop-blur-md border border-white/10 p-4"
+              className="rounded-xl bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none p-4"
             >
               <div className="flex gap-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
@@ -493,22 +514,22 @@ export default function PostDetailPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-white/10 flex items-center justify-center text-white font-semibold">
+                    <div className="w-full h-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-white font-semibold">
                       {(comment.authorName || 'C')[0]}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-white text-sm">{comment.authorName}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.authorName}</span>
                     <span className="text-xs text-gray-500">{comment.createdAt}</span>
                   </div>
-                  <p className="text-gray-300 text-sm">{comment.content}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{comment.content}</p>
                   <div className="flex items-center gap-4 mt-2">
-                    <button className="text-xs text-gray-500 hover:text-amber-400 flex items-center gap-1">
+                    <button className="text-xs text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1">
                       <Heart className="w-3 h-3" /> {comment.likes}
                     </button>
-                    <button className="text-xs text-gray-500 hover:text-amber-400">Reply</button>
+                    <button className="text-xs text-gray-500 hover:text-amber-600 dark:hover:text-amber-400">Reply</button>
                   </div>
                 </div>
               </div>

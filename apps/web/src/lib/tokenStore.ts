@@ -44,9 +44,9 @@ export function getAccessToken(): string | null {
 /**
  * Set the access token in memory
  * @param token - The access token
- * @param expiresIn - Token expiry time in seconds (default: 15 minutes)
+ * @param expiresIn - Token expiry time in seconds (default: 7 days, matching backend JWT_EXPIRES_IN)
  */
-export function setAccessToken(token: string, expiresIn: number = 900): void {
+export function setAccessToken(token: string, expiresIn: number = 7 * 24 * 60 * 60): void {
   accessToken = token;
   tokenExpiry = Date.now() + (expiresIn * 1000);
   resetIdleTimer();
@@ -74,20 +74,64 @@ export function hasValidToken(): boolean {
 }
 
 /**
- * Refresh the access token using HttpOnly cookie
- * This is the primary way to get a new token after page reload
+ * Refresh the access token using the current token.
+ * Uses a singleton promise to prevent concurrent refresh requests.
  */
 export async function refreshAccessToken(): Promise<string | null> {
-  return null;
+  // If already refreshing, return the existing promise
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  const currentToken = accessToken;
+  if (!currentToken) return null;
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        clearTokens();
+        return null;
+      }
+
+      const data = await res.json();
+      const newToken = data?.data?.token || data?.token;
+      if (newToken) {
+        setAccessToken(newToken);
+        return newToken;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 /**
- * Initialize token from HttpOnly cookie on app load
- * Call this on app startup to restore the session
+ * Initialize token from auth store on app load.
+ * Clears legacy tokens from older versions of the app.
  */
 export async function initializeAuth(): Promise<boolean> {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('ngurra_token');
+  }
+  // If we already have a token in memory, we're good
+  if (hasValidToken()) {
+    return true;
   }
   return false;
 }

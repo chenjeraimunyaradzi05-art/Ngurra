@@ -71,7 +71,7 @@ export default function MentorLayout({ children }: { children: React.ReactNode }
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-64 bg-slate-900/50 border-r border-slate-800 fixed inset-y-0 left-0 z-40">
         {/* Brand Header */}

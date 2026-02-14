@@ -138,19 +138,10 @@ export default function WelcomePage() {
   };
 
   return (
-    <div 
-      className="min-h-screen py-12 px-4 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}
-    >
+    <div className="ngurra-page py-12 px-4 relative overflow-hidden">
       {/* Decorative halos */}
-      <div 
-        className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${accentPink}22 0%, transparent 70%)`, filter: 'blur(40px)' }}
-      />
-      <div 
-        className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${accentPurple}22 0%, transparent 70%)`, filter: 'blur(40px)' }}
-      />
+      <div className="ngurra-halo-pink" />
+      <div className="ngurra-halo-purple" />
 
       <div className="max-w-2xl mx-auto relative">
         {/* Progress */}

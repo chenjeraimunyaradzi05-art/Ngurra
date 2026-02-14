@@ -307,7 +307,7 @@ function CompanyDetailModal({
   onClose: () => void;
   onFollow: () => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'about' | 'jobs' | 'reviews'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'culture' | 'jobs' | 'reviews'>('about');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [reviews, setReviews] = useState<CompanyReview[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -416,7 +416,7 @@ function CompanyDetailModal({
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
-          {['about', 'jobs', 'reviews'].map((tab) => (
+          {['about', 'culture', 'jobs', 'reviews'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as typeof activeTab)}
@@ -426,7 +426,7 @@ function CompanyDetailModal({
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              {tab}
+              {tab === 'culture' ? '🎥 Culture' : tab}
               {tab === 'jobs' && company.stats.openJobs > 0 && (
                 <span className="ml-1 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-1.5 rounded">
                   {company.stats.openJobs}
@@ -490,19 +490,29 @@ function CompanyDetailModal({
                 </div>
               )}
 
-              {/* Benefits */}
+              {/* Benefits — Enhanced with category icons */}
               {company.benefits.length > 0 && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Benefits & Perks</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {company.benefits.map((benefit, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {benefit}
-                      </div>
-                    ))}
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Benefits & Perks</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {company.benefits.map((benefit, i) => {
+                      const benefitIcons: Record<string, string> = {
+                        health: '🏥', dental: '🦷', vision: '👁️', insurance: '🛡️',
+                        remote: '🏠', flexible: '⏰', leave: '🌴', parental: '👶',
+                        training: '📚', development: '🚀', mentoring: '🤝', education: '🎓',
+                        gym: '💪', wellness: '🧘', food: '🍽️', travel: '✈️',
+                        stock: '📈', bonus: '💰', salary: '💵', retirement: '🏦',
+                        cultural: '🌏', community: '🤲', diversity: '🌈',
+                      };
+                      const key = Object.keys(benefitIcons).find(k => benefit.toLowerCase().includes(k));
+                      const icon = key ? benefitIcons[key] : '✅';
+                      return (
+                        <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-sm text-gray-700 dark:text-gray-300">
+                          <span className="text-lg flex-shrink-0">{icon}</span>
+                          {benefit}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -532,6 +542,106 @@ function CompanyDetailModal({
                     </a>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'culture' && (
+            <div className="space-y-6">
+              {/* Company Intro Video */}
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  🎬 Company Video
+                </h3>
+                <div className="aspect-video rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-gray-200 dark:border-gray-700 flex items-center justify-center relative overflow-hidden group cursor-pointer">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                      <div className="w-0 h-0 border-l-[20px] border-l-blue-500 border-y-[12px] border-y-transparent ml-1" />
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Watch our intro video</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">2:45</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Culture Video */}
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  👥 Life at {company.name}
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {['Team Culture', 'Office Tour', 'Day in the Life', 'Community Impact'].map((title, i) => (
+                    <div key={i} className="aspect-video rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+                      <div className="text-center p-2">
+                        <div className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-600 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-0 h-0 border-l-[10px] border-l-gray-600 dark:border-l-gray-300 border-y-[6px] border-y-transparent ml-0.5" />
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-400 text-xs font-medium">{title}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Employee Testimonials */}
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  💬 Employee Spotlight
+                </h3>
+                <div className="space-y-3">
+                  {[
+                    { name: 'Team Member', role: 'Software Engineer', quote: 'The mentoring culture here is incredible. I feel supported to grow both professionally and personally.', avatar: '👩🏽', years: 3 },
+                    { name: 'Team Member', role: 'HR Coordinator', quote: 'Our RAP commitments are real — not just words on a page. I see genuine cultural safety every day.', avatar: '👨🏾', years: 5 },
+                    { name: 'Team Member', role: 'Graduate Program', quote: 'As a CareerTrackers intern turned full-time employee, I can say the pathway programs actually work.', avatar: '👩🏻', years: 1 },
+                  ].map((testimonial, i) => (
+                    <div key={i} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-lg flex-shrink-0">
+                          {testimonial.avatar}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-gray-900 dark:text-white text-sm">{testimonial.name}</p>
+                            <span className="text-gray-400 text-xs">·</span>
+                            <p className="text-gray-500 text-xs">{testimonial.role}</p>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 italic">"{testimonial.quote}"</p>
+                          <p className="text-gray-400 text-xs mt-2">{testimonial.years} year{testimonial.years > 1 ? 's' : ''} at {company.name}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Programs & Pathways */}
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  🚀 Programs & Pathways
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { name: 'Indigenous Internship Program', icon: '🌏', description: 'Paid summer internships for Aboriginal and Torres Strait Islander students', status: 'Applications Open' },
+                    { name: 'Graduate Development Program', icon: '🎓', description: '2-year rotational program with mentoring and cultural support', status: 'Coming Soon' },
+                    { name: 'Career Mentoring', icon: '🤝', description: 'Matched mentoring with senior leaders and cultural advisors', status: 'Always Open' },
+                    { name: 'Community Partnerships', icon: '🤲', description: 'Partnerships with Indigenous organisations and community groups', status: 'Active' },
+                  ].map((program, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+                      <span className="text-2xl flex-shrink-0 mt-0.5">{program.icon}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-medium text-gray-900 dark:text-white text-sm">{program.name}</p>
+                          <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex-shrink-0 ${
+                            program.status === 'Applications Open' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            program.status === 'Coming Soon' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                            'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                          }`}>{program.status}</span>
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">{program.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

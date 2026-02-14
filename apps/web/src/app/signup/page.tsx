@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { API_BASE } from '@/lib/apiBase';
+import { setAuthSessionCookie } from '@/lib/authSession';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -130,6 +131,9 @@ export default function SignUpPage() {
       }
 
       setToken(data.data.token);
+
+      // Set auth-session cookie for middleware route protection
+      setAuthSessionCookie();
 
       // Update auth store
       setUser({

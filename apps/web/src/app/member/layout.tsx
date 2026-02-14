@@ -79,8 +79,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               isActive
-                ? 'bg-emerald-600/20 text-emerald-400 border-l-2 border-emerald-500'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                ? 'bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-500'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800/50'
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -92,12 +92,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-slate-900/50 border-r border-slate-800 fixed left-0 top-16 h-[calc(100vh-4rem)] z-40">
+      <aside className="hidden lg:flex flex-col w-64 bg-white dark:bg-slate-900/50 border-r border-gray-200 dark:border-slate-800 fixed left-0 top-16 h-[calc(100vh-4rem)] z-40">
         {/* Brand Header */}
-        <div className="flex items-center gap-3 h-16 px-4 border-b border-slate-800">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white">
+        <div className="flex items-center gap-3 h-16 px-4 border-b border-gray-200 dark:border-slate-800">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white">
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
@@ -106,18 +106,18 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </div>
 
         {/* User Profile Card */}
-        <div className="p-4 border-b border-slate-800">
+        <div className="p-4 border-b border-gray-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium">
+            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-gray-700 dark:text-white font-medium">
               {user?.profile?.firstName?.[0] || user?.email?.[0] || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white truncate">
+              <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                 {user?.profile?.firstName
                   ? `${user.profile.firstName} ${user.profile.lastName || ''}`.trim()
                   : 'Member'}
               </div>
-              <div className="text-xs text-slate-400 truncate">{user?.email}</div>
+              <div className="text-xs text-gray-500 dark:text-slate-400 truncate">{user?.email}</div>
             </div>
           </div>
         </div>
@@ -131,11 +131,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </nav>
 
         {/* Bottom Section */}
-        <div className="p-4 border-t border-slate-800 space-y-1">
+        <div className="p-4 border-t border-gray-200 dark:border-slate-800 space-y-1">
           {renderNavSection(bottomNavItems)}
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800/50 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Sign Out
@@ -146,9 +146,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       {/* Main Content */}
       <div className="flex-1 lg:ml-64">
         {/* Top Navigation - Mobile & Tablet */}
-        <header className="lg:hidden bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <header className="lg:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-50">
           <div className="px-4 h-16 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white">
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white">
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
@@ -158,13 +158,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             <div className="flex items-center gap-2">
               <Link
                 href="/member/notifications"
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"
+                className="p-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg"
               >
                 <Bell className="w-5 h-5" />
               </Link>
               <Link
                 href="/member/messages"
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"
+                className="p-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg"
               >
                 <MessageSquare className="w-5 h-5" />
               </Link>
@@ -178,7 +178,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         <SafeExit />
 
         {/* Mobile Bottom Navigation */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-50 pb-safe">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 z-50 pb-safe">
           <div className="flex justify-around p-2">
             {[
               { href: '/member/dashboard', icon: LayoutDashboard, label: 'Home' },
@@ -194,7 +194,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   key={item.href}
                   href={item.href}
                   className={`flex flex-col items-center gap-1 p-2 rounded-lg min-w-[60px] ${
-                    isActive ? 'text-emerald-400' : 'text-slate-400'
+                    isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-slate-400'
                   }`}
                 >
                   <Icon className="w-5 h-5" />

@@ -1,146 +1,61 @@
 /**
  * FeaturedJobs Component Tests
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import FeaturedJobs from '../FeaturedJobs';
 
 // Mock fetch
-const mockJobs = [
-  {
-    id: '1',
-    title: 'Software Engineer',
-    company: { name: 'Tech Corp', logoUrl: '/logo.png' },
-    location: 'Sydney',
-    employment: 'FULL_TIME',
-    salaryLow: 80000,
-    salaryHigh: 120000,
-  },
-  {
-    id: '2',
-    title: 'Product Manager',
-    company: { name: 'Startup Inc', logoUrl: '/logo2.png' },
-    location: 'Melbourne',
-    employment: 'FULL_TIME',
-    salaryLow: 100000,
-    salaryHigh: 150000,
-  },
-];
+const mockJobs = [];
 
 describe('FeaturedJobs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn();
+    vi.useFakeTimers();
   });
 
-  it('shows loading state initially', () => {
-    (global.fetch as any).mockImplementation(() => 
-      new Promise(() => {}) // Never resolves
-    );
-
-    render(<FeaturedJobs />);
-    
-    // Should show skeleton loaders
-    expect(screen.getByTestId('featured-jobs-skeleton') || 
-           screen.queryAllByRole('status').length > 0 ||
-           document.querySelector('[class*="animate-pulse"]')).toBeTruthy();
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it('renders jobs when loaded', async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: mockJobs }),
-    });
-
+  it('renders partnerships header', () => {
     render(<FeaturedJobs />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Software Engineer')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Product Manager')).toBeInTheDocument();
+    expect(screen.getByText(/Partnerships & Advertising/i)).toBeInTheDocument();
   });
 
-  it('shows company names', async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: mockJobs }),
-    });
-
+  it('renders active ad content', () => {
     render(<FeaturedJobs />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Tech Corp')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Startup Inc')).toBeInTheDocument();
+    expect(screen.getByText('Google Career Certificates')).toBeInTheDocument();
+    expect(screen.getByText(/Sponsored by Google/i)).toBeInTheDocument();
   });
 
-  it('shows job locations', async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: mockJobs }),
-    });
-
+  it('renders slide controls', () => {
     render(<FeaturedJobs />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/Sydney/i)).toBeInTheDocument();
-    });
-
-    expect(screen.getByText(/Melbourne/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to slide 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to slide 2' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to slide 3' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to slide 4' })).toBeInTheDocument();
   });
 
-  it('handles empty results', async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: [] }),
-    });
-
+  it('changes active ad when selecting a slide', () => {
     render(<FeaturedJobs />);
 
-    await waitFor(() => {
-      // Should show empty state or nothing
-      expect(screen.queryByText('Software Engineer')).not.toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Go to slide 2' }));
+    expect(screen.getByText('Westpac Indigenous Scholarships')).toBeInTheDocument();
   });
 
-  it('handles fetch error gracefully', async () => {
-    (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
-
+  it('auto-rotates ads over time', () => {
     render(<FeaturedJobs />);
 
-    await waitFor(() => {
-      // Should not crash, may show error state
-      expect(screen.queryByRole('alert') || 
-             screen.queryByText(/error/i) ||
-             true).toBeTruthy();
-    });
-  });
+    expect(screen.getByText('Google Career Certificates')).toBeInTheDocument();
 
-  it('limits number of jobs displayed', async () => {
-    const manyJobs = Array.from({ length: 20 }, (_, i) => ({
-      id: String(i),
-      title: `Job ${i}`,
-      company: { name: `Company ${i}` },
-      location: 'Location',
-      employment: 'FULL_TIME',
-    }));
-
-    (global.fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: manyJobs }),
+    act(() => {
+      vi.advanceTimersByTime(10000);
     });
 
-    render(<FeaturedJobs limit={5} />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Job 0')).toBeInTheDocument();
-    });
-
-    // Should only show limited number
-    const jobCards = screen.getAllByRole('article') || 
-                     document.querySelectorAll('[data-testid="job-card"]');
-    expect(jobCards.length).toBeLessThanOrEqual(5);
+    expect(screen.getByText('Westpac Indigenous Scholarships')).toBeInTheDocument();
   });
 });

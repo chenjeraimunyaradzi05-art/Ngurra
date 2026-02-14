@@ -13,7 +13,7 @@ import Link from 'next/link';
 
 export default function PreApplyPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <div className="bg-gradient-to-r from-amber-900/30 to-purple-900/30 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-4 py-8">

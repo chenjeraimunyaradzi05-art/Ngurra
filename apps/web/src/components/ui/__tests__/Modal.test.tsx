@@ -3,12 +3,12 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Modal from '../Modal';
+import Modal from '../../Modal';
 
 describe('Modal', () => {
   it('does not render when closed', () => {
     render(
-      <Modal isOpen={false} onClose={() => {}}>
+      <Modal isOpen={false} onClose={() => {}} title="Test Modal">
         <div>Modal Content</div>
       </Modal>
     );
@@ -18,7 +18,7 @@ describe('Modal', () => {
 
   it('renders when open', () => {
     render(
-      <Modal isOpen={true} onClose={() => {}}>
+      <Modal isOpen={true} onClose={() => {}} title="Test Modal">
         <div>Modal Content</div>
       </Modal>
     );
@@ -28,24 +28,23 @@ describe('Modal', () => {
 
   it('calls onClose when clicking backdrop', () => {
     const handleClose = vi.fn();
-    render(
-      <Modal isOpen={true} onClose={handleClose}>
+    const { container } = render(
+      <Modal isOpen={true} onClose={handleClose} title="Test Modal">
         <div>Content</div>
       </Modal>
     );
     
     // Click the backdrop (overlay)
-    const backdrop = screen.getByRole('dialog').parentElement;
-    if (backdrop) {
-      fireEvent.click(backdrop);
-      expect(handleClose).toHaveBeenCalled();
-    }
+    const overlay = container.querySelector('div[aria-hidden="true"]');
+    expect(overlay).toBeInTheDocument();
+    fireEvent.click(overlay as Element);
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('calls onClose when pressing Escape', () => {
     const handleClose = vi.fn();
     render(
-      <Modal isOpen={true} onClose={handleClose}>
+      <Modal isOpen={true} onClose={handleClose} title="Test Modal">
         <div>Content</div>
       </Modal>
     );
@@ -67,23 +66,19 @@ describe('Modal', () => {
   it('renders close button', () => {
     const handleClose = vi.fn();
     render(
-      <Modal isOpen={true} onClose={handleClose}>
+      <Modal isOpen={true} onClose={handleClose} title="Test Modal">
         <div>Content</div>
       </Modal>
     );
     
-    const closeButton = screen.getByRole('button', { name: /close/i }) || 
-                        screen.getByLabelText(/close/i);
-    
-    if (closeButton) {
-      fireEvent.click(closeButton);
-      expect(handleClose).toHaveBeenCalled();
-    }
+    const closeButton = screen.getByRole('button', { name: /close modal/i });
+    fireEvent.click(closeButton);
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('applies size variants', () => {
     const { rerender } = render(
-      <Modal isOpen={true} onClose={() => {}} size="sm">
+      <Modal isOpen={true} onClose={() => {}} title="Test Modal" size="sm">
         <div>Small Modal</div>
       </Modal>
     );
@@ -92,7 +87,7 @@ describe('Modal', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     
     rerender(
-      <Modal isOpen={true} onClose={() => {}} size="lg">
+      <Modal isOpen={true} onClose={() => {}} title="Test Modal" size="lg">
         <div>Large Modal</div>
       </Modal>
     );
@@ -102,7 +97,7 @@ describe('Modal', () => {
 
   it('prevents body scroll when open', () => {
     render(
-      <Modal isOpen={true} onClose={() => {}}>
+      <Modal isOpen={true} onClose={() => {}} title="Test Modal">
         <div>Content</div>
       </Modal>
     );
@@ -113,13 +108,13 @@ describe('Modal', () => {
 
   it('restores body scroll when closed', () => {
     const { rerender } = render(
-      <Modal isOpen={true} onClose={() => {}}>
+      <Modal isOpen={true} onClose={() => {}} title="Test Modal">
         <div>Content</div>
       </Modal>
     );
     
     rerender(
-      <Modal isOpen={false} onClose={() => {}}>
+      <Modal isOpen={false} onClose={() => {}} title="Test Modal">
         <div>Content</div>
       </Modal>
     );

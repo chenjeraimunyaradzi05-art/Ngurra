@@ -3,8 +3,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
-import Toast from '../Toast';
-import ToastContainer from '../ToastContainer';
+import Toast, { ToastContainer } from '../../Toast';
 
 describe('Toast', () => {
   beforeEach(() => {
@@ -16,94 +15,90 @@ describe('Toast', () => {
   });
 
   it('renders message correctly', () => {
-    render(<Toast message="Test message" type="info" onClose={() => {}} />);
+    render(<Toast id="toast-1" message="Test message" type="info" onDismiss={() => {}} />);
     expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 
   it('renders success toast', () => {
-    const { container } = render(
-      <Toast message="Success!" type="success" onClose={() => {}} />
-    );
-    expect(container.firstChild).toHaveClass('bg-green');
+    render(<Toast id="toast-1" message="Success!" type="success" onDismiss={() => {}} />);
+    expect(screen.getByRole('alert')).toHaveClass('bg-green-50');
   });
 
   it('renders error toast', () => {
-    const { container } = render(
-      <Toast message="Error!" type="error" onClose={() => {}} />
-    );
-    expect(container.firstChild).toHaveClass('bg-red');
+    render(<Toast id="toast-1" message="Error!" type="error" onDismiss={() => {}} />);
+    expect(screen.getByRole('alert')).toHaveClass('bg-red-50');
   });
 
   it('renders warning toast', () => {
-    const { container } = render(
-      <Toast message="Warning!" type="warning" onClose={() => {}} />
-    );
-    expect(container.firstChild).toHaveClass('bg-yellow');
+    render(<Toast id="toast-1" message="Warning!" type="warning" onDismiss={() => {}} />);
+    expect(screen.getByRole('alert')).toHaveClass('bg-yellow-50');
   });
 
   it('renders info toast', () => {
-    const { container } = render(
-      <Toast message="Info" type="info" onClose={() => {}} />
-    );
-    expect(container.firstChild).toHaveClass('bg-blue');
+    render(<Toast id="toast-1" message="Info" type="info" onDismiss={() => {}} />);
+    expect(screen.getByRole('alert')).toHaveClass('bg-blue-50');
   });
 
   it('auto-dismisses after duration', () => {
-    const handleClose = vi.fn();
+    const handleDismiss = vi.fn();
     render(
-      <Toast message="Auto dismiss" type="info" duration={3000} onClose={handleClose} />
+      <Toast
+        id="toast-1"
+        message="Auto dismiss"
+        type="info"
+        duration={3000}
+        onDismiss={handleDismiss}
+      />
     );
 
     act(() => {
       vi.advanceTimersByTime(3000);
     });
 
-    expect(handleClose).toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(handleDismiss).toHaveBeenCalledWith('toast-1');
   });
 
   it('does not auto-dismiss when duration is 0', () => {
-    const handleClose = vi.fn();
+    const handleDismiss = vi.fn();
     render(
-      <Toast message="Persistent" type="info" duration={0} onClose={handleClose} />
+      <Toast id="toast-1" message="Persistent" type="info" duration={0} onDismiss={handleDismiss} />
     );
 
     act(() => {
       vi.advanceTimersByTime(10000);
     });
 
-    expect(handleClose).not.toHaveBeenCalled();
+    expect(handleDismiss).not.toHaveBeenCalled();
   });
 
-  it('renders with title', () => {
-    render(
-      <Toast message="Message" title="Title" type="info" onClose={() => {}} />
-    );
-    expect(screen.getByText('Title')).toBeInTheDocument();
-  });
+  it('calls onDismiss when dismiss button is clicked', () => {
+    const handleDismiss = vi.fn();
+    render(<Toast id="toast-1" message="Dismiss me" type="info" duration={0} onDismiss={handleDismiss} />);
 
-  it('renders with action button', () => {
-    const handleAction = vi.fn();
-    render(
-      <Toast 
-        message="Message" 
-        type="info" 
-        onClose={() => {}} 
-        action={{ label: 'Undo', onClick: handleAction }}
-      />
-    );
-    
-    const actionButton = screen.getByText('Undo');
-    expect(actionButton).toBeInTheDocument();
+    screen.getByRole('button', { name: /dismiss notification/i }).click();
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(handleDismiss).toHaveBeenCalledWith('toast-1');
   });
 });
 
 describe('ToastContainer', () => {
   it('renders multiple toasts', () => {
     render(
-      <ToastContainer>
-        <Toast message="Toast 1" type="info" onClose={() => {}} />
-        <Toast message="Toast 2" type="success" onClose={() => {}} />
-      </ToastContainer>
+      <ToastContainer
+        toasts={[
+          { id: 'toast-1', message: 'Toast 1', type: 'info' },
+          { id: 'toast-2', message: 'Toast 2', type: 'success' },
+        ]}
+        onDismiss={() => {}}
+      />
     );
 
     expect(screen.getByText('Toast 1')).toBeInTheDocument();
@@ -111,13 +106,16 @@ describe('ToastContainer', () => {
   });
 
   it('positions toasts correctly', () => {
-    const { container } = render(
-      <ToastContainer position="top-right">
-        <Toast message="Toast" type="info" onClose={() => {}} />
-      </ToastContainer>
+    render(
+      <ToastContainer
+        position="top-right"
+        toasts={[{ id: 'toast-1', message: 'Toast', type: 'info' }]}
+        onDismiss={() => {}}
+      />
     );
 
-    expect(container.firstChild).toHaveClass('top-0');
-    expect(container.firstChild).toHaveClass('right-0');
+    const containerEl = screen.getByLabelText('Notifications');
+    expect(containerEl).toHaveClass('top-4');
+    expect(containerEl).toHaveClass('right-4');
   });
 });

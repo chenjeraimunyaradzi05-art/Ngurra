@@ -54,7 +54,7 @@ export default function PerformancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-white p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-6 md:p-8 mb-8">

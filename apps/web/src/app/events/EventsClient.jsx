@@ -221,10 +221,7 @@ export default function EventsClient({ initialEvents, hasPrefetched }) {
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-      >
+      <div className="ngurra-page flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: accentPink }} />
           <p className="text-slate-600 font-medium">Loading events...</p>
@@ -234,10 +231,7 @@ export default function EventsClient({ initialEvents, hasPrefetched }) {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: 'linear-gradient(180deg, #FFF5FB 0%, #FAFAFF 100%)' }}
-    >
+    <div className="ngurra-page">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Background Elements */}

@@ -723,6 +723,97 @@ select.form-control {
 @tailwind components;
 @tailwind utilities;
 
+/* ===== NGURRA PAGE UTILITIES ===== */
+/* Shared, theme-aware classes used across all page views for consistency. */
+
+@layer components {
+  /* Standard soft-gradient page background — works in light & dark mode */
+  .ngurra-page {
+    @apply min-h-screen bg-gradient-to-br from-pink-50/40 to-purple-50/40 dark:from-slate-950 dark:to-slate-900;
+  }
+
+  /* Standard page card — light/dark aware */
+  .ngurra-card {
+    @apply bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 rounded-2xl shadow-sm;
+  }
+
+  /* Standard page heading (h1) */
+  .ngurra-h1 {
+    @apply text-3xl md:text-4xl font-bold text-slate-900 dark:text-white;
+  }
+
+  /* Standard page subheading (h2) */
+  .ngurra-h2 {
+    @apply text-xl md:text-2xl font-semibold text-slate-900 dark:text-white;
+  }
+
+  /* Standard page body text */
+  .ngurra-text {
+    @apply text-slate-600 dark:text-slate-400;
+  }
+
+  /* Standard muted / secondary text */
+  .ngurra-muted {
+    @apply text-slate-500 dark:text-slate-500;
+  }
+
+  /* Standard link styling */
+  .ngurra-link {
+    @apply text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors;
+  }
+
+  /* Standard primary CTA button */
+  .ngurra-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 55%, #6366f1 100%);
+  }
+
+  /* Standard secondary / outline button */
+  .ngurra-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold border transition-all duration-200 hover:-translate-y-0.5;
+    @apply bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700;
+  }
+
+  /* Standard section container inside a page */
+  .ngurra-container {
+    @apply container mx-auto px-4 max-w-5xl relative z-10;
+  }
+
+  /* Decorative background halos — theme-aware */
+  .ngurra-halos {
+    @apply fixed inset-0 pointer-events-none overflow-hidden;
+  }
+  .ngurra-halo-pink {
+    @apply absolute -top-40 -right-40 w-96 h-96 rounded-full;
+    background: radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%);
+    filter: blur(40px);
+  }
+  .dark .ngurra-halo-pink {
+    background: radial-gradient(circle, rgba(168,85,247,0.10) 0%, transparent 70%);
+  }
+  .ngurra-halo-purple {
+    @apply absolute top-1/3 -left-40 w-80 h-80 rounded-full;
+    background: radial-gradient(circle, rgba(168,85,247,0.10) 0%, transparent 70%);
+    filter: blur(40px);
+  }
+  .dark .ngurra-halo-purple {
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+  }
+
+  /* Standard section divider */
+  .ngurra-divider {
+    @apply border-t border-slate-200 dark:border-slate-700;
+  }
+
+  /* Standard input field */
+  .ngurra-input {
+    @apply w-full px-4 py-3 rounded-xl border transition-colors;
+    @apply bg-white dark:bg-slate-800 text-slate-900 dark:text-white;
+    @apply border-slate-300 dark:border-slate-600 focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20;
+    @apply placeholder-slate-400 dark:placeholder-slate-500;
+  }
+}
+
 /* ===== ROOT VARIABLES - ADAPTED TO PERPLEXITY DESIGN SYSTEM ===== */
 :root {
   /* Mapped to Perplexity color palette */

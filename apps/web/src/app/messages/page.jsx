@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
  * Direct messaging interface with real-time features and safety
  */
 export default function MessagesPage() {
-  const { user } = useAuth();
+  const { user, token: authToken } = useAuth();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,11 +35,10 @@ export default function MessagesPage() {
   const accentPink = '#E91E8C';
   const accentPurple = '#8B5CF6';
 
-  // Initialize WebSocket connection
+  // Initialize Socket.io connection
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      socketService.connect(token);
+    if (authToken) {
+      socketService.connect(authToken);
 
       // Listen for connection status
       const handleConnect = () => setIsConnected(true);
@@ -261,7 +260,7 @@ export default function MessagesPage() {
           );
           if (unreadFromOthers.length) {
             try {
-              await api(`/live-messages/conversations/${selectedConversation.id}/read`, {
+              await api(`/messages/conversations/${selectedConversation.id}/read`, {
                 method: 'POST',
               });
               const ids = unreadFromOthers.map((m) => m.id);
@@ -456,12 +455,7 @@ export default function MessagesPage() {
           ),
         );
 
-        // Optionally send via socket to ensure real-time delivery
-        try {
-          socketService.sendMessage(selectedConversation.id, message.content);
-        } catch (err) {
-          console.debug('Socket send failed, server should broadcast:', err);
-        }
+        // Real-time broadcast is handled server-side after REST persist
       } else {
         // Mark as failed
         setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' } : m)));
@@ -513,10 +507,7 @@ export default function MessagesPage() {
   }, [displayMessages]);
 
   return (
-    <div
-      className="min-h-screen pt-16"
-      style={{ background: 'linear-gradient(135deg, #FFF5FB 0%, #F3E8FF 100%)' }}
-    >
+    <div className="ngurra-page pt-16">
       <div className="h-[calc(100vh-4rem)] flex">
         {/* Conversations List */}
         <aside

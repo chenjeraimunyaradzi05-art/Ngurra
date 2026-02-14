@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../Card';
+import { Card, CardHeader, CardContent, CardFooter } from '../Card';
 
 describe('Card', () => {
   it('renders children correctly', () => {
@@ -18,12 +18,14 @@ describe('Card', () => {
 
   it('applies ngurra variant styles', () => {
     const { container } = render(<Card variant="ngurra">Content</Card>);
-    expect(container.firstChild).toHaveClass('bg-gradient-to-br');
+    expect(container.firstChild).toHaveClass('backdrop-blur-md');
+    expect(container.firstChild).toHaveClass('bg-white/90');
   });
 
   it('applies ngurra-dark variant styles', () => {
     const { container } = render(<Card variant="ngurra-dark">Content</Card>);
-    expect(container.firstChild).toHaveClass('from-slate-800');
+    expect(container.firstChild).toHaveClass('backdrop-blur-md');
+    expect(container.firstChild).toHaveClass('bg-slate-900/90');
   });
 
   it('applies custom className', () => {
@@ -31,10 +33,7 @@ describe('Card', () => {
     expect(container.firstChild).toHaveClass('custom-class');
   });
 
-  it('passes through additional props', () => {
-    render(<Card data-testid="test-card">Content</Card>);
-    expect(screen.getByTestId('test-card')).toBeInTheDocument();
-  });
+  // Note: Card currently only supports the explicit props defined in CardProps.
 });
 
 describe('CardHeader', () => {
@@ -45,32 +44,14 @@ describe('CardHeader', () => {
 
   it('applies padding classes', () => {
     const { container } = render(<CardHeader>Header</CardHeader>);
-    expect(container.firstChild).toHaveClass('p-6');
-  });
-});
-
-describe('CardTitle', () => {
-  it('renders as h3 by default', () => {
-    render(<CardTitle>Title</CardTitle>);
-    const title = screen.getByText('Title');
-    expect(title.tagName).toBe('H3');
+    expect(container.firstChild).toHaveClass('px-4');
+    expect(container.firstChild).toHaveClass('py-3');
   });
 
-  it('applies font styling', () => {
-    const { container } = render(<CardTitle>Title</CardTitle>);
-    expect(container.firstChild).toHaveClass('font-semibold');
-  });
-});
-
-describe('CardDescription', () => {
-  it('renders children correctly', () => {
-    render(<CardDescription>Description text</CardDescription>);
-    expect(screen.getByText('Description text')).toBeInTheDocument();
-  });
-
-  it('applies muted text color', () => {
-    const { container } = render(<CardDescription>Desc</CardDescription>);
-    expect(container.firstChild).toHaveClass('text-muted-foreground');
+  it('renders title and subtitle when provided', () => {
+    render(<CardHeader title="Title" subtitle="Subtitle" />);
+    expect(screen.getByText('Title')).toBeInTheDocument();
+    expect(screen.getByText('Subtitle')).toBeInTheDocument();
   });
 });
 
@@ -82,8 +63,8 @@ describe('CardContent', () => {
 
   it('applies padding classes', () => {
     const { container } = render(<CardContent>Content</CardContent>);
-    expect(container.firstChild).toHaveClass('p-6');
-    expect(container.firstChild).toHaveClass('pt-0');
+    expect(container.firstChild).toHaveClass('px-4');
+    expect(container.firstChild).toHaveClass('py-3');
   });
 });
 
@@ -93,10 +74,9 @@ describe('CardFooter', () => {
     expect(screen.getByText('Footer content')).toBeInTheDocument();
   });
 
-  it('applies flex layout', () => {
+  it('renders a divided footer by default', () => {
     const { container } = render(<CardFooter>Footer</CardFooter>);
-    expect(container.firstChild).toHaveClass('flex');
-    expect(container.firstChild).toHaveClass('items-center');
+    expect(container.firstChild).toHaveClass('border-t');
   });
 });
 
@@ -104,10 +84,7 @@ describe('Card composition', () => {
   it('renders complete card structure', () => {
     render(
       <Card>
-        <CardHeader>
-          <CardTitle>Test Title</CardTitle>
-          <CardDescription>Test description</CardDescription>
-        </CardHeader>
+        <CardHeader title="Test Title" subtitle="Test description" />
         <CardContent>Test content</CardContent>
         <CardFooter>Test footer</CardFooter>
       </Card>

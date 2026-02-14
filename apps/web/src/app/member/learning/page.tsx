@@ -59,7 +59,7 @@ const topics = [
 
 export default function LearningHubPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-900/40 to-indigo-900/40 border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-8">

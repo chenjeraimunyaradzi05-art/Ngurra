@@ -25,6 +25,8 @@ export interface SocketMessage {
   senderId: string;
   content: string;
   type: 'text' | 'image' | 'video' | 'file' | 'audio' | 'location';
+  messageType?: 'text' | 'image' | 'video' | 'file' | 'audio' | 'location';
+  clientId?: string;
   replyTo?: string;
   createdAt: string;
 }
@@ -32,7 +34,7 @@ export interface SocketMessage {
 export interface TypingIndicator {
   conversationId: string;
   userId: string;
-  userName: string;
+  userName?: string;
   isTyping: boolean;
 }
 
@@ -72,6 +74,7 @@ export type SocketEventType =
   | 'error'
   | 'authenticated'
   | 'message:new'
+  | 'message:sent'
   | 'message:updated'
   | 'message:deleted'
   | 'message:read'
@@ -180,11 +183,25 @@ class SocketService extends EventEmitter {
 
     // Messages
     this.socket.on('message:new', (message: SocketMessage) => {
-      this.emit('message:new', message);
+      const normalized: SocketMessage = {
+        ...message,
+        type: message.type || message.messageType || 'text',
+        messageType: message.messageType || message.type || 'text',
+      };
+      this.emit('message:new', normalized);
+    });
+
+    this.socket.on('message:sent', (data: { clientId: string; messageId: string; timestamp: string }) => {
+      this.emit('message:sent', data);
     });
 
     this.socket.on('message:updated', (message: SocketMessage) => {
-      this.emit('message:updated', message);
+      const normalized: SocketMessage = {
+        ...message,
+        type: message.type || message.messageType || 'text',
+        messageType: message.messageType || message.type || 'text',
+      };
+      this.emit('message:updated', normalized);
     });
 
     this.socket.on('message:deleted', (data: { messageId: string; conversationId: string }) => {
@@ -266,13 +283,14 @@ class SocketService extends EventEmitter {
     conversationId: string,
     content: string,
     type: SocketMessage['type'] = 'text',
-    replyTo?: string
+    replyTo?: string,
+    clientId?: string
   ): void {
     this.emitEvent('message:send', {
       conversationId,
       content,
-      type,
-      replyTo
+      messageType: type,
+      clientId,
     });
   }
 
@@ -326,7 +344,7 @@ class SocketService extends EventEmitter {
    * Update presence status
    */
   public updatePresence(status: PresenceUpdate['status']): void {
-    this.emitEvent('presence:update', { status });
+    this.emitEvent('presence:update', status);
   }
 
   /**
@@ -349,14 +367,14 @@ class SocketService extends EventEmitter {
    * Join a conversation room
    */
   public joinConversation(conversationId: string): void {
-    this.emitEvent('conversation:join', { conversationId });
+    this.emitEvent('conversation:join', conversationId);
   }
 
   /**
    * Leave a conversation room
    */
   public leaveConversation(conversationId: string): void {
-    this.emitEvent('conversation:leave', { conversationId });
+    this.emitEvent('conversation:leave', conversationId);
   }
 
   /**

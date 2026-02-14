@@ -1,6 +1,7 @@
 "use client";
 
 import { API_BASE } from '@/lib/apiBase';
+import { socketService } from '@/lib/socket';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { 
@@ -186,6 +187,37 @@ export default function LiveChatPage() {
 
   const apiBase = API_BASE;
 
+  useEffect(() => {
+    if (!token) return;
+
+    socketService.connect(token);
+
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    const handlePresenceUpdate = (update) => {
+      setPresence((prev) => ({
+        ...prev,
+        [update.userId]: {
+          ...(prev?.[update.userId] || {}),
+          online: update.status === 'online',
+        },
+      }));
+    };
+
+    socketService.on('connect', handleConnect);
+    socketService.on('disconnect', handleDisconnect);
+    socketService.on('presence:update', handlePresenceUpdate);
+
+    setIsConnected(socketService.connected);
+
+    return () => {
+      socketService.off('connect', handleConnect);
+      socketService.off('disconnect', handleDisconnect);
+      socketService.off('presence:update', handlePresenceUpdate);
+    };
+  }, [token]);
+
   // Scroll to bottom when new messages arrive
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -225,17 +257,25 @@ export default function LiveChatPage() {
     async function fetchMessages() {
       try {
         const res = await fetch(
-          `${apiBase}/live-messages/conversations/${selectedConversation.id}/messages`,
+          `${apiBase}/messages/conversations/${selectedConversation.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.ok) {
           const data = await res.json();
-          setMessages(data.messages || []);
+          const normalized = (data.messages || []).map((m) => ({
+            ...m,
+            sender: {
+              id: m.senderId,
+              name: m.senderName,
+              avatar: m.senderAvatar,
+            },
+          }));
+          setMessages(normalized);
         }
 
         // Mark as read
         await fetch(
-          `${apiBase}/live-messages/conversations/${selectedConversation.id}/read`,
+          `${apiBase}/messages/conversations/${selectedConversation.id}/read`,
           {
             method: 'POST',
             headers: {
@@ -258,33 +298,6 @@ export default function LiveChatPage() {
     fetchMessages();
   }, [token, selectedConversation?.id]);
 
-  // Fetch presence for conversation participants
-  useEffect(() => {
-    if (!token || !selectedConversation) return;
-
-    async function fetchPresence() {
-      const userIds = selectedConversation.participants?.map(p => p.userId) || [];
-      if (userIds.length === 0) return;
-
-      try {
-        const res = await fetch(
-          `${apiBase}/live-messages/presence?userIds=${userIds.join(',')}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setPresence(data.presence || {});
-        }
-      } catch (err) {
-        console.error('Failed to fetch presence:', err);
-      }
-    }
-
-    fetchPresence();
-    const interval = setInterval(fetchPresence, 30000); // Refresh every 30s
-    return () => clearInterval(interval);
-  }, [token, selectedConversation?.id]);
-
   // WebSocket connection (simulated polling for now since WS requires server setup)
   useEffect(() => {
     if (!token || !selectedConversation) return;
@@ -293,15 +306,22 @@ export default function LiveChatPage() {
     const pollInterval = setInterval(async () => {
       try {
         const res = await fetch(
-          `${apiBase}/live-messages/conversations/${selectedConversation.id}/messages?limit=10`,
+          `${apiBase}/messages/conversations/${selectedConversation.id}?limit=10`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.ok) {
           const data = await res.json();
           // Check for new messages
           if (data.messages?.length > 0) {
-            const lastKnownId = messages[messages.length - 1]?.id;
-            const newMessages = data.messages.filter(m => 
+            const normalized = (data.messages || []).map((m) => ({
+              ...m,
+              sender: {
+                id: m.senderId,
+                name: m.senderName,
+                avatar: m.senderAvatar,
+              },
+            }));
+            const newMessages = normalized.filter(m => 
               !messages.some(existing => existing.id === m.id)
             );
             if (newMessages.length > 0) {
@@ -314,11 +334,8 @@ export default function LiveChatPage() {
       }
     }, 3000);
 
-    setIsConnected(true);
-
     return () => {
       clearInterval(pollInterval);
-      setIsConnected(false);
     };
   }, [token, selectedConversation?.id, messages]);
 
@@ -343,28 +360,46 @@ export default function LiveChatPage() {
 
     try {
       const res = await fetch(
-        `${apiBase}/live-messages/conversations/${selectedConversation.id}/send`,
+        `${apiBase}/messages/conversations/${selectedConversation.id}/messages`,
         {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ content })
+          body: JSON.stringify({ content, messageType: 'text' })
         }
       );
 
       if (res.ok) {
         const data = await res.json();
+        const normalizedMessage = data.message
+          ? {
+              ...data.message,
+              sender: {
+                id: data.message.senderId,
+                name: data.message.senderName,
+                avatar: data.message.senderAvatar,
+              },
+              sending: false,
+            }
+          : null;
+
+        if (!normalizedMessage) {
+          setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
+          showNotification({ message: 'Failed to send message', variant: 'error' });
+          return;
+        }
+
         // Replace temp message with real one
         setMessages(prev => prev.map(m => 
-          m.id === tempMessage.id ? { ...data.message, sending: false } : m
+          m.id === tempMessage.id ? normalizedMessage : m
         ));
 
         // Update conversation last message
         setConversations(prev => prev.map(c =>
           c.id === selectedConversation.id
-            ? { ...c, lastMessage: data.message, updatedAt: new Date().toISOString() }
+            ? { ...c, lastMessage: normalizedMessage, updatedAt: new Date().toISOString() }
             : c
         ));
       } else {
@@ -406,7 +441,7 @@ export default function LiveChatPage() {
     if (!token) return;
     setLoadingMentors(true);
     try {
-      const res = await fetch(`${apiBase}/mentors`, {
+      const res = await fetch(`${apiBase}/mentor/search`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -430,18 +465,30 @@ export default function LiveChatPage() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ recipientId })
+        body: JSON.stringify({ participantIds: [recipientId], type: 'direct' })
       });
       if (res.ok) {
         const data = await res.json();
-        // Add to conversations if new
-        setConversations(prev => {
-          if (prev.some(c => c.id === data.conversation.id)) {
-            return prev;
-          }
-          return [data.conversation, ...prev];
+        const conversationId = data?.conversation?.id;
+        if (!conversationId) {
+          showNotification({ message: 'Failed to start conversation', variant: 'error' });
+          return;
+        }
+
+        // Refresh conversations to get full conversation shape
+        const listRes = await fetch(`${apiBase}/messages/conversations`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setSelectedConversation(data.conversation);
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          const nextConversations = listData.conversations || [];
+          setConversations(nextConversations);
+          const nextSelected = nextConversations.find(c => c.id === conversationId);
+          if (nextSelected) {
+            setSelectedConversation(nextSelected);
+          }
+        }
+
         setShowNewConversation(false);
         setShowMobileSidebar(false);
       }

@@ -81,7 +81,7 @@ Gimbi is a comprehensive "superapp" designed specifically for **First Nations Au
 
 ---
 
-## 📋 1000-STEP IMPLEMENTATION PLAN
+## 📋 1200-STEP IMPLEMENTATION PLAN
 
 ### PHASE 1: FOUNDATION & INFRASTRUCTURE (Steps 1-100)
 
@@ -1517,7 +1517,7 @@ _Note: Percentages for Phases 4–12 are conservative, evidence-based estimates 
 
 ### Repo-Verified Implementation Matrix (Evidence-Based)
 
-_As of **January 16, 2026**. This matrix reflects what is present in the repository today:_
+_As of **January 19, 2026**. This matrix reflects what is present in the repository today:_
 
 - **Routes present** are based on what is mounted in `apps/api/src/app.ts`.
 - **DB models present** are based on `apps/api/prisma/schema.prisma` (representative models listed; not exhaustive).
@@ -1595,7 +1595,7 @@ _As of **January 16, 2026**. This matrix reflects what is present in the reposit
 - TailwindCSS
 - Socket.io client
 - React Query for data fetching
-- Zustand for state management
+- Redux Toolkit for state management
 
 ### Mobile (React Native/Expo)
 
@@ -1641,12 +1641,6 @@ _As of **January 16, 2026**. This matrix reflects what is present in the reposit
 - GitHub Actions CI/CD
 - Prometheus + Grafana monitoring
 - Sentry for error tracking
-
-## 📋 Table of Contents (Original Guide Below)
-
-9. [Email Templates & Communication](#email-templates--communication)
-10. [Phase 2 Roadmap](#phase-2-roadmap)
-11. [Proprietary Algorithm Specifications](#appendix-proprietary-algorithm-specifications)
 
 ### What Was Accomplished
 
@@ -1864,7 +1858,7 @@ Performance Reports → Monthly RAP Compliance
 
 #### 1. API Routes (88+ endpoints)
 
-**Authentication Routes** (12 routes)
+**Authentication Routes** (12 routes — key routes shown below)
 
 ```
 POST   /api/auth/register
@@ -1881,7 +1875,7 @@ POST   /api/auth/oauth/:provider/callback
 GET    /api/auth/profile
 ```
 
-**Job Routes** (16 routes)
+**Job Routes** (16 routes — key routes shown below)
 
 ```
 GET    /api/jobs                    # List all jobs
@@ -1897,7 +1891,7 @@ POST   /api/jobs/:id/bookmark       # Bookmark job
 GET    /api/bookmarks               # Get bookmarked jobs
 ```
 
-**Mentorship Routes** (14 routes)
+**Mentorship Routes** (14 routes — key routes shown below)
 
 ```
 GET    /api/mentorship/mentors      # List mentors
@@ -1912,7 +1906,7 @@ POST   /api/mentorship/feedback     # Leave feedback
 GET    /api/mentorship/ratings      # Get mentor ratings
 ```
 
-**Messaging Routes** (10 routes)
+**Messaging Routes** (10 routes — key routes shown below)
 
 ```
 GET    /api/messages                # Get conversations
@@ -1925,7 +1919,7 @@ GET    /api/messages/search         # Search messages
 POST   /api/messages/group          # Create group chat
 ```
 
-**Community Routes** (12 routes)
+**Community Routes** (12 routes — key routes shown below)
 
 ```
 GET    /api/community/posts         # Get feed
@@ -1939,7 +1933,7 @@ GET    /api/community/forums        # Get forums
 POST   /api/community/forums        # Create forum
 ```
 
-**Education Routes** (10 routes)
+**Education Routes** (10 routes — key routes shown below)
 
 ```
 GET    /api/education/courses       # List courses
@@ -1950,7 +1944,7 @@ POST   /api/education/complete      # Mark module complete
 GET    /api/education/certificates  # Get certificates
 ```
 
-**User Routes** (12 routes)
+**User Routes** (12 routes — key routes shown below)
 
 ```
 GET    /api/users/:id               # Get user profile
@@ -1961,7 +1955,7 @@ POST   /api/users/:id/follow        # Follow user
 GET    /api/users/search            # Search users
 ```
 
-**Admin Routes** (12 routes)
+**Admin Routes** (12 routes — key routes shown below)
 
 ```
 GET    /api/admin/users             # List users
@@ -2094,7 +2088,7 @@ socket.on('connect', () => {
 - MFA Setup
 - Email Verification
 
-**Job Seeker Screens** (12)
+**Job Seeker Screens** (11)
 
 - Job Discovery
 - Job Search & Filter
@@ -2549,18 +2543,22 @@ socket.on('message:delivered', (messageId) => {
 
 ```typescript
 // Employer receives new application notification
-socket.on('job:application', {
-  jobId: string,
-  applicantName: string,
-  applicantId: string,
-  appliedAt: Date,
+socket.on('job:application', (data: {
+  jobId: string;
+  applicantName: string;
+  applicantId: string;
+  appliedAt: Date;
+}) => {
+  // Handle new application
 });
 
 // Status change notification
-socket.on('job:status-change', {
-  applicationId: string,
-  oldStatus: string,
-  newStatus: string,
+socket.on('job:status-change', (data: {
+  applicationId: string;
+  oldStatus: string;
+  newStatus: string;
+}) => {
+  // Handle status change
 });
 ```
 
@@ -2568,18 +2566,22 @@ socket.on('job:status-change', {
 
 ```typescript
 // Mentorship request received
-socket.on('mentorship:request', {
-  mentorId: string,
-  menteeName: string,
-  requestMessage: string,
+socket.on('mentorship:request', (data: {
+  mentorId: string;
+  menteeName: string;
+  requestMessage: string;
+}) => {
+  // Handle mentorship request
 });
 
 // Session reminder
-socket.on('mentorship:session-reminder', {
-  sessionId: string,
-  mentorName: string,
-  sessionTime: Date,
-  minutesUntilStart: number,
+socket.on('mentorship:session-reminder', (data: {
+  sessionId: string;
+  mentorName: string;
+  sessionTime: Date;
+  minutesUntilStart: number;
+}) => {
+  // Handle session reminder
 });
 ```
 
@@ -3357,7 +3359,7 @@ Solution:
 ---
 
 **Document Version:** 4.0  
-**Last Updated:** January 14, 2026  
+**Last Updated:** January 19, 2026  
 **Status:** Production-Ready + Algorithm Roadmap  
 **Test Coverage:** 85%+ across 360 tests  
 **Total Steps:** 1,200 (Phases 1-14)  
@@ -3367,7 +3369,7 @@ Solution:
 
 ---
 
-## \ud83d\udcda APPENDIX: PROPRIETARY ALGORITHM SPECIFICATIONS
+## 📚 APPENDIX: PROPRIETARY ALGORITHM SPECIFICATIONS
 
 ### A.1 CareerPathfinder Algorithm
 
@@ -3456,14 +3458,14 @@ Stage 3: Delivery
 Video A: First Nations woman shares business success story
 - Engagement: 7/10, Relevance: 8/10, Opportunity: 7/10
 - First Nations: 10/10, Safety: 9/10
-- **Final Score: 7.9/10 \u2192 HIGH PRIORITY**
+- **Final Score: 7.7/10 → HIGH PRIORITY**
 
 Video B: Celebrity lifestyle (no economic value)
 - Engagement: 9/10, Relevance: 2/10, Opportunity: 0/10
 - First Nations: 1/10, Safety: 7/10
-- **Final Score: 3.8/10 \u2192 DOWNRANKED**
+- **Final Score: 4.2/10 → DOWNRANKED**
 
-Result: Video A ranked 2x higher despite lower raw engagement
+Result: Video A ranked ~2x higher despite lower raw engagement
 ```
 
 ---
@@ -3472,14 +3474,14 @@ Result: Video A ranked 2x higher despite lower raw engagement
 
 | Badge                                           | Requirements                          | Purpose                       |
 | ----------------------------------------------- | ------------------------------------- | ----------------------------- |
-| \ud83d\udfe6 First Nations Verified             | Self-ID + elder/community endorsement | Cultural authenticity         |
-| \ud83d\udcbc Employer Verified                  | Government ID + company email         | Legitimate employers          |
-| \ud83c\udf93 Educator Verified                  | Institution email                     | Trusted training providers    |
-| \ud83d\udc69\u200d\ud83d\udcbc Mentor Certified | Background check + references         | Safe mentorship               |
-| \u2705 Creator Verified                         | 10k+ followers, 90-day history        | Content trust                 |
-| \ud83c\udfe2 Business Verified                  | ABN, GST registered                   | Legitimate business           |
-| \ud83c\udfdb\ufe0f RAP Certified                | Reconciliation Action Plan            | Culturally committed employer |
-| \ud83d\udee1\ufe0f DV Support Verified          | Trained facilitator                   | Safety-focused content        |
+| 🟦 First Nations Verified | Self-ID + elder/community endorsement | Cultural authenticity |
+| 💼 Employer Verified | Government ID + company email | Legitimate employers |
+| 🎓 Educator Verified | Institution email | Trusted training providers |
+| 👩‍💼 Mentor Certified | Background check + references | Safe mentorship |
+| ✅ Creator Verified | 10k+ followers, 90-day history | Content trust |
+| 🏢 Business Verified | ABN, GST registered | Legitimate business |
+| 🏛️ RAP Certified | Reconciliation Action Plan | Culturally committed employer |
+| 🛡️ DV Support Verified | Trained facilitator | Safety-focused content |
 
 ---
 

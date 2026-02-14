@@ -185,10 +185,7 @@ export default function CommunityClient({ initialCategories = [], initialTopics 
 
   if (loading) {
     return (
-      <div
-        className={`${spaceGrotesk.className} min-h-screen flex items-center justify-center`}
-        style={{ background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)' }}
-      >
+      <div className={`${spaceGrotesk.className} ngurra-page flex items-center justify-center`}>
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-pink-500" />
           <p className="text-gray-400 font-medium">Loading community...</p>
@@ -198,10 +195,7 @@ export default function CommunityClient({ initialCategories = [], initialTopics 
   }
 
   return (
-    <div
-      className={`${spaceGrotesk.className} min-h-screen`}
-      style={{ background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)' }}
-    >
+    <div className={`${spaceGrotesk.className} ngurra-page`}>
       {/* Decorative patterns */}
       <div
         className="fixed inset-0 opacity-10 pointer-events-none"

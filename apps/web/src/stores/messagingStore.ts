@@ -3,13 +3,16 @@
 /**
  * Messaging Store
  * 
- * Real-time messaging state management with WebSocket support.
+ * Real-time messaging state management with Socket.io support.
  * Handles conversations, messages, presence, and typing indicators.
  */
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import api from '@/lib/apiClient';
+import { socketService } from '@/lib/socket';
+import type { SocketMessage, TypingIndicator, PresenceUpdate } from '@/lib/socket';
+import { getAccessToken } from '@/lib/tokenStore';
 
 interface Message {
   id: string;
@@ -95,11 +98,8 @@ interface MessagingActions {
 
 type MessagingStore = MessagingState & MessagingActions;
 
-// WebSocket instance (managed externally)
-let ws: WebSocket | null = null;
-let reconnectTimeout: NodeJS.Timeout | null = null;
 let typingTimeouts: Record<string, NodeJS.Timeout> = {};
-let shouldReconnect = true;
+let eventCleanups: (() => void)[] = [];
 
 function clearTypingTimeouts() {
   Object.values(typingTimeouts).forEach((timeout) => clearTimeout(timeout));
@@ -120,22 +120,14 @@ export const useMessagingStore = create<MessagingStore>()(
 
     // Connection
     connect: async () => {
-      if (ws?.readyState === WebSocket.OPEN || get().isConnecting) {
+      if (socketService.connected || get().isConnecting) {
         return;
       }
 
       set({ isConnecting: true, connectionError: null });
-      shouldReconnect = true;
 
       try {
-        // Get WebSocket config from server
-        const { ok, data } = await api<{ websocketUrl: string }>('/live-messages/config');
-        if (!ok || !data) {
-          throw new Error('Failed to get WebSocket configuration');
-        }
-
-        // Get auth token for WebSocket
-        const token = sessionStorage.getItem('accessToken');
+        const token = getAccessToken();
         if (!token) {
           set({
             isConnecting: false,
@@ -143,41 +135,130 @@ export const useMessagingStore = create<MessagingStore>()(
           });
           return;
         }
-        
-        ws = new WebSocket(`${data.websocketUrl}?token=${token}`);
 
-        ws.onopen = () => {
+        // Clean up previous listeners
+        eventCleanups.forEach(fn => fn());
+        eventCleanups = [];
+
+        // Connect via Socket.io
+        socketService.connect(token);
+
+        // Connection state listeners
+        eventCleanups.push(
+          socketService.addEventListener('connect', () => {
+            set({ isConnected: true, isConnecting: false, connectionError: null });
+          })
+        );
+
+        eventCleanups.push(
+          socketService.addEventListener('disconnect', () => {
+            set({ isConnected: false });
+          })
+        );
+
+        eventCleanups.push(
+          socketService.addEventListener('error', (error: unknown) => {
+            const msg = error instanceof Error ? error.message : 'Connection error';
+            set({ connectionError: msg, isConnecting: false });
+          })
+        );
+
+        // Real-time message handler
+        eventCleanups.push(
+          socketService.addEventListener('message:new', (incoming: unknown) => {
+            const msg = incoming as SocketMessage & { clientId?: string; senderName?: string };
+            const convMessages = get().messages[msg.conversationId] || [];
+
+            // Deduplicate by real message ID
+            if (convMessages.some(m => m.id === msg.id)) return;
+
+            // Check if this confirms our optimistic message
+            if (msg.clientId && convMessages.some(m => m.id === msg.clientId)) {
+              set((state) => ({
+                messages: {
+                  ...state.messages,
+                  [msg.conversationId]: (state.messages[msg.conversationId] || []).map(m =>
+                    m.id === msg.clientId
+                      ? { ...m, id: msg.id, status: 'sent' as const, createdAt: msg.createdAt }
+                      : m
+                  ),
+                },
+              }));
+              return;
+            }
+
+            // New incoming message
+            get().handleNewMessage({
+              id: msg.id,
+              conversationId: msg.conversationId,
+              senderId: msg.senderId,
+              senderName: msg.senderName || '',
+              content: msg.content,
+              type: (msg.type || 'text') as Message['type'],
+              createdAt: msg.createdAt,
+              status: 'delivered',
+            });
+          })
+        );
+
+        // Optimistic send confirmation
+        eventCleanups.push(
+          socketService.addEventListener('message:sent', (data: unknown) => {
+            const { clientId, messageId, timestamp } = data as { clientId: string; messageId: string; timestamp: string };
+            set((state) => {
+              const newMessages = { ...state.messages };
+              for (const convId in newMessages) {
+                newMessages[convId] = newMessages[convId].map((m) =>
+                  m.id === clientId
+                    ? { ...m, id: messageId, status: 'sent' as const, createdAt: timestamp }
+                    : m
+                );
+              }
+              return { messages: newMessages };
+            });
+          })
+        );
+
+        // Message delivered
+        eventCleanups.push(
+          socketService.addEventListener('message:delivered', (data: unknown) => {
+            const { messageId } = data as { messageId: string };
+            get().handleMessageDelivered(messageId, new Date().toISOString());
+          })
+        );
+
+        // Message read
+        eventCleanups.push(
+          socketService.addEventListener('message:read', (data: unknown) => {
+            const { conversationId, userId } = data as { conversationId: string; userId: string };
+            get().handleMessageRead(conversationId, userId, new Date().toISOString());
+          })
+        );
+
+        // Typing indicators
+        eventCleanups.push(
+          socketService.addEventListener('message:typing', (data: unknown) => {
+            const typing = data as TypingIndicator;
+            if (typing.isTyping) {
+              get().handleUserTyping(typing.conversationId, typing.userId);
+            } else {
+              get().handleUserStoppedTyping(typing.conversationId, typing.userId);
+            }
+          })
+        );
+
+        // Presence updates
+        eventCleanups.push(
+          socketService.addEventListener('presence:update', (data: unknown) => {
+            const presence = data as PresenceUpdate;
+            get().handlePresenceChange(presence.userId, presence.status === 'online');
+          })
+        );
+
+        // If already connected synchronously
+        if (socketService.connected) {
           set({ isConnected: true, isConnecting: false, connectionError: null });
-          // Clear any reconnect timeout
-          if (reconnectTimeout) {
-            clearTimeout(reconnectTimeout);
-            reconnectTimeout = null;
-          }
-        };
-
-        ws.onclose = () => {
-          set({ isConnected: false, isConnecting: false });
-          ws = null;
-          if (shouldReconnect) {
-            // Auto-reconnect after 3 seconds
-            reconnectTimeout = setTimeout(() => {
-              get().connect();
-            }, 3000);
-          }
-        };
-
-        ws.onerror = () => {
-          set({ connectionError: 'WebSocket connection error', isConnecting: false });
-        };
-
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            handleWebSocketMessage(data, get);
-          } catch (err) {
-            console.error('Failed to parse WebSocket message:', err);
-          }
-        };
+        }
       } catch (err) {
         set({ 
           isConnecting: false, 
@@ -187,15 +268,9 @@ export const useMessagingStore = create<MessagingStore>()(
     },
 
     disconnect: () => {
-      shouldReconnect = false;
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-        reconnectTimeout = null;
-      }
-      if (ws) {
-        ws.close();
-        ws = null;
-      }
+      eventCleanups.forEach(fn => fn());
+      eventCleanups = [];
+      socketService.disconnect();
       clearTypingTimeouts();
       set({ isConnected: false, isConnecting: false });
     },
@@ -246,8 +321,8 @@ export const useMessagingStore = create<MessagingStore>()(
     loadMessages: async (conversationId, before) => {
       try {
         const url = before 
-          ? `/live-messages/conversations/${conversationId}/messages?before=${before}`
-          : `/live-messages/conversations/${conversationId}/messages`;
+          ? `/messages/conversations/${conversationId}?before=${before}`
+          : `/messages/conversations/${conversationId}`;
         
         const { ok, data } = await api<{ messages: Message[] }>(url);
         if (ok && data?.messages) {
@@ -287,15 +362,9 @@ export const useMessagingStore = create<MessagingStore>()(
       }));
 
       try {
-        // Send via WebSocket if connected
-        if (ws?.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({
-            type: 'send_message',
-            conversationId,
-            content,
-            messageType: type,
-            tempId,
-          }));
+        // Send via Socket.io if connected
+        if (socketService.connected) {
+          socketService.sendMessage(conversationId, content, type as SocketMessage['type'], undefined, tempId);
           return true;
         }
 
@@ -344,7 +413,7 @@ export const useMessagingStore = create<MessagingStore>()(
 
     markAsRead: async (conversationId) => {
       try {
-        await api(`/live-messages/conversations/${conversationId}/read`, { method: 'POST' });
+        await api(`/messages/conversations/${conversationId}/read`, { method: 'POST' });
         set((state) => ({
           conversations: state.conversations.map((c) =>
             c.id === conversationId ? { ...c, unreadCount: 0 } : c
@@ -464,15 +533,11 @@ export const useMessagingStore = create<MessagingStore>()(
 
     // Typing
     sendTypingStart: (conversationId) => {
-      if (ws?.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'typing_start', conversationId }));
-      }
+      socketService.startTyping(conversationId);
     },
 
     sendTypingStop: (conversationId) => {
-      if (ws?.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'typing_stop', conversationId }));
-      }
+      socketService.stopTyping(conversationId);
     },
 
     // State
@@ -482,36 +547,3 @@ export const useMessagingStore = create<MessagingStore>()(
   }))
 );
 
-// WebSocket message handler
-function handleWebSocketMessage(data: any, get: () => MessagingStore) {
-  const store = get();
-  
-  switch (data.type) {
-    case 'new_message':
-      store.handleNewMessage(data.message);
-      break;
-    case 'message_delivered':
-      store.handleMessageDelivered(data.messageId, data.deliveredAt);
-      break;
-    case 'message_read':
-      store.handleMessageRead(data.conversationId, data.userId, data.readAt);
-      break;
-    case 'user_typing':
-      store.handleUserTyping(data.conversationId, data.userId);
-      break;
-    case 'user_stopped_typing':
-      store.handleUserStoppedTyping(data.conversationId, data.userId);
-      break;
-    case 'user_online':
-      store.handlePresenceChange(data.userId, true);
-      break;
-    case 'user_offline':
-      store.handlePresenceChange(data.userId, false);
-      break;
-    case 'pong':
-      // Heartbeat response
-      break;
-    default:
-      console.log('Unknown WebSocket message type:', data.type);
-  }
-}

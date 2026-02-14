@@ -97,7 +97,7 @@ export default function PostComposer({
   const handleSubmit = async () => {
     if (!content.trim() && !mediaPreview) return;
     if (!isAuthenticated) {
-      router.push('/login?redirect=/connections');
+      router.push('/signin?returnTo=/connections');
       return;
     }
 
@@ -156,7 +156,7 @@ export default function PostComposer({
         }}
       >
         <p className="text-gray-400 text-center py-4">
-          <a href="/login?redirect=/connections" className="text-pink-400 hover:text-pink-300">
+          <a href="/signin?returnTo=/connections" className="text-pink-400 hover:text-pink-300">
             Sign in
           </a>{' '}
           to share posts with your network

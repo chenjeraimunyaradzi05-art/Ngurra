@@ -200,7 +200,7 @@ export default function HousingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white px-6 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-white px-6 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
           <Home className="w-6 h-6 text-emerald-400" />

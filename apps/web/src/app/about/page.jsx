@@ -110,19 +110,12 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Celestial background overlay */}
-      <div 
-        className="fixed inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 80% 70%, rgba(80, 200, 120, 0.12) 0%, transparent 40%),
-            radial-gradient(circle at 50% 90%, rgba(228, 91, 138, 0.1) 0%, transparent 40%)
-          `
-        }}
-        aria-hidden="true"
-      />
+    <div className="ngurra-page relative">
+      {/* Decorative halos */}
+      <div className="ngurra-halos">
+        <div className="ngurra-halo-pink" />
+        <div className="ngurra-halo-purple" />
+      </div>
 
       {/* Hero Section */}
       <section className="relative py-20 px-6 text-center z-10">
@@ -134,13 +127,10 @@ export default function AboutPage() {
             <Gem className="w-5 h-5" style={{ color: '#50C878' }} />
           </div>
 
-          <h1 
-            className="text-4xl md:text-5xl font-bold mb-6 text-gradient-gold"
-            style={{ textShadow: '0 0 40px rgba(255, 215, 0, 0.3)' }}
-          >
+          <h1 className="ngurra-h1 text-4xl md:text-5xl mb-6">
             About Ngurra Pathways
           </h1>
-          <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: 'rgba(248, 246, 255, 0.85)' }}>
+          <p className="text-xl mb-8 max-w-3xl mx-auto ngurra-text">
             Ngurra means "home" or "country" in many Aboriginal languages. We're building a platform 
             that creates pathways home—to fulfilling careers, supportive communities, and a future 
             where Indigenous Australians thrive in the workplace. ✨
@@ -148,41 +138,14 @@ export default function AboutPage() {
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/jobs"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold transition-all duration-300"
-              style={{ 
-                background: 'linear-gradient(135deg, #C41E3A, #E85B8A)',
-                color: 'white',
-                border: '2px solid #FFD700',
-                boxShadow: '0 4px 20px rgba(196, 30, 58, 0.35), 0 0 15px rgba(255, 215, 0, 0.15)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                e.currentTarget.style.boxShadow = '0 8px 30px rgba(196, 30, 58, 0.45), 0 0 25px rgba(255, 215, 0, 0.25)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(196, 30, 58, 0.35), 0 0 15px rgba(255, 215, 0, 0.15)';
-              }}
+              className="ngurra-btn-primary px-8 py-3.5"
             >
               <Gem className="w-5 h-5" />
               Browse Jobs
             </Link>
             <Link
               href="/mentorship"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold transition-all duration-300"
-              style={{ 
-                background: 'transparent',
-                color: '#FFD700',
-                border: '2px solid rgba(255, 215, 0, 0.5)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)';
-                e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.25)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              className="ngurra-btn-secondary px-8 py-3.5"
             >
               <Sparkles className="w-5 h-5" />
               Find a Mentor
@@ -212,7 +175,7 @@ export default function AboutPage() {
                   <div className="text-3xl md:text-4xl font-bold mb-2 text-gradient-gold">
                     {stat.value}
                   </div>
-                  <div className="text-sm" style={{ color: 'rgba(248, 246, 255, 0.7)' }}>{stat.label}</div>
+                  <div className="text-sm ngurra-muted">{stat.label}</div>
                 </div>
               );
             })}
@@ -228,12 +191,12 @@ export default function AboutPage() {
             <span className="text-sm font-medium" style={{ color: '#50C878' }}>Our Mission</span>
           </div>
           <h2 className="text-3xl font-bold mb-6 text-gradient-gold">Building Noble Pathways</h2>
-          <p className="text-lg mb-6" style={{ color: 'rgba(248, 246, 255, 0.85)' }}>
+          <p className="text-lg mb-6 ngurra-text">
             Ngurra Pathways exists to close the employment gap for Aboriginal and Torres Strait Islander 
             peoples by connecting job seekers with culturally safe employers, meaningful mentorship, 
             and accredited training pathways.
           </p>
-          <p className="text-lg" style={{ color: 'rgba(248, 246, 255, 0.8)' }}>
+          <p className="text-lg ngurra-text">
             We partner with employers who have genuine Reconciliation Action Plans (RAPs) and a 
             commitment to creating inclusive workplaces. Our platform is built on Indigenous data 
             sovereignty principles, ensuring that community members maintain control over their data.
@@ -288,8 +251,8 @@ export default function AboutPage() {
                   >
                     <Icon className="w-6 h-6" style={{ color: value.color }} />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: '#F8F6FF' }}>{value.title}</h3>
-                  <p className="text-sm" style={{ color: 'rgba(248, 246, 255, 0.7)' }}>{value.description}</p>
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">{value.title}</h3>
+                  <p className="text-sm ngurra-text">{value.description}</p>
                 </div>
               );
             })}
@@ -334,8 +297,8 @@ export default function AboutPage() {
                 >
                   {partner.role}
                 </div>
-                <h3 className="text-lg font-semibold mb-3" style={{ color: '#F8F6FF' }}>{partner.name}</h3>
-                <p className="text-sm" style={{ color: 'rgba(248, 246, 255, 0.7)' }}>{partner.description}</p>
+                <h3 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white">{partner.name}</h3>
+                <p className="text-sm ngurra-text">{partner.description}</p>
               </div>
             ))}
           </div>
@@ -360,7 +323,7 @@ export default function AboutPage() {
           >
             <Crown className="w-10 h-10 mx-auto mb-4" style={{ color: '#FFD700' }} />
             <h2 className="text-2xl font-bold mb-6 text-gradient-gold">Acknowledgement of Country</h2>
-            <p className="mb-6" style={{ color: 'rgba(248, 246, 255, 0.9)' }}>
+            <p className="mb-6 ngurra-text">
               Ngurra Pathways acknowledges the Traditional Custodians of the lands on which we work 
               and live. We pay our respects to Elders past, present, and emerging, and recognise the 
               continuing connection of Aboriginal and Torres Strait Islander peoples to land, waters, 
@@ -385,7 +348,7 @@ export default function AboutPage() {
             }}
           >
             <h2 className="text-2xl font-bold mb-4 text-gradient-gold">Ready to Start Your Journey?</h2>
-            <p className="mb-8" style={{ color: 'rgba(248, 246, 255, 0.8)' }}>
+            <p className="mb-8 ngurra-text">
               Whether you're looking for your next career opportunity, seeking a mentor, or wanting 
               to upskill, we're here to support you every step of the way. ✨
             </p>

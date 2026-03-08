@@ -12,23 +12,37 @@ jest.mock('expo-secure-store', () => ({
 }));
 
 // Mock Haptics
-jest.mock('expo-haptics', () => ({
-  impactAsync: jest.fn(),
-  ImpactFeedbackStyle: {
-    Light: 'light',
-    Medium: 'medium',
-    Heavy: 'heavy',
-  },
-}));
+jest.mock(
+  'expo-haptics',
+  () => ({
+    impactAsync: jest.fn(),
+    ImpactFeedbackStyle: {
+      Light: 'light',
+      Medium: 'medium',
+      Heavy: 'heavy',
+    },
+  }),
+  { virtual: true }
+);
 
 // Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  multiGet: jest.fn(),
-  multiSet: jest.fn(),
-}));
+jest.mock('@react-native-async-storage/async-storage', () => {
+  const asyncStorageMock = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    multiGet: jest.fn(),
+    multiSet: jest.fn(),
+    multiRemove: jest.fn(),
+    clear: jest.fn(),
+  };
+
+  return {
+    __esModule: true,
+    default: asyncStorageMock,
+    ...asyncStorageMock,
+  };
+});
 
 // Mock React Navigation
 jest.mock('@react-navigation/native', () => {
@@ -66,21 +80,21 @@ jest.mock('socket.io-client', () => {
 jest.mock('eventemitter3', () => {
   return class EventEmitter {
     listeners: Record<string, Function[]> = {};
-    
+
     on(event: string, fn: Function) {
       if (!this.listeners[event]) this.listeners[event] = [];
       this.listeners[event].push(fn);
     }
-    
+
     off(event: string, fn: Function) {
       if (this.listeners[event]) {
-        this.listeners[event] = this.listeners[event].filter(f => f !== fn);
+        this.listeners[event] = this.listeners[event].filter((f) => f !== fn);
       }
     }
-    
+
     emit(event: string, ...args: any[]) {
       if (this.listeners[event]) {
-        this.listeners[event].forEach(fn => fn(...args));
+        this.listeners[event].forEach((fn) => fn(...args));
       }
     }
   };

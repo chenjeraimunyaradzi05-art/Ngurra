@@ -1,6 +1,6 @@
 /**
  * Email Template Management System
- * 
+ *
  * CMS-editable email templates with variable substitution,
  * preview, and versioning.
  */
@@ -74,7 +74,7 @@ Get started: {{loginUrl}}
 
 © 2026 Ngurra Pathways`,
   },
-  
+
   passwordReset: {
     name: 'Password Reset',
     subject: 'Reset your Ngurra Pathways password',
@@ -124,7 +124,15 @@ This link expires in {{expiresIn}}. If you didn't request this, ignore this emai
     name: 'Payment Failed',
     subject: 'Action Required: Payment failed for your subscription',
     category: 'billing',
-    variables: ['firstName', 'amount', 'currency', 'lastFour', 'retryDate', 'updatePaymentUrl', 'billingUrl'],
+    variables: [
+      'firstName',
+      'amount',
+      'currency',
+      'lastFour',
+      'retryDate',
+      'updatePaymentUrl',
+      'billingUrl',
+    ],
     htmlTemplate: `
 <!DOCTYPE html>
 <html>
@@ -226,7 +234,15 @@ Track your application: {{dashboardUrl}}`,
     name: 'Mentor Session Reminder',
     subject: 'Reminder: Mentoring session in {{timeUntil}}',
     category: 'mentorship',
-    variables: ['firstName', 'mentorName', 'sessionTime', 'sessionDate', 'timeUntil', 'meetingLink', 'rescheduleUrl'],
+    variables: [
+      'firstName',
+      'mentorName',
+      'sessionTime',
+      'sessionDate',
+      'timeUntil',
+      'meetingLink',
+      'rescheduleUrl',
+    ],
     htmlTemplate: `
 <!DOCTYPE html>
 <html>
@@ -275,29 +291,120 @@ Need to reschedule? {{rescheduleUrl}}`,
   },
 };
 
+type TemplateView = {
+  id: string;
+  slug: string;
+  name: string;
+  subject: string;
+  category: string;
+  htmlTemplate: string;
+  textTemplate: string;
+  variables: string[];
+  isActive: boolean;
+  version: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+function humanizeTemplateKey(key: string): string {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim();
+}
+
+function extractVariables(...sources: Array<string | undefined>): string[] {
+  const variables = new Set<string>();
+
+  for (const source of sources) {
+    if (!source) continue;
+
+    for (const match of source.matchAll(/{{\s*([\w.]+)\s*}}/g)) {
+      if (match[1]) variables.add(match[1]);
+    }
+  }
+
+  return Array.from(variables).sort();
+}
+
+function buildDefaultTemplate(slug: string): TemplateView | null {
+  const template = DEFAULT_TEMPLATES[slug];
+  if (!template) return null;
+
+  return {
+    id: slug,
+    slug,
+    name: template.name,
+    subject: template.subject,
+    category: template.category,
+    htmlTemplate: template.htmlTemplate,
+    textTemplate: template.textTemplate,
+    variables: template.variables,
+    isActive: true,
+    version: 1,
+  };
+}
+
+function mapStoredTemplate(template: any): TemplateView {
+  const fallback = buildDefaultTemplate(template.key);
+
+  return {
+    id: String(template.id || template.key),
+    slug: String(template.key),
+    name: fallback?.name || humanizeTemplateKey(String(template.key)),
+    subject: String(template.subject || fallback?.subject || ''),
+    category: fallback?.category || 'custom',
+    htmlTemplate: String(template.html || fallback?.htmlTemplate || ''),
+    textTemplate: String(template.text || fallback?.textTemplate || ''),
+    variables:
+      fallback?.variables || extractVariables(template.subject, template.html, template.text),
+    isActive: true,
+    version: 1,
+    createdAt: template.createdAt,
+    updatedAt: template.updatedAt,
+  };
+}
+
+async function loadStoredTemplates(): Promise<any[]> {
+  return prisma.emailTemplate
+    .findMany({
+      orderBy: { key: 'asc' },
+    })
+    .catch(() => []);
+}
+
+async function loadTemplate(slug: string): Promise<TemplateView | null> {
+  const stored = await prisma.emailTemplate
+    .findUnique({
+      where: { key: slug },
+    })
+    .catch(() => null);
+
+  return stored ? mapStoredTemplate(stored) : buildDefaultTemplate(slug);
+}
+
 /**
  * GET /admin/email-templates
  * List all email templates
  */
 router.get('/', authenticate, authorize(['ADMIN']), async (req, res) => {
   try {
-    // Try to get from database first
-    let templates = await prisma.emailTemplate.findMany({
-      orderBy: { category: 'asc' },
-    }).catch(() => []);
+    const storedTemplates = await loadStoredTemplates();
+    const storedByKey = new Map(storedTemplates.map((template: any) => [template.key, template]));
+    const keys = Array.from(
+      new Set([
+        ...Object.keys(DEFAULT_TEMPLATES),
+        ...storedTemplates.map((template: any) => String(template.key)),
+      ])
+    ).sort();
 
-    // If no templates in DB, seed with defaults
-    if (templates.length === 0) {
-      templates = Object.entries(DEFAULT_TEMPLATES).map(([key, template]) => ({
-        id: key,
-        slug: key,
-        ...template,
-        isActive: true,
-        version: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }));
-    }
+    const templates = keys
+      .map((key) => {
+        const stored = storedByKey.get(key);
+        return stored ? mapStoredTemplate(stored) : buildDefaultTemplate(key);
+      })
+      .filter(Boolean);
 
     res.json({ templates });
   } catch (err) {
@@ -314,19 +421,7 @@ router.get('/:slug', authenticate, authorize(['ADMIN']), async (req, res) => {
   try {
     const { slug } = req.params;
 
-    let template = await prisma.emailTemplate.findUnique({
-      where: { slug },
-    }).catch(() => null);
-
-    if (!template && DEFAULT_TEMPLATES[slug]) {
-      template = {
-        id: slug,
-        slug,
-        ...DEFAULT_TEMPLATES[slug],
-        isActive: true,
-        version: 1,
-      };
-    }
+    const template = await loadTemplate(slug);
 
     if (!template) {
       return void res.status(404).json({ error: 'Template not found' });
@@ -347,33 +442,35 @@ router.put('/:slug', authenticate, authorize(['ADMIN']), async (req, res) => {
   try {
     const { slug } = req.params;
     const { name, subject, htmlTemplate, textTemplate, variables, isActive } = req.body;
+    const fallback = buildDefaultTemplate(slug);
 
     const template = await prisma.emailTemplate.upsert({
-      where: { slug },
+      where: { key: slug },
       update: {
-        name,
-        subject,
-        htmlTemplate,
-        textTemplate,
-        variables: JSON.stringify(variables),
-        isActive,
-        version: { increment: 1 },
-        updatedAt: new Date(),
+        subject: subject || fallback?.subject || '',
+        html: htmlTemplate || fallback?.htmlTemplate || '',
+        text: textTemplate || fallback?.textTemplate || '',
       },
       create: {
-        slug,
-        name,
-        subject,
-        htmlTemplate,
-        textTemplate,
-        variables: JSON.stringify(variables),
-        category: DEFAULT_TEMPLATES[slug]?.category || 'custom',
-        isActive: isActive ?? true,
-        version: 1,
+        key: slug,
+        subject: subject || fallback?.subject || '',
+        html: htmlTemplate || fallback?.htmlTemplate || '',
+        text: textTemplate || fallback?.textTemplate || '',
       },
     });
 
-    res.json({ template, message: 'Template updated successfully' });
+    res.json({
+      template: {
+        ...mapStoredTemplate(template),
+        name: name || fallback?.name || humanizeTemplateKey(slug),
+        variables:
+          Array.isArray(variables) && variables.length > 0
+            ? variables.map(String)
+            : mapStoredTemplate(template).variables,
+        isActive: typeof isActive === 'boolean' ? isActive : true,
+      },
+      message: 'Template updated successfully',
+    });
   } catch (err) {
     console.error('Failed to update template:', err);
     res.status(500).json({ error: 'Failed to update template' });
@@ -389,13 +486,7 @@ router.post('/:slug/preview', authenticate, authorize(['ADMIN']), async (req, re
     const { slug } = req.params;
     const { sampleData } = req.body;
 
-    let template = await prisma.emailTemplate.findUnique({
-      where: { slug },
-    }).catch(() => null);
-
-    if (!template && DEFAULT_TEMPLATES[slug]) {
-      template = DEFAULT_TEMPLATES[slug];
-    }
+    const template = await loadTemplate(slug);
 
     if (!template) {
       return void res.status(404).json({ error: 'Template not found' });
@@ -435,9 +526,9 @@ router.post('/:slug/preview', authenticate, authorize(['ADMIN']), async (req, re
       subject = subject.replace(regex, String(value));
     });
 
-    res.json({ 
-      html, 
-      text, 
+    res.json({
+      html,
+      text,
       subject,
       originalVariables: template.variables,
     });
@@ -461,16 +552,19 @@ router.post('/:slug/send-test', authenticate, authorize(['ADMIN']), async (req, 
     }
 
     // Get preview content
-    const previewRes = await fetch(`${req.protocol}://${req.get('host')}/admin/email-templates/${slug}/preview`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': req.headers.authorization || '',
-      },
-      body: JSON.stringify({ sampleData }),
-    });
+    const previewRes = await fetch(
+      `${req.protocol}://${req.get('host')}/admin/email-templates/${slug}/preview`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: req.headers.authorization || '',
+        },
+        body: JSON.stringify({ sampleData }),
+      }
+    );
 
-    const preview = await previewRes.json() as { subject: string; html: string; text: string };
+    const preview = (await previewRes.json()) as { subject: string; html: string; text: string };
 
     // Queue email
     const { queueEmail } = require('../services/queue');
@@ -493,13 +587,7 @@ router.post('/:slug/send-test', authenticate, authorize(['ADMIN']), async (req, 
  * Used by other services to send emails
  */
 async function renderTemplate(slug, data) {
-  let template = await prisma.emailTemplate.findUnique({
-    where: { slug },
-  }).catch(() => null);
-
-  if (!template && DEFAULT_TEMPLATES[slug]) {
-    template = DEFAULT_TEMPLATES[slug];
-  }
+  const template = await loadTemplate(slug);
 
   if (!template) {
     throw new Error(`Template not found: ${slug}`);
@@ -521,6 +609,3 @@ async function renderTemplate(slug, data) {
 
 export default router;
 export { renderTemplate, DEFAULT_TEMPLATES };
-
-
-

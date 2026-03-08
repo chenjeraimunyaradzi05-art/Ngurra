@@ -5,10 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import api from '@/lib/apiClient';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * SuccessStories - Community success stories and testimonials
- * 
+ *
  * Features:
  * - Success story showcase
  * - Indigenous journey highlights
@@ -30,7 +31,14 @@ interface SuccessStory {
     isIndigenous: boolean;
     countryGroup?: string;
   };
-  category: 'career-transition' | 'first-job' | 'promotion' | 'entrepreneur' | 'education' | 'mentorship' | 'community';
+  category:
+    | 'career-transition'
+    | 'first-job'
+    | 'promotion'
+    | 'entrepreneur'
+    | 'education'
+    | 'mentorship'
+    | 'community';
   featuredImage?: string;
   publishedAt: string;
   likes: number;
@@ -44,6 +52,30 @@ interface SuccessStory {
     to: string;
     duration: string;
   };
+}
+
+interface ApiStory {
+  id?: string | number;
+  title?: string;
+  story?: string;
+  content?: string;
+  authorName?: string;
+  role?: string;
+  imageUrl?: string;
+  viewCount?: number;
+  isFeatured?: boolean;
+  publishedAt?: string;
+  category?: SuccessStory['category'];
+}
+
+interface ApiStoryComment {
+  id?: string | number;
+  content?: string;
+  author?: { id?: string | number; name?: string; avatar?: string };
+  authorId?: string | number;
+  authorName?: string;
+  createdAt?: string;
+  likes?: number;
 }
 
 interface StoryComment {
@@ -61,19 +93,35 @@ interface StoryComment {
 }
 
 // API functions
+type StoriesQueryParams = Record<string, string>;
+// eslint-disable-next-line no-unused-vars
+type StoryCommentSubmitHandler = (comment: string) => void;
+// eslint-disable-next-line no-unused-vars
+type StorySubmitHandler = (payload: FormData) => void;
+
 const storiesApi = {
-  async getStories(params: any): Promise<{ stories: SuccessStory[]; total: number }> {
+  async getStories(
+    params: StoriesQueryParams,
+  ): Promise<{ stories: SuccessStory[]; total: number }> {
     const query = new URLSearchParams(params);
     const response = await api(`/stories?${query.toString()}`);
     if (!response.ok) return { stories: [], total: 0 };
-    
-    const data = response.data;
-    const stories = (data?.stories || []).map((s: any) => {
+
+    const data = response.data as
+      | { stories?: ApiStory[]; pagination?: { total?: number } }
+      | ApiStory[];
+    const rawStories = Array.isArray((data as { stories?: ApiStory[] }).stories)
+      ? ((data as { stories?: ApiStory[] }).stories ?? [])
+      : Array.isArray(data)
+        ? (data as ApiStory[])
+        : [];
+    const stories = rawStories.map((s) => {
       const text = s.story || s.content || '';
       const excerpt = (text || '').slice(0, 140) + ((text || '').length > 140 ? '…' : '');
       return {
+        ...s,
         id: String(s.id),
-        title: s.title,
+        title: s.title || 'Untitled',
         excerpt,
         content: text,
         author: {
@@ -85,7 +133,7 @@ const storiesApi = {
           isIndigenous: false,
           countryGroup: undefined,
         },
-        category: (params?.category || 'community') as any,
+        category: (s.category || params?.category || 'community') as SuccessStory['category'],
         featuredImage: s.imageUrl || undefined,
         publishedAt: (s.publishedAt ? new Date(s.publishedAt) : new Date()).toISOString(),
         likes: 0,
@@ -97,19 +145,22 @@ const storiesApi = {
         journey: undefined,
       } as SuccessStory;
     });
-    return { stories, total: data?.pagination?.total ?? stories.length };
+    return {
+      stories,
+      total: (data as { pagination?: { total?: number } })?.pagination?.total ?? stories.length,
+    };
   },
 
   async getStory(id: string): Promise<SuccessStory> {
     const response = await api(`/stories/${id}`);
     if (!response.ok || !response.data) throw new Error('Failed to load story');
     const data = response.data;
-    const s = data?.story ?? data;
+    const s = (data as { story?: ApiStory })?.story ?? (data as ApiStory);
     const text = s.story || s.content || '';
     const excerpt = (text || '').slice(0, 140) + ((text || '').length > 140 ? '…' : '');
     return {
       id: String(s.id),
-      title: s.title,
+      title: s.title || 'Untitled',
       excerpt,
       content: text,
       author: {
@@ -121,7 +172,7 @@ const storiesApi = {
         isIndigenous: false,
         countryGroup: undefined,
       },
-      category: 'community',
+      category: (s.category || 'community') as SuccessStory['category'],
       featuredImage: s.imageUrl || undefined,
       publishedAt: (s.publishedAt ? new Date(s.publishedAt) : new Date()).toISOString(),
       likes: 0,
@@ -145,18 +196,18 @@ const storiesApi = {
   async getComments(storyId: string): Promise<StoryComment[]> {
     const response = await api(`/stories/${storyId}/comments`);
     if (!response.ok) return [];
-    
+
     const comments = response.data?.comments ?? response.data;
-    return (Array.isArray(comments) ? comments : []).map((c: any) => ({
-      id: String(c.id),
-      content: c.content,
+    return (Array.isArray(comments) ? comments : []).map((c: ApiStoryComment) => ({
+      id: String(c.id ?? crypto.randomUUID()),
+      content: c.content || '',
       author: {
-        id: String(c.authorId ?? 'author'),
-        name: c.authorName || 'Community Member',
-        avatar: undefined,
+        id: String(c.author?.id ?? c.authorId ?? 'author'),
+        name: c.author?.name || c.authorName || 'Community Member',
+        avatar: c.author?.avatar,
         isIndigenous: false,
       },
-      createdAt: new Date(c.createdAt).toISOString(),
+      createdAt: new Date(c.createdAt || Date.now()).toISOString(),
       likes: c.likes ?? 0,
       isLiked: false,
     }));
@@ -169,18 +220,20 @@ const storiesApi = {
       body: JSON.stringify({ content }),
     });
     if (!response.ok || !response.data) throw new Error('Failed to post comment');
-    
-    const c = response.data?.comment ?? response.data;
+
+    const c =
+      (response.data as { comment?: ApiStoryComment })?.comment ??
+      (response.data as ApiStoryComment);
     return {
-      id: String(c.id),
-      content: c.content,
+      id: String(c.id ?? crypto.randomUUID()),
+      content: c.content || '',
       author: {
-        id: String(c.authorId ?? 'author'),
-        name: c.authorName || 'Community Member',
-        avatar: undefined,
+        id: String(c.authorId ?? c.author?.id ?? 'author'),
+        name: c.authorName || c.author?.name || 'Community Member',
+        avatar: c.author?.avatar,
         isIndigenous: false,
       },
-      createdAt: new Date(c.createdAt).toISOString(),
+      createdAt: new Date(c.createdAt ?? Date.now()).toISOString(),
       likes: c.likes ?? 0,
       isLiked: false,
     };
@@ -204,12 +257,12 @@ const storiesApi = {
       }),
     });
     if (!created.ok || !created.data) throw new Error('Failed to submit story');
-    const s = (created.data as any)?.story ?? created.data;
+    const s = (created.data as { story?: ApiStory })?.story ?? (created.data as ApiStory);
     const text = s.story || s.content || '';
     const excerpt = (text || '').slice(0, 140) + ((text || '').length > 140 ? '…' : '');
     return {
       id: String(s.id),
-      title: s.title,
+      title: s.title || title || 'Untitled',
       excerpt,
       content: text,
       author: {
@@ -252,23 +305,29 @@ const STORY_CATEGORIES: { value: SuccessStory['category']; label: string; icon: 
 
 // Featured Story Hero
 function FeaturedStoryHero({ story, onRead }: { story: SuccessStory; onRead: () => void }) {
-  const categoryInfo = STORY_CATEGORIES.find(c => c.value === story.category);
-
   return (
     <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-8">
       <div className="absolute inset-0">
         {story.featuredImage && (
-          <img src={toCloudinaryAutoUrl(story.featuredImage)} alt="" className="w-full h-full object-cover opacity-30" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(story.featuredImage)}
+            alt={`${story.title} featured image`}
+            fill
+            sizes="100vw"
+            className="w-full h-full object-cover opacity-30"
+          />
         )}
       </div>
       <div className="relative p-8 md:p-12">
         <div className="flex items-center gap-2 mb-4">
           <span className="px-3 py-1 bg-white/20 rounded-full text-sm">✨ Featured Story</span>
           {story.author.isIndigenous && (
-            <span className="px-3 py-1 bg-amber-400/30 rounded-full text-sm">🌏 Indigenous Journey</span>
+            <span className="px-3 py-1 bg-amber-400/30 rounded-full text-sm">
+              🌏 Indigenous Journey
+            </span>
           )}
         </div>
-        
+
         <h2 className="text-3xl md:text-4xl font-bold mb-4">{story.title}</h2>
         <p className="text-lg text-white/80 mb-6 max-w-2xl">{story.excerpt}</p>
 
@@ -292,9 +351,15 @@ function FeaturedStoryHero({ story, onRead }: { story: SuccessStory; onRead: () 
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+            <div className="relative w-12 h-12 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
               {story.author.avatar ? (
-                <img src={toCloudinaryAutoUrl(story.author.avatar)} alt="" className="w-full h-full object-cover" />
+                <OptimizedImage
+                  src={toCloudinaryAutoUrl(story.author.avatar)}
+                  alt={`${story.author.name} avatar`}
+                  fill
+                  sizes="48px"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-xl">{story.author.name[0]}</span>
               )}
@@ -307,10 +372,7 @@ function FeaturedStoryHero({ story, onRead }: { story: SuccessStory; onRead: () 
               </p>
             </div>
           </div>
-          <Button 
-            className="ml-auto bg-white text-blue-600 hover:bg-white/90"
-            onClick={onRead}
-          >
+          <Button className="ml-auto bg-white text-blue-600 hover:bg-white/90" onClick={onRead}>
             Read Full Story
           </Button>
         </div>
@@ -329,7 +391,7 @@ function StoryCard({
   onRead: () => void;
   onLike: () => void;
 }) {
-  const categoryInfo = STORY_CATEGORIES.find(c => c.value === story.category);
+  const categoryInfo = STORY_CATEGORIES.find((c) => c.value === story.category);
   const publishedDate = new Date(story.publishedAt);
 
   return (
@@ -337,7 +399,13 @@ function StoryCard({
       {/* Image */}
       <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-500">
         {story.featuredImage && (
-          <img src={toCloudinaryAutoUrl(story.featuredImage)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(story.featuredImage)}
+            alt={`${story.title} featured image`}
+            fill
+            sizes="(min-width: 1024px) 384px, (min-width: 768px) 50vw, 100vw"
+            className="w-full h-full object-cover"
+          />
         )}
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="px-2 py-1 bg-white/90 rounded text-xs font-medium">
@@ -372,9 +440,15 @@ function StoryCard({
 
         {/* Author */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+          <div className="relative w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {story.author.avatar ? (
-              <img src={toCloudinaryAutoUrl(story.author.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(story.author.avatar)}
+                alt={`${story.author.name} avatar`}
+                fill
+                sizes="32px"
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="text-sm">{story.author.name[0]}</span>
             )}
@@ -415,13 +489,13 @@ function StoryDetailModal({
   isOpen: boolean;
   onClose: () => void;
   onLike: () => void;
-  onPostComment: (content: string) => void;
+  onPostComment: StoryCommentSubmitHandler;
 }) {
   const [commentText, setCommentText] = useState('');
 
   if (!isOpen || !story) return null;
 
-  const categoryInfo = STORY_CATEGORIES.find(c => c.value === story.category);
+  const categoryInfo = STORY_CATEGORIES.find((c) => c.value === story.category);
   const publishedDate = new Date(story.publishedAt);
 
   const handleSubmitComment = () => {
@@ -436,7 +510,13 @@ function StoryDetailModal({
         {/* Header Image */}
         <div className="relative h-64 bg-gradient-to-br from-blue-500 to-purple-500">
           {story.featuredImage && (
-            <img src={toCloudinaryAutoUrl(story.featuredImage)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(story.featuredImage)}
+              alt={`${story.title} featured image`}
+              fill
+              sizes="(min-width: 1024px) 768px, 100vw"
+              className="w-full h-full object-cover"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <button
@@ -461,24 +541,26 @@ function StoryDetailModal({
 
         {/* Content */}
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {story.title}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{story.title}</h1>
 
           {/* Author */}
           <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+            <div className="relative w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               {story.author.avatar ? (
-                <img src={toCloudinaryAutoUrl(story.author.avatar)} alt="" className="w-full h-full object-cover" />
+                <OptimizedImage
+                  src={toCloudinaryAutoUrl(story.author.avatar)}
+                  alt={`${story.author.name} avatar`}
+                  fill
+                  sizes="56px"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-xl">{story.author.name[0]}</span>
               )}
             </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-white">{story.author.name}</p>
-              {story.author.role && (
-                <p className="text-sm text-gray-500">{story.author.role}</p>
-              )}
+              {story.author.role && <p className="text-sm text-gray-500">{story.author.role}</p>}
               <p className="text-sm text-gray-500">
                 {story.author.location}
                 {story.author.countryGroup && ` • ${story.author.countryGroup} Country`}
@@ -491,16 +573,22 @@ function StoryDetailModal({
             <div className="flex items-center justify-center gap-6 mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
               <div className="text-center">
                 <p className="text-sm text-gray-500 mb-1">From</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">{story.journey.from}</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {story.journey.from}
+                </p>
               </div>
               <div className="text-3xl">→</div>
               <div className="text-center">
                 <p className="text-sm text-gray-500 mb-1">To</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">{story.journey.to}</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {story.journey.to}
+                </p>
               </div>
               <div className="border-l border-gray-300 dark:border-gray-600 pl-6">
                 <p className="text-sm text-gray-500 mb-1">Duration</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">{story.journey.duration}</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {story.journey.duration}
+                </p>
               </div>
             </div>
           )}
@@ -538,7 +626,11 @@ function StoryDetailModal({
             </button>
             <span className="text-gray-500">👁️ {story.views} views</span>
             <span className="text-sm text-gray-400">
-              {publishedDate.toLocaleDateString('en-AU', { month: 'long', day: 'numeric', year: 'numeric' })}
+              {publishedDate.toLocaleDateString('en-AU', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
             </span>
           </div>
 
@@ -566,16 +658,24 @@ function StoryDetailModal({
             <div className="space-y-4">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div className="relative w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
                     {comment.author.avatar ? (
-                      <img src={toCloudinaryAutoUrl(comment.author.avatar)} alt="" className="w-full h-full object-cover" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(comment.author.avatar)}
+                        alt={`${comment.author.name} avatar`}
+                        fill
+                        sizes="32px"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <span className="text-sm">{comment.author.name[0]}</span>
                     )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-white">{comment.author.name}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {comment.author.name}
+                      </span>
                       {comment.author.isIndigenous && <span>🌏</span>}
                       <span className="text-xs text-gray-400">
                         {new Date(comment.createdAt).toLocaleDateString('en-AU')}
@@ -604,7 +704,7 @@ function SubmitStoryModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
+  onSubmit: StorySubmitHandler;
 }) {
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
@@ -624,11 +724,14 @@ function SubmitStoryModal({
     formData.append('content', content);
     formData.append('category', category);
     if (journeyFrom && journeyTo) {
-      formData.append('journey', JSON.stringify({
-        from: journeyFrom,
-        to: journeyTo,
-        duration: journeyDuration,
-      }));
+      formData.append(
+        'journey',
+        JSON.stringify({
+          from: journeyFrom,
+          to: journeyTo,
+          duration: journeyDuration,
+        }),
+      );
     }
     formData.append('tags', tags);
     onSubmit(formData);
@@ -638,7 +741,9 @@ function SubmitStoryModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Share Your Success Story</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Share Your Success Story
+          </h2>
           <p className="text-sm text-gray-500 mt-1">Inspire others with your journey</p>
         </div>
         <div className="p-6 space-y-4">
@@ -742,8 +847,13 @@ function SubmitStoryModal({
           </div>
         </div>
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={!title.trim() || !excerpt.trim() || !content.trim()}>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!title.trim() || !excerpt.trim() || !content.trim()}
+          >
             Submit Story
           </Button>
         </div>
@@ -754,7 +864,7 @@ function SubmitStoryModal({
 
 // Main Component
 export function SuccessStories() {
-  const { user } = useAuth();
+  useAuth();
   const [stories, setStories] = useState<SuccessStory[]>([]);
   const [featuredStory, setFeaturedStory] = useState<SuccessStory | null>(null);
   const [selectedStory, setSelectedStory] = useState<SuccessStory | null>(null);
@@ -771,7 +881,11 @@ export function SuccessStories() {
     setIsLoading(true);
     try {
       const [storiesData, featured] = await Promise.all([
-        storiesApi.getStories(filters),
+        storiesApi.getStories({
+          category: filters.category,
+          indigenousOnly: String(filters.indigenousOnly),
+          sort: filters.sort,
+        }),
         storiesApi.getFeatured(),
       ]);
       setStories(storiesData.stories);
@@ -804,7 +918,9 @@ export function SuccessStories() {
   };
 
   const handleLike = async (storyId: string) => {
-    const story = stories.find(s => s.id === storyId) || (storyId === featuredStory?.id ? featuredStory : null);
+    const story =
+      stories.find((s) => s.id === storyId) ||
+      (storyId === featuredStory?.id ? featuredStory : null);
     if (!story) return;
 
     try {
@@ -854,17 +970,12 @@ export function SuccessStories() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Success Stories</h1>
           <p className="text-gray-500 mt-1">Be inspired by journeys from our community</p>
         </div>
-        <Button onClick={() => setShowSubmitModal(true)}>
-          ✏️ Share Your Story
-        </Button>
+        <Button onClick={() => setShowSubmitModal(true)}>✏️ Share Your Story</Button>
       </div>
 
       {/* Featured Story */}
       {featuredStory && (
-        <FeaturedStoryHero
-          story={featuredStory}
-          onRead={() => handleViewStory(featuredStory)}
-        />
+        <FeaturedStoryHero story={featuredStory} onRead={() => handleViewStory(featuredStory)} />
       )}
 
       {/* Filters */}

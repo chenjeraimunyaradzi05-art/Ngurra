@@ -1,9 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const STORE_PATH = path.join(__dirname, '..', '..', 'data', 'sovereignty-store.json');
 
@@ -49,7 +45,10 @@ function ensureStoreFile() {
   const dir = path.dirname(STORE_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   if (!fs.existsSync(STORE_PATH)) {
-    fs.writeFileSync(STORE_PATH, JSON.stringify({ consents: {}, exports: {}, deletions: {}, audit: [] }, null, 2));
+    fs.writeFileSync(
+      STORE_PATH,
+      JSON.stringify({ consents: {}, exports: {}, deletions: {}, audit: [] }, null, 2)
+    );
   }
 }
 
@@ -136,7 +135,11 @@ export function createExportRequest({
 export function findInProgressExport(userId: string): ExportRecord | null {
   const store = readStore();
   const exportsMap = store.exports || {};
-  return Object.values(exportsMap).find((e) => e.userId === userId && ['pending', 'processing'].includes(e.status)) || null;
+  return (
+    Object.values(exportsMap).find(
+      (e) => e.userId === userId && ['pending', 'processing'].includes(e.status)
+    ) || null
+  );
 }
 
 export function getExport(exportId: string): ExportRecord | null {
@@ -178,4 +181,3 @@ export default {
   upsertDeletionRequest,
   STORE_PATH,
 };
-

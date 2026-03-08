@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 import { API_BASE } from '@/lib/apiBase';
 import { getAccessToken } from '@/lib/tokenStore';
 import {
@@ -26,20 +27,94 @@ const DEFAULT_PERIOD = 'MONTHLY';
 
 export default function FinancialWellnessPage() {
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'budget' | 'accounts' | 'debt' | 'grants'>('overview');
-  const [summary, setSummary] = useState<any>(null);
-  const [budgets, setBudgets] = useState<any[]>([]);
-  const [templates, setTemplates] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'budget' | 'accounts' | 'debt' | 'grants'
+  >('overview');
+  interface BudgetCategory {
+    id: string;
+    name: string;
+    type: string;
+    limitAmount?: number;
+  }
+  interface Budget {
+    id: string;
+    name: string;
+    period: string;
+    categories?: BudgetCategory[];
+  }
+  interface AlertItem {
+    message: string;
+    severity?: string;
+  }
+  interface SummaryTotals {
+    income?: number;
+    expenses?: number;
+    leftover?: number;
+  }
+  interface SummaryDebtItem {
+    id?: string;
+  }
+  interface SummaryDebtSummary {
+    total?: number;
+    items?: SummaryDebtItem[];
+  }
+  interface Summary {
+    alerts?: AlertItem[];
+    budget?: Budget;
+    totals?: SummaryTotals;
+    debts?: SummaryDebtSummary;
+  }
+  interface InsightByMerchant {
+    merchant: string;
+    total: number;
+  }
+  interface InsightTransaction {
+    id: string;
+    name: string;
+    amount: number;
+  }
+  interface Insights {
+    byMerchant?: InsightByMerchant[];
+    unusualTransactions?: InsightTransaction[];
+  }
+  interface DebtItem {
+    id: string;
+    lender: string;
+    balance?: number;
+    interestRate?: number;
+    type?: string;
+    strategy?: string;
+  }
+  interface DebtPlanItem {
+    id: string;
+    lender: string;
+    estimatedMonths?: number;
+  }
+  interface DebtPlan {
+    plan?: DebtPlanItem[];
+  }
+  interface SupportItem {
+    name: string;
+    url: string;
+  }
+  interface Resources {
+    hardshipSupport?: SupportItem[];
+    counseling?: SupportItem[];
+  }
+
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [templates, setTemplates] = useState<Record<string, BudgetCategory[]> | null>(null);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [connections, setConnections] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [debts, setDebts] = useState<any[]>([]);
+  const [debts, setDebts] = useState<DebtItem[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
   const [bills, setBills] = useState<any[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [insights, setInsights] = useState<any>(null);
-  const [debtPlan, setDebtPlan] = useState<any>(null);
-  const [resources, setResources] = useState<any>(null);
+  const [insights, setInsights] = useState<Insights | null>(null);
+  const [debtPlan, setDebtPlan] = useState<DebtPlan | null>(null);
+  const [resources, setResources] = useState<Resources | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [grants, setGrants] = useState<any[]>([]);
@@ -52,7 +127,11 @@ export default function FinancialWellnessPage() {
   const [grantFilters, setGrantFilters] = useState({ category: '', indigenous: true, women: true });
   const [grantEligibility, setGrantEligibility] = useState<Record<string, any>>({});
 
-  const [budgetForm, setBudgetForm] = useState({ name: '', period: DEFAULT_PERIOD, template: 'CUSTOM' });
+  const [budgetForm, setBudgetForm] = useState({
+    name: '',
+    period: DEFAULT_PERIOD,
+    template: 'CUSTOM',
+  });
   const [categoryForm, setCategoryForm] = useState({ name: '', type: 'EXPENSE', limitAmount: '' });
   const [entryForm, setEntryForm] = useState({
     type: 'EXPENSE',
@@ -62,10 +141,19 @@ export default function FinancialWellnessPage() {
     occurredAt: '',
   });
   const [accountForm, setAccountForm] = useState({ provider: 'PLAID', name: '' });
-  const [debtForm, setDebtForm] = useState({ type: 'OTHER', lender: '', balance: '', interestRate: '' });
+  const [debtForm, setDebtForm] = useState({
+    type: 'OTHER',
+    lender: '',
+    balance: '',
+    interestRate: '',
+  });
   const [goalForm, setGoalForm] = useState({ name: '', targetAmount: '' });
   const [billForm, setBillForm] = useState({ name: '', amount: '', dueDate: '' });
-  const [subscriptionForm, setSubscriptionForm] = useState({ name: '', amount: '', cadence: 'MONTHLY' });
+  const [subscriptionForm, setSubscriptionForm] = useState({
+    name: '',
+    amount: '',
+    cadence: 'MONTHLY',
+  });
   const [importForm, setImportForm] = useState({ budgetId: '', categoryId: '' });
   const [shareForm, setShareForm] = useState({ memberId: '', role: 'VIEWER' });
 
@@ -75,7 +163,20 @@ export default function FinancialWellnessPage() {
     setLoading(true);
     setError(null);
     try {
-      const [summaryRes, budgetRes, templateRes, accountRes, txRes, debtRes, goalRes, billRes, subscriptionRes, insightsRes, debtPlanRes, resourcesRes] = await Promise.all([
+      const [
+        summaryRes,
+        budgetRes,
+        templateRes,
+        accountRes,
+        txRes,
+        debtRes,
+        goalRes,
+        billRes,
+        subscriptionRes,
+        insightsRes,
+        debtPlanRes,
+        resourcesRes,
+      ] = await Promise.all([
         api('/financial/summary'),
         api('/financial/budgets'),
         api('/financial/templates'),
@@ -105,8 +206,8 @@ export default function FinancialWellnessPage() {
       if (insightsRes.ok) setInsights(insightsRes.data || null);
       if (debtPlanRes.ok) setDebtPlan(debtPlanRes.data || null);
       if (resourcesRes.ok) setResources(resourcesRes.data || null);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to load financial wellness data');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load financial wellness data'));
     } finally {
       setLoading(false);
     }
@@ -114,12 +215,14 @@ export default function FinancialWellnessPage() {
 
   useEffect(() => {
     loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (activeTab === 'grants') {
       loadGrants();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   async function loadGrants() {
@@ -130,19 +233,21 @@ export default function FinancialWellnessPage() {
       if (grantFilters.indigenous) query.set('indigenous', 'true');
       if (grantFilters.women) query.set('women', 'true');
 
-      const [grantsRes, scholarshipsRes, grantAppsRes, scholarshipAppsRes, tipsRes, prepRes] = await Promise.all([
-        api(`/financial/grants?${query.toString()}`),
-        api(`/financial/scholarships?${query.toString()}`),
-        api('/financial/grants/applications'),
-        api('/financial/scholarships/applications'),
-        api('/financial/grants/writing-tips'),
-        api('/financial/scholarships/interview-prep'),
-      ]);
+      const [grantsRes, scholarshipsRes, grantAppsRes, scholarshipAppsRes, tipsRes, prepRes] =
+        await Promise.all([
+          api(`/financial/grants?${query.toString()}`),
+          api(`/financial/scholarships?${query.toString()}`),
+          api('/financial/grants/applications'),
+          api('/financial/scholarships/applications'),
+          api('/financial/grants/writing-tips'),
+          api('/financial/scholarships/interview-prep'),
+        ]);
 
       if (grantsRes.ok) setGrants(grantsRes.data?.grants || []);
       if (scholarshipsRes.ok) setScholarships(scholarshipsRes.data?.scholarships || []);
       if (grantAppsRes.ok) setGrantApplications(grantAppsRes.data?.applications || []);
-      if (scholarshipAppsRes.ok) setScholarshipApplications(scholarshipAppsRes.data?.applications || []);
+      if (scholarshipAppsRes.ok)
+        setScholarshipApplications(scholarshipAppsRes.data?.applications || []);
       if (tipsRes.ok) setGrantTips(tipsRes.data?.tips || []);
       if (prepRes.ok) setScholarshipPrep(prepRes.data?.prep || []);
     } catch (err) {
@@ -185,8 +290,8 @@ export default function FinancialWellnessPage() {
       budgetForm.template === 'FIFTY_THIRTY_TWENTY'
         ? templates?.fiftyThirtyTwenty
         : budgetForm.template === 'ZERO_BASED'
-        ? templates?.zeroBased
-        : [];
+          ? templates?.zeroBased
+          : [];
 
     const res = await api('/financial/budgets', {
       method: 'POST',
@@ -194,7 +299,7 @@ export default function FinancialWellnessPage() {
         name: budgetForm.name || 'My Budget',
         period: budgetForm.period,
         template: budgetForm.template,
-        categories: templateCategories?.map((cat: any) => ({
+        categories: templateCategories?.map((cat: BudgetCategory) => ({
           name: cat.name,
           type: cat.type,
         })),
@@ -236,7 +341,13 @@ export default function FinancialWellnessPage() {
       },
     });
     if (res.ok) {
-      setEntryForm({ type: 'EXPENSE', amount: '', categoryId: '', description: '', occurredAt: '' });
+      setEntryForm({
+        type: 'EXPENSE',
+        amount: '',
+        categoryId: '',
+        description: '',
+        occurredAt: '',
+      });
       loadAll();
     }
   }
@@ -316,7 +427,7 @@ export default function FinancialWellnessPage() {
       body: {
         budgetId: importForm.budgetId,
         categoryId: importForm.categoryId || null,
-        transactionIds: transactions.slice(0, 10).map(tx => tx.id),
+        transactionIds: transactions.slice(0, 10).map((tx) => tx.id),
       },
     });
     if (res.ok) {
@@ -374,8 +485,11 @@ export default function FinancialWellnessPage() {
               </p>
               {summary?.alerts?.length ? (
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {summary.alerts.map((alert: any, idx: number) => (
-                    <span key={idx} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-200 flex items-center gap-1">
+                  {summary.alerts.map((alert: AlertItem, idx: number) => (
+                    <span
+                      key={idx}
+                      className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-200 flex items-center gap-1"
+                    >
                       <AlertTriangle className="w-3 h-3" />
                       {alert.message}
                     </span>
@@ -439,7 +553,9 @@ export default function FinancialWellnessPage() {
             <p className="text-2xl font-semibold mt-1 text-amber-300">
               {summary?.debts?.total?.toFixed?.(2) || '0.00'}
             </p>
-            <p className="text-xs text-slate-500 mt-1">Across {summary?.debts?.items?.length || 0} accounts</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Across {summary?.debts?.items?.length || 0} accounts
+            </p>
           </div>
         </div>
 
@@ -454,7 +570,9 @@ export default function FinancialWellnessPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors ${
-                activeTab === tab.id ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                activeTab === tab.id
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -470,16 +588,21 @@ export default function FinancialWellnessPage() {
                 <PiggyBank className="w-5 h-5 text-emerald-400" /> Savings Goals
               </h3>
               <div className="space-y-3">
-                {goals.map(goal => (
+                {goals.map((goal) => (
                   <div key={goal.id} className="rounded-lg bg-slate-800/60 p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{goal.name}</span>
-                      <span className="text-xs text-slate-400">{Number(goal.currentAmount || 0).toFixed(2)} / {Number(goal.targetAmount || 0).toFixed(2)}</span>
+                      <span className="text-xs text-slate-400">
+                        {Number(goal.currentAmount || 0).toFixed(2)} /{' '}
+                        {Number(goal.targetAmount || 0).toFixed(2)}
+                      </span>
                     </div>
                     <div className="h-2 bg-slate-700 rounded-full mt-2">
                       <div
                         className="h-full rounded-full bg-emerald-500"
-                        style={{ width: `${Math.min(100, (Number(goal.currentAmount || 0) / Math.max(1, Number(goal.targetAmount || 1))) * 100)}%` }}
+                        style={{
+                          width: `${Math.min(100, (Number(goal.currentAmount || 0) / Math.max(1, Number(goal.targetAmount || 1))) * 100)}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -513,13 +636,20 @@ export default function FinancialWellnessPage() {
                 <Calendar className="w-5 h-5 text-blue-400" /> Upcoming Bills
               </h3>
               <div className="space-y-3">
-                {bills.map(bill => (
-                  <div key={bill.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                {bills.map((bill) => (
+                  <div
+                    key={bill.id}
+                    className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                  >
                     <div>
                       <p className="text-sm font-medium">{bill.name}</p>
-                      <p className="text-xs text-slate-400">Due {new Date(bill.dueDate).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-400">
+                        Due {new Date(bill.dueDate).toLocaleDateString()}
+                      </p>
                     </div>
-                    <span className="text-sm text-slate-300">{Number(bill.amount || 0).toFixed(2)}</span>
+                    <span className="text-sm text-slate-300">
+                      {Number(bill.amount || 0).toFixed(2)}
+                    </span>
                   </div>
                 ))}
                 {bills.length === 0 && <p className="text-sm text-slate-500">No upcoming bills.</p>}
@@ -557,34 +687,47 @@ export default function FinancialWellnessPage() {
                 <CreditCard className="w-5 h-5 text-purple-400" /> Subscriptions
               </h3>
               <div className="space-y-3">
-                {subscriptions.map(sub => (
-                  <div key={sub.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                {subscriptions.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                  >
                     <div>
                       <p className="text-sm font-medium">{sub.name}</p>
                       <p className="text-xs text-slate-400">{sub.cadence}</p>
                     </div>
-                    <span className="text-sm text-slate-300">{Number(sub.amount || 0).toFixed(2)}</span>
+                    <span className="text-sm text-slate-300">
+                      {Number(sub.amount || 0).toFixed(2)}
+                    </span>
                   </div>
                 ))}
-                {subscriptions.length === 0 && <p className="text-sm text-slate-500">No subscriptions yet.</p>}
+                {subscriptions.length === 0 && (
+                  <p className="text-sm text-slate-500">No subscriptions yet.</p>
+                )}
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2">
                 <input
                   className="col-span-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm"
                   placeholder="Subscription name"
                   value={subscriptionForm.name}
-                  onChange={(e) => setSubscriptionForm({ ...subscriptionForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setSubscriptionForm({ ...subscriptionForm, name: e.target.value })
+                  }
                 />
                 <input
                   className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm"
                   placeholder="Amount"
                   value={subscriptionForm.amount}
-                  onChange={(e) => setSubscriptionForm({ ...subscriptionForm, amount: e.target.value })}
+                  onChange={(e) =>
+                    setSubscriptionForm({ ...subscriptionForm, amount: e.target.value })
+                  }
                 />
                 <select
                   className="col-span-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm"
                   value={subscriptionForm.cadence}
-                  onChange={(e) => setSubscriptionForm({ ...subscriptionForm, cadence: e.target.value })}
+                  onChange={(e) =>
+                    setSubscriptionForm({ ...subscriptionForm, cadence: e.target.value })
+                  }
                 >
                   <option value="MONTHLY">Monthly</option>
                   <option value="FORTNIGHTLY">Fortnightly</option>
@@ -608,12 +751,19 @@ export default function FinancialWellnessPage() {
                 <div className="bg-slate-800/60 rounded-lg p-4">
                   <p className="text-sm text-slate-300 mb-3">Top merchants</p>
                   <div className="space-y-2">
-                    {insights?.byMerchant?.length ? insights.byMerchant.map((item: any) => (
-                      <div key={item.merchant} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-300">{item.merchant}</span>
-                        <span className="text-slate-400">{Number(item.total || 0).toFixed(2)}</span>
-                      </div>
-                    )) : (
+                    {insights?.byMerchant?.length ? (
+                      insights.byMerchant.map((item: InsightByMerchant) => (
+                        <div
+                          key={item.merchant}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="text-slate-300">{item.merchant}</span>
+                          <span className="text-slate-400">
+                            {Number(item.total || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
                       <p className="text-sm text-slate-500">No merchant insights yet.</p>
                     )}
                   </div>
@@ -621,12 +771,16 @@ export default function FinancialWellnessPage() {
                 <div className="bg-slate-800/60 rounded-lg p-4">
                   <p className="text-sm text-slate-300 mb-3">Unusual activity</p>
                   <div className="space-y-2">
-                    {insights?.unusualTransactions?.length ? insights.unusualTransactions.map((tx: any) => (
-                      <div key={tx.id} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-300">{tx.name}</span>
-                        <span className="text-amber-300">{Number(tx.amount || 0).toFixed(2)}</span>
-                      </div>
-                    )) : (
+                    {insights?.unusualTransactions?.length ? (
+                      insights.unusualTransactions.map((tx: InsightTransaction) => (
+                        <div key={tx.id} className="flex items-center justify-between text-sm">
+                          <span className="text-slate-300">{tx.name}</span>
+                          <span className="text-amber-300">
+                            {Number(tx.amount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
                       <p className="text-sm text-slate-500">No unusual activity detected.</p>
                     )}
                   </div>
@@ -678,14 +832,19 @@ export default function FinancialWellnessPage() {
               <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6">
                 <h3 className="text-lg font-semibold mb-4">Categories</h3>
                 <div className="space-y-3">
-                  {currentBudget?.categories?.map((cat: any) => (
-                    <div key={cat.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                  {currentBudget?.categories?.map((cat: BudgetCategory) => (
+                    <div
+                      key={cat.id}
+                      className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                    >
                       <div>
                         <p className="text-sm font-medium">{cat.name}</p>
                         <p className="text-xs text-slate-400">{cat.type}</p>
                       </div>
                       <span className="text-xs text-slate-400">
-                        {cat.limitAmount ? `Limit: ${Number(cat.limitAmount).toFixed(2)}` : 'No limit'}
+                        {cat.limitAmount
+                          ? `Limit: ${Number(cat.limitAmount).toFixed(2)}`
+                          : 'No limit'}
                       </span>
                     </div>
                   ))}
@@ -712,7 +871,9 @@ export default function FinancialWellnessPage() {
                     className="col-span-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm"
                     placeholder="Limit (optional)"
                     value={categoryForm.limitAmount}
-                    onChange={(e) => setCategoryForm({ ...categoryForm, limitAmount: e.target.value })}
+                    onChange={(e) =>
+                      setCategoryForm({ ...categoryForm, limitAmount: e.target.value })
+                    }
                   />
                   <button
                     onClick={handleAddCategory}
@@ -772,8 +933,10 @@ export default function FinancialWellnessPage() {
                     onChange={(e) => setEntryForm({ ...entryForm, categoryId: e.target.value })}
                   >
                     <option value="">Select category</option>
-                    {currentBudget?.categories?.map((cat: any) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    {currentBudget?.categories?.map((cat: BudgetCategory) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
                     ))}
                   </select>
                   <input
@@ -805,16 +968,23 @@ export default function FinancialWellnessPage() {
             <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6">
               <h3 className="text-lg font-semibold mb-4">Connected Accounts</h3>
               <div className="space-y-3">
-                {accounts.map(account => (
-                  <div key={account.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                {accounts.map((account) => (
+                  <div
+                    key={account.id}
+                    className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                  >
                     <div>
                       <p className="text-sm font-medium">{account.name || 'Bank Account'}</p>
-                      <p className="text-xs text-slate-400">•••• {account.mask || '0000'} · {account.provider}</p>
+                      <p className="text-xs text-slate-400">
+                        •••• {account.mask || '0000'} · {account.provider}
+                      </p>
                     </div>
                     <span className="text-xs text-slate-400">{account.currency}</span>
                   </div>
                 ))}
-                {accounts.length === 0 && <p className="text-sm text-slate-500">No accounts connected.</p>}
+                {accounts.length === 0 && (
+                  <p className="text-sm text-slate-500">No accounts connected.</p>
+                )}
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2">
                 <select
@@ -846,18 +1016,28 @@ export default function FinancialWellnessPage() {
             <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6">
               <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
               <div className="space-y-3">
-                {transactions.map(tx => (
-                  <div key={tx.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                {transactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                  >
                     <div>
                       <p className="text-sm font-medium">{tx.name}</p>
-                      <p className="text-xs text-slate-400">{tx.merchantName || 'General'} · {tx.postedAt ? new Date(tx.postedAt).toLocaleDateString() : ''}</p>
+                      <p className="text-xs text-slate-400">
+                        {tx.merchantName || 'General'} ·{' '}
+                        {tx.postedAt ? new Date(tx.postedAt).toLocaleDateString() : ''}
+                      </p>
                     </div>
-                    <span className={`text-sm ${Number(tx.amount) >= 0 ? 'text-rose-300' : 'text-emerald-300'}`}>
+                    <span
+                      className={`text-sm ${Number(tx.amount) >= 0 ? 'text-rose-300' : 'text-emerald-300'}`}
+                    >
                       {Number(tx.amount).toFixed(2)}
                     </span>
                   </div>
                 ))}
-                {transactions.length === 0 && <p className="text-sm text-slate-500">No transactions loaded.</p>}
+                {transactions.length === 0 && (
+                  <p className="text-sm text-slate-500">No transactions loaded.</p>
+                )}
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <select
@@ -866,8 +1046,10 @@ export default function FinancialWellnessPage() {
                   onChange={(e) => setImportForm({ ...importForm, budgetId: e.target.value })}
                 >
                   <option value="">Select budget</option>
-                  {budgets.map(budget => (
-                    <option key={budget.id} value={budget.id}>{budget.name}</option>
+                  {budgets.map((budget) => (
+                    <option key={budget.id} value={budget.id}>
+                      {budget.name}
+                    </option>
                   ))}
                 </select>
                 <select
@@ -876,8 +1058,10 @@ export default function FinancialWellnessPage() {
                   onChange={(e) => setImportForm({ ...importForm, categoryId: e.target.value })}
                 >
                   <option value="">Select category</option>
-                  {currentBudget?.categories?.map((cat: any) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  {currentBudget?.categories?.map((cat: BudgetCategory) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
                   ))}
                 </select>
                 <button
@@ -896,13 +1080,20 @@ export default function FinancialWellnessPage() {
             <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6">
               <h3 className="text-lg font-semibold mb-4">Debt Accounts</h3>
               <div className="space-y-3">
-                {debts.map((debt: any) => (
-                  <div key={debt.id} className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between">
+                {debts.map((debt: DebtItem) => (
+                  <div
+                    key={debt.id}
+                    className="rounded-lg bg-slate-800/60 p-3 flex items-center justify-between"
+                  >
                     <div>
                       <p className="text-sm font-medium">{debt.lender}</p>
-                      <p className="text-xs text-slate-400">{debt.type} · {debt.strategy}</p>
+                      <p className="text-xs text-slate-400">
+                        {debt.type} · {debt.strategy}
+                      </p>
                     </div>
-                    <span className="text-sm text-amber-300">{Number(debt.balance || 0).toFixed(2)}</span>
+                    <span className="text-sm text-amber-300">
+                      {Number(debt.balance || 0).toFixed(2)}
+                    </span>
                   </div>
                 ))}
                 {debts.length === 0 && <p className="text-sm text-slate-500">No debts tracked.</p>}
@@ -956,12 +1147,16 @@ export default function FinancialWellnessPage() {
                 <div className="bg-slate-800/60 rounded-lg p-4">
                   <p className="text-sm text-slate-300 mb-3">Snowball plan</p>
                   <div className="space-y-2">
-                    {debtPlan?.plan?.length ? debtPlan.plan.map((item: any) => (
-                      <div key={item.id} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-300">{item.lender}</span>
-                        <span className="text-slate-400">{item.estimatedMonths ? `${item.estimatedMonths} months` : 'N/A'}</span>
-                      </div>
-                    )) : (
+                    {debtPlan?.plan?.length ? (
+                      debtPlan.plan.map((item: DebtPlanItem) => (
+                        <div key={item.id} className="flex items-center justify-between text-sm">
+                          <span className="text-slate-300">{item.lender}</span>
+                          <span className="text-slate-400">
+                            {item.estimatedMonths ? `${item.estimatedMonths} months` : 'N/A'}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
                       <p className="text-sm text-slate-500">Add debts to see payoff timeline.</p>
                     )}
                   </div>
@@ -969,13 +1164,25 @@ export default function FinancialWellnessPage() {
                 <div className="bg-slate-800/60 rounded-lg p-4">
                   <p className="text-sm text-slate-300 mb-3">Support resources</p>
                   <div className="space-y-2">
-                    {resources?.hardshipSupport?.map((item: any) => (
-                      <a key={item.url} href={item.url} target="_blank" rel="noreferrer" className="text-sm text-emerald-300 hover:text-emerald-200 block">
+                    {resources?.hardshipSupport?.map((item: SupportItem) => (
+                      <a
+                        key={item.url}
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-emerald-300 hover:text-emerald-200 block"
+                      >
                         {item.name}
                       </a>
                     ))}
-                    {resources?.counseling?.map((item: any) => (
-                      <a key={item.url} href={item.url} target="_blank" rel="noreferrer" className="text-sm text-slate-300 hover:text-white block">
+                    {resources?.counseling?.map((item: SupportItem) => (
+                      <a
+                        key={item.url}
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-slate-300 hover:text-white block"
+                      >
                         {item.name}
                       </a>
                     ))}
@@ -1027,7 +1234,9 @@ export default function FinancialWellnessPage() {
                     <input
                       type="checkbox"
                       checked={grantFilters.indigenous}
-                      onChange={(e) => setGrantFilters({ ...grantFilters, indigenous: e.target.checked })}
+                      onChange={(e) =>
+                        setGrantFilters({ ...grantFilters, indigenous: e.target.checked })
+                      }
                     />
                     Indigenous
                   </label>
@@ -1035,7 +1244,9 @@ export default function FinancialWellnessPage() {
                     <input
                       type="checkbox"
                       checked={grantFilters.women}
-                      onChange={(e) => setGrantFilters({ ...grantFilters, women: e.target.checked })}
+                      onChange={(e) =>
+                        setGrantFilters({ ...grantFilters, women: e.target.checked })
+                      }
                     />
                     Women
                   </label>
@@ -1063,12 +1274,17 @@ export default function FinancialWellnessPage() {
                           <p className="text-xs text-slate-400">{grant.provider}</p>
                         </div>
                         <span className="text-xs text-slate-400">
-                          {grant.deadline ? new Date(grant.deadline).toLocaleDateString() : 'No deadline'}
+                          {grant.deadline
+                            ? new Date(grant.deadline).toLocaleDateString()
+                            : 'No deadline'}
                         </span>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {(grant.tags || []).map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 rounded-full bg-slate-700 text-xs text-slate-200">
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full bg-slate-700 text-xs text-slate-200"
+                          >
                             {tag}
                           </span>
                         ))}
@@ -1098,7 +1314,9 @@ export default function FinancialWellnessPage() {
                       </div>
                     </div>
                   ))}
-                  {grants.length === 0 && <p className="text-sm text-slate-500">No grants found.</p>}
+                  {grants.length === 0 && (
+                    <p className="text-sm text-slate-500">No grants found.</p>
+                  )}
                 </div>
               </div>
 
@@ -1115,12 +1333,17 @@ export default function FinancialWellnessPage() {
                           <p className="text-xs text-slate-400">{scholarship.provider}</p>
                         </div>
                         <span className="text-xs text-slate-400">
-                          {scholarship.deadline ? new Date(scholarship.deadline).toLocaleDateString() : 'No deadline'}
+                          {scholarship.deadline
+                            ? new Date(scholarship.deadline).toLocaleDateString()
+                            : 'No deadline'}
                         </span>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {(scholarship.tags || []).map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 rounded-full bg-slate-700 text-xs text-slate-200">
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full bg-slate-700 text-xs text-slate-200"
+                          >
                             {tag}
                           </span>
                         ))}
@@ -1135,7 +1358,9 @@ export default function FinancialWellnessPage() {
                       </div>
                     </div>
                   ))}
-                  {scholarships.length === 0 && <p className="text-sm text-slate-500">No scholarships found.</p>}
+                  {scholarships.length === 0 && (
+                    <p className="text-sm text-slate-500">No scholarships found.</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -1148,13 +1373,17 @@ export default function FinancialWellnessPage() {
                 <div className="space-y-3">
                   {grantApplications.map((app) => (
                     <div key={app.id} className="rounded-lg bg-slate-800/60 p-3">
-                      <p className="text-sm font-medium">{app.grant?.title || 'Grant Application'}</p>
+                      <p className="text-sm font-medium">
+                        {app.grant?.title || 'Grant Application'}
+                      </p>
                       <p className="text-xs text-slate-400">Status: {app.status}</p>
                     </div>
                   ))}
                   {scholarshipApplications.map((app) => (
                     <div key={app.id} className="rounded-lg bg-slate-800/60 p-3">
-                      <p className="text-sm font-medium">{app.scholarship?.title || 'Scholarship Application'}</p>
+                      <p className="text-sm font-medium">
+                        {app.scholarship?.title || 'Scholarship Application'}
+                      </p>
                       <p className="text-xs text-slate-400">Status: {app.status}</p>
                     </div>
                   ))}
@@ -1170,12 +1399,18 @@ export default function FinancialWellnessPage() {
                 </h3>
                 <div className="space-y-3">
                   {grantTips.map((tip, index) => (
-                    <div key={`grant-tip-${index}`} className="rounded-lg bg-slate-800/60 p-3 text-sm text-slate-300">
+                    <div
+                      key={`grant-tip-${index}`}
+                      className="rounded-lg bg-slate-800/60 p-3 text-sm text-slate-300"
+                    >
                       {tip}
                     </div>
                   ))}
                   {scholarshipPrep.map((tip, index) => (
-                    <div key={`scholarship-tip-${index}`} className="rounded-lg bg-slate-800/60 p-3 text-sm text-slate-300">
+                    <div
+                      key={`scholarship-tip-${index}`}
+                      className="rounded-lg bg-slate-800/60 p-3 text-sm text-slate-300"
+                    >
                       {tip}
                     </div>
                   ))}

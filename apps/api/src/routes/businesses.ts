@@ -37,7 +37,19 @@ router.post('/', authenticate, async (req, res) => {
   try {
     const input = createBusinessSchema.parse(req.body || {});
     const ownerId = (req as any).user?.id;
-    const business = await businessService.createBusiness({ ...input, ownerId });
+    if (!ownerId) {
+      return void res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const business = await businessService.createBusiness({
+      name: input.name,
+      description: input.description,
+      website: input.website,
+      category: input.category,
+      address: input.address,
+      contacts: input.contacts,
+      ownerId,
+    });
     res.status(201).json({ business });
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -1,6 +1,6 @@
 /**
  * Socket.io Service for Real-Time Features
- * 
+ *
  * Handles:
  * - Real-time messaging
  * - Typing indicators
@@ -11,6 +11,7 @@
  */
 
 // @ts-ignore - socket.io-client types may not be installed
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { io, Socket } from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 
@@ -111,8 +112,9 @@ interface ConnectionAcceptedData {
 }
 
 // API base URL - aligned with API server port
-const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3333';
-// const ACCESS_TOKEN_KEY = 'auth_token';
+const SOCKET_URL =
+  process.env.EXPO_PUBLIC_SOCKET_URL || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3333';
+const ACCESS_TOKEN_KEY = '@ngurra_auth_token';
 
 // Message types - aligned with server's colon-separated event naming convention
 export const MESSAGE_TYPES = {
@@ -137,21 +139,21 @@ export const MESSAGE_TYPES = {
   PRESENCE_CHANGE: 'presence:update',
   CONVERSATION_JOINED: 'conversation:joined',
   ERROR: 'error',
-  
+
   // Feed events
   FEED_UPDATE: 'feed:update',
-  
+
   // Notification events
   NEW_NOTIFICATION: 'notification:new',
-  
+
   // Job events
   JOB_APPLICATION: 'job:application',
   JOB_STATUS_CHANGE: 'job:status-change',
-  
+
   // Mentorship events
   MENTORSHIP_REQUEST: 'mentorship:request',
   MENTORSHIP_SESSION_REMINDER: 'mentorship:session-reminder',
-  
+
   // Connection events
   CONNECTION_UPDATE: 'connection:update',
 };
@@ -191,7 +193,7 @@ class SocketService {
   private presenceCache: Map<string, PresenceData> = new Map();
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private currentConversationId: string | null = null;
-  
+
   public events: SocketEventEmitter;
 
   private constructor() {
@@ -228,8 +230,17 @@ class SocketService {
       return;
     }
 
-    // Auth purged
-    const token = 'mock-socket-token';
+    const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
+    if (!token) {
+      const error = new Error('Authentication token not available');
+      this.connectionState = ConnectionState.ERROR;
+      this.events.emit('stateChange', this.connectionState);
+      this.events.emit('authError', {
+        message: error.message,
+        code: 'AUTH_TOKEN_MISSING',
+      });
+      throw error;
+    }
 
     return new Promise((resolve, reject) => {
       this.connectionState = ConnectionState.CONNECTING;
@@ -289,7 +300,7 @@ class SocketService {
       this.socket.on('connect_error', (error: Error) => {
         console.error('[Socket] Connection error:', error.message);
         this.reconnectAttempts++;
-        
+
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
           this.connectionState = ConnectionState.ERROR;
           this.events.emit('stateChange', this.connectionState);
@@ -341,9 +352,9 @@ class SocketService {
     // Presence updates - unified event
     this.socket.on(MESSAGE_TYPES.PRESENCE_CHANGE, (data: PresenceEvent & { status?: string }) => {
       const isOnline = data.status === 'online';
-      this.presenceCache.set(data.userId, { 
-        online: isOnline, 
-        lastSeen: data.lastSeen ? new Date(data.lastSeen) : new Date() 
+      this.presenceCache.set(data.userId, {
+        online: isOnline,
+        lastSeen: data.lastSeen ? new Date(data.lastSeen) : new Date(),
       });
       if (isOnline) {
         this.events.emit('userOnline', data);
@@ -364,22 +375,25 @@ class SocketService {
     });
 
     // Feed events - unified feed:update event
-    this.socket.on(MESSAGE_TYPES.FEED_UPDATE, (data: { type: string; postId?: string; data?: unknown }) => {
-      switch (data.type) {
-        case 'new_post':
-          this.events.emit('newPost', data);
-          break;
-        case 'post_updated':
-          this.events.emit('postUpdated', data);
-          break;
-        case 'new_reaction':
-          this.events.emit('newReaction', data);
-          break;
-        case 'new_comment':
-          this.events.emit('newComment', data);
-          break;
+    this.socket.on(
+      MESSAGE_TYPES.FEED_UPDATE,
+      (data: { type: string; postId?: string; data?: unknown }) => {
+        switch (data.type) {
+          case 'new_post':
+            this.events.emit('newPost', data);
+            break;
+          case 'post_updated':
+            this.events.emit('postUpdated', data);
+            break;
+          case 'new_reaction':
+            this.events.emit('newReaction', data);
+            break;
+          case 'new_comment':
+            this.events.emit('newComment', data);
+            break;
+        }
       }
-    });
+    );
 
     // Notification events
     this.socket.on(MESSAGE_TYPES.NEW_NOTIFICATION, (notification: NotificationData) => {
@@ -571,7 +585,7 @@ class SocketService {
   disconnect(): void {
     this.stopHeartbeat();
     this.leaveConversation();
-    
+
     // Clear all typing timers
     this.typingTimers.forEach((timer) => clearTimeout(timer));
     this.typingTimers.clear();

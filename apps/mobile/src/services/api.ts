@@ -126,7 +126,7 @@ async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): 
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
-  
+
   // Add auth token if not skipping auth
   if (!options.skipAuth) {
     const token = await getAuthToken();
@@ -134,7 +134,7 @@ async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): 
       headers['Authorization'] = `Bearer ${token}`;
     }
   }
-  
+
   let response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
@@ -151,12 +151,12 @@ async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): 
       });
     }
   }
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.error || error.message || `Request failed: ${response.status}`);
   }
-  
+
   return response.json();
 }
 
@@ -170,7 +170,7 @@ export const authApi = {
       body: JSON.stringify({ email, password, twoFactorToken }),
       skipAuth: true,
     });
-    
+
     // Store tokens and user data
     if (response.token) {
       await storeTokens(response.token, response.refreshToken);
@@ -178,17 +178,17 @@ export const authApi = {
     if (response.user) {
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.user));
     }
-    
+
     return response;
   },
-  
+
   async register(data: any) {
     const response = await apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
       skipAuth: true,
     });
-    
+
     // Store tokens and user data
     if (response.token) {
       await storeTokens(response.token, response.refreshToken);
@@ -196,20 +196,20 @@ export const authApi = {
     if (response.user) {
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.user));
     }
-    
+
     return response;
   },
-  
+
   async logout() {
     await clearTokens();
   },
-  
+
   async getCurrentUser() {
     const userData = await AsyncStorage.getItem(USER_KEY);
     if (userData) {
       return JSON.parse(userData);
     }
-    
+
     // Try to fetch from API
     try {
       const response = await apiRequest('/auth/me');
@@ -220,10 +220,10 @@ export const authApi = {
     } catch (e) {
       // Not authenticated
     }
-    
+
     return null;
   },
-  
+
   async isAuthenticated() {
     const token = await getAuthToken();
     return !!token;
@@ -237,39 +237,39 @@ export const jobsApi = {
   async getJobs(params: any = {}) {
     const queryString = new URLSearchParams(params).toString();
     const cacheKey = `jobs_${queryString}`;
-    
+
     // Try cache first for offline support
     const cached = await getCache(cacheKey);
     if (cached) {
       return cached;
     }
-    
+
     const result = await apiRequest(`/jobs?${queryString}`, { skipAuth: true });
     await setCache(cacheKey, result, 10); // Cache for 10 minutes
-    
+
     return result;
   },
-  
+
   async getJob(id: string) {
     const cacheKey = `job_${id}`;
     const cached = await getCache(cacheKey);
     if (cached) {
       return cached;
     }
-    
+
     const result = await apiRequest(`/jobs/${id}`);
     await setCache(cacheKey, result, 30); // Cache for 30 minutes
-    
+
     return result;
   },
-  
+
   async applyForJob(jobId: string, data: any) {
     return apiRequest(`/jobs/${jobId}/apply`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-  
+
   async saveJob(jobId: string) {
     return apiRequest(`/jobs/${jobId}/save`, {
       method: 'POST',
@@ -288,14 +288,14 @@ export const memberApi = {
   async getProfile() {
     return apiRequest('/member/profile');
   },
-  
+
   async updateProfile(data: any) {
     return apiRequest('/member/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  
+
   async getApplications() {
     return apiRequest('/member/applications');
   },
@@ -308,14 +308,14 @@ export const profileApi = {
   async getProfile() {
     return apiRequest('/member/profile');
   },
-  
+
   async updateProfile(data: any) {
     return apiRequest('/member/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  
+
   async uploadAvatar(uri: string) {
     const token = await getAuthToken();
     const formData = new FormData();
@@ -325,19 +325,19 @@ export const profileApi = {
       type: 'image/jpeg',
       name: 'avatar.jpg',
     });
-    
+
     const response = await fetch(`${API_BASE_URL}/member/avatar`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to upload avatar');
     }
-    
+
     return response.json();
   },
 };
@@ -350,21 +350,21 @@ export const mentorshipApi = {
     const queryString = new URLSearchParams(params).toString();
     return apiRequest(`/mentorship/mentors?${queryString}`);
   },
-  
+
   async getMatches() {
     return apiRequest('/mentorship/matches');
   },
-  
+
   async requestMentor(mentorId: string, data: any) {
     return apiRequest('/mentorship/matches', {
       method: 'POST',
       body: JSON.stringify({ mentorId, ...data }),
     });
   },
-  
+
   async getSessions() {
     return apiRequest('/mentorship/sessions');
-  }
+  },
 };
 
 /**
@@ -393,20 +393,22 @@ export const dataSovereigntyApi = {
  * Courses API
  */
 export const coursesApi = {
-  async getCourses(params: { page?: number; limit?: number; search?: string; category?: string } = {}) {
+  async getCourses(
+    params: { page?: number; limit?: number; search?: string; category?: string } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
     if (params.category) queryParams.append('category', params.category);
-    
+
     return apiRequest(`/courses?${queryParams.toString()}`);
   },
 
   async getCourse(id: string) {
     return apiRequest(`/courses/${id}`);
   },
-  
+
   async enroll(id: string) {
     return apiRequest(`/courses/${id}/enroll`, {
       method: 'POST',
@@ -418,7 +420,7 @@ export const coursesApi = {
       method: 'DELETE',
     });
   },
-  
+
   async saveCourse(id: string) {
     return apiRequest(`/courses/${id}/save`, {
       method: 'POST',
@@ -429,9 +431,8 @@ export const coursesApi = {
     return apiRequest(`/courses/${id}/save`, {
       method: 'DELETE',
     });
-  }
+  },
 };
-
 
 /**
  * Forums API
@@ -446,17 +447,17 @@ export const forumsApi = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     return apiRequest(`/forums/threads/recent?${queryParams.toString()}`);
   },
-  
+
   async getThread(id: string) {
     return apiRequest(`/forums/threads/${id}`);
   },
-  
+
   async createThread(data: any) {
     return apiRequest('/forums/threads', {
       method: 'POST',
       body: JSON.stringify(data),
     });
-  }
+  },
 };
 
 /**
@@ -468,7 +469,7 @@ export const mentorApi = {
     if (params.search) queryParams.append('search', params.search);
     if (params.industry) queryParams.append('industry', params.industry);
     if (params.country) queryParams.append('country', params.country);
-    
+
     return apiRequest(`/mentorship/mentors?${queryParams.toString()}`);
   },
 
@@ -477,14 +478,13 @@ export const mentorApi = {
   },
 
   async getMyMentors() {
-
     return apiRequest('/mentorship/my-mentors');
   },
-  
+
   async getSessions() {
     return apiRequest('/mentorship/sessions');
   },
-  
+
   async requestMentor(mentorId: string) {
     return apiRequest('/mentorship/requests', {
       method: 'POST',
@@ -501,7 +501,7 @@ export const mentorApi = {
       method: 'POST',
       body: JSON.stringify(data),
     });
-  }
+  },
 };
 
 /**
@@ -512,16 +512,16 @@ export const culturalEventsApi = {
     const queryParams = new URLSearchParams();
     if (params.year) queryParams.append('year', params.year.toString());
     if (params.upcoming) queryParams.append('upcoming', params.upcoming.toString());
-    
+
     return apiRequest(`/cultural-events?${queryParams.toString()}`);
   },
 
   async getSignificantDates(params: { year?: number } = {}) {
     const queryParams = new URLSearchParams();
     if (params.year) queryParams.append('year', params.year.toString());
-    
+
     return apiRequest(`/cultural-events/significant-dates?${queryParams.toString()}`);
-  }
+  },
 };
 
 /**
@@ -532,23 +532,23 @@ export const resourcesApi = {
     const queryParams = new URLSearchParams();
     if (params.category) queryParams.append('category', params.category);
     if (params.search) queryParams.append('search', params.search);
-    
+
     return apiRequest(`/resources?${queryParams.toString()}`);
   },
 
   async getResource(id: string) {
     return apiRequest(`/resources/${id}`);
   },
-  
+
   async getBookmarks() {
     return apiRequest('/resources/bookmarks');
   },
-  
+
   async toggleBookmark(id: string) {
     return apiRequest(`/resources/${id}/bookmark`, {
       method: 'POST',
     });
-  }
+  },
 };
 
 /**
@@ -564,7 +564,7 @@ export const wellnessApi = {
       method: 'POST',
       body: JSON.stringify({ mood }),
     });
-  }
+  },
 };
 
 /**
@@ -586,14 +586,13 @@ export const securityApi = {
   async disable2FA(code: string) {
     return { success: true };
   },
-  
+
   async getBackupCodes() {
     return ['123456', '789012'];
   },
 
   async getSessions() {
     return [];
-  },
   },
 
   async terminateSession(sessionId: string) {
@@ -606,7 +605,7 @@ export const securityApi = {
     return apiRequest('/auth/sessions', {
       method: 'DELETE',
     });
-  }
+  },
 };
 
 /**
@@ -622,7 +621,7 @@ export const notificationPreferencesApi = {
       method: 'PUT',
       body: JSON.stringify({ categoryId, channelId, enabled }),
     });
-  }
+  },
 };
 
 /**
@@ -651,7 +650,7 @@ export const videoResumeApi = {
     return apiRequest('/video-resume', {
       method: 'DELETE',
     });
-  }
+  },
 };
 
 /**
@@ -676,7 +675,7 @@ export const onboardingApi = {
 
   async skipAll() {
     return { success: true };
-  }
+  },
 };
 
 /**
@@ -691,8 +690,10 @@ export const messagesApi = {
     const queryParams = new URLSearchParams();
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.before) queryParams.append('before', params.before);
-    
-    return apiRequest(`/messages/conversations/${conversationId}/messages?${queryParams.toString()}`);
+
+    return apiRequest(
+      `/messages/conversations/${conversationId}/messages?${queryParams.toString()}`
+    );
   },
 
   async sendMessage(conversationId: string, content: string) {
@@ -713,7 +714,7 @@ export const messagesApi = {
     return apiRequest(`/messages/conversations/${conversationId}/read`, {
       method: 'POST',
     });
-  }
+  },
 };
 
 /**
@@ -740,7 +741,7 @@ export const notificationsApi = {
     return apiRequest(`/notifications/${id}`, {
       method: 'DELETE',
     });
-  }
+  },
 };
 
 /**
@@ -752,7 +753,7 @@ export const feedApi = {
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.filter) queryParams.append('filter', params.filter);
-    
+
     return apiRequest(`/social-feed?${queryParams.toString()}`);
   },
 
@@ -803,7 +804,7 @@ export const feedApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/social-feed/posts/${postId}/comments?${queryParams.toString()}`);
   },
 
@@ -837,7 +838,7 @@ export const connectionsApi = {
     if (params.status) queryParams.append('status', params.status);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/connections?${queryParams.toString()}`);
   },
 
@@ -880,7 +881,7 @@ export const connectionsApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/connections/followers?${queryParams.toString()}`);
   },
 
@@ -888,7 +889,7 @@ export const connectionsApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/connections/following?${queryParams.toString()}`);
   },
 
@@ -918,14 +919,16 @@ export const connectionsApi = {
  * Groups API
  */
 export const groupsApi = {
-  async getGroups(params: { 
-    type?: string; 
-    search?: string; 
-    womenOnly?: boolean;
-    featured?: boolean;
-    page?: number; 
-    limit?: number 
-  } = {}) {
+  async getGroups(
+    params: {
+      type?: string;
+      search?: string;
+      womenOnly?: boolean;
+      featured?: boolean;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.type) queryParams.append('type', params.type);
     if (params.search) queryParams.append('search', params.search);
@@ -933,7 +936,7 @@ export const groupsApi = {
     if (params.featured) queryParams.append('featured', 'true');
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/groups?${queryParams.toString()}`);
   },
 
@@ -942,7 +945,7 @@ export const groupsApi = {
     if (params.type) queryParams.append('type', params.type);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/groups/my-groups?${queryParams.toString()}`);
   },
 
@@ -994,7 +997,7 @@ export const groupsApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/groups/${groupId}/members?${queryParams.toString()}`);
   },
 
@@ -1002,7 +1005,7 @@ export const groupsApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/groups/${groupId}/posts?${queryParams.toString()}`);
   },
 
@@ -1041,16 +1044,18 @@ export const groupsApi = {
  * Stories API - Success Stories
  */
 export const storiesApi = {
-  async getStories(params: {
-    page?: number;
-    limit?: number;
-    category?: string;
-    search?: string;
-    featured?: boolean;
-    saved?: boolean;
-    trending?: boolean;
-    userId?: string;
-  } = {}) {
+  async getStories(
+    params: {
+      page?: number;
+      limit?: number;
+      category?: string;
+      search?: string;
+      featured?: boolean;
+      saved?: boolean;
+      trending?: boolean;
+      userId?: string;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
@@ -1132,7 +1137,7 @@ export const storiesApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/stories/${storyId}/comments?${queryParams.toString()}`);
   },
 
@@ -1181,19 +1186,21 @@ export const searchApi = {
         }
       });
     }
-    
+
     return apiRequest(`/search?${queryParams.toString()}`);
   },
 
-  async searchJobs(params: {
-    q?: string;
-    location?: string;
-    type?: string;
-    salary?: string;
-    remote?: boolean;
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async searchJobs(
+    params: {
+      q?: string;
+      location?: string;
+      type?: string;
+      salary?: string;
+      remote?: boolean;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.q) queryParams.append('q', params.q);
     if (params.location) queryParams.append('location', params.location);
@@ -1202,41 +1209,45 @@ export const searchApi = {
     if (params.remote) queryParams.append('remote', 'true');
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/search/jobs?${queryParams.toString()}`);
   },
 
-  async searchMentors(params: {
-    q?: string;
-    industry?: string;
-    skills?: string[];
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async searchMentors(
+    params: {
+      q?: string;
+      industry?: string;
+      skills?: string[];
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.q) queryParams.append('q', params.q);
     if (params.industry) queryParams.append('industry', params.industry);
-    if (params.skills) params.skills.forEach(s => queryParams.append('skills', s));
+    if (params.skills) params.skills.forEach((s) => queryParams.append('skills', s));
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/search/mentors?${queryParams.toString()}`);
   },
 
-  async searchCourses(params: {
-    q?: string;
-    category?: string;
-    level?: string;
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async searchCourses(
+    params: {
+      q?: string;
+      category?: string;
+      level?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.q) queryParams.append('q', params.q);
     if (params.category) queryParams.append('category', params.category);
     if (params.level) queryParams.append('level', params.level);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/search/courses?${queryParams.toString()}`);
   },
 
@@ -1288,11 +1299,7 @@ export const bookmarksApi = {
     return apiRequest(`/bookmarks/collections/${collectionId}`);
   },
 
-  async createCollection(data: {
-    name: string;
-    description?: string;
-    isPublic?: boolean;
-  }) {
+  async createCollection(data: { name: string; description?: string; isPublic?: boolean }) {
     return apiRequest('/bookmarks/collections', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -1312,18 +1319,20 @@ export const bookmarksApi = {
     });
   },
 
-  async getBookmarks(params: {
-    collectionId?: string;
-    type?: string;
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async getBookmarks(
+    params: {
+      collectionId?: string;
+      type?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.collectionId) queryParams.append('collectionId', params.collectionId);
     if (params.type) queryParams.append('type', params.type);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/bookmarks?${queryParams.toString()}`);
   },
 
@@ -1392,7 +1401,7 @@ export const achievementsApi = {
     if (params.type) queryParams.append('type', params.type);
     if (params.period) queryParams.append('period', params.period);
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/leaderboard?${queryParams.toString()}`);
   },
 };
@@ -1421,7 +1430,7 @@ export const referralApi = {
     if (params.status) queryParams.append('status', params.status);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/referrals/list?${queryParams.toString()}`);
   },
 
@@ -1459,11 +1468,15 @@ export const courseProgressApi = {
     return apiRequest(`/courses/${courseId}/progress`);
   },
 
-  async updateLessonProgress(courseId: string, lessonId: string, data: {
-    completed?: boolean;
-    progress?: number;
-    timeSpent?: number;
-  }) {
+  async updateLessonProgress(
+    courseId: string,
+    lessonId: string,
+    data: {
+      completed?: boolean;
+      progress?: number;
+      timeSpent?: number;
+    }
+  ) {
     return apiRequest(`/courses/${courseId}/lessons/${lessonId}/progress`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -1499,11 +1512,14 @@ export const courseProgressApi = {
     return apiRequest(`/courses/${courseId}/notes`);
   },
 
-  async saveCourseNote(courseId: string, data: {
-    lessonId?: string;
-    content: string;
-    timestamp?: number;
-  }) {
+  async saveCourseNote(
+    courseId: string,
+    data: {
+      lessonId?: string;
+      content: string;
+      timestamp?: number;
+    }
+  ) {
     return apiRequest(`/courses/${courseId}/notes`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -1515,18 +1531,20 @@ export const courseProgressApi = {
  * Mentor Circles API
  */
 export const mentorCirclesApi = {
-  async getCircles(params: { 
-    search?: string; 
-    category?: string; 
-    page?: number; 
-    limit?: number 
-  } = {}) {
+  async getCircles(
+    params: {
+      search?: string;
+      category?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     const queryParams = new URLSearchParams();
     if (params.search) queryParams.append('search', params.search);
     if (params.category) queryParams.append('category', params.category);
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/mentor-circles?${queryParams.toString()}`);
   },
 
@@ -1557,7 +1575,7 @@ export const mentorCirclesApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
-    
+
     return apiRequest(`/mentor-circles/${circleId}/discussions?${queryParams.toString()}`);
   },
 

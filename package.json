@@ -1,7 +1,7 @@
 {
-  "name": "gimbi-serverless-demo",
+  "name": "nexta-platform",
   "version": "1.0.0",
-  "description": "Serverless function demos for the Gimbi careers site (Netlify-style)",
+  "description": "Nexta platform monorepo for web, mobile, and API experiences",
   "private": true,
   "main": "index.js",
   "packageManager": "npm@10.8.2",

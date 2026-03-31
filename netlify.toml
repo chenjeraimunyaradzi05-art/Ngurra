@@ -7,6 +7,10 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Force package directory to override Netlify UI settings
+  NETLIFY_PACKAGE_PATH = "apps/web"
+  # Disable legacy Next.js plugin to force modern adapter
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
   # Set in Netlify UI: JWT_SECRET, DATABASE_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
   # Email: SENDGRID_API_KEY, SENDGRID_FROM or AWS SES keys
   # Rate limiting: RATE_LIMIT_SECRET, AI_RATE_LIMIT_PER_MINUTE

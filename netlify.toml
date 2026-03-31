@@ -6,6 +6,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Skip Next.js plugin processing for mobile app directories
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
   # Set in Netlify UI: JWT_SECRET, DATABASE_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
   # Email: SENDGRID_API_KEY, SENDGRID_FROM or AWS SES keys
   # Rate limiting: RATE_LIMIT_SECRET, AI_RATE_LIMIT_PER_MINUTE

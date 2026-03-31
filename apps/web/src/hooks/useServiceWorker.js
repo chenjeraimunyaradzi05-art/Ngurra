@@ -11,15 +11,14 @@ export function useServiceWorker() {
   const [registration, setRegistration] = useState(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
-  
-  const applicationStorage = useOfflineStorage('pending-applications');
-  const messageStorage = useOfflineStorage('pending-messages');
 
   useEffect(() => {
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
       return;
     }
+
+    let updateIntervalId = null;
 
     // Register service worker
     const registerSW = async () => {
@@ -45,7 +44,7 @@ export function useServiceWorker() {
         });
 
         // Check for updates every hour
-        setInterval(() => {
+        updateIntervalId = window.setInterval(() => {
           reg.update();
         }, 60 * 60 * 1000);
 
@@ -69,6 +68,9 @@ export function useServiceWorker() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      if (updateIntervalId) {
+        clearInterval(updateIntervalId);
+      }
     };
   }, []);
 
@@ -97,6 +99,8 @@ export function useOfflineStorage(storeName) {
   const [db, setDb] = useState(null);
 
   useEffect(() => {
+    let database = null;
+
     const openDb = async () => {
       const request = indexedDB.open('ngurra-offline', 1);
 
@@ -105,7 +109,8 @@ export function useOfflineStorage(storeName) {
       };
 
       request.onsuccess = () => {
-        setDb(request.result);
+        database = request.result;
+        setDb(database);
       };
 
       request.onupgradeneeded = (event) => {
@@ -135,8 +140,8 @@ export function useOfflineStorage(storeName) {
     openDb();
 
     return () => {
-      if (db) {
-        db.close();
+      if (database) {
+        database.close();
       }
     };
   }, []);
@@ -213,6 +218,8 @@ export function useOfflineStorage(storeName) {
  */
 export function useBackgroundSync() {
   const [syncSupported, setSyncSupported] = useState(false);
+  const applicationStorage = useOfflineStorage('pending-applications');
+  const messageStorage = useOfflineStorage('pending-messages');
 
   useEffect(() => {
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
@@ -328,9 +335,11 @@ export function useInstallPrompt() {
   };
 }
 
-export default {
+const serviceWorkerHooks = {
   useServiceWorker,
   useOfflineStorage,
   useBackgroundSync,
   useInstallPrompt,
 };
+
+export default serviceWorkerHooks;

@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * GlobalSearch - Advanced search with faceted filters
@@ -205,7 +206,7 @@ function SearchResultCard({ result, onClick }: { result: SearchResult; onClick: 
         {/* Image */}
         {result.imageUrl && (
           <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex-shrink-0">
-            <img src={toCloudinaryAutoUrl(result.imageUrl)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(result.imageUrl)} alt={result.title || ''} width={64} height={64} className="w-full h-full object-cover" />
           </div>
         )}
         

@@ -90,7 +90,7 @@ export default function JobDetailsSEO() {
 
         <section className="mt-6">
           <h3 className="font-semibold mb-2">Apply for this job</h3>
-                    {!user ? (<div className="text-sm text-slate-200">Applications are unavailable while authentication is disabled.</div>) : user.userType !== 'MEMBER' ? (<div className="text-sm text-slate-200">Only Member accounts can apply. Create a Member account to apply.</div>) : (<div className="space-y-3">
+                    {!user ? (<div className="text-sm text-slate-200">Sign in with a Member account to apply for this role.</div>) : user.userType !== 'MEMBER' ? (<div className="text-sm text-slate-200">Only Member accounts can apply. Create a Member account to apply.</div>) : (<div className="space-y-3">
               <div>
                                 <label className="block text-sm text-slate-200">Select a resume</label>
                                 <select value={selectedResume ?? ''} onChange={(e) => setSelectedResume(e.target.value)} className="w-full mt-1 border border-slate-700 bg-slate-950/40 px-3 py-2 rounded text-slate-100">

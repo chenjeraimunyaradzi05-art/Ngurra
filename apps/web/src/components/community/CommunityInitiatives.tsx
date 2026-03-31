@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import api from '@/lib/apiClient';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CommunityInitiatives - Browse and participate in community initiatives
@@ -166,7 +167,13 @@ function InitiativeCard({
       {/* Image */}
       {initiative.imageUrl && (
         <div className="relative h-40">
-          <img src={toCloudinaryAutoUrl(initiative.imageUrl)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(initiative.imageUrl)}
+            alt={`${initiative.title} image`}
+            width={1200}
+            height={160}
+            className="w-full h-full object-cover"
+          />
           <div className="absolute top-2 left-2 flex gap-2">
             <span className={`px-2 py-1 text-xs font-medium rounded-full bg-${category.color}-100 text-${category.color}-700`}>
               {category.icon} {category.label}
@@ -298,7 +305,13 @@ function InitiativeDetailModal({
         {/* Header Image */}
         {initiative.imageUrl && (
           <div className="relative h-56">
-            <img src={toCloudinaryAutoUrl(initiative.imageUrl)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(initiative.imageUrl)}
+              alt={`${initiative.title} image`}
+              width={1200}
+              height={224}
+              className="w-full h-full object-cover"
+            />
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"
@@ -337,7 +350,13 @@ function InitiativeDetailModal({
           {/* Organizer */}
           <div className="flex items-center gap-3 mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             {initiative.organizer.avatar ? (
-              <img src={toCloudinaryAutoUrl(initiative.organizer.avatar)} alt="" className="w-10 h-10 rounded-full" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(initiative.organizer.avatar)}
+                alt={`${initiative.organizer.name} avatar`}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full"
+              />
             ) : (
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium">
                 {initiative.organizer.name.charAt(0)}
@@ -409,7 +428,13 @@ function InitiativeDetailModal({
                   <div key={update.id} className="border-l-2 border-blue-500 pl-4">
                     <div className="flex items-center gap-2 mb-1">
                       {update.author.avatar ? (
-                        <img src={toCloudinaryAutoUrl(update.author.avatar)} alt="" className="w-6 h-6 rounded-full" />
+                        <OptimizedImage
+                          src={toCloudinaryAutoUrl(update.author.avatar)}
+                          alt={`${update.author.name} avatar`}
+                          width={24}
+                          height={24}
+                          className="w-6 h-6 rounded-full"
+                        />
                       ) : (
                         <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs">
                           {update.author.name.charAt(0)}

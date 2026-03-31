@@ -225,7 +225,7 @@ export default function UserProfilePage() {
         
         {/* Back Button */}
         <Link 
-          href="/feed" 
+          href="/social-feed" 
           className="absolute top-4 left-4 p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors"
         >
           ←

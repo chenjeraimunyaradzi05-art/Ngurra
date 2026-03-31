@@ -19,15 +19,15 @@ export default function NotificationsPage() {
     { id: 1, type: 'like', read: false, time: '2m ago', 
       user: { name: 'Sarah M.', avatar: '👩🏽' },
       content: 'liked your post about career development',
-      link: '/feed' },
+      link: '/social-feed' },
     { id: 2, type: 'comment', read: false, time: '15m ago',
       user: { name: 'James K.', avatar: '👨🏿' },
       content: 'commented on your post: "Great insights! Thanks for sharing..."',
-      link: '/feed' },
+      link: '/social-feed' },
     { id: 3, type: 'mention', read: false, time: '1h ago',
       user: { name: 'Lisa P.', avatar: '👩🏻' },
       content: 'mentioned you in a comment',
-      link: '/feed' },
+      link: '/social-feed' },
     // Connections
     { id: 4, type: 'connection_request', read: false, time: '2h ago',
       user: { name: 'David W.', avatar: '👨🏽', trustLevel: 'established' },
@@ -146,7 +146,7 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Link href="/feed" className="p-2 rounded-full hover:bg-white/60 transition-colors text-slate-600">
+            <Link href="/social-feed" className="p-2 rounded-full hover:bg-white/60 transition-colors text-slate-600">
               ← 
             </Link>
             <div>

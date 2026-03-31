@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * LearningPathVisualization - Interactive learning path display
@@ -294,7 +295,7 @@ function LearningPathCard({
             <p className="text-sm text-blue-600 dark:text-blue-400 mt-0.5">{path.targetRole}</p>
           </div>
           {path.badgeUrl && (
-            <img src={toCloudinaryAutoUrl(path.badgeUrl)} alt="" className="w-12 h-12" />
+            <OptimizedImage src={toCloudinaryAutoUrl(path.badgeUrl)} alt={`${path.title} badge`} width={48} height={48} className="w-12 h-12" />
           )}
         </div>
 
@@ -483,7 +484,7 @@ export function LearningPathVisualization() {
               <p className="text-blue-100 mt-2 max-w-2xl">{selectedPath.description}</p>
             </div>
             {selectedPath.badgeUrl && (
-              <img src={toCloudinaryAutoUrl(selectedPath.badgeUrl)} alt="" className="w-20 h-20" />
+              <OptimizedImage src={toCloudinaryAutoUrl(selectedPath.badgeUrl)} alt={`${selectedPath.title} badge`} width={80} height={80} className="w-20 h-20" />
             )}
           </div>
 
@@ -532,8 +533,8 @@ export function LearningPathVisualization() {
                 module={module}
                 index={index}
                 isActive={index === currentModuleIndex}
-                onStart={() => console.log('Start:', module.id)}
-                onContinue={() => console.log('Continue:', module.id)}
+                onStart={() => { /* TODO: implement module start */ }}
+                onContinue={() => { /* TODO: implement module continue */ }}
               />
             ))}
           </div>

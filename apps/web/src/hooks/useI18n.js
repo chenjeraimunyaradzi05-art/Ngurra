@@ -219,7 +219,7 @@ export const AUSTRALIAN_STATES = [
   { code: 'NT', name: 'Northern Territory' },
 ];
 
-export default {
+const i18nHooks = {
   I18nProvider,
   useI18n,
   useTranslation,
@@ -227,3 +227,5 @@ export default {
   useNumberFormat,
   AUSTRALIAN_STATES,
 };
+
+export default i18nHooks;

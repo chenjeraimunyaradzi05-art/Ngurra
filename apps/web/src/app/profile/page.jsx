@@ -145,7 +145,14 @@ export default function ProfilePage() {
       <div className="ngurra-page flex items-center justify-center px-4">
         <div className="text-center ngurra-card p-8">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Please Sign In</h1>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">Authentication is disabled.</p>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">Sign in to edit your profile details.</p>
+          <Link
+            href="/signin?returnTo=/profile"
+            className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-white font-medium"
+            style={{ background: `linear-gradient(135deg, ${accentPink} 0%, ${accentPurple} 100%)` }}
+          >
+            Go to Sign In
+          </Link>
         </div>
       </div>
     );

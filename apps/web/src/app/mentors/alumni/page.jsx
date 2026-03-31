@@ -278,8 +278,14 @@ export default function AlumniMentorsPage() {
           <div className="mt-12 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-3">Ready to find your mentor?</h2>
             <p className="text-gray-300 mb-6 max-w-xl mx-auto">
-              Authentication is disabled while it’s being rebuilt.
+              Sign in to request mentorship, track matches, and join alumni circles.
             </p>
+            <Link
+              href="/signin?returnTo=/mentors/alumni"
+              className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 bg-pink-600 hover:bg-pink-500 font-semibold transition-colors"
+            >
+              Sign In
+            </Link>
           </div>
         )}
       </div>

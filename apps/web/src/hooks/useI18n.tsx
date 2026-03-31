@@ -41,7 +41,7 @@ export function I18nProvider({ children, initialLocale = 'en-AU' }: I18nProvider
 
   const translate = useCallback((key: keyof TranslationKeys, params?: Record<string, string | number>) => {
     return t(key, params);
-  }, [locale]); // Re-create when locale changes
+  }, []);
 
   const value = useMemo<I18nContextValue>(() => ({
     locale,

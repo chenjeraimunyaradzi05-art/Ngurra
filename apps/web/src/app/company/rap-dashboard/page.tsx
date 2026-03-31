@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 import { 
   BarChart, 
   Bar, 
@@ -133,8 +134,8 @@ export default function RapDashboardPage() {
           },
           partnerships: 5,
         });
-      } catch (err: any) {
-        setError(err.message || 'Failed to load RAP dashboard');
+      } catch (err: unknown) {
+        setError(getErrorMessage(err, 'Failed to load RAP dashboard'));
       } finally {
         setLoading(false);
       }

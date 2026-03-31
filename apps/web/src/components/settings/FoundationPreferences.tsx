@@ -11,6 +11,7 @@ import {
   Building, Scale, Building2, PiggyBank, Home, TrendingUp, Coins, BarChart3,
   Bell, Briefcase, MapPin, DollarSign, Loader2, Check, AlertCircle
 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface FoundationPreferences {
   // Business & Entrepreneurship
@@ -144,8 +145,8 @@ export default function FoundationPreferences({ apiBase = '', token }: Props) {
       setSuccess(true);
       setHasChanges(false);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save preferences');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to save preferences'));
     } finally {
       setSaving(false);
     }

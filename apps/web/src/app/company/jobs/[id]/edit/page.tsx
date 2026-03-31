@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Briefcase, MapPin, DollarSign, AlertCircle, CheckCircle, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface Job {
   id: string;
@@ -34,10 +35,6 @@ export default function EditJobPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated && id) load();
-  }, [isAuthenticated, id]);
-
   async function load() {
     setLoading(true);
     try {
@@ -53,12 +50,17 @@ export default function EditJobPage() {
       } else {
         setError('Job not found');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load job');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load job'));
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, id]);
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
@@ -85,8 +87,8 @@ export default function EditJobPage() {
       } else {
         setError(res.error || 'Save failed');
       }
-    } catch (err: any) {
-      setError(err.message || 'Save failed');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Save failed'));
     } finally {
       setSaving(false);
     }

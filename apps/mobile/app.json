@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ngurra Pathways",
-    "slug": "ngurra-pathways",
+    "name": "Nexta",
+    "slug": "nexta",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "au.com.ngurrapathways.mobile",
+      "bundleIdentifier": "au.com.nexta.mobile",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Use Face ID for secure login"
       }
@@ -26,7 +26,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1E293B"
       },
-      "package": "au.com.ngurrapathways.mobile",
+      "package": "au.com.nexta.mobile",
       "permissions": [
         "USE_BIOMETRIC",
         "USE_FINGERPRINT"

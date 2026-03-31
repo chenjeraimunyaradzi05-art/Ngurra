@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Briefcase, Plus, Users, Clock, Search, Filter, MoreVertical, Trash2, Eye, EyeOff, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 // @ts-ignore
 import SubscriptionBadge from '@/components/SubscriptionBadge';
 
@@ -63,8 +64,8 @@ export default function CompanyJobsList() {
       if (subRes.ok && subRes.data) {
         setSubscription(subRes.data.subscription);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load jobs');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load jobs'));
     } finally {
       setLoading(false);
     }
@@ -85,8 +86,8 @@ export default function CompanyJobsList() {
       if (res.ok) {
         setJobs(jobs.map(j => j.id === job.id ? { ...j, isActive: newStatus, status: newStatus ? 'OPEN' : 'CLOSED' } : j));
       }
-    } catch (err: any) {
-      alert('Failed to update status: ' + err.message);
+    } catch (err: unknown) {
+      alert('Failed to update status: ' + getErrorMessage(err));
     }
   }
 
@@ -98,8 +99,8 @@ export default function CompanyJobsList() {
       if (res.ok) {
         setJobs(jobs.filter(j => j.id !== id));
       }
-    } catch (err: any) {
-      alert('Failed to delete job: ' + err.message);
+    } catch (err: unknown) {
+      alert('Failed to delete job: ' + getErrorMessage(err));
     }
   }
 

@@ -279,7 +279,7 @@ export default function SearchClient() {
                 result.type === 'person' ? `/profile/${result.id}` :
                 result.type === 'group' ? `/groups/${result.id}` :
                 result.type === 'org' ? `/organizations/${result.id}` :
-                `/feed`
+                `/social-feed`
               }>
                 <div className="bg-white border border-slate-200 rounded-xl p-4 hover:border-pink-300 transition-colors" style={{ boxShadow: '0 4px 20px rgba(15, 23, 42, 0.06)' }}>
                   {result.type === 'job' && (

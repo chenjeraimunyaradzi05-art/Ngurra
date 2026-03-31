@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Nexta open graph image">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="55%" stop-color="#ECFDF5" />
+      <stop offset="100%" stop-color="#E0F2FE" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F766E" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#F97316" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1040" cy="110" r="130" fill="#D1FAE5" opacity="0.8" />
+  <circle cx="980" cy="500" r="170" fill="#BAE6FD" opacity="0.85" />
+  <circle cx="180" cy="120" r="90" fill="#FED7AA" opacity="0.7" />
+
+  <rect x="80" y="74" width="230" height="62" rx="31" fill="white" stroke="#CBD5E1" />
+  <text x="136" y="113" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#0F172A">Nexta</text>
+  <circle cx="112" cy="105" r="18" fill="url(#panel)" />
+  <path d="M104 114V96h3.2l10.6 12.7V96h3.2v18h-3.2l-10.6-12.7V114H104Z" fill="white" />
+
+  <text x="80" y="236" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#0F172A">
+    Opportunity, connected.
+  </text>
+  <text x="80" y="318" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#0F172A">
+    Progress, supported.
+  </text>
+
+  <text x="80" y="384" font-family="Arial, sans-serif" font-size="30" fill="#334155">
+    Jobs, learning, mentors, community, business tools, financial wellbeing,
+  </text>
+  <text x="80" y="424" font-family="Arial, sans-serif" font-size="30" fill="#334155">
+    and real-world opportunities in one guided platform built for long-term progress.
+  </text>
+
+  <rect x="80" y="478" width="250" height="72" rx="20" fill="url(#panel)" />
+  <text x="160" y="523" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="white">Get Started</text>
+
+  <rect x="352" y="478" width="300" height="72" rx="20" fill="white" stroke="#0F766E" stroke-width="3" />
+  <text x="398" y="523" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#0F766E">Explore Pathways</text>
+
+  <rect x="766" y="104" width="324" height="408" rx="36" fill="url(#panel)" />
+  <rect x="790" y="134" width="276" height="54" rx="18" fill="rgba(255,255,255,0.12)" />
+  <text x="824" y="169" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="white">Your next step, connected.</text>
+
+  <rect x="790" y="216" width="276" height="110" rx="24" fill="white" opacity="0.98" />
+  <text x="816" y="256" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0F172A">Continue your Pathway</text>
+  <text x="816" y="292" font-family="Arial, sans-serif" font-size="18" fill="#475569">You are 62% through this week's plan.</text>
+
+  <rect x="790" y="350" width="128" height="58" rx="18" fill="rgba(255,255,255,0.12)" />
+  <rect x="938" y="350" width="128" height="58" rx="18" fill="rgba(255,255,255,0.12)" />
+  <rect x="790" y="426" width="128" height="58" rx="18" fill="rgba(255,255,255,0.12)" />
+  <rect x="938" y="426" width="128" height="58" rx="18" fill="rgba(255,255,255,0.12)" />
+  <text x="816" y="386" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="white">Find Work</text>
+  <text x="970" y="386" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="white">Upgrade Skills</text>
+  <text x="823" y="462" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="white">Nexta AI</text>
+  <text x="955" y="462" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="white">Track Money</text>
+
+  <path d="M1026 84L1050 108L1026 132L1002 108L1026 84Z" fill="url(#accent)" />
+</svg>

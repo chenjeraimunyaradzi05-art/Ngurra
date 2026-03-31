@@ -617,8 +617,7 @@ export function ApplicationTemplates() {
 
   const handleGetSuggestions = async (question: string) => {
     try {
-      // Implementation would show matching templates based on question
-      console.log('Getting suggestions for:', question);
+      // Filter matching templates based on question keywords
       // For now, filter by keywords in question
       const keywords = question.toLowerCase().split(' ');
       const filtered = templates.filter(t => 

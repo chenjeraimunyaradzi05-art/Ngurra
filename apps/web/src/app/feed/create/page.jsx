@@ -124,8 +124,8 @@ export default function CreatePostPage() {
         throw new Error(errData.error || 'Failed to create post');
       }
       
-      // Success - redirect to feed
-      router.push('/feed');
+      // Success - redirect to canonical social feed
+      router.push('/social-feed');
     } catch (err) {
       console.error('Failed to create post:', err);
       setError(err.message || 'Failed to create post. Please try again.');
@@ -189,7 +189,7 @@ export default function CreatePostPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link 
-                href="/feed" 
+                href="/social-feed" 
                 className="p-2 rounded-full transition-all hover:scale-105"
                 style={{ background: 'rgba(255, 215, 0, 0.1)', color: '#FFD700' }}
               >

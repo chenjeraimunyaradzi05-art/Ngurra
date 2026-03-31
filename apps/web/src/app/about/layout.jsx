@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: 'About Ngurra Pathways',
     description: 'A culturally-grounded platform connecting First Nations job seekers with meaningful opportunities.',
-    url: 'https://ngurrapathways.com.au/about',
+    url: 'https://ngurrapathways.life/about',
   },
   alternates: {
     canonical: '/about',

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Save, Building, Mail, Phone, MapPin, Globe, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface CompanyProfile {
   companyName: string;
@@ -57,7 +58,7 @@ export default function CompanySettingsPage() {
       if (res.ok && res.data?.profile) {
         setProfile(res.data.profile);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load profile:', err);
     } finally {
       setLoading(false);
@@ -80,8 +81,8 @@ export default function CompanySettingsPage() {
       } else {
         setMessage({ type: 'error', text: res.error || 'Failed to update profile' });
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Failed to update profile' });
+    } catch (err: unknown) {
+      setMessage({ type: 'error', text: getErrorMessage(err, 'Failed to update profile') });
     } finally {
       setSaving(false);
     }

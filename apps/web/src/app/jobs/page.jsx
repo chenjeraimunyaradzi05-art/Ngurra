@@ -9,7 +9,7 @@ export const metadata = {
     openGraph: {
         title: 'Indigenous Jobs & Careers | Ngurra Pathways',
         description: 'Find Indigenous employment opportunities across Australia from leading employers.',
-        url: 'https://ngurrapathways.com.au/jobs',
+        url: 'https://ngurrapathways.life/jobs',
     },
     alternates: {
         canonical: '/jobs',

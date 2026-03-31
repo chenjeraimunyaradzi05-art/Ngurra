@@ -156,6 +156,26 @@ const nextConfig = {
 
   // API proxy rewrites - Route all /api/* requests to the backend
   // This solves CORS issues and enables cookie sharing on the same origin
+  async redirects() {
+    return [
+      {
+        source: '/feed',
+        destination: '/social-feed',
+        permanent: true,
+      },
+      {
+        source: '/feed/create',
+        destination: '/social-feed/new',
+        permanent: true,
+      },
+      {
+        source: '/feed/:path*',
+        destination: '/social-feed',
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
     return {

@@ -1,52 +1,53 @@
 {
-  "name": "Ngurra Pathways",
-  "short_name": "Ngurra",
-  "description": "A culturally-grounded employment, education & mentorship platform for First Nations futures",
+  "name": "Nexta",
+  "short_name": "Nexta",
+  "description": "A guided platform for jobs, learning, mentors, business tools, money support, and long-term progress",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e3a8a",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
   "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
     {
-      "src": "/brand/ngurra-logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/brand/ngurra-logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ],
-  "categories": ["business", "education", "social"],
-  "lang": "en-AU",
+  "categories": ["business", "education", "productivity"],
+  "lang": "en-US",
   "dir": "ltr",
   "prefer_related_applications": false,
   "shortcuts": [
     {
-      "name": "Browse Jobs",
-      "short_name": "Jobs",
-      "description": "Find new job opportunities",
-      "url": "/jobs",
-      "icons": [{ "src": "/brand/ngurra-logo.png", "sizes": "192x192" }]
+      "name": "Explore Pathways",
+      "short_name": "Pathways",
+      "description": "See jobs, skills, mentors, and support in one place",
+      "url": "/#pathways",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
     },
     {
-      "name": "My Dashboard",
-      "short_name": "Dashboard",
-      "description": "View your dashboard",
-      "url": "/member/dashboard",
-      "icons": [{ "src": "/brand/ngurra-logo.png", "sizes": "192x192" }]
+      "name": "Join Nexta",
+      "short_name": "Join",
+      "description": "Start your Nexta profile and guided pathway",
+      "url": "/signup",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
     },
     {
-      "name": "Find Mentors",
-      "short_name": "Mentors",
-      "description": "Connect with mentors",
-      "url": "/mentorship",
-      "icons": [{ "src": "/brand/ngurra-logo.png", "sizes": "192x192" }]
+      "name": "Ask Nexta AI",
+      "short_name": "AI",
+      "description": "Get guided next steps and practical planning support",
+      "url": "/ai",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
+    },
+    {
+      "name": "Partner with Nexta",
+      "short_name": "Partners",
+      "description": "Hire, partner, or run programs with Nexta",
+      "url": "/company/setup",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32" }]
     }
   ],
   "share_target": {
@@ -67,7 +68,7 @@
   },
   "protocol_handlers": [
     {
-      "protocol": "web+ngurra",
+      "protocol": "web+nexta",
       "url": "/%s"
     }
   ],

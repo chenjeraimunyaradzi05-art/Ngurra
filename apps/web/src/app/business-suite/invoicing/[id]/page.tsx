@@ -64,6 +64,8 @@ type Invoice = {
     paidAt: string;
     reference?: string;
   }>;
+  senderBusinessName?: string;
+  senderAbn?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -388,8 +390,10 @@ export default function InvoiceDetailPage() {
                   <p className="text-gray-600 mt-1">{invoice.invoiceNumber}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900">Your Business Name</p>
-                  <p className="text-gray-600 text-sm">ABN: XX XXX XXX XXX</p>
+                  <p className="font-semibold text-gray-900">{invoice.senderBusinessName || 'Your Business Name'}</p>
+                  {invoice.senderAbn && (
+                    <p className="text-gray-600 text-sm">ABN: {invoice.senderAbn}</p>
+                  )}
                 </div>
               </div>
 

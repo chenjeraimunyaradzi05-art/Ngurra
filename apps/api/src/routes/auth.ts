@@ -10,7 +10,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../lib/errors';
-import { forgotPasswordSchema, resetPasswordSchema } from '../lib/validation';
+import { changePasswordSchema, forgotPasswordSchema, resetPasswordSchema } from '../lib/validation';
 import { emailService } from '../services/emailService';
 import { redisCache } from '../lib/redisCacheWrapper';
 import { authenticate } from '../middleware/auth';
@@ -416,6 +416,76 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
           avatar: user.avatarUrl,
         },
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route POST /auth/change-password
+ * @desc Change password for authenticated user
+ * @access Private
+ */
+router.post('/change-password', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validation = changePasswordSchema.safeParse(req.body);
+    if (!validation.success) {
+      return void res.status(400).json({
+        error: 'Validation failed',
+        details: validation.error.flatten().fieldErrors,
+      });
+    }
+
+    const { currentPassword, newPassword } = validation.data;
+    const userId = (req as any).user?.id as string | undefined;
+
+    if (!userId) {
+      return void res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, userType: true, password: true },
+    });
+
+    if (!user || !user.password) {
+      return void res.status(404).json({ error: 'User not found' });
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return void res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    if (currentPassword === newPassword) {
+      return void res.status(400).json({ error: 'New password must be different from current password' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    const freshToken = generateToken({
+      id: user.id,
+      email: user.email,
+      userType: String(user.userType),
+    });
+
+    // Rotate cookie token to keep session continuity after password change.
+    res.cookie('token', freshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return void res.json({
+      message: 'Password changed successfully',
+      token: freshToken,
     });
   } catch (error) {
     next(error);

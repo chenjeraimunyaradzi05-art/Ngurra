@@ -6,9 +6,10 @@
  * Full-featured chat interface with Socket.io support for live messaging.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useMessagingStore } from '@/stores/messagingStore';
 import { useAuthStore } from '@/stores/authStore';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   MessageCircle,
   Send,
@@ -67,8 +68,14 @@ export default function Chat({ conversationId: propConversationId, onClose, embe
 
   const currentConversationId = propConversationId || activeConversationId;
   const currentConversation = conversations.find((c) => c.id === currentConversationId);
-  const currentMessages = currentConversationId ? messages[currentConversationId] || [] : [];
-  const currentTypingUsers = currentConversationId ? typingUsers[currentConversationId] || [] : [];
+  const currentMessages = useMemo(
+    () => (currentConversationId ? messages[currentConversationId] || [] : []),
+    [currentConversationId, messages]
+  );
+  const currentTypingUsers = useMemo(
+    () => (currentConversationId ? typingUsers[currentConversationId] || [] : []),
+    [currentConversationId, typingUsers]
+  );
 
   // Connect to WebSocket on mount
   useEffect(() => {
@@ -81,14 +88,14 @@ export default function Chat({ conversationId: propConversationId, onClose, embe
       // Don't disconnect on unmount if we're just switching views
       // disconnect();
     };
-  }, []);
+  }, [connect, isConnected, isConnecting, loadConversations]);
 
   // Set active conversation from prop
   useEffect(() => {
     if (propConversationId && propConversationId !== activeConversationId) {
       setActiveConversation(propConversationId);
     }
-  }, [propConversationId]);
+  }, [propConversationId, activeConversationId, setActiveConversation]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -278,9 +285,11 @@ export default function Chat({ conversationId: propConversationId, onClose, embe
                           {conversation.type === 'group' ? (
                             <Users className="w-6 h-6 text-white" />
                           ) : otherParticipants[0]?.userAvatar ? (
-                            <img
+                            <OptimizedImage
                               src={otherParticipants[0].userAvatar}
-                              alt=""
+                              alt={`${otherParticipants[0]?.userName || 'User'} avatar`}
+                              width={48}
+                              height={48}
                               className="w-full h-full rounded-full object-cover"
                             />
                           ) : (
@@ -420,10 +429,12 @@ export default function Chat({ conversationId: propConversationId, onClose, embe
                       )}
 
                       {message.type === 'image' ? (
-                        <img
+                        <OptimizedImage
                           src={message.content}
                           alt="Shared image"
-                          className="rounded-lg max-w-full"
+                          width={640}
+                          height={360}
+                          className="rounded-lg max-w-full h-auto"
                         />
                       ) : message.type === 'file' ? (
                         <a

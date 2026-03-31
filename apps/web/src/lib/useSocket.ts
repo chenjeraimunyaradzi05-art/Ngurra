@@ -89,6 +89,8 @@ export function useConversation(conversationId: string | null) {
   useEffect(() => {
     if (!conversationId) return;
 
+    const typingTimeouts = typingTimeoutRef.current;
+
     // Join conversation room
     socketService.joinConversation(conversationId);
 
@@ -122,7 +124,7 @@ export function useConversation(conversationId: string | null) {
           setTypingUsers(prev => new Map(prev).set(data.userId, data));
           
           // Clear existing timeout
-          const existing = typingTimeoutRef.current.get(data.userId);
+          const existing = typingTimeouts.get(data.userId);
           if (existing) clearTimeout(existing);
           
           // Auto-clear after 5 seconds
@@ -134,7 +136,7 @@ export function useConversation(conversationId: string | null) {
             });
           }, 5000);
           
-          typingTimeoutRef.current.set(data.userId, timeout);
+          typingTimeouts.set(data.userId, timeout);
         } else {
           // isTyping === false means stop typing
           setTypingUsers(prev => {
@@ -143,10 +145,10 @@ export function useConversation(conversationId: string | null) {
             return next;
           });
           
-          const timeout = typingTimeoutRef.current.get(data.userId);
+          const timeout = typingTimeouts.get(data.userId);
           if (timeout) {
             clearTimeout(timeout);
-            typingTimeoutRef.current.delete(data.userId);
+            typingTimeouts.delete(data.userId);
           }
         }
       }
@@ -165,8 +167,8 @@ export function useConversation(conversationId: string | null) {
       cleanupTyping();
       
       // Clear all typing timeouts
-      typingTimeoutRef.current.forEach(clearTimeout);
-      typingTimeoutRef.current.clear();
+      typingTimeouts.forEach(clearTimeout);
+      typingTimeouts.clear();
     };
   }, [conversationId]);
 
@@ -293,7 +295,7 @@ export function usePresence(userIds: string[]) {
       socketService.unsubscribeFromPresence(userIds);
       cleanup();
     };
-  }, [userIds.join(',')]);
+  }, [userIds]);
 
   const updateMyPresence = useCallback((status: PresenceUpdate['status']) => {
     socketService.updatePresence(status);

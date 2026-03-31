@@ -9,7 +9,7 @@ export const metadata = {
   openGraph: {
     title: 'Indigenous Mentorship Program | Ngurra Pathways',
     description: 'Connect with experienced First Nations mentors for career guidance.',
-    url: 'https://ngurrapathways.com.au/mentorship',
+    url: 'https://ngurrapathways.life/mentorship',
   },
   alternates: {
     canonical: '/mentorship',
@@ -171,5 +171,10 @@ export default async function MentorshipPage() {
         initialMentors = SEED_MENTORS;
     }
 
-    return <MentorshipClient initialMentors={initialMentors} />;
+    return (
+        <MentorshipClient
+            initialMentors={initialMentors}
+            hasPrefetched={initialMentors.length > 0}
+        />
+    );
 }

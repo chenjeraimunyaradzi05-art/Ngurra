@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * StoriesFeed - Indigenous stories and community narratives
@@ -207,7 +208,13 @@ function StoryCard({
       {/* Media */}
       {story.type === 'video' && story.thumbnailUrl && (
         <div className="relative aspect-video bg-gray-900 cursor-pointer group" onClick={onViewFull}>
-          <img src={toCloudinaryAutoUrl(story.thumbnailUrl)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(story.thumbnailUrl)}
+            alt={`${story.title} video thumbnail`}
+            width={1280}
+            height={720}
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
               <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
@@ -257,7 +264,13 @@ function StoryCard({
         {/* Author */}
         <div className="flex items-center gap-3 mb-3">
           {story.author.avatar ? (
-            <img src={toCloudinaryAutoUrl(story.author.avatar)} alt="" className="w-10 h-10 rounded-full" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(story.author.avatar)}
+              alt={`${story.author.name} avatar`}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full"
+            />
           ) : (
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium">
               {story.author.name.charAt(0)}
@@ -428,7 +441,13 @@ function StoryDetailModal({
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {story.author.avatar ? (
-              <img src={toCloudinaryAutoUrl(story.author.avatar)} alt="" className="w-10 h-10 rounded-full" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(story.author.avatar)}
+                alt={`${story.author.name} avatar`}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full"
+              />
             ) : (
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium">
                 {story.author.name.charAt(0)}
@@ -538,7 +557,13 @@ function StoryDetailModal({
                 {comments.map((comment) => (
                   <div key={comment.id} className="flex gap-3">
                     {comment.author.avatar ? (
-                      <img src={toCloudinaryAutoUrl(comment.author.avatar)} alt="" className="w-10 h-10 rounded-full" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(comment.author.avatar)}
+                        alt={`${comment.author.name} avatar`}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full"
+                      />
                     ) : (
                       <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium text-sm">
                         {comment.author.name.charAt(0)}

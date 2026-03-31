@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * OfferManagement - Job offer creation and management for employers
@@ -82,9 +83,35 @@ interface OfferTemplate {
   terms?: string;
 }
 
+type OfferQueryParams = Record<string, string>;
+
+interface SelectOption {
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+  title?: string;
+  department?: string;
+}
+
+interface OfferPayload {
+  candidateId: string;
+  jobId: string;
+  startDate: string;
+  expiryDate: string;
+  location: string;
+  workType: Offer['workType'];
+  benefits?: string[];
+  baseSalary?: number;
+  currency?: string;
+  signOnBonus?: number;
+  templateId?: string;
+  compensation?: Offer['compensation'];
+}
+
 // API functions
 const offersApi = {
-  async getOffers(params: any): Promise<{ offers: Offer[]; total: number }> {
+  async getOffers(params: OfferQueryParams): Promise<{ offers: Offer[]; total: number }> {
     const query = new URLSearchParams(params);
     const res = await api<{ offers: Offer[]; total: number }>(`/employer/offers?${query.toString()}`);
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch offers');
@@ -97,7 +124,7 @@ const offersApi = {
     return res.data;
   },
 
-  async createOffer(data: any): Promise<Offer> {
+  async createOffer(data: OfferPayload): Promise<Offer> {
     const res = await api<Offer>('/employer/offers', {
       method: 'POST',
       body: data,
@@ -106,7 +133,7 @@ const offersApi = {
     return res.data;
   },
 
-  async updateOffer(id: string, data: any): Promise<Offer> {
+  async updateOffer(id: string, data: Partial<OfferPayload>): Promise<Offer> {
     const res = await api<Offer>(`/employer/offers/${id}`, {
       method: 'PUT',
       body: data,
@@ -181,7 +208,7 @@ function OfferCard({
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {offer.candidate.avatar ? (
-              <img src={toCloudinaryAutoUrl(offer.candidate.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage src={toCloudinaryAutoUrl(offer.candidate.avatar)} alt={offer.candidate.name} width={48} height={48} className="w-full h-full object-cover" />
             ) : (
               <span className="text-lg">{offer.candidate.name[0]}</span>
             )}
@@ -278,7 +305,7 @@ function OfferDetailModal({
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                 {offer.candidate.avatar ? (
-                  <img src={toCloudinaryAutoUrl(offer.candidate.avatar)} alt="" className="w-full h-full object-cover" />
+                  <OptimizedImage src={toCloudinaryAutoUrl(offer.candidate.avatar)} alt={offer.candidate.name} width={56} height={56} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-xl">{offer.candidate.name[0]}</span>
                 )}
@@ -469,9 +496,9 @@ function CreateOfferModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (data: any) => void;
-  candidates: any[];
-  jobs: any[];
+  onCreate: (data: OfferPayload) => void;
+  candidates: SelectOption[];
+  jobs: SelectOption[];
   templates: OfferTemplate[];
 }) {
   const [step, setStep] = useState(1);

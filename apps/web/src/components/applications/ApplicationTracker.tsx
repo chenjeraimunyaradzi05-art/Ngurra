@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ApplicationTracker - Track job applications
@@ -256,7 +257,7 @@ function ApplicationCard({
       <div className="flex items-start gap-4">
         {/* Company Logo */}
         {application.job.companyLogo ? (
-          <img src={toCloudinaryAutoUrl(application.job.companyLogo)} alt="" className="w-12 h-12 rounded-lg object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(application.job.companyLogo)} alt={application.job.company} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" />
         ) : (
           <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium text-lg">
             {application.job.company.charAt(0)}
@@ -361,7 +362,7 @@ function ApplicationDetailModal({
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               {application.job.companyLogo ? (
-                <img src={toCloudinaryAutoUrl(application.job.companyLogo)} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                <OptimizedImage src={toCloudinaryAutoUrl(application.job.companyLogo)} alt={application.job.company} width={56} height={56} className="w-14 h-14 rounded-xl object-cover" />
               ) : (
                 <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium text-xl">
                   {application.job.company.charAt(0)}

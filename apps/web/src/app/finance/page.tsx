@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 type ChartAccount = {
   id: string;
@@ -260,8 +261,8 @@ export default function FinancePage() {
         }
       }
       if (periodsRes.ok) setPeriods(periodsRes.data?.periods || []);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to load finance data');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load finance data'));
     } finally {
       setLoading(false);
     }

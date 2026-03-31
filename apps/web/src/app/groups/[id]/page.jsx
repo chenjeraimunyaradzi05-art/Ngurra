@@ -196,7 +196,7 @@ export default function GroupDetailPage() {
               <>
                 {/* Create Post */}
                 {isMember && (
-                  <Link href="/feed/create" className="block">
+                  <Link href="/social-feed/new" className="block">
                     <div className="royal-card p-4 hover:border-gold/30 transition-colors cursor-pointer">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-royal/30 to-pink-blush/30 flex items-center justify-center">

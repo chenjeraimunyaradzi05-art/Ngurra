@@ -44,6 +44,9 @@ const colors = {
   sky: '#0EA5E9',
 };
 
+const TABS = ['connections', 'followers', 'following', 'requests', 'suggestions'] as const;
+type Tab = (typeof TABS)[number];
+
 interface Person {
   id: string | number;
   name: string;
@@ -60,9 +63,26 @@ interface Person {
   isOnline?: boolean;
 }
 
+interface Connection {
+  id: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  headline?: string;
+  company?: string;
+  avatar?: string;
+  avatarUrl?: string;
+  trustLevel?: string;
+  mutualConnections?: number;
+  isFollowingBack?: boolean;
+  location?: string;
+  isOnline?: boolean;
+  time?: string;
+}
+
 export default function ConnectionsPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'connections' | 'followers' | 'following' | 'requests'>('connections');
+  const [activeTab, setActiveTab] = useState<Tab>('connections');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -112,7 +132,7 @@ export default function ConnectionsPage() {
 
       // Process connections
       if (connRes.ok && 'data' in connRes) {
-        const mapped = (connRes.data?.connections || []).map((c: any) => ({
+        const mapped = (connRes.data?.connections || []).map((c: Connection) => ({
           id: c.id,
           name: c.name || c.email || 'Unknown',
           role: c.role || c.headline || '',
@@ -132,7 +152,7 @@ export default function ConnectionsPage() {
 
       // Process followers
       if (followersRes.ok && 'data' in followersRes) {
-        const mapped = (followersRes.data?.followers || []).map((f: any) => ({
+        const mapped = (followersRes.data?.followers || []).map((f: Connection) => ({
           id: f.id,
           name: f.name || f.email || 'Unknown',
           role: f.role || f.headline || '',
@@ -151,7 +171,7 @@ export default function ConnectionsPage() {
 
       // Process following
       if (followingRes.ok && 'data' in followingRes) {
-        const mapped = (followingRes.data?.following || []).map((f: any) => ({
+        const mapped = (followingRes.data?.following || []).map((f: Connection) => ({
           id: f.id,
           name: f.name || f.email || 'Unknown',
           role: f.role || f.headline || '',
@@ -169,7 +189,7 @@ export default function ConnectionsPage() {
 
       // Process requests
       if (requestsRes.ok && 'data' in requestsRes) {
-        const received = (requestsRes.data?.received || []).map((p: any) => ({
+        const received = (requestsRes.data?.received || []).map((p: Connection) => ({
           id: p.id,
           name: p.name || p.email || 'Unknown',
           role: p.role || p.headline || '',
@@ -180,7 +200,7 @@ export default function ConnectionsPage() {
           time: p.time || 'Recently',
           mutualConnections: p.mutualConnections || 0,
         }));
-        const sent = (requestsRes.data?.sent || []).map((p: any) => ({
+        const sent = (requestsRes.data?.sent || []).map((p: Connection) => ({
           id: p.id,
           name: p.name || p.email || 'Unknown',
           role: p.role || p.headline || '',
@@ -201,7 +221,7 @@ export default function ConnectionsPage() {
 
       // Process suggestions
       if (suggestionsRes.ok && 'data' in suggestionsRes) {
-        const mapped = (suggestionsRes.data?.suggestions || suggestionsRes.data || []).map((s: any) => ({
+        const mapped = (suggestionsRes.data?.suggestions || suggestionsRes.data || []).map((s: Connection) => ({
           id: s.id,
           name: s.name || s.email || 'Unknown',
           role: s.role || s.headline || '',

@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ApplicantTracker - Applicant tracking system (ATS) for employers
@@ -203,7 +204,7 @@ function ApplicantCard({
         />
         <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
           {applicant.candidate.avatar ? (
-            <img src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt={applicant.candidate.name} width={40} height={40} className="w-full h-full object-cover" />
           ) : (
             <span>{applicant.candidate.name[0]}</span>
           )}
@@ -368,7 +369,7 @@ function ApplicantDetailPanel({
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {applicant.candidate.avatar ? (
-              <img src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt={applicant.candidate.name} width={56} height={56} className="w-full h-full object-cover" />
             ) : (
               <span className="text-xl">{applicant.candidate.name[0]}</span>
             )}

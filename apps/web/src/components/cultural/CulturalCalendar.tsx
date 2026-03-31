@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CulturalCalendar - Calendar for Indigenous cultural events
@@ -163,7 +164,7 @@ function EventCard({
       {/* Event Image */}
       {event.imageUrl && (
         <div className="relative h-40">
-          <img src={toCloudinaryAutoUrl(event.imageUrl)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(event.imageUrl)} alt={event.title} width={400} height={160} className="w-full h-full object-cover" />
           <div className="absolute top-2 left-2">
             <span className={`px-2 py-1 text-xs font-medium rounded-full bg-${config.color}-100 text-${config.color}-700`}>
               {config.icon} {config.label}
@@ -313,7 +314,7 @@ function EventDetailModal({
         {/* Header Image */}
         {event.imageUrl && (
           <div className="relative h-48">
-            <img src={toCloudinaryAutoUrl(event.imageUrl)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(event.imageUrl)} alt={event.title} width={600} height={192} className="w-full h-full object-cover" />
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"

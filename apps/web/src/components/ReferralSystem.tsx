@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from './Button';
 import { useToast } from './Toast';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ReferralSystem - Complete referral program management
@@ -562,9 +563,11 @@ export function ReferralSystem() {
                   {/* Avatar */}
                   <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden">
                     {referral.referredUser.avatar ? (
-                      <img 
+                      <OptimizedImage 
                         src={toCloudinaryAutoUrl(referral.referredUser.avatar)} 
-                        alt="" 
+                        alt={referral.referredUser.name || 'Referred user'} 
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover" 
                       />
                     ) : (

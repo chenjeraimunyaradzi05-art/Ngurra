@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * JobSearchBrowse - Search and browse job listings
@@ -271,7 +272,7 @@ function JobCard({
       <div className="flex gap-4">
         {/* Company Logo */}
         {job.company.logo ? (
-          <img src={toCloudinaryAutoUrl(job.company.logo)} alt="" className="w-12 h-12 rounded-lg object-contain bg-white" />
+          <OptimizedImage src={toCloudinaryAutoUrl(job.company.logo)} alt={job.company.name} width={48} height={48} className="w-12 h-12 rounded-lg object-contain bg-white" />
         ) : (
           <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center text-lg font-medium text-gray-400">
             {job.company.name.charAt(0)}
@@ -386,7 +387,7 @@ function JobDetailPanel({
         <div className="flex items-start justify-between gap-4">
           <div className="flex gap-4">
             {job.company.logo ? (
-              <img src={toCloudinaryAutoUrl(job.company.logo)} alt="" className="w-14 h-14 rounded-xl object-contain bg-white" />
+              <OptimizedImage src={toCloudinaryAutoUrl(job.company.logo)} alt={job.company.name} width={56} height={56} className="w-14 h-14 rounded-xl object-contain bg-white" />
             ) : (
               <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-xl font-medium text-gray-400">
                 {job.company.name.charAt(0)}
@@ -669,6 +670,7 @@ export function JobSearchBrowse() {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page]);
 
   const loadRecommended = useCallback(async () => {

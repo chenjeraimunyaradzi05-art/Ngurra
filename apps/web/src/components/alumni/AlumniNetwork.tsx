@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * AlumniNetwork - Connect with platform alumni
@@ -206,7 +207,13 @@ function AlumniCard({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-start gap-4">
         {alumni.avatar ? (
-          <img src={toCloudinaryAutoUrl(alumni.avatar)} alt="" className="w-16 h-16 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(alumni.avatar)}
+            alt={`${alumni.name} avatar`}
+            width={64}
+            height={64}
+            className="w-16 h-16 rounded-full object-cover"
+          />
         ) : (
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
             {alumni.name.split(' ').map(n => n[0]).join('')}
@@ -299,13 +306,25 @@ function StoryCard({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       {story.imageUrl && (
-        <img src={toCloudinaryAutoUrl(story.imageUrl)} alt="" className="w-full h-48 object-cover" />
+        <OptimizedImage
+          src={toCloudinaryAutoUrl(story.imageUrl)}
+          alt={`${story.title} cover image`}
+          width={1200}
+          height={192}
+          className="w-full h-48 object-cover"
+        />
       )}
       <div className="p-6">
         {/* Author */}
         <div className="flex items-center gap-3 mb-4">
           {story.alumni.avatar ? (
-            <img src={toCloudinaryAutoUrl(story.alumni.avatar)} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(story.alumni.avatar)}
+              alt={`${story.alumni.name} avatar`}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full object-cover"
+            />
           ) : (
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
               {story.alumni.name.split(' ').map(n => n[0]).join('')}
@@ -428,7 +447,13 @@ function EventCard({
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {event.host.avatar ? (
-            <img src={toCloudinaryAutoUrl(event.host.avatar)} alt="" className="w-8 h-8 rounded-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(event.host.avatar)}
+              alt={`${event.host.name} avatar`}
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full object-cover"
+            />
           ) : (
             <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 text-xs">
               {event.host.name.split(' ').map(n => n[0]).join('')}
@@ -482,7 +507,13 @@ function ProfileModal({
           {/* Profile Header */}
           <div className="flex items-start gap-4 mb-6">
             {alumni.avatar ? (
-              <img src={toCloudinaryAutoUrl(alumni.avatar)} alt="" className="w-24 h-24 rounded-full object-cover" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(alumni.avatar)}
+                alt={`${alumni.name} avatar`}
+                width={96}
+                height={96}
+                className="w-24 h-24 rounded-full object-cover"
+              />
             ) : (
               <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-semibold">
                 {alumni.name.split(' ').map(n => n[0]).join('')}
@@ -493,7 +524,13 @@ function ProfileModal({
               <p className="text-gray-600 dark:text-gray-400">{alumni.currentRole}</p>
               <div className="flex items-center gap-2 mt-1">
                 {alumni.companyLogo && (
-                  <img src={toCloudinaryAutoUrl(alumni.companyLogo)} alt="" className="w-5 h-5 rounded" />
+                  <OptimizedImage
+                    src={toCloudinaryAutoUrl(alumni.companyLogo)}
+                    alt={`${alumni.company} logo`}
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 rounded"
+                  />
                 )}
                 <span className="text-gray-500">{alumni.company}</span>
               </div>

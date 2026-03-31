@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * OnboardingFlow - User onboarding wizard
@@ -235,7 +236,7 @@ function ProfileStep({
         <div className="relative">
           <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {data.avatar ? (
-              <img src={toCloudinaryAutoUrl(data.avatar)} alt="Avatar" className="w-full h-full object-cover" />
+              <OptimizedImage src={toCloudinaryAutoUrl(data.avatar)} alt="Avatar preview" width={96} height={96} className="w-full h-full object-cover" />
             ) : (
               <span className="text-4xl">👤</span>
             )}

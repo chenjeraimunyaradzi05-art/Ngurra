@@ -338,8 +338,7 @@ export function AnalyticsDashboard() {
   const handleExport = async (format: 'csv' | 'pdf') => {
     setIsExporting(true);
     try {
-      // Placeholder for export functionality
-      console.log(`Exporting analytics as ${format}...`);
+      // TODO: implement export functionality
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
       console.error('Export failed:', error);

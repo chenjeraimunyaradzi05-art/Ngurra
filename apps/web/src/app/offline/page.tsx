@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   WifiOff,
   RefreshCw,
@@ -65,7 +66,7 @@ export default function OfflinePage() {
       <header className="bg-slate-800 border-b border-slate-700 px-4 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logos/logo.svg" alt="Ngurra" className="h-8 w-8" />
+            <OptimizedImage src="/logos/logo.svg" alt="Ngurra" width={32} height={32} className="h-8 w-8" />
             <span className="text-xl font-bold text-white">Ngurra Pathways</span>
           </div>
           <div className="flex items-center gap-2 text-slate-400">

@@ -481,7 +481,7 @@ export const employerVerification = {
 };
 
 // Default export with all modules
-export default {
+const phaseFModules = {
   videoResume,
   skillsVerification,
   careerPortfolio,
@@ -491,3 +491,5 @@ export default {
   apprenticeship,
   employerVerification
 };
+
+export default phaseFModules;

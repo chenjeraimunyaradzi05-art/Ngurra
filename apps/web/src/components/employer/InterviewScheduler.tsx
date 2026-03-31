@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * InterviewScheduler - Interview scheduling and management for employers
@@ -71,9 +72,41 @@ interface CalendarDay {
   interviews: Interview[];
 }
 
+type InterviewQueryParams = Record<string, string>;
+
+interface ScheduleInterviewData {
+  candidateId: string;
+  jobId: string;
+  type: Interview['type'];
+  date: string;
+  startTime: string;
+  endTime: string;
+  interviewerIds: string[];
+  location?: string;
+  meetingLink?: string;
+  notes?: string;
+}
+
+interface FeedbackData {
+  rating: number;
+  recommendation: string;
+  comments: string;
+  strengths?: string;
+  improvements?: string;
+}
+
+interface SelectOption {
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+  title?: string;
+  role?: string;
+}
+
 // API functions
 const interviewsApi = {
-  async getInterviews(params: any): Promise<{ interviews: Interview[]; total: number }> {
+  async getInterviews(params: InterviewQueryParams): Promise<{ interviews: Interview[]; total: number }> {
     const query = new URLSearchParams(params);
     const res = await api<{ interviews: Interview[]; total: number }>(`/employer/interviews?${query.toString()}`);
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch interviews');
@@ -86,7 +119,7 @@ const interviewsApi = {
     return res.data;
   },
 
-  async scheduleInterview(data: any): Promise<Interview> {
+  async scheduleInterview(data: ScheduleInterviewData): Promise<Interview> {
     const res = await api<Interview>('/employer/interviews', {
       method: 'POST',
       body: data,
@@ -95,7 +128,7 @@ const interviewsApi = {
     return res.data;
   },
 
-  async updateInterview(id: string, data: any): Promise<Interview> {
+  async updateInterview(id: string, data: Partial<ScheduleInterviewData>): Promise<Interview> {
     const res = await api<Interview>(`/employer/interviews/${id}`, {
       method: 'PUT',
       body: data,
@@ -112,7 +145,7 @@ const interviewsApi = {
     if (!res.ok) throw new Error(res.error || 'Failed to cancel interview');
   },
 
-  async submitFeedback(interviewId: string, data: any): Promise<void> {
+  async submitFeedback(interviewId: string, data: FeedbackData): Promise<void> {
     const res = await api(`/employer/interviews/${interviewId}/feedback`, {
       method: 'POST',
       body: data,
@@ -120,28 +153,28 @@ const interviewsApi = {
     if (!res.ok) throw new Error(res.error || 'Failed to submit feedback');
   },
 
-  async getAvailableSlots(params: any): Promise<TimeSlot[]> {
+  async getAvailableSlots(params: InterviewQueryParams): Promise<TimeSlot[]> {
     const query = new URLSearchParams(params);
     const res = await api<TimeSlot[]>(`/employer/interviews/available-slots?${query.toString()}`);
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch slots');
     return res.data;
   },
 
-  async getTeamMembers(): Promise<any[]> {
-    const res = await api<any[]>('/employer/team');
+  async getTeamMembers(): Promise<SelectOption[]> {
+    const res = await api<SelectOption[]>('/employer/team');
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch team');
     return res.data;
   },
 
-  async getCandidates(jobId?: string): Promise<any[]> {
+  async getCandidates(jobId?: string): Promise<SelectOption[]> {
     const query = jobId ? `?jobId=${jobId}` : '';
-    const res = await api<any[]>(`/employer/candidates${query}`);
+    const res = await api<SelectOption[]>(`/employer/candidates${query}`);
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch candidates');
     return res.data;
   },
 
-  async getJobs(): Promise<any[]> {
-    const res = await api<any[]>('/employer/jobs');
+  async getJobs(): Promise<SelectOption[]> {
+    const res = await api<SelectOption[]>('/employer/jobs');
     if (!res.ok || !res.data) throw new Error(res.error || 'Failed to fetch jobs');
     return res.data;
   },
@@ -318,7 +351,13 @@ function InterviewCard({
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {interview.candidate.avatar ? (
-              <img src={toCloudinaryAutoUrl(interview.candidate.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(interview.candidate.avatar)}
+                alt={`${interview.candidate.name} avatar`}
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span>{interview.candidate.name[0]}</span>
             )}
@@ -355,7 +394,13 @@ function InterviewCard({
                 title={interviewer.name}
               >
                 {interviewer.avatar ? (
-                  <img src={toCloudinaryAutoUrl(interviewer.avatar)} alt="" className="w-full h-full object-cover" />
+                  <OptimizedImage
+                    src={toCloudinaryAutoUrl(interviewer.avatar)}
+                    alt={`${interviewer.name} avatar`}
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span className="text-xs">{interviewer.name[0]}</span>
                 )}
@@ -384,10 +429,10 @@ function ScheduleInterviewModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSchedule: (data: any) => void;
-  candidates: any[];
-  jobs: any[];
-  teamMembers: any[];
+  onSchedule: (data: ScheduleInterviewData) => void;
+  candidates: SelectOption[];
+  jobs: SelectOption[];
+  teamMembers: SelectOption[];
 }) {
   const [candidateId, setCandidateId] = useState('');
   const [jobId, setJobId] = useState('');
@@ -537,7 +582,13 @@ function ScheduleInterviewModal({
                 >
                   <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                     {member.avatar ? (
-                      <img src={toCloudinaryAutoUrl(member.avatar)} alt="" className="w-full h-full object-cover" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(member.avatar)}
+                        alt={`${member.name} avatar`}
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <span className="text-xs">{member.name[0]}</span>
                     )}
@@ -615,7 +666,7 @@ function FeedbackModal({
   interview: Interview | null;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: FeedbackData) => void;
 }) {
   const [rating, setRating] = useState(3);
   const [recommendation, setRecommendation] = useState<string>('neutral');
@@ -755,7 +806,7 @@ export function InterviewScheduler() {
     loadFormData();
   }, [loadFormData]);
 
-  const handleSchedule = async (data: any) => {
+  const handleSchedule = async (data: ScheduleInterviewData) => {
     try {
       await interviewsApi.scheduleInterview(data);
       setShowScheduleModal(false);
@@ -765,7 +816,7 @@ export function InterviewScheduler() {
     }
   };
 
-  const handleSubmitFeedback = async (data: any) => {
+  const handleSubmitFeedback = async (data: FeedbackData) => {
     if (!selectedInterview) return;
     try {
       await interviewsApi.submitFeedback(selectedInterview.id, data);

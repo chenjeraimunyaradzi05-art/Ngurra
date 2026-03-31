@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ChevronRight, Sparkles } from 'lucide-react';
 
 type PartnershipAd = {
@@ -85,11 +86,12 @@ export default function FeaturedJobs() {
 
         <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 p-6">
           <div className="flex items-center justify-center min-h-[120px]">
-            <img
+            <OptimizedImage
               src={activeAd.imageUrl}
               alt={activeAd.imageAlt}
+              width={200}
+              height={56}
               className="h-10 sm:h-12 md:h-14 w-auto object-contain"
-              loading="lazy"
             />
           </div>
         </div>

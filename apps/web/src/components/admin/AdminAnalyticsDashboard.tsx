@@ -205,16 +205,12 @@ export default function AdminAnalyticsDashboard() {
     loadData();
   }, [timeRange]);
 
-  if (loading || !data) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="animate-spin w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  const { metrics, charts } = data;
   const derived = useMemo(() => {
+    if (!data) {
+      return { activationRate: 0, hireRate: 0, mentorCompletion: 0 };
+    }
+
+    const { metrics } = data;
     const activationRate = metrics.users.total > 0
       ? Math.round((metrics.users.active / metrics.users.total) * 100)
       : 0;
@@ -225,7 +221,17 @@ export default function AdminAnalyticsDashboard() {
       ? Math.round((metrics.mentorship.completedThisMonth / metrics.mentorship.totalSessions) * 100)
       : 0;
     return { activationRate, hireRate, mentorCompletion };
-  }, [metrics]);
+  }, [data]);
+
+  if (loading || !data) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  const { metrics, charts } = data;
 
   return (
     <div className="min-h-screen bg-slate-950">

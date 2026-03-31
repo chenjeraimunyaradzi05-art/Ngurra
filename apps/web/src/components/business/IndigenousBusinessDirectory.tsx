@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * IndigenousBusinessDirectory - Indigenous business directory and support
@@ -245,7 +246,13 @@ function BusinessCard({
       {/* Cover Image */}
       <div className="relative h-40 bg-gradient-to-br from-amber-500 to-orange-600">
         {business.coverImage && (
-          <img src={toCloudinaryAutoUrl(business.coverImage)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(business.coverImage)}
+            alt={`${business.name} cover image`}
+            width={1200}
+            height={160}
+            className="w-full h-full object-cover"
+          />
         )}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
@@ -273,9 +280,11 @@ function BusinessCard({
       {/* Logo */}
       <div className="px-6 -mt-8 relative z-10">
         {business.logo ? (
-          <img
-            src={business.logo}
-            alt=""
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(business.logo)}
+            alt={`${business.name} logo`}
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-xl border-4 border-white dark:border-gray-800 object-cover bg-white"
           />
         ) : (
@@ -384,7 +393,13 @@ function BusinessDetailModal({
         {/* Cover */}
         <div className="relative h-48 bg-gradient-to-br from-amber-500 to-orange-600 flex-shrink-0">
           {business.coverImage && (
-            <img src={toCloudinaryAutoUrl(business.coverImage)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(business.coverImage)}
+              alt={`${business.name} cover image`}
+              width={1200}
+              height={192}
+              className="w-full h-full object-cover"
+            />
           )}
           <button
             onClick={onClose}
@@ -400,9 +415,11 @@ function BusinessDetailModal({
         <div className="px-6 pb-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-end gap-4 -mt-10">
             {business.logo ? (
-              <img
-                src={business.logo}
-                alt=""
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(business.logo)}
+                alt={`${business.name} logo`}
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 object-cover bg-white"
               />
             ) : (
@@ -500,7 +517,13 @@ function BusinessDetailModal({
                     {business.founders.map((founder, i) => (
                       <div key={i} className="flex items-center gap-3">
                         {founder.avatar ? (
-                          <img src={toCloudinaryAutoUrl(founder.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+                          <OptimizedImage
+                            src={toCloudinaryAutoUrl(founder.avatar)}
+                            alt={`${founder.name} avatar`}
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
                         ) : (
                           <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
                             {founder.name.split(' ').map(n => n[0]).join('')}
@@ -635,7 +658,13 @@ function BusinessDetailModal({
                     <div className="flex items-start justify-between gap-4 mb-2">
                       <div className="flex items-center gap-3">
                         {review.author.avatar ? (
-                          <img src={toCloudinaryAutoUrl(review.author.avatar)} alt="" className="w-10 h-10 rounded-full object-cover" />
+                          <OptimizedImage
+                            src={toCloudinaryAutoUrl(review.author.avatar)}
+                            alt={`${review.author.name} avatar`}
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
                         ) : (
                           <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 text-sm">
                             {review.author.name.split(' ').map(n => n[0]).join('')}

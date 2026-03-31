@@ -7,7 +7,7 @@
  * and moderation actions.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Shield,
   Flag,
@@ -17,7 +17,7 @@ import {
   Eye,
   Trash2,
   MessageSquare,
-  Image,
+  Image as ImageIcon,
   FileText,
   User,
   Clock,
@@ -65,12 +65,7 @@ export default function ModerationPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'high-priority'>('pending');
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    loadReports();
-    loadStats();
-  }, [filter, page]);
-
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
@@ -87,9 +82,9 @@ export default function ModerationPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter, page]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const { ok, data } = await api<ModerationStats>('/admin/moderation/stats');
       if (ok && data) {
@@ -98,7 +93,12 @@ export default function ModerationPage() {
     } catch (err) {
       console.error('Failed to load stats:', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadReports();
+    loadStats();
+  }, [loadReports, loadStats]);
 
   const handleAction = async (reportId: string, action: 'approve' | 'remove' | 'dismiss' | 'warn') => {
     try {
@@ -140,7 +140,7 @@ export default function ModerationPage() {
       case 'comment': return <MessageSquare className="w-4 h-4" />;
       case 'message': return <MessageSquare className="w-4 h-4" />;
       case 'profile': return <User className="w-4 h-4" />;
-      case 'image': return <Image className="w-4 h-4" />;
+      case 'image': return <ImageIcon className="w-4 h-4" />;
       default: return <FileText className="w-4 h-4" />;
     }
   };

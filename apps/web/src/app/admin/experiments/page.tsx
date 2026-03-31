@@ -6,7 +6,7 @@
  * Manage experiments, view results, and control feature rollouts.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Zap,
@@ -71,11 +71,7 @@ export default function ExperimentsPage() {
     targetPercentage: 100,
   });
 
-  useEffect(() => {
-    loadData();
-  }, [filter]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
@@ -90,7 +86,11 @@ export default function ExperimentsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleCreate = async () => {
     try {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { HeartHandshake, Lightbulb, Target, Users, TrendingUp, Scale } from 'lucide-react';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 export default function FoundersPage() {
   return (
@@ -106,20 +107,65 @@ export default function FoundersPage() {
         {/* Founders */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 mb-8">
           <h2 className="text-xl font-semibold text-white mb-4">Founders</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gradient-to-br from-slate-900/50 to-slate-900/20 border border-slate-800 rounded-xl p-5">
-              <h3 className="font-semibold text-white">Takutai Garland</h3>
-              <p className="text-sm text-slate-400">Platform inspiration</p>
-              <p className="mt-3 text-sm text-slate-300">
-                Inspired the platform concept and direction alongside his fiancée.
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-slate-900/60 to-slate-900/20 border border-slate-800 rounded-xl p-5 flex flex-col">
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-slate-800">
+                <OptimizedImage
+                  src="/founders/Taku.jpeg"
+                  alt="Portrait of Takutai Garland"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </div>
+              <div className="mt-4">
+                <h3 className="font-semibold text-white">Takutai Garland</h3>
+                <p className="text-sm text-slate-400">Platform inspiration</p>
+                <p className="mt-3 text-sm text-slate-300">
+                  Inspired the platform concept and direction alongside his fiancée.
+                </p>
+              </div>
             </div>
-            <div className="bg-gradient-to-br from-slate-900/50 to-slate-900/20 border border-slate-800 rounded-xl p-5">
-              <h3 className="font-semibold text-white">Miss Fiona Leanee Baker</h3>
-              <p className="text-sm text-slate-400">Platform inspiration</p>
-              <p className="mt-3 text-sm text-slate-300">
-                Co-inspired the platform vision and the community-first approach.
-              </p>
+
+            <div className="bg-gradient-to-br from-slate-900/60 to-slate-900/20 border border-slate-800 rounded-xl p-5 flex flex-col">
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-slate-800">
+                <OptimizedImage
+                  src="/founders/Fiona.jpeg"
+                  alt="Portrait of Miss Fiona Leanee Baker"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </div>
+              <div className="mt-4">
+                <h3 className="font-semibold text-white">Miss Fiona Leanee Baker</h3>
+                <p className="text-sm text-slate-400">Platform inspiration</p>
+                <p className="mt-3 text-sm text-slate-300">
+                  Co-inspired the platform vision and the community-first approach.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-950/30 to-slate-900/20 border border-purple-800/40 rounded-xl p-5 flex flex-col">
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-purple-900/60">
+                <OptimizedImage
+                  src="/founders/Taku and Fiona.jpeg"
+                  alt="Takutai Garland and Miss Fiona Leanee Baker together"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+              <div className="mt-4">
+                <h3 className="font-semibold text-white">Together in vision</h3>
+                <p className="text-sm text-slate-400">Founding partners</p>
+                <p className="mt-3 text-sm text-slate-300">
+                  Their partnership anchors the platform&apos;s cultural grounding and people-first
+                  ethos.
+                </p>
+              </div>
             </div>
           </div>
 

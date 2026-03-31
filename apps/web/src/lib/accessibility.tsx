@@ -359,7 +359,7 @@ export function meetsContrastRequirement(
 // Import React for JSX
 import React from 'react';
 
-export default {
+const accessibilityUtils = {
   useFocusTrap,
   useFocusReturn,
   useAnnounce,
@@ -373,3 +373,5 @@ export default {
   getContrastRatio,
   meetsContrastRequirement,
 };
+
+export default accessibilityUtils;

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * EmployerDashboard - Dashboard for employers to manage job listings and candidates
@@ -275,7 +276,7 @@ function ApplicantCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         {applicant.candidate.avatar ? (
-          <img src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt="" className="w-12 h-12 rounded-full" />
+          <OptimizedImage src={toCloudinaryAutoUrl(applicant.candidate.avatar)} alt={applicant.candidate.name} width={48} height={48} className="w-12 h-12 rounded-full" />
         ) : (
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium text-lg">
             {applicant.candidate.name.charAt(0)}

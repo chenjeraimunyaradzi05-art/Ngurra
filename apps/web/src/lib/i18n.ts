@@ -336,4 +336,6 @@ export function getAvailableLocales(): Locale[] {
   return Object.keys(translations) as Locale[];
 }
 
-export default { t, setLocale, getLocale, getAvailableLocales };
+const i18nUtils = { t, setLocale, getLocale, getAvailableLocales };
+
+export default i18nUtils;

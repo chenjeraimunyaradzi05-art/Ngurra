@@ -25,14 +25,14 @@ export interface FetchOptions {
   pollingInterval?: number;
   /** Callback on success */
   // eslint-disable-next-line no-unused-vars
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: unknown) => void;
   /** Callback on error */
   // eslint-disable-next-line no-unused-vars
   onError?: (error: Error) => void;
 }
 
 // Simple in-memory cache
-const cache = new Map<string, { data: any; timestamp: number }>();
+const cache = new Map<string, { data: unknown; timestamp: number }>();
 const DEFAULT_CACHE_TIME = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -69,7 +69,7 @@ export function useFetch<T>(
     if (cached && Date.now() - cached.timestamp < cacheTime) {
       setState((s) => ({
         ...s,
-        data: cached.data,
+        data: cached.data as T,
         isLoading: false,
         isValidating: true,
       }));
@@ -105,15 +105,16 @@ export function useFetch<T>(
         });
         onSuccess?.(data);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (mountedRef.current) {
+        const err = error instanceof Error ? error : new Error(String(error));
         setState((s) => ({
           ...s,
           isLoading: false,
-          error,
+          error: err,
           isValidating: false,
         }));
-        onError?.(error);
+        onError?.(err);
       }
     }
   }, [url, skip, cacheTime, onSuccess, onError]);
@@ -198,9 +199,10 @@ export function useMutation<TData, TVariables>(
         const data = await mutationFn(variables);
         setState({ data, isLoading: false, error: null });
         return data;
-      } catch (error: any) {
-        setState({ data: null, isLoading: false, error });
-        throw error;
+      } catch (error: unknown) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        setState({ data: null, isLoading: false, error: err });
+        throw err;
       }
     },
     [mutationFn],

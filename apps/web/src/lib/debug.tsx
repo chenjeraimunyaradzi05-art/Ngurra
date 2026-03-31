@@ -42,15 +42,12 @@ export function useWhyDidYouUpdate<T extends Record<string, unknown>>(
  */
 export function useRenderCount(componentName: string): number {
   const renderCount = useRef(0);
-  // eslint-disable-next-line react-hooks/refs
   renderCount.current++;
 
   if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line react-hooks/refs
     console.log(`[render-count] ${componentName}: ${renderCount.current}`);
   }
 
-  // eslint-disable-next-line react-hooks/refs
   return renderCount.current;
 }
 
@@ -313,7 +310,7 @@ export function getPerformanceReport(): {
 // Need to import React for JSX
 import React from 'react';
 
-export default {
+const debugUtils = {
   useWhyDidYouUpdate,
   useRenderCount,
   useComponentLifecycle,
@@ -327,3 +324,5 @@ export default {
   measure,
   getPerformanceReport,
 };
+
+export default debugUtils;

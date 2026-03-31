@@ -10,7 +10,6 @@ import {
   ArrowLeft, 
   Key, 
   Shield, 
-  Smartphone,
   Eye,
   EyeOff,
   CheckCircle2,
@@ -26,17 +25,24 @@ import {
 
 const API_URL = API_BASE;
 
-export default function SecuritySettingsPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)' }}>
-      <div className="text-center p-8 rounded-3xl max-w-md w-full" style={{ background: 'linear-gradient(135deg, rgba(15, 8, 25, 0.95), rgba(26, 15, 46, 0.9))', border: '2px solid rgba(255, 215, 0, 0.4)' }}>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: '#FFD700' }}>Security Settings Disabled</h2>
-        <p style={{ color: 'rgba(248, 246, 255, 0.8)' }}>Authentication has been removed, so security settings are unavailable.</p>
-      </div>
-    </div>
-  );
+const strengthBarClasses = {
+  red: 'bg-red-500',
+  yellow: 'bg-yellow-500',
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  emerald: 'bg-emerald-500',
+};
 
-  const { token, user } = useAuth();
+const strengthTextClasses = {
+  red: 'text-red-400',
+  yellow: 'text-yellow-400',
+  blue: 'text-blue-400',
+  green: 'text-green-400',
+  emerald: 'text-emerald-400',
+};
+
+export default function SecuritySettingsPage() {
+  const { token, user, isLoading } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -51,6 +57,39 @@ export default function SecuritySettingsPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
+
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)' }}>
+        <div className="text-center p-8 rounded-3xl max-w-md w-full" style={{ background: 'linear-gradient(135deg, rgba(15, 8, 25, 0.95), rgba(26, 15, 46, 0.9))', border: '2px solid rgba(255, 215, 0, 0.4)' }}>
+          <RefreshCw className="w-7 h-7 animate-spin mx-auto mb-3" style={{ color: '#FFD700' }} />
+          <p style={{ color: 'rgba(248, 246, 255, 0.8)' }}>Loading your security settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'linear-gradient(135deg, #1A0F2E 0%, #2D1B69 50%, #3D1A2A 100%)' }}>
+        <div className="text-center p-8 rounded-3xl max-w-md w-full" style={{ background: 'linear-gradient(135deg, rgba(15, 8, 25, 0.95), rgba(26, 15, 46, 0.9))', border: '2px solid rgba(255, 215, 0, 0.4)' }}>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: '#FFD700' }}>Sign in required</h2>
+          <p className="mb-6" style={{ color: 'rgba(248, 246, 255, 0.8)' }}>
+            Sign in to manage your password, 2FA settings, and active sessions.
+          </p>
+          <Link
+            href="/signin?returnTo=/settings/security"
+            className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
+            style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)' }}
+          >
+            Go to Sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   async function handleChangePassword(e) {
     e.preventDefault();
@@ -71,9 +110,10 @@ export default function SecuritySettingsPage() {
     try {
       const res = await fetch(`${API_URL}/auth/change-password`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...authHeaders,
         },
         body: JSON.stringify({
           currentPassword,
@@ -105,9 +145,8 @@ export default function SecuritySettingsPage() {
     try {
       const res = await fetch(`${API_URL}/security/data-export`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers: authHeaders,
       });
       
       if (!res.ok) {
@@ -140,9 +179,10 @@ export default function SecuritySettingsPage() {
     try {
       const res = await fetch(`${API_URL}/security/delete-account`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...authHeaders,
         },
         body: JSON.stringify({ password: deletePassword }),
       });
@@ -171,9 +211,8 @@ export default function SecuritySettingsPage() {
     try {
       const res = await fetch(`${API_URL}/security/cancel-deletion`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers: authHeaders,
       });
       
       if (!res.ok) {
@@ -302,13 +341,13 @@ export default function SecuritySettingsPage() {
                         key={level}
                         className={`h-1 flex-1 rounded ${
                           level <= passwordStrength.strength
-                            ? `bg-${passwordStrength.color}-500`
+                            ? strengthBarClasses[passwordStrength.color]
                             : 'bg-slate-700'
                         }`}
                       />
                     ))}
                   </div>
-                  <div className={`text-xs text-${passwordStrength.color}-400`}>
+                  <div className={`text-xs ${strengthTextClasses[passwordStrength.color]}`}>
                     Password strength: {passwordStrength.label}
                   </div>
                 </div>

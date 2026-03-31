@@ -332,10 +332,12 @@ export const cookies = {
   },
 };
 
-export default {
+const storageUtils = {
   localStorage,
   sessionStorage,
   cookies,
   getLocalStorage,
   getSessionStorage,
 };
+
+export default storageUtils;

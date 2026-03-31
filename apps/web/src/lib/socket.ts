@@ -121,7 +121,7 @@ class SocketService extends EventEmitter {
    */
   public connect(token: string): void {
     if (this.socket?.connected) {
-      console.log('Socket already connected');
+      if (process.env.NODE_ENV === 'development') console.log('Socket already connected');
       return;
     }
 
@@ -155,7 +155,7 @@ class SocketService extends EventEmitter {
 
     // Connection events
     this.socket.on('connect', () => {
-      console.log('Socket connected:', this.socket?.id);
+      if (process.env.NODE_ENV === 'development') console.log('Socket connected:', this.socket?.id);
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emit('connect');
@@ -163,7 +163,7 @@ class SocketService extends EventEmitter {
     });
 
     this.socket.on('disconnect', (reason: string) => {
-      console.log('Socket disconnected:', reason);
+      if (process.env.NODE_ENV === 'development') console.log('Socket disconnected:', reason);
       this.isConnected = false;
       this.emit('disconnect', reason);
     });
@@ -176,7 +176,7 @@ class SocketService extends EventEmitter {
 
     // Authentication
     this.socket.on('authenticated', (data: { userId: string }) => {
-      console.log('Socket authenticated:', data.userId);
+      if (process.env.NODE_ENV === 'development') console.log('Socket authenticated:', data.userId);
       this.userId = data.userId;
       this.emit('authenticated', data);
     });

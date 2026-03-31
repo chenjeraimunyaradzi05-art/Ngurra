@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import api from '@/lib/apiClient';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CommunityEvents - Community events and gatherings
@@ -225,7 +226,13 @@ function EventCard({
       {/* Image */}
       <div className="relative h-40 bg-gradient-to-r from-blue-500 to-purple-500">
         {event.image && (
-          <img src={toCloudinaryAutoUrl(event.image)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(event.image)}
+            alt={`${event.title} event image`}
+            width={1200}
+            height={160}
+            className="w-full h-full object-cover"
+          />
         )}
         <div className="absolute top-3 left-3 flex gap-2">
           <span className={`px-2 py-1 rounded text-xs font-medium ${formatColors[event.format]}`}>
@@ -293,7 +300,13 @@ function EventCard({
         <div className="flex items-center gap-2 mb-4">
           <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
             {event.organizer.avatar ? (
-              <img src={toCloudinaryAutoUrl(event.organizer.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(event.organizer.avatar)}
+                alt={`${event.organizer.name} avatar`}
+                width={24}
+                height={24}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="text-xs">🏢</span>
             )}
@@ -354,7 +367,13 @@ function EventDetailModal({
         {/* Header Image */}
         <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-500">
           {event.image && (
-            <img src={toCloudinaryAutoUrl(event.image)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(event.image)}
+              alt={`${event.title} event image`}
+              width={1200}
+              height={192}
+              className="w-full h-full object-cover"
+            />
           )}
           <button
             onClick={onClose}
@@ -431,7 +450,13 @@ function EventDetailModal({
           <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg mb-6">
             <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               {event.organizer.avatar ? (
-                <img src={toCloudinaryAutoUrl(event.organizer.avatar)} alt="" className="w-full h-full object-cover" />
+                <OptimizedImage
+                  src={toCloudinaryAutoUrl(event.organizer.avatar)}
+                  alt={`${event.organizer.name} avatar`}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-xl">🏢</span>
               )}

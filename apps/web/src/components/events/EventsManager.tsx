@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * EventsManager - Manage and attend events
@@ -198,7 +199,13 @@ function EventCard({
       {/* Image */}
       {event.image && (
         <div className="relative h-40 bg-gray-100 dark:bg-gray-900">
-          <img src={toCloudinaryAutoUrl(event.image)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(event.image)}
+            alt={`${event.title} event image`}
+            width={1200}
+            height={160}
+            className="w-full h-full object-cover"
+          />
           {event.isFeatured && (
             <span className="absolute top-3 left-3 px-2 py-1 bg-amber-500 text-white text-xs font-medium rounded">
               Featured
@@ -264,7 +271,13 @@ function EventCard({
         {/* Host */}
         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           {event.host.avatar ? (
-            <img src={toCloudinaryAutoUrl(event.host.avatar)} alt="" className="w-8 h-8 rounded-full" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(event.host.avatar)}
+              alt={`${event.host.name} avatar`}
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full"
+            />
           ) : (
             <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm font-medium">
               {event.host.name.charAt(0)}
@@ -353,7 +366,13 @@ function EventDetailModal({
         {/* Image header */}
         {event.image && (
           <div className="relative h-48 bg-gray-100 dark:bg-gray-900 flex-shrink-0">
-            <img src={toCloudinaryAutoUrl(event.image)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(event.image)}
+              alt={`${event.title} event image`}
+              width={1200}
+              height={192}
+              className="w-full h-full object-cover"
+            />
             {isLive && (
               <span className="absolute top-4 right-4 px-3 py-1 bg-red-500 text-white text-sm font-medium rounded flex items-center gap-2">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
@@ -444,7 +463,13 @@ function EventDetailModal({
                 {event.speakers.map((speaker) => (
                   <div key={speaker.id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     {speaker.avatar ? (
-                      <img src={toCloudinaryAutoUrl(speaker.avatar)} alt="" className="w-12 h-12 rounded-full" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(speaker.avatar)}
+                        alt={`${speaker.name} avatar`}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-full"
+                      />
                     ) : (
                       <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium">
                         {speaker.name.charAt(0)}
@@ -468,7 +493,13 @@ function EventDetailModal({
             <p className="text-xs text-gray-500 mb-2">Hosted by</p>
             <div className="flex items-center gap-3">
               {event.host.avatar ? (
-                <img src={toCloudinaryAutoUrl(event.host.avatar)} alt="" className="w-10 h-10 rounded-full" />
+                <OptimizedImage
+                  src={toCloudinaryAutoUrl(event.host.avatar)}
+                  alt={`${event.host.name} avatar`}
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full"
+                />
               ) : (
                 <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium">
                   {event.host.name.charAt(0)}

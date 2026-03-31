@@ -36,6 +36,7 @@ import {
 import api from '@/lib/apiClient';
 import { useUIStore } from '@/stores/uiStore';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface User {
   id: string;
@@ -442,7 +443,7 @@ export default function AdminUsersPage() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-purple-900/50 flex items-center justify-center">
                           {user.avatar ? (
-                            <img src={toCloudinaryAutoUrl(user.avatar)} alt="" className="w-full h-full rounded-full" />
+                            <OptimizedImage src={toCloudinaryAutoUrl(user.avatar)} alt={`${user.firstName} ${user.lastName}`} width={40} height={40} className="w-full h-full rounded-full" />
                           ) : (
                             <span className="text-purple-300 font-medium">
                               {user.firstName?.charAt(0) || user.email.charAt(0).toUpperCase()}

@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { socketService } from '@/lib/socket';
 import { Send, ArrowLeft, Search, Plus, MessageSquare, Loader2, BellOff } from 'lucide-react';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 // Types matching backend API response shapes
 interface Participant {
@@ -514,9 +515,11 @@ export default function MessagesPage() {
                         <div className="relative flex-shrink-0">
                           <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
                             {otherParticipant?.avatar ? (
-                              <img
+                              <OptimizedImage
                                 src={otherParticipant.avatar}
                                 alt={displayName}
+                                width={48}
+                                height={48}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -605,9 +608,11 @@ export default function MessagesPage() {
 
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                   {(() => { const p = getOtherParticipant(selectedConversation); return p?.avatar ? (
-                    <img
+                    <OptimizedImage
                       src={p.avatar}
                       alt={selectedConversation.name}
+                      width={40}
+                      height={40}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (

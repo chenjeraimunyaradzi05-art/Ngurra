@@ -184,7 +184,7 @@ export default function ReelsPage() {
       <div className="absolute top-0 left-0 right-0 z-50 p-4 bg-gradient-to-b from-black/70 to-transparent">
         <div className="flex items-center justify-between">
           <Link 
-            href="/feed" 
+            href="/social-feed" 
             className="flex items-center gap-2 text-white p-2 hover:bg-white/10 rounded-full transition-colors"
           >
             <ArrowLeft size={20} />
@@ -204,7 +204,7 @@ export default function ReelsPage() {
           </div>
           
           <Link 
-            href="/feed/create" 
+            href="/social-feed/new" 
             className="p-2 hover:bg-white/10 rounded-full transition-colors"
             style={{ color: theme.gold }}
           >

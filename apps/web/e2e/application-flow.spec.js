@@ -161,5 +161,8 @@ test.describe('Job Search Accessibility', () => {
     const h3s = await page.locator('h3').count();
     
     // If there are h3s, there should be h2s
-  });
+    if (h3s > 0) {
       expect(h2s).toBeGreaterThan(0);
+    }
+  });
+});

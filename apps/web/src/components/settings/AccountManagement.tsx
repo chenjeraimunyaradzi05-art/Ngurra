@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * AccountManagement - Account settings and security
@@ -229,7 +230,7 @@ function ProfileSection({
         <div className="relative">
           <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
             {account.avatarUrl ? (
-              <img src={toCloudinaryAutoUrl(account.avatarUrl)} alt="Avatar" className="w-full h-full object-cover" />
+              <OptimizedImage src={toCloudinaryAutoUrl(account.avatarUrl)} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-3xl text-gray-400">
                 {account.firstName.charAt(0)}{account.lastName.charAt(0)}
@@ -609,7 +610,7 @@ function TwoFactorSection({
                 Scan this QR code with your authenticator app:
               </p>
               <div className="p-4 bg-white rounded-lg inline-block">
-                <img src={toCloudinaryAutoUrl(qrCode)} alt="2FA QR Code" className="w-48 h-48" />
+                <OptimizedImage src={toCloudinaryAutoUrl(qrCode)} alt="2FA QR Code" width={192} height={192} className="w-48 h-48" />
               </div>
             </div>
           ) : (

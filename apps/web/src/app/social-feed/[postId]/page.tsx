@@ -19,6 +19,37 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk'
 });
 
+interface ApiMediaItem { url?: string }
+interface ApiComment {
+  id?: string | number;
+  authorName?: string;
+  authorAvatar?: string | null;
+  content?: string;
+  createdAt?: string;
+  likeCount?: number;
+}
+interface ApiPost {
+  id?: string | number;
+  content?: unknown;
+  createdAt?: string;
+  authorName?: string;
+  authorAvatar?: string | null;
+  authorTitle?: string;
+  trustLevel?: string;
+  likes?: number;
+  likedByUser?: boolean;
+  media?: unknown;
+  isOrganization?: boolean;
+  isSponsored?: boolean;
+  comments?: ApiComment[];
+  reactionCounts?: Record<string, number>;
+  reactions?: Record<string, number>;
+  likeCount?: number;
+  commentCount?: number;
+  _count?: { comments?: number };
+  shareCount?: number;
+}
+
 interface Comment {
   id: string;
   authorName: string;
@@ -68,22 +99,27 @@ export default function PostDetailPage() {
     return `${diffDays}d ago`;
   }
 
-  function pickFirstMediaUrl(raw: any): string | null {
+  function pickFirstMediaUrl(raw: unknown): string | null {
     if (!raw) return null;
     if (typeof raw === 'string') {
       try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && typeof parsed[0] === 'string') return parsed[0];
+        if (Array.isArray(parsed) && parsed.length > 0 && (parsed[0] as ApiMediaItem)?.url) {
+          return (parsed[0] as ApiMediaItem).url || null;
+        }
       } catch {
-        // ignore
+        return null;
       }
-      return raw;
     }
-    if (Array.isArray(raw) && typeof raw[0] === 'string') return raw[0];
+    if (Array.isArray(raw)) {
+      const first = raw[0] as ApiMediaItem | string;
+      if (typeof first === 'string') return first;
+      if (first?.url) return first.url;
+    }
     return null;
   }
 
-  function mapApiPostToUi(apiPost: any): Post {
+  function mapApiPostToUi(apiPost: ApiPost): Post {
     const content = typeof apiPost?.content === 'string' ? apiPost.content : '';
     return {
       id: String(apiPost?.id ?? params.postId),
@@ -92,7 +128,7 @@ export default function PostDetailPage() {
       authorTitle: apiPost?.authorTitle || '',
       trustLevel: apiPost?.trustLevel || 'basic',
       content,
-      mediaUrl: pickFirstMediaUrl(apiPost?.mediaUrls) || apiPost?.articleCoverUrl || null,
+      mediaUrl: pickFirstMediaUrl(apiPost?.media) || null,
       reactions: apiPost?.reactionCounts || apiPost?.reactions || { like: apiPost?.likeCount || 0 },
       commentCount: apiPost?.commentCount ?? apiPost?._count?.comments ?? 0,
       shareCount: apiPost?.shareCount ?? 0,
@@ -100,7 +136,7 @@ export default function PostDetailPage() {
       isOrganization: !!apiPost?.isOrganization,
       isSponsored: !!apiPost?.isSponsored,
       comments: Array.isArray(apiPost?.comments)
-        ? apiPost.comments.map((c: any) => ({
+        ? apiPost.comments.map((c: ApiComment) => ({
             id: String(c?.id ?? ''),
             authorName: c?.authorName || 'Community Member',
             authorAvatar: c?.authorAvatar ?? null,
@@ -171,16 +207,16 @@ export default function PostDetailPage() {
           return;
         }
 
-        const apiPost = (res.data as any)?.post ?? res.data;
+        const apiPost = (res.data as { post?: ApiPost })?.post ?? (res.data as ApiPost);
         const mapped = mapApiPostToUi(apiPost);
 
         // Optionally hydrate comments from the dedicated endpoint
         try {
           const commentsRes = await api(`/social-feed/posts/${postId}/comments`);
           if (commentsRes.ok) {
-            const commentsData: any = commentsRes.data;
+            const commentsData = commentsRes.data as { comments?: ApiComment[]; total?: number };
             const comments = Array.isArray(commentsData?.comments) ? commentsData.comments : [];
-            mapped.comments = comments.map((c: any) => ({
+            mapped.comments = comments.map((c: ApiComment) => ({
               id: String(c?.id ?? ''),
               authorName: c?.authorName || 'Community Member',
               authorAvatar: c?.authorAvatar ?? null,
@@ -249,7 +285,7 @@ export default function PostDetailPage() {
         return;
       }
 
-      const serverComment: any = (res.data as any)?.comment;
+      const serverComment = (res.data as { comment?: ApiComment })?.comment;
       if (serverComment?.id) {
         setPost(prev => prev ? {
           ...prev,

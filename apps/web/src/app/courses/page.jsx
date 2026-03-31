@@ -9,7 +9,7 @@ export const metadata = {
   openGraph: {
     title: 'Indigenous Training & Courses | Ngurra Pathways',
     description: 'Explore culturally-grounded training courses for First Nations people.',
-    url: 'https://ngurrapathways.com.au/courses',
+    url: 'https://ngurrapathways.life/courses',
   },
   alternates: {
     canonical: '/courses',

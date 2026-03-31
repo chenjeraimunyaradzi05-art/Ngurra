@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ReferencesManager - Manage professional references
@@ -207,7 +208,7 @@ function ReferenceCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         {reference.avatar ? (
-          <img src={toCloudinaryAutoUrl(reference.avatar)} alt="" className="w-14 h-14 rounded-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(reference.avatar)} alt={reference.name} width={56} height={56} className="w-14 h-14 rounded-full object-cover" />
         ) : (
           <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
             {reference.name.charAt(0)}

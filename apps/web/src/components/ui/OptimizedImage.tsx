@@ -9,17 +9,17 @@ export type OptimizedImageProps = ImageProps & {
   cloudinary?: boolean;
 };
 
-export default function OptimizedImage({ cloudinary, loader, src, ...rest }: OptimizedImageProps) {
+export default function OptimizedImage({ cloudinary, loader, src, alt = '', ...rest }: OptimizedImageProps) {
   if (loader) {
-    return <Image loader={loader} src={src} {...rest} />;
+    return <Image loader={loader} src={src} alt={alt} {...rest} />;
   }
 
   const shouldUseCloudinary =
     cloudinary || (typeof src === 'string' && isCloudinaryUrl(src));
 
   if (shouldUseCloudinary && typeof src === 'string') {
-    return <Image loader={cloudinaryLoader} src={src} {...rest} />;
+    return <Image loader={cloudinaryLoader} src={src} alt={alt} {...rest} />;
   }
 
-  return <Image src={src} {...rest} />;
+  return <Image src={src} alt={alt} {...rest} />;
 }

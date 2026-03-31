@@ -1,16 +1,16 @@
 /**
  * Deep Linking Configuration
- * 
- * Enables deep linking and universal links for the Ngurra Pathways mobile app.
- * 
+ *
+ * Enables deep linking and universal links for the Nexta mobile app.
+ *
  * Supported URL patterns:
- * - ngurra://job/{id} - Open job detail
- * - ngurra://mentor/{id} - Open mentor profile
- * - ngurra://course/{id} - Open course detail
- * - ngurra://messages - Open messages
- * - ngurra://wellness - Open wellness check-in
- * - ngurra://applications - Open my applications
- * - https://ngurrapathways.com.au/jobs/{id} - Universal link to job
+ * - nexta://job/{id} - Open job detail
+ * - nexta://mentor/{id} - Open mentor profile
+ * - nexta://course/{id} - Open course detail
+ * - nexta://messages - Open messages
+ * - nexta://wellness - Open wellness check-in
+ * - nexta://applications - Open my applications
+ * - https://nexta.app/jobs/{id} - Universal link to job
  */
 
 import * as Linking from 'expo-linking';
@@ -24,9 +24,9 @@ const prefix = Linking.createURL('/');
 export const linking = {
   prefixes: [
     prefix,
-    'ngurra://',
-    'https://ngurrapathways.com.au',
-    'https://www.ngurrapathways.com.au',
+    'nexta://',
+    'https://nexta.app',
+    'https://www.nexta.app',
   ],
   
   config: {
@@ -88,6 +88,8 @@ export const linking = {
       MyApplications: 'applications',
       SavedJobs: 'saved-jobs',
       Wellness: 'wellness',
+      NextaAI: 'ai',
+      MoneyTools: 'money-tools',
       NotificationPreferences: 'notification-preferences',
       Notifications: 'notifications',
       CourseDetail: {
@@ -138,35 +140,35 @@ export const linking = {
 export function generateDeepLink(screen, params = {}) {
   switch (screen) {
     case 'JobDetail':
-      return `ngurra://job/${params.id}`;
+      return `nexta://job/${params.id}`;
     case 'MentorDetail':
-      return `ngurra://mentor/${params.id}`;
+      return `nexta://mentor/${params.id}`;
     case 'CourseDetail':
-      return `ngurra://course/${params.id}`;
+      return `nexta://course/${params.id}`;
     case 'Apply':
-      return `ngurra://apply/${params.jobId}`;
+      return `nexta://apply/${params.jobId}`;
     case 'BookSession':
-      return `ngurra://book/${params.mentorId}`;
+      return `nexta://book/${params.mentorId}`;
     case 'Messages':
-      return 'ngurra://messages';
+      return 'nexta://messages';
     case 'Notifications':
-      return 'ngurra://notifications';
+      return 'nexta://notifications';
     case 'Wellness':
-      return 'ngurra://wellness';
+      return 'nexta://wellness';
     case 'MyApplications':
-      return 'ngurra://applications';
+      return 'nexta://applications';
     case 'SavedJobs':
-      return 'ngurra://saved-jobs';
+      return 'nexta://saved-jobs';
     case 'CulturalCalendar':
-      return 'ngurra://cultural-calendar';
+      return 'nexta://cultural-calendar';
     case 'Resources':
-      return 'ngurra://resources';
+      return 'nexta://resources';
     case 'SecuritySettings':
-      return 'ngurra://security';
+      return 'nexta://security';
     case 'ActiveSessions':
-      return 'ngurra://sessions';
+      return 'nexta://sessions';
     default:
-      return 'ngurra://';
+      return 'nexta://';
   }
 }
 
@@ -177,7 +179,7 @@ export function generateDeepLink(screen, params = {}) {
  * @returns {string} Web URL
  */
 export function generateWebLink(screen, params = {}) {
-  const baseUrl = 'https://ngurrapathways.com.au';
+  const baseUrl = 'https://nexta.app';
   
   switch (screen) {
     case 'JobDetail':

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import asyncHandler from '../utils/asyncHandler';
 import { prisma } from '../db';
 import auth from '../middleware/auth';
+import { contentModerationService } from '../services/contentModeration';
 
 // Extend Request (handled globally in auth.ts now)
 // interface AuthRequest extends Request { ... } removed
@@ -465,11 +466,6 @@ router.post('/posts', auth.authenticate, async (req, res) => {
       }
     }
 
-    // Extract hashtags and mentions
-    const hashtags = (contentStr.match(/#\w+/g) || []).slice(0, 10);
-    const mentionMatches = contentStr.match(/@\w+/g) || [];
-    const mentions = mentionMatches.slice(0, 20);
-
     // Rate limiting check
     const rateLimit = await checkRateLimit(userId, 'post');
     if (!rateLimit.allowed) {
@@ -479,11 +475,42 @@ router.post('/posts', auth.authenticate, async (req, res) => {
       });
     }
 
+    let moderatedContent = contentStr;
+    let moderationAction = 'approve';
+    let moderationSummary: { violations: unknown[]; requiresHumanReview: boolean } | undefined;
+
+    if (contentStr.trim().length > 0) {
+      const moderationResult = await contentModerationService.moderateContent(
+        contentStr,
+        'post',
+        userId
+      );
+
+      moderationAction = moderationResult.action;
+      moderatedContent = moderationResult.sanitizedContent || contentStr;
+      moderationSummary = {
+        violations: moderationResult.violations,
+        requiresHumanReview: moderationResult.requiresHumanReview,
+      };
+
+      if (['remove', 'suspend', 'ban'].includes(moderationResult.action)) {
+        return void res.status(400).json({
+          error: 'Your post could not be published due to safety policy.',
+          moderation: moderationSummary,
+        });
+      }
+    }
+
+    // Extract hashtags and mentions from moderated content
+    const hashtags = (moderatedContent.match(/#\w+/g) || []).slice(0, 10);
+    const mentionMatches = moderatedContent.match(/@\w+/g) || [];
+    const mentions = mentionMatches.slice(0, 20);
+
     const post = await prisma.socialPost.create({
       data: {
         authorId: userId,
         type,
-        content: contentStr,
+        content: moderatedContent,
         mediaUrls: hasMedia ? JSON.stringify(normalizedMediaUrls) : null,
         articleTitle,
         articleCoverUrl,
@@ -491,7 +518,9 @@ router.post('/posts', auth.authenticate, async (req, res) => {
         pollEndsAt: pollEndsAt ? new Date(pollEndsAt) : null,
         hashtags: JSON.stringify(hashtags),
         mentions: JSON.stringify(mentions),
-        visibility
+        visibility,
+        isSpam: moderationAction === 'flag',
+        moderatedAt: moderationAction !== 'approve' ? new Date() : null,
       }
     });
 
@@ -519,7 +548,7 @@ router.post('/posts', auth.authenticate, async (req, res) => {
             userId: mentionedUser.id,
             type: 'MENTION',
             title: 'You were mentioned in a post',
-            message: `Someone mentioned you: "${contentStr.substring(0, 100)}${contentStr.length > 100 ? '...' : ''}"`,
+            message: `Someone mentioned you: "${moderatedContent.substring(0, 100)}${moderatedContent.length > 100 ? '...' : ''}"`,
             referenceId: post.id,
             referenceType: 'social_post'
           }));
@@ -536,7 +565,7 @@ router.post('/posts', auth.authenticate, async (req, res) => {
       }
     }
 
-    res.status(201).json({ post });
+    res.status(201).json({ post, moderation: moderationSummary });
   } catch (err) {
     console.error('Create post error:', err);
     res.status(500).json({ error: 'Failed to create post' });
@@ -809,8 +838,9 @@ router.post('/posts/:id/comments', auth.authenticate, async (req, res) => {
     const { id } = req.params;
     const userId = req.user!.id;
     const { content, parentId } = req.body;
+    const commentContent = typeof content === 'string' ? content : '';
 
-    if (!content || content.length > 1000) {
+    if (!commentContent || commentContent.length > 1000) {
       return void res.status(400).json({ error: 'Content is required (max 1000 characters)' });
     }
 
@@ -820,12 +850,31 @@ router.post('/posts/:id/comments', auth.authenticate, async (req, res) => {
       return void res.status(429).json({ error: 'Rate limit exceeded' });
     }
 
+    const moderationResult = await contentModerationService.moderateContent(
+      commentContent,
+      'comment',
+      userId,
+      { isReply: Boolean(parentId) }
+    );
+
+    if (['remove', 'suspend', 'ban'].includes(moderationResult.action)) {
+      return void res.status(400).json({
+        error: 'Your comment could not be published due to safety policy.',
+        moderation: {
+          violations: moderationResult.violations,
+          requiresHumanReview: moderationResult.requiresHumanReview,
+        },
+      });
+    }
+
+    const finalCommentContent = moderationResult.sanitizedContent || commentContent;
+
     const comment = await prisma.socialComment.create({
       data: {
         postId: id,
         authorId: userId,
         parentId,
-        content
+        content: finalCommentContent
       }
     });
 

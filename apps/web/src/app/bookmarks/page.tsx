@@ -93,6 +93,7 @@ export default function BookmarksPage() {
       setSavedItems(mockSavedItems);
       setLoading(false);
     }, 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredItems = savedItems.filter(item => {

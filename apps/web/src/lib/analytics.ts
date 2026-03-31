@@ -18,6 +18,7 @@ interface EventProperties {
  */
 export async function trackEvent(name: EventName | string, properties?: EventProperties): Promise<void> {
   if (typeof window === 'undefined') return;
+  if (!isAnalyticsEnabled()) return;
 
   const eventData = {
     eventName: name,
@@ -93,6 +94,7 @@ type EventName =
  */
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return;
+  if (!isAnalyticsEnabled()) return;
   
   // Initialize PostHog if configured
   if (config.posthogKey) {
@@ -111,6 +113,7 @@ export function track(
   properties?: EventProperties
 ): void {
   if (typeof window === 'undefined') return;
+  if (!isAnalyticsEnabled()) return;
   
   // Strip PII from properties
   const safeProperties = sanitizeProperties(properties);
@@ -130,6 +133,7 @@ export function track(
  */
 export function identify(userId: string, properties?: UserProperties): void {
   if (typeof window === 'undefined') return;
+  if (!isAnalyticsEnabled()) return;
   
   // Only include safe properties
   const safeProperties: UserProperties = {
@@ -165,6 +169,7 @@ export function reset(): void {
  * Track page view
  */
 export function trackPageView(url: string): void {
+  if (!isAnalyticsEnabled()) return;
   track('page_view', { url: sanitizePath(url) });
 }
 

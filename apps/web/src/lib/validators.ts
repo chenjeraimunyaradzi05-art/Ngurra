@@ -324,7 +324,7 @@ export function validateForm<T extends Record<string, unknown>>(
   return { isValid, errors, firstError };
 }
 
-export default {
+const validators = {
   isValidEmail,
   checkPasswordStrength,
   isValidAustralianPhone,
@@ -343,3 +343,5 @@ export default {
   validateField,
   validateForm,
 };
+
+export default validators;

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * NotificationCenter - Comprehensive notification management system
@@ -274,9 +275,11 @@ function NotificationItem({
       {/* Icon */}
       <div className={`flex-shrink-0 p-2 rounded-full ${config.color}`}>
         {notification.imageUrl ? (
-          <img 
+          <OptimizedImage 
             src={toCloudinaryAutoUrl(notification.imageUrl)} 
-            alt="" 
+            alt={notification.title || ''} 
+            width={20}
+            height={20}
             className="w-5 h-5 rounded-full object-cover"
           />
         ) : (
@@ -401,6 +404,7 @@ export function NotificationCenter({ isOpen, onClose }: { isOpen?: boolean; onCl
   // Initial load and filter changes
   useEffect(() => {
     loadNotifications(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
 
   // Mark single notification as read

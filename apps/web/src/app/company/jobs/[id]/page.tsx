@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Briefcase, MapPin, Users, Eye, Clock, Edit, FileText, Star, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface Job {
   id: string;
@@ -32,10 +33,6 @@ export default function JobDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated && id) load();
-  }, [isAuthenticated, id]);
-
   async function load() {
     setLoading(true);
     try {
@@ -45,12 +42,17 @@ export default function JobDashboard() {
       } else {
         setError('Job not found');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load job');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load job'));
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, id]);
 
   if (loading) {
     return (

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CandidateSearch - Employer candidate search and discovery
@@ -343,7 +344,7 @@ function CandidateCard({
         {/* Avatar */}
         <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
           {candidate.avatar ? (
-            <img src={toCloudinaryAutoUrl(candidate.avatar)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(candidate.avatar)} alt={`${candidate.firstName} ${candidate.lastName}`} width={64} height={64} className="w-full h-full object-cover" />
           ) : (
             <span className="text-2xl text-gray-400">👤</span>
           )}

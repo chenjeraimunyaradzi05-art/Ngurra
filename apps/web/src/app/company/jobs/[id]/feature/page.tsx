@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Zap, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 const FEATURE_PACKAGES = [
   {
@@ -59,10 +60,6 @@ export default function FeatureJobPage() {
   const [selectedPackage, setSelectedPackage] = useState('14day');
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated && id) load();
-  }, [isAuthenticated, id]);
-
   async function load() {
     setLoading(true);
     try {
@@ -72,12 +69,17 @@ export default function FeatureJobPage() {
       } else {
         setError('Job not found');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load job');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load job'));
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, id]);
 
   async function handlePurchase() {
     if (!selectedPackage) return;
@@ -103,8 +105,8 @@ export default function FeatureJobPage() {
       } else {
         setError(res.error || 'Purchase failed');
       }
-    } catch (err: any) {
-      setError(err.message || 'Purchase failed');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Purchase failed'));
     } finally {
       setPurchasing(false);
     }

@@ -1,7 +1,7 @@
 /**
  * Deep Linking Configuration for React Native
  * 
- * Handles URL scheme and universal links for the Ngurra Pathways app.
+ * Handles URL scheme and universal links for the Nexta app.
  */
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -10,13 +10,13 @@ import * as Notifications from 'expo-notifications';
  * URL Scheme Configuration
  * 
  * Supported URL formats:
- * - ngurra://jobs/123 - Open job details
- * - ngurra://applications/456 - Open application
- * - ngurra://mentors/789 - Open mentor profile
- * - ngurra://courses/abc - Open course details
- * - ngurra://messages/conv123 - Open conversation
- * - ngurra://community/thread/456 - Open forum thread
- * - https://ngurrapathways.com.au/jobs/123 - Universal link
+ * - nexta://jobs/123 - Open job details
+ * - nexta://applications/456 - Open application
+ * - nexta://mentors/789 - Open mentor profile
+ * - nexta://courses/abc - Open course details
+ * - nexta://messages/conv123 - Open conversation
+ * - nexta://community/thread/456 - Open forum thread
+ * - https://nexta.app/jobs/123 - Universal link
  */
 
 /**
@@ -24,10 +24,10 @@ import * as Notifications from 'expo-notifications';
  */
 export const linkingConfig = {
   prefixes: [
-    'ngurra://',
-    'https://ngurrapathways.com.au',
-    'https://www.ngurrapathways.com.au',
-    'https://app.ngurrapathways.com.au',
+    'nexta://',
+    'https://nexta.app',
+    'https://www.nexta.app',
+    'https://app.nexta.app',
   ],
   
   config: {
@@ -142,10 +142,10 @@ export function parseDeepLink(url) {
   try {
     // Remove scheme prefix
     let path = url
-      .replace('ngurra://', '')
-      .replace('https://ngurrapathways.com.au/', '')
-      .replace('https://www.ngurrapathways.com.au/', '')
-      .replace('https://app.ngurrapathways.com.au/', '');
+      .replace('nexta://', '')
+      .replace('https://nexta.app/', '')
+      .replace('https://www.nexta.app/', '')
+      .replace('https://app.nexta.app/', '');
 
     // Parse query string
     const [pathPart, queryString] = path.split('?');
@@ -262,7 +262,7 @@ export async function handleInitialNotification(navigation) {
  * @returns {string} Deep link URL
  */
 export function createDeepLink(screen, params = {}) {
-  const baseUrl = 'ngurra://';
+  const baseUrl = 'nexta://';
   
   const pathMap = {
     'Home': 'home',
@@ -294,7 +294,7 @@ export function createDeepLink(screen, params = {}) {
  * @returns {string} Universal link URL
  */
 export function createUniversalLink(screen, params = {}) {
-  const baseUrl = 'https://ngurrapathways.com.au/';
+  const baseUrl = 'https://nexta.app/';
   
   const pathMap = {
     'Jobs': 'jobs',

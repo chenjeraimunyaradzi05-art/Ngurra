@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * PortfolioBuilder - Create and manage professional portfolio
@@ -204,7 +205,7 @@ function ProjectCard({
       {/* Thumbnail */}
       <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
         {project.thumbnail ? (
-          <img src={toCloudinaryAutoUrl(project.thumbnail)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(project.thumbnail)} alt={project.title || 'Project thumbnail'} width={400} height={225} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">

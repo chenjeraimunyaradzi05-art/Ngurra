@@ -365,8 +365,10 @@ export const transforms = {
   },
 };
 
-export default {
+const formHelpers = {
   useForm,
   rules,
   transforms,
 };
+
+export default formHelpers;

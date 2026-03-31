@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 /**
- * Theme Provider for Ngurra Pathways
+ * Theme Provider for Nexta
  * 
  * Supports three theme modes:
  * - light: Standard light theme
@@ -138,7 +138,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = 'ngurra-theme';
+const STORAGE_KEY = 'nexta-theme';
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'dark';

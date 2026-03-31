@@ -265,7 +265,7 @@ export function getInitials(name: string | null | undefined): string {
     .join('');
 }
 
-export default {
+const formatters = {
   formatDate,
   formatRelativeTime,
   formatCurrency,
@@ -282,3 +282,17 @@ export default {
   toTitleCase,
   getInitials,
 };
+
+/**
+ * Safely extract an error message from an unknown catch variable.
+ */
+export function getErrorMessage(err: unknown, fallback = 'An unexpected error occurred'): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') return err;
+  if (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') {
+    return (err as { message: string }).message;
+  }
+  return fallback;
+}
+
+export default formatters;

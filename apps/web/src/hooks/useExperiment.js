@@ -25,6 +25,12 @@ export function useExperiment(experimentName, options = {}) {
   const [variant, setVariant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  let optionsKey = '{}';
+  try {
+    optionsKey = JSON.stringify(options || {});
+  } catch {
+    optionsKey = '{}';
+  }
 
   useEffect(() => {
     if (!experimentName) {
@@ -57,7 +63,7 @@ export function useExperiment(experimentName, options = {}) {
           body: JSON.stringify({
             experimentName,
             anonymousId,
-            ...options
+            ...JSON.parse(optionsKey)
           })
         });
 
@@ -79,7 +85,7 @@ export function useExperiment(experimentName, options = {}) {
     }
 
     fetchVariant();
-  }, [experimentName]);
+  }, [experimentName, optionsKey]);
 
   /**
    * Track a conversion event for this experiment

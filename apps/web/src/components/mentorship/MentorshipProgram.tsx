@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * MentorshipProgram - Comprehensive mentorship platform
@@ -271,7 +272,13 @@ function MentorCard({
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">
           {mentor.avatar ? (
-            <img src={toCloudinaryAutoUrl(mentor.avatar)} alt="" className="w-16 h-16 rounded-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(mentor.avatar)}
+              alt={`${mentor.name} avatar`}
+              width={64}
+              height={64}
+              className="w-16 h-16 rounded-full object-cover"
+            />
           ) : (
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
               {mentor.name.charAt(0)}
@@ -427,10 +434,12 @@ function ProgramCard({
             <div className="flex -space-x-2">
               {program.mentors.slice(0, 3).map((mentor) => (
                 mentor.avatar ? (
-                  <img
+                  <OptimizedImage
                     key={mentor.id}
-                    src={mentor.avatar}
-                    alt=""
+                    src={toCloudinaryAutoUrl(mentor.avatar)}
+                    alt={`${mentor.name} avatar`}
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
                   />
                 ) : (
@@ -479,7 +488,13 @@ function RelationshipCard({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-start gap-4 mb-4">
         {relationship.mentor.avatar ? (
-          <img src={toCloudinaryAutoUrl(relationship.mentor.avatar)} alt="" className="w-14 h-14 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(relationship.mentor.avatar)}
+            alt={`${relationship.mentor.name} avatar`}
+            width={56}
+            height={56}
+            className="w-14 h-14 rounded-full object-cover"
+          />
         ) : (
           <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
             {relationship.mentor.name.charAt(0)}
@@ -594,7 +609,13 @@ function ApplicationModal({
           {mentor && (
             <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
               {mentor.avatar ? (
-                <img src={toCloudinaryAutoUrl(mentor.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+                <OptimizedImage
+                  src={toCloudinaryAutoUrl(mentor.avatar)}
+                  alt={`${mentor.name} avatar`}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
               ) : (
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
                   {mentor.name.charAt(0)}

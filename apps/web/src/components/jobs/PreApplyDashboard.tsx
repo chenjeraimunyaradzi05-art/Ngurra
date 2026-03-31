@@ -10,6 +10,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import { getErrorMessage } from '@/lib/formatters';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { 
   Briefcase, MapPin, DollarSign, Clock, X, ExternalLink,
   Loader2, CheckCircle, Sparkles, TrendingUp, AlertCircle, Bell
@@ -105,8 +107,8 @@ export default function PreApplyDashboard({ apiBase = '', token, limit = 10 }: P
 
       const data = await res.json();
       setMatches(data.matches || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load matches');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load matches'));
     } finally {
       setLoading(false);
     }
@@ -131,7 +133,7 @@ export default function PreApplyDashboard({ apiBase = '', token, limit = 10 }: P
       }
 
       setMatches(prev => prev.filter(m => m.job.id !== jobId));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Dismiss error:', err);
     } finally {
       setDismissing(null);
@@ -153,7 +155,7 @@ export default function PreApplyDashboard({ apiBase = '', token, limit = 10 }: P
       }
 
       setMatches(prev => prev.filter(m => m.job.id !== jobId));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Mark applied error:', err);
     } finally {
       setApplying(null);
@@ -243,7 +245,7 @@ export default function PreApplyDashboard({ apiBase = '', token, limit = 10 }: P
                   {/* Company Logo */}
                   <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 overflow-hidden">
                     {match.job.logo ? (
-                      <img src={toCloudinaryAutoUrl(match.job.logo)} alt={match.job.company} className="w-full h-full object-cover" />
+                      <OptimizedImage src={toCloudinaryAutoUrl(match.job.logo)} alt={match.job.company} width={48} height={48} className="w-full h-full object-cover" />
                     ) : (
                       <Briefcase className="w-6 h-6 text-slate-400" />
                     )}

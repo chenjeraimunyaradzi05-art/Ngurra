@@ -76,8 +76,10 @@
 # =============================================================================
 # Plugins
 # =============================================================================
-# Note: Modern Next.js (13.5+) uses OpenNext adapter automatically
-# Legacy @netlify/plugin-nextjs removed for Next.js 16 compatibility
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Note: Using @netlify/plugin-nextjs v5 for Next.js 16.1.1 compatibility
 
 # =============================================================================
 # Headers for Security

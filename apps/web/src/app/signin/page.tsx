@@ -7,6 +7,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { API_BASE } from '@/lib/apiBase';
 import { setAuthSessionCookie } from '@/lib/authSession';
+import { getErrorMessage } from '@/lib/formatters';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -85,9 +86,9 @@ export default function SignInPage() {
       setTimeout(() => {
         router.push(returnTo);
       }, 100);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Sign in error:', err);
-      setError(err.message || 'An error occurred during sign in');
+      setError(getErrorMessage(err, 'An error occurred during sign in'));
     } finally {
       setIsLoading(false);
     }

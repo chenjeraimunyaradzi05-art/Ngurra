@@ -211,7 +211,7 @@ export function useExperimentTracking(experimentName) {
   return { variant, trackExposure };
 }
 
-export default {
+const featureFlagHooks = {
   FeatureFlagsProvider,
   useFeatureFlags,
   useFeature,
@@ -220,3 +220,5 @@ export default {
   Feature,
   Experiment,
 };
+
+export default featureFlagHooks;

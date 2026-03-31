@@ -1,5 +1,5 @@
 /**
- * Ngurra Pathways Mobile App
+ * Nexta Mobile App
  * Main entry point with navigation, drawer, and state persistence
  * 
  * Features:
@@ -51,6 +51,8 @@ import AccessibilitySettingsScreen from './screens/AccessibilitySettingsScreen';
 import NotificationPreferencesScreen from './screens/NotificationPreferencesScreen';
 import VideoResumeScreen from './screens/VideoResumeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+import NextaAIScreen from './screens/NextaAIScreen';
+import MoneyToolsScreen from './screens/MoneyToolsScreen';
 
 // Theme
 import { colors, spacing } from './theme';
@@ -65,7 +67,7 @@ import { initializeOfflineSync } from './services/offlineSync';
 import { initializeAccessibility } from './services/accessibility';
 
 // Navigation state persistence key
-const NAVIGATION_STATE_KEY = '@ngurra_nav_state';
+const NAVIGATION_STATE_KEY = '@nexta_nav_state';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -183,7 +185,8 @@ function MainTabs() {
         name="Home" 
         component={HomeScreen}
         options={({ navigation }) => ({ 
-          title: 'Dashboard',
+          title: 'Home',
+          tabBarLabel: 'Home',
           headerLeft: () => (
             <TouchableOpacity 
               onPress={() => navigation.getParent()?.openDrawer()}
@@ -210,7 +213,8 @@ function MainTabs() {
         name="Jobs" 
         component={JobsScreen}
         options={({ navigation }) => ({ 
-          title: 'Jobs',
+          title: 'Discover',
+          tabBarLabel: 'Discover',
           headerLeft: () => (
             <TouchableOpacity 
               onPress={() => navigation.getParent()?.openDrawer()}
@@ -226,7 +230,8 @@ function MainTabs() {
         name="Courses" 
         component={CoursesScreen}
         options={({ navigation }) => ({ 
-          title: 'Courses',
+          title: 'Learn',
+          tabBarLabel: 'Learn',
           headerLeft: () => (
             <TouchableOpacity 
               onPress={() => navigation.getParent()?.openDrawer()}
@@ -242,7 +247,8 @@ function MainTabs() {
         name="Community" 
         component={CommunityScreen}
         options={({ navigation }) => ({ 
-          title: 'Community',
+          title: 'Connect',
+          tabBarLabel: 'Connect',
           headerLeft: () => (
             <TouchableOpacity 
               onPress={() => navigation.getParent()?.openDrawer()}
@@ -517,6 +523,16 @@ function RootNavigator() {
           headerShown: false,
           animation: 'fade',
         }}
+      />
+      <Stack.Screen
+        name="NextaAI"
+        component={NextaAIScreen}
+        options={{ title: 'Nexta AI' }}
+      />
+      <Stack.Screen
+        name="MoneyTools"
+        component={MoneyToolsScreen}
+        options={{ title: 'Money Tools' }}
       />
     </Stack.Navigator>
   );

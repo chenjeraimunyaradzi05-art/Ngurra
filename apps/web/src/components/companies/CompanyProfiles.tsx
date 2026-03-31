@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CompanyProfiles - Browse and view employer profiles
@@ -216,7 +217,13 @@ function CompanyCard({
       {/* Cover */}
       <div className="h-24 bg-gradient-to-r from-blue-500 to-purple-500 relative">
         {company.coverImage && (
-          <img src={toCloudinaryAutoUrl(company.coverImage)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(company.coverImage)}
+            alt={`${company.name} cover image`}
+            width={1200}
+            height={96}
+            className="w-full h-full object-cover"
+          />
         )}
         {(company.isIndigenousOwned || company.isIndigenousFriendly) && (
           <div className="absolute top-2 right-2">
@@ -237,9 +244,11 @@ function CompanyCard({
           {/* Logo */}
           <div className="-mt-10 relative">
             {company.logo ? (
-              <img
-                src={company.logo}
-                alt=""
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(company.logo)}
+                alt={`${company.name} logo`}
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-xl border-4 border-white dark:border-gray-800 bg-white object-contain"
               />
             ) : (
@@ -346,7 +355,13 @@ function CompanyDetailModal({
         {/* Cover */}
         <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-500 relative">
           {company.coverImage && (
-            <img src={toCloudinaryAutoUrl(company.coverImage)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(company.coverImage)}
+              alt={`${company.name} cover image`}
+              width={1200}
+              height={128}
+              className="w-full h-full object-cover"
+            />
           )}
           <button
             onClick={onClose}
@@ -362,9 +377,11 @@ function CompanyDetailModal({
         <div className="px-6 pb-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-end gap-4 -mt-8">
             {company.logo ? (
-              <img
-                src={company.logo}
-                alt=""
+              <OptimizedImage
+                src={toCloudinaryAutoUrl(company.logo)}
+                alt={`${company.name} logo`}
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 bg-white object-contain"
               />
             ) : (

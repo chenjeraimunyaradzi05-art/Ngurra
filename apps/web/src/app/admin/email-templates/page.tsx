@@ -6,7 +6,7 @@
  * Visual editor for managing email templates with live preview.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Mail,
@@ -52,11 +52,7 @@ export default function EmailTemplatesPage() {
   const [testEmail, setTestEmail] = useState('');
   const [showTestModal, setShowTestModal] = useState(false);
 
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     setIsLoading(true);
     try {
       const { ok, data } = await api<{ templates: EmailTemplate[] }>('/admin/email-templates');
@@ -71,7 +67,12 @@ export default function EmailTemplatesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
 
   const handleSelectTemplate = async (template: EmailTemplate) => {
     setSelectedTemplate(template);

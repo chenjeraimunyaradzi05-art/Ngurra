@@ -5,6 +5,7 @@ import {
   X, ChevronLeft, ChevronRight, Volume2, VolumeX,
   Plus, Music2, Eye, Clock, Image as ImageIcon
 } from 'lucide-react';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 export interface StorySlide {
   id: string;
@@ -124,6 +125,7 @@ function StoryViewer({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storyIdx, slideIdx, paused]);
 
   useEffect(() => {
@@ -135,6 +137,7 @@ function StoryViewer({
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storyIdx, slideIdx]);
 
   if (!story || !slide) return null;
@@ -387,9 +390,11 @@ function StoryCreator({ onClose }: { onClose: () => void }) {
                 className="aspect-[9/16] max-h-[300px] rounded-xl bg-white/5 border border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:border-amber-400/40 transition overflow-hidden"
               >
                 {photoPreview ? (
-                  <img
+                  <OptimizedImage
                     src={photoPreview}
-                    alt="Preview"
+                    alt="Story photo preview"
+                    width={270}
+                    height={480}
                     className="w-full h-full object-cover"
                   />
                 ) : (

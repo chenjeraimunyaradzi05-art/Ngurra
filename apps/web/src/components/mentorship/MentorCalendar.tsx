@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * MentorCalendar - Calendar for scheduling mentorship sessions
@@ -366,7 +367,7 @@ function SessionCard({
         {/* Mentor Avatar */}
         <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden flex-shrink-0">
           {session.mentorAvatar ? (
-            <img src={toCloudinaryAutoUrl(session.mentorAvatar)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(session.mentorAvatar)} alt={session.mentorName} width={48} height={48} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400 text-lg font-medium">
               {session.mentorName.charAt(0)}
@@ -488,7 +489,7 @@ function BookingModal({
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden">
               {mentor.avatar ? (
-                <img src={toCloudinaryAutoUrl(mentor.avatar)} alt="" className="w-full h-full object-cover" />
+                <OptimizedImage src={toCloudinaryAutoUrl(mentor.avatar)} alt={mentor.name} width={40} height={40} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   {mentor.name.charAt(0)}

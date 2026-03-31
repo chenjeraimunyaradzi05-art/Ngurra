@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import api from '@/lib/apiClient';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CommunityForums - Discussion forums and community conversations
@@ -372,7 +373,13 @@ function ThreadRow({
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                 {thread.author.avatar ? (
-                  <img src={toCloudinaryAutoUrl(thread.author.avatar)} alt="" className="w-full h-full object-cover" />
+                  <OptimizedImage
+                    src={toCloudinaryAutoUrl(thread.author.avatar)}
+                    alt={`${thread.author.name} avatar`}
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span className="text-xs">{thread.author.name[0]}</span>
                 )}
@@ -409,7 +416,13 @@ function ReplyComponent({
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
           {reply.author.avatar ? (
-            <img src={toCloudinaryAutoUrl(reply.author.avatar)} alt="" className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={toCloudinaryAutoUrl(reply.author.avatar)}
+              alt={`${reply.author.name} avatar`}
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <span className="text-sm">{reply.author.name[0]}</span>
           )}
@@ -526,7 +539,13 @@ function ThreadDetailView({
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                 {thread.author.avatar ? (
-                  <img src={toCloudinaryAutoUrl(thread.author.avatar)} alt="" className="w-full h-full object-cover" />
+                  <OptimizedImage
+                    src={toCloudinaryAutoUrl(thread.author.avatar)}
+                    alt={`${thread.author.name} avatar`}
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span>{thread.author.name[0]}</span>
                 )}

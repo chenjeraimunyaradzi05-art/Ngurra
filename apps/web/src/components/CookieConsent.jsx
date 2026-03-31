@@ -24,6 +24,7 @@ export default function CookieConsent() {
         const data = JSON.parse(stored);
         if (data.version === CONSENT_VERSION) {
           setPreferences(data.preferences);
+          localStorage.setItem('analytics_consent', String(Boolean(data.preferences?.analytics)));
           return; // Already consented
         }
       } catch {
@@ -42,6 +43,7 @@ export default function CookieConsent() {
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem(CONSENT_KEY, JSON.stringify(data));
+    localStorage.setItem('analytics_consent', String(Boolean(prefs?.analytics)));
     setPreferences(prefs);
     setVisible(false);
   };

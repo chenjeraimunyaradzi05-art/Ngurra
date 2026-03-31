@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ConnectionsNetwork - Professional networking component
@@ -172,7 +173,13 @@ function ConnectionCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         {connection.user.avatar ? (
-          <img src={toCloudinaryAutoUrl(connection.user.avatar)} alt="" className="w-14 h-14 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(connection.user.avatar)}
+            alt={`${connection.user.name} avatar`}
+            width={56}
+            height={56}
+            className="w-14 h-14 rounded-full object-cover"
+          />
         ) : (
           <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-medium text-lg">
             {connection.user.name.charAt(0)}
@@ -292,7 +299,13 @@ function RequestCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         {request.user.avatar ? (
-          <img src={toCloudinaryAutoUrl(request.user.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(request.user.avatar)}
+            alt={`${request.user.name} avatar`}
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-full object-cover"
+          />
         ) : (
           <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
             {request.user.name.charAt(0)}
@@ -353,7 +366,13 @@ function SuggestionCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         {suggestion.user.avatar ? (
-          <img src={toCloudinaryAutoUrl(suggestion.user.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(suggestion.user.avatar)}
+            alt={`${suggestion.user.name} avatar`}
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-full object-cover"
+          />
         ) : (
           <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-white font-medium">
             {suggestion.user.name.charAt(0)}
@@ -625,7 +644,13 @@ export function ConnectionsNetwork() {
                 >
                   <div className="flex items-center gap-3">
                     {person.user.avatar ? (
-                      <img src={toCloudinaryAutoUrl(person.user.avatar)} alt="" className="w-10 h-10 rounded-full" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(person.user.avatar)}
+                        alt={`${person.user.name} avatar`}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full"
+                      />
                     ) : (
                       <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center font-medium">
                         {person.user.name.charAt(0)}

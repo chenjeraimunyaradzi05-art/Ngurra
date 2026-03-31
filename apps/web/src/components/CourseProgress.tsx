@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from './Button';
 import api from '@/lib/apiClient';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CourseProgress - Course progress tracking and certificate management
@@ -201,9 +202,11 @@ function CourseCard({
       {/* Course Image */}
       <div className="relative h-40 bg-gradient-to-br from-blue-500 to-purple-600">
         {course.imageUrl && (
-          <img 
+          <OptimizedImage 
             src={toCloudinaryAutoUrl(course.imageUrl)} 
             alt={course.title}
+            width={400}
+            height={160}
             className="w-full h-full object-cover"
           />
         )}
@@ -230,7 +233,7 @@ function CourseCard({
         <div className="mt-3 flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden">
             {course.instructor.avatar ? (
-              <img src={toCloudinaryAutoUrl(course.instructor.avatar)} alt="" className="w-full h-full object-cover" />
+              <OptimizedImage src={toCloudinaryAutoUrl(course.instructor.avatar)} alt={course.instructor.name} width={24} height={24} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
                 {course.instructor.name.charAt(0)}

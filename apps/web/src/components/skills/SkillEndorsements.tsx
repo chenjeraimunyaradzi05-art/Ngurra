@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * SkillEndorsements - Skill endorsement and verification system
@@ -292,10 +293,12 @@ function SkillCard({
           <div className="flex items-center gap-2">
             {skill.endorsements.slice(0, 3).map((e, i) => (
               e.endorser.avatar ? (
-                <img
+                <OptimizedImage
                   key={e.id}
-                  src={e.endorser.avatar}
-                  alt=""
+                  src={toCloudinaryAutoUrl(e.endorser.avatar)}
+                  alt={`${e.endorser.name} avatar`}
+                  width={24}
+                  height={24}
                   className="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800"
                   style={{ marginLeft: i > 0 ? '-8px' : 0 }}
                 />
@@ -342,7 +345,13 @@ function PendingEndorsementCard({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-start gap-4">
         {request.person.avatar ? (
-          <img src={toCloudinaryAutoUrl(request.person.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(request.person.avatar)}
+            alt={`${request.person.name} avatar`}
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-full object-cover"
+          />
         ) : (
           <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
             {request.person.name.split(' ').map(n => n[0]).join('')}
@@ -379,7 +388,13 @@ function ConnectionEndorseCard({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center gap-3 mb-4">
         {connection.avatar ? (
-          <img src={toCloudinaryAutoUrl(connection.avatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(connection.avatar)}
+            alt={`${connection.name} avatar`}
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-full object-cover"
+          />
         ) : (
           <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
             {connection.name.split(' ').map(n => n[0]).join('')}
@@ -606,7 +621,13 @@ function RequestEndorsementModal({
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
                   {connection.avatar ? (
-                    <img src={toCloudinaryAutoUrl(connection.avatar)} alt="" className="w-8 h-8 rounded-full object-cover" />
+                    <OptimizedImage
+                      src={toCloudinaryAutoUrl(connection.avatar)}
+                      alt={`${connection.name} avatar`}
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
                   ) : (
                     <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 text-xs">
                       {connection.name.split(' ').map(n => n[0]).join('')}

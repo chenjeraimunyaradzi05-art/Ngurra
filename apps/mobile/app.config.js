@@ -1,5 +1,5 @@
 /**
- * Expo App Configuration for Ngurra Pathways
+ * Expo App Configuration for Nexta
  * 
  * This configuration supports:
  * - EAS Build and Submit
@@ -10,8 +10,8 @@
 
 export default ({ config }) => ({
   ...config,
-  name: 'Ngurra Pathways',
-  slug: 'ngurra-pathways',
+  name: 'Nexta',
+  slug: 'nexta',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -32,7 +32,7 @@ export default ({ config }) => ({
   // iOS-specific configuration
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.ngurrapathways.app',
+    bundleIdentifier: 'com.nexta.app',
     buildNumber: '1',
     
     // App Store metadata
@@ -43,10 +43,10 @@ export default ({ config }) => ({
     // Info.plist additions
     infoPlist: {
       // Privacy permission descriptions
-      NSCameraUsageDescription: 'Allow Ngurra Pathways to access your camera to take photos for your profile or resume.',
-      NSPhotoLibraryUsageDescription: 'Allow Ngurra Pathways to access your photos to upload profile pictures or documents.',
-      NSFaceIDUsageDescription: 'Use Face ID for quick and secure login to your Ngurra Pathways account.',
-      NSLocationWhenInUseUsageDescription: 'Allow Ngurra Pathways to access your location to find nearby jobs and events.',
+      NSCameraUsageDescription: 'Allow Nexta to access your camera to take photos for your profile or documents.',
+      NSPhotoLibraryUsageDescription: 'Allow Nexta to access your photos to upload profile pictures or documents.',
+      NSFaceIDUsageDescription: 'Use Face ID for quick and secure login to your Nexta account.',
+      NSLocationWhenInUseUsageDescription: 'Allow Nexta to access your location to find nearby opportunities and events.',
       
       // Background modes
       UIBackgroundModes: [
@@ -60,8 +60,8 @@ export default ({ config }) => ({
     
     // Universal links - Apple App Site Association
     associatedDomains: [
-      'applinks:ngurrapathways.com.au',
-      'applinks:www.ngurrapathways.com.au',
+      'applinks:nexta.app',
+      'applinks:www.nexta.app',
     ],
     
     // Push notifications
@@ -76,7 +76,7 @@ export default ({ config }) => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0F172A',
     },
-    package: 'com.ngurrapathways.app',
+    package: 'com.nexta.app',
     versionCode: 1,
     
     // Permissions
@@ -100,17 +100,17 @@ export default ({ config }) => ({
         data: [
           {
             scheme: 'https',
-            host: 'ngurrapathways.com.au',
+            host: 'nexta.app',
             pathPrefix: '/jobs',
           },
           {
             scheme: 'https',
-            host: 'ngurrapathways.com.au',
+            host: 'nexta.app',
             pathPrefix: '/courses',
           },
           {
             scheme: 'https',
-            host: 'ngurrapathways.com.au',
+            host: 'nexta.app',
             pathPrefix: '/mentors',
           },
         ],
@@ -120,7 +120,7 @@ export default ({ config }) => ({
         action: 'VIEW',
         data: [
           {
-            scheme: 'ngurra',
+            scheme: 'nexta',
           },
         ],
         category: ['BROWSABLE', 'DEFAULT'],
@@ -168,8 +168,8 @@ export default ({ config }) => ({
     [
       'expo-image-picker',
       {
-        photosPermission: 'Allow Ngurra Pathways to access your photos for profile and document uploads.',
-        cameraPermission: 'Allow Ngurra Pathways to use your camera for taking photos.',
+        photosPermission: 'Allow Nexta to access your photos for profile and document uploads.',
+        cameraPermission: 'Allow Nexta to use your camera for taking photos.',
       },
     ],
     
@@ -177,7 +177,7 @@ export default ({ config }) => ({
     [
       'expo-location',
       {
-        locationAlwaysAndWhenInUsePermission: 'Allow Ngurra Pathways to use your location to find nearby jobs and events.',
+        locationAlwaysAndWhenInUsePermission: 'Allow Nexta to use your location to find nearby opportunities and events.',
       },
     ],
   ],
@@ -185,7 +185,7 @@ export default ({ config }) => ({
   // Extra configuration
   extra: {
     // Environment variables
-    apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.ngurrapathways.com.au',
+    apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.nexta.app',
     sentryDsn: process.env.SENTRY_DSN,
     posthogApiKey: process.env.POSTHOG_API_KEY,
     
@@ -205,17 +205,42 @@ export default ({ config }) => ({
     
     // App metadata
     appMetadata: {
-      name: 'Ngurra Pathways',
-      tagline: 'First Nations Employment Platform',
-      description: 'Connect with culturally safe employers, access training, and find career opportunities tailored for First Nations peoples.',
-      supportEmail: 'support@ngurrapathways.com.au',
-      privacyUrl: 'https://ngurrapathways.com.au/privacy',
-      termsUrl: 'https://ngurrapathways.com.au/terms',
+      name: 'Nexta',
+      tagline: 'Your next step, connected.',
+      description: 'Jobs, learning, mentors, community, business tools, financial wellbeing, and real-world opportunities in one guided platform.',
+      supportEmail: 'support@nexta.app',
+      privacyUrl: 'https://nexta.app/privacy',
+      termsUrl: 'https://nexta.app/terms',
+      developerName: 'Munyaradzi Chenjerai',
+      storeListing: {
+        iosFullDescription:
+          'Nexta is your all-in-one pathway platform for progress - designed to help you discover opportunities, build skills, get support, and move forward with confidence.\n\nWhether you are looking for work, learning something new, building a business, or trying to stabilise your finances, Nexta brings the tools and guidance together in one place.\n\nWith Nexta you can:\n\nDiscover jobs and opportunities that match your goals\nBuild skills with learning pathways and certifications\nConnect with mentors and book sessions\nJoin communities and stay connected\nGet AI guidance for next steps, planning, and readiness\nUse practical business and money tools to stay on track\nSave and track opportunities, deadlines, and progress\nControl your privacy with clear settings and safe defaults\n\nWhy Nexta:\nMost platforms give you one piece of the puzzle. Nexta helps you build the whole pathway - from discovery to long-term stability.\nYour data, your control.\nYou choose what to share, when to share it, and who can see it.\nDownload Nexta and take your next step - and the step after that.',
+        googlePlayShortDescription:
+          'Your next step, connected: jobs, learning, mentors, tools, and progress.',
+        googlePlayFullDescription:
+          'Nexta helps you move from opportunity discovery to long-term progress - in one guided platform.\n\nFind opportunities, build skills, get support, and track your next steps with tools designed for real life.\n\nWhat you can do:\n\nExplore jobs and career pathways\nLearn with structured training and certificates\nMatch with mentors and book sessions\nJoin communities and stay motivated\nUse AI guidance to plan next steps and prepare\nTrack goals, tasks, and progress\nUse practical money and business tools\nManage privacy and safety settings easily\n\nBuilt for progress, not pressure.\nNexta is designed to feel clear, supportive, and useful - every day.',
+        keywords: [
+          'jobs',
+          'career',
+          'learning',
+          'mentor',
+          'coaching',
+          'skills',
+          'training',
+          'pathways',
+          'finance',
+          'budgeting',
+          'business',
+          'community',
+          'opportunities',
+          'AI assistant',
+        ],
+      },
     },
   },
   
   // Owner (for Expo organization)
-  owner: 'ngurrapathways',
+  owner: 'nexta',
   
   // Updates configuration
   updates: {

@@ -1,7 +1,7 @@
 {
-  "name": "ngurra-mobile",
+  "name": "nexta-mobile",
   "version": "1.0.0",
-  "description": "Ngurra Pathways Mobile App - First Nations Employment Platform",
+  "description": "Nexta mobile app - guided pathways for work, learning, support, and progress",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",

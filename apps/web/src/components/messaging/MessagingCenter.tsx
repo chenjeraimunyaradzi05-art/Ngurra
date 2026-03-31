@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * MessagingCenter - Real-time messaging and chat
@@ -162,7 +163,13 @@ function ConversationItem({
       {/* Avatar */}
       <div className="relative flex-shrink-0">
         {avatar ? (
-          <img src={toCloudinaryAutoUrl(avatar)} alt="" className="w-12 h-12 rounded-full" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(avatar)}
+            alt={`${displayName} avatar`}
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-full"
+          />
         ) : conversation.type === 'group' ? (
           <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -239,7 +246,13 @@ function MessageBubble({
       {/* Avatar */}
       {showAvatar && !isOwn ? (
         message.sender.avatar ? (
-          <img src={toCloudinaryAutoUrl(message.sender.avatar)} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
+          <OptimizedImage
+            src={toCloudinaryAutoUrl(message.sender.avatar)}
+            alt={`${message.sender.name} avatar`}
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full flex-shrink-0"
+          />
         ) : (
           <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
             {message.sender.name.charAt(0)}
@@ -260,10 +273,12 @@ function MessageBubble({
         >
           {/* Image */}
           {message.type === 'image' && message.attachments?.[0] && (
-            <img
+            <OptimizedImage
               src={toCloudinaryAutoUrl(message.attachments[0].url)}
-              alt=""
-              className="max-w-full rounded-lg mb-2"
+              alt="Shared image"
+              width={640}
+              height={360}
+              className="max-w-full h-auto rounded-lg mb-2"
             />
           )}
 
@@ -435,7 +450,13 @@ function NewConversationModal({
                     }`}
                   >
                     {user.avatar ? (
-                      <img src={toCloudinaryAutoUrl(user.avatar)} alt="" className="w-10 h-10 rounded-full" />
+                      <OptimizedImage
+                        src={toCloudinaryAutoUrl(user.avatar)}
+                        alt={`${user.name} avatar`}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full"
+                      />
                     ) : (
                       <div className="w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 font-medium">
                         {user.name.charAt(0)}
@@ -629,10 +650,12 @@ export function MessagingCenter() {
                 </div>
               ) : (
                 activeConversation.participants.filter(p => p.id !== user?.id)[0]?.avatar ? (
-                  <img 
-                    src={toCloudinaryAutoUrl(activeConversation.participants.filter(p => p.id !== user?.id)[0]?.avatar || '')} 
-                    alt="" 
-                    className="w-10 h-10 rounded-full" 
+                  <OptimizedImage
+                    src={toCloudinaryAutoUrl(activeConversation.participants.filter(p => p.id !== user?.id)[0]?.avatar || '')}
+                    alt={`${activeConversation.name || 'Conversation'} avatar`}
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full"
                   />
                 ) : (
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium">

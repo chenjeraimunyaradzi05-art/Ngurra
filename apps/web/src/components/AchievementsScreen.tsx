@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from './Button';
 import { Modal } from './Modal';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * AchievementsScreen - User achievements and badges management
@@ -367,7 +368,7 @@ function Leaderboard({
             {/* Avatar */}
             <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden">
               {entry.avatar ? (
-                <img src={toCloudinaryAutoUrl(entry.avatar)} alt="" className="w-full h-full object-cover" />
+                <OptimizedImage src={toCloudinaryAutoUrl(entry.avatar)} alt={entry.userName} width={40} height={40} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">

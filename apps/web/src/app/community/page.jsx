@@ -9,7 +9,7 @@ export const metadata = {
   openGraph: {
     title: 'Indigenous Community Forums | Ngurra Pathways',
     description: 'Join the Ngurra Pathways community and connect with First Nations professionals.',
-    url: 'https://ngurrapathways.com.au/community',
+    url: 'https://ngurrapathways.life/community',
   },
   alternates: {
     canonical: '/community',

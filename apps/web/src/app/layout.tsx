@@ -16,26 +16,29 @@ import AIAssistantWrapper from '../components/AIAssistantWrapper';
 import Script from 'next/script';
 import { Metadata, Viewport } from 'next';
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const DEVELOPER_NAME = 'Munyaradzi Chenjerai';
+
 export const metadata: Metadata = {
   title: {
-    default: 'Ngurra Pathways | Indigenous Employment & Mentorship',
-    template: '%s | Ngurra Pathways',
+    default: 'Nexta | The Pathway Platform for Opportunity and Economic Progress',
+    template: '%s | Nexta',
   },
   description:
-    'A culturally-grounded employment, education & mentorship platform for First Nations futures. Find jobs, courses, and mentors designed for Indigenous Australians.',
+    'Nexta helps people discover opportunities, build skills, connect with mentors, use practical tools, and make long-term progress in one guided platform.',
   keywords: [
-    'Indigenous employment',
-    'First Nations jobs',
-    'Aboriginal careers',
-    'Indigenous mentorship',
-    'TAFE courses Indigenous',
-    'culturally safe workplace',
+    'career pathways',
+    'job platform',
+    'learning pathways',
+    'mentor support',
+    'business tools',
+    'financial wellbeing',
   ],
-  authors: [{ name: 'Ngurra Pathways' }],
-  creator: 'Ngurra Pathways',
-  publisher: 'Ngurra Pathways',
+  authors: [{ name: DEVELOPER_NAME }],
+  creator: DEVELOPER_NAME,
+  publisher: 'Nexta',
   manifest: '/manifest.json',
-  metadataBase: new URL('https://ngurrapathways.life'),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: '/',
   },
@@ -53,52 +56,44 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Ngurra Pathways',
+    title: 'Nexta',
   },
   openGraph: {
     type: 'website',
-    locale: 'en_AU',
-    url: 'https://ngurrapathways.life',
-    siteName: 'Ngurra Pathways',
-    title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
+    locale: 'en_US',
+    url: SITE_URL,
+    siteName: 'Nexta',
+    title: 'Nexta | Opportunity, Connected. Progress, Supported.',
     description:
-      'A culturally-grounded employment, education & mentorship platform for First Nations futures',
+      'Jobs, learning, mentors, community, money tools, and real-world support in one guided platform.',
     images: [
       {
-        url: '/brand/ngurra-og-image.png',
+        url: '/brand/nexta-og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'Ngurra Pathways - Indigenous Employment Platform',
+        alt: 'Nexta - pathway platform for opportunity and progress',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ngurra Pathways | Indigenous Employment & Mentorship',
-    description: 'Employment & mentorship platform for First Nations futures',
-    images: ['/brand/ngurra-og-image.png'],
-    creator: '@ngurrapathways',
+    title: 'Nexta | Your Next Step, Connected',
+    description: 'A guided platform for jobs, skills, mentors, tools, and long-term progress.',
+    images: ['/brand/nexta-og-image.svg'],
   },
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/brand/ngurra-logo.png', sizes: '32x32', type: 'image/png' },
-      { url: '/brand/ngurra-logo.png', sizes: '192x192', type: 'image/png' },
-    ],
-    apple: [{ url: '/brand/ngurra-logo.png', sizes: '180x180', type: 'image/png' }],
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
     shortcut: [{ url: '/favicon.svg' }],
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
-  category: 'employment',
+  category: 'career development',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#6B4C9A',
+  themeColor: '#0F766E',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -106,16 +101,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Ngurra Pathways',
-    url: 'https://ngurrapathways.com.au',
-    logo: 'https://ngurrapathways.com.au/brand/ngurra-logo.png',
+    name: 'Nexta',
+    url: SITE_URL,
+    logo: `${SITE_URL}/favicon.svg`,
     description:
-      'A culturally-grounded employment, education & mentorship platform for First Nations futures',
-    sameAs: [
-      'https://twitter.com/ngurrapathways',
-      'https://www.linkedin.com/company/ngurra-pathways',
-      'https://www.facebook.com/ngurrapathways',
-    ],
+      'A guided pathway platform for opportunity, economic progress, and long-term stability.',
+    founder: DEVELOPER_NAME,
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
@@ -126,11 +117,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Ngurra Pathways',
-    url: 'https://ngurrapathways.com.au',
+    name: 'Nexta',
+    url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://ngurrapathways.com.au/jobs?q={search_term_string}',
+      target: `${SITE_URL}/jobs?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };
@@ -138,7 +129,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="/brand/ngurra-logo.png" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         {/* Theme flash prevention script - runs before paint */}
@@ -147,7 +138,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('ngurra-theme');
+                  var theme = localStorage.getItem('nexta-theme');
                   var resolved = theme;
                   if (!theme || theme === 'system') {
                     resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

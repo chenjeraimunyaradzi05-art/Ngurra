@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, User, Users, FileText, Mail, Calendar, CheckCircle, XCircle, Clock, MoreHorizontal, Download } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface Application {
   id: string;
@@ -44,10 +45,6 @@ export default function ApplicantsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated && id) load();
-  }, [isAuthenticated, id]);
-
   async function load() {
     setLoading(true);
     try {
@@ -57,12 +54,17 @@ export default function ApplicantsPage() {
       } else {
         setError('Failed to load applicants');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load applicants');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load applicants'));
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, id]);
 
   async function updateStatus(appId: string, newStatus: string) {
     try {
@@ -74,8 +76,8 @@ export default function ApplicantsPage() {
       if (res.ok) {
         setApplicants(applicants.map(a => a.id === appId ? { ...a, status: newStatus } : a));
       }
-    } catch (err: any) {
-      alert('Failed to update status: ' + err.message);
+    } catch (err: unknown) {
+      alert('Failed to update status: ' + getErrorMessage(err));
     }
   }
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * CareerCoaching - Career coaching and mentorship matching
@@ -242,7 +243,7 @@ function CoachCard({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-start gap-4">
         {coach.avatar ? (
-          <img src={toCloudinaryAutoUrl(coach.avatar)} alt="" className="w-16 h-16 rounded-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(coach.avatar)} alt={coach.name} width={64} height={64} className="w-16 h-16 rounded-full object-cover" />
         ) : (
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
             {coach.name.split(' ').map(n => n[0]).join('')}
@@ -369,7 +370,7 @@ function SessionCard({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {session.coachAvatar ? (
-            <img src={toCloudinaryAutoUrl(session.coachAvatar)} alt="" className="w-12 h-12 rounded-full object-cover" />
+            <OptimizedImage src={toCloudinaryAutoUrl(session.coachAvatar)} alt={session.coachName} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
           ) : (
             <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
               {session.coachName.split(' ').map(n => n[0]).join('')}

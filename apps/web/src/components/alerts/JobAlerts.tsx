@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * JobAlerts - Job alerts configuration and management
@@ -639,7 +640,7 @@ function MatchesModal({
                 >
                   <div className="flex items-start gap-4">
                     {match.job.logo ? (
-                      <img src={toCloudinaryAutoUrl(match.job.logo)} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                      <OptimizedImage src={toCloudinaryAutoUrl(match.job.logo)} alt={match.job.company} width={48} height={48} className="w-12 h-12 rounded-lg object-cover" />
                     ) : (
                       <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center text-xl">
                         🏢

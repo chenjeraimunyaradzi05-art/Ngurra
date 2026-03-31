@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * SalaryInsights - Salary data and negotiation resources
@@ -459,7 +460,7 @@ function ResourceCard({ resource }: { resource: NegotiationResource }) {
     >
       {resource.thumbnail && (
         <div className="h-32 bg-gray-100 dark:bg-gray-700">
-          <img src={toCloudinaryAutoUrl(resource.thumbnail)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(resource.thumbnail)} alt={resource.title} width={400} height={128} className="w-full h-full object-cover" />
         </div>
       )}
       <div className="p-4">

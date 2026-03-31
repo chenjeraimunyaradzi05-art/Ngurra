@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * InterviewPrep - Interview preparation and practice
@@ -344,6 +345,7 @@ function PracticeMode({
     setTimeLeft(currentQuestion?.timeLimit || 120);
     setAnswer(answers[currentQuestion?.id] || '');
     setShowTips(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, currentQuestion]);
 
   const formatTime = (seconds: number) => {
@@ -875,7 +877,7 @@ export function InterviewPrep() {
             <div key={company.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-4 mb-4">
                 {company.companyLogo ? (
-                  <img src={toCloudinaryAutoUrl(company.companyLogo)} alt="" className="w-12 h-12 rounded-lg object-contain" />
+                  <OptimizedImage src={toCloudinaryAutoUrl(company.companyLogo)} alt={company.company} width={48} height={48} className="w-12 h-12 rounded-lg object-contain" />
                 ) : (
                   <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center text-xl font-bold text-gray-400">
                     {company.company.charAt(0)}

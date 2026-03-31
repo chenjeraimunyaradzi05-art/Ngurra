@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Briefcase, MapPin, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface Subscription {
   tier: string;
@@ -84,8 +85,8 @@ export default function NewJobPage() {
            setError(res.error || 'Failed to create job');
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Create failed');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Create failed'));
     } finally {
       setLoading(false);
     }

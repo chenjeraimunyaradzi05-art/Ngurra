@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Briefcase, Users, Eye, Plus, FileText, Settings, CreditCard, Building, Search, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 // @ts-ignore
 import AnnouncementsBanner from '@/components/AnnouncementsBanner';
 // @ts-ignore
@@ -91,8 +92,8 @@ export default function CompanyDashboard() {
         ]);
       }
 
-    } catch (err: any) {
-      setError(err.message || 'Failed to load dashboard');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load dashboard'));
     } finally {
       setLoading(false);
     }

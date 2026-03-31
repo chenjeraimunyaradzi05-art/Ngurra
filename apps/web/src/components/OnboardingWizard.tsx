@@ -11,6 +11,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   ChevronLeft,
   ChevronRight,
@@ -348,7 +349,7 @@ export default function OnboardingWizard() {
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-slate-700 overflow-hidden flex items-center justify-center">
                     {photoPreview ? (
-                      <img src={toCloudinaryAutoUrl(photoPreview)} alt="" className="w-full h-full object-cover" />
+                      <OptimizedImage src={toCloudinaryAutoUrl(photoPreview)} alt="Profile photo preview" width={96} height={96} className="w-full h-full object-cover" />
                     ) : (
                       <User className="w-10 h-10 text-slate-500" />
                     )}

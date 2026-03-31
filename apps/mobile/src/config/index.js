@@ -1,7 +1,7 @@
 /**
  * Mobile App Configuration
- * 
- * Central configuration values for the Ngurra Pathways mobile app.
+ *
+ * Central configuration values for the Nexta mobile app.
  */
 
 // Re-export deep linking configuration
@@ -11,8 +11,9 @@ export { linking } from './linking';
 export const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 
 // App info
-export const APP_NAME = 'Ngurra Pathways';
+export const APP_NAME = 'Nexta';
 export const APP_VERSION = '1.0.0';
+export const DEVELOPER_NAME = 'Munyaradzi Chenjerai';
 
 // Feature flags
 export const FEATURES = {
@@ -60,9 +61,9 @@ export const STORAGE_KEYS = {
 
 // Support contact info
 export const SUPPORT = {
-  EMAIL: 'support@ngurrapathways.com.au',
-  PHONE: '1800 NGURRA',
-  WEBSITE: 'https://ngurrapathways.com.au/support',
+  EMAIL: 'support@nexta.app',
+  PHONE: '1800 NEXTA',
+  WEBSITE: 'https://nexta.app/support',
 };
 
 // Analytics event names
@@ -85,6 +86,7 @@ export default {
   API_BASE,
   APP_NAME,
   APP_VERSION,
+  DEVELOPER_NAME,
   FEATURES,
   CACHE_CONFIG,
   PAGINATION,

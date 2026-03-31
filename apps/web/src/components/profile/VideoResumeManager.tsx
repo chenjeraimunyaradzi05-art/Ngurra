@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * VideoResume - Video resume recording and management
@@ -171,7 +172,7 @@ function VideoResumeCard({
       {/* Thumbnail */}
       <div className="relative aspect-video bg-gray-900 cursor-pointer group" onClick={onView}>
         {resume.thumbnailUrl ? (
-          <img src={toCloudinaryAutoUrl(resume.thumbnailUrl)} alt="" className="w-full h-full object-cover" />
+          <OptimizedImage src={toCloudinaryAutoUrl(resume.thumbnailUrl)} alt={resume.title || 'Video resume thumbnail'} width={400} height={225} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <svg className="w-16 h-16 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -281,6 +282,7 @@ function VideoRecorder({
         stream.getTracks().forEach(track => track.stop());
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Recording timer

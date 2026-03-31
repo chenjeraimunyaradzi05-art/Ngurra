@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 import { useAuth } from '@/hooks/useAuth';
 import {
   Home,
@@ -85,8 +86,8 @@ export default function HousingPage() {
         if (!ok) throw new Error(data?.error || 'Failed to load listings');
         setListings(data?.listings || []);
         setTotal(data?.total || 0);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to load listings');
+      } catch (err: unknown) {
+        setError(getErrorMessage(err, 'Failed to load listings'));
       } finally {
         setLoading(false);
       }
@@ -161,8 +162,8 @@ export default function HousingPage() {
         availableFrom: '',
         housingType: 'APARTMENT',
       });
-    } catch (err: any) {
-      setError(err?.message || 'Failed to create listing');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to create listing'));
     } finally {
       setCreating(false);
     }

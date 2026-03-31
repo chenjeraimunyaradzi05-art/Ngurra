@@ -7,6 +7,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Loader2, CheckCircle } from 
 import { useAuthStore } from '@/stores/authStore';
 import { API_BASE } from '@/lib/apiBase';
 import { setAuthSessionCookie } from '@/lib/authSession';
+import { getErrorMessage } from '@/lib/formatters';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -151,14 +152,14 @@ export default function SignUpPage() {
           window.location.assign('/welcome');
         }
       }, 500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Registration error:', err);
-      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
         setError(
           'Unable to connect to server. Please check your internet connection or try again later.',
         );
       } else {
-        setError(err.message || 'An unexpected error occurred during registration');
+        setError(getErrorMessage(err, 'An unexpected error occurred during registration'));
       }
     } finally {
       setIsLoading(false);

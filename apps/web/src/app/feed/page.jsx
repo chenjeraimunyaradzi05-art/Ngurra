@@ -299,7 +299,7 @@ export default function FeedPage() {
                 </h3>
                 <div className="space-y-2">
                   <Link
-                    href="/feed/create"
+                    href="/social-feed/new"
                     className="flex items-center gap-2 p-2 rounded-lg transition-colors text-slate-700 hover:bg-pink-50 hover:text-pink-600"
                   >
                     ✏️ Create Post
@@ -407,7 +407,7 @@ export default function FeedPage() {
                   👤
                 </div>
                 <Link
-                  href="/feed/create"
+                  href="/social-feed/new"
                   className="flex-1 p-3 rounded-lg text-left bg-slate-50 text-slate-400 hover:bg-pink-50 transition-colors"
                 >
                   Share your story with the community...
@@ -559,7 +559,7 @@ export default function FeedPage() {
                         <span className="hidden sm:inline text-sm">Like</span>
                       </button>
                       <Link
-                        href={`/feed/${post.id}`}
+                        href={`/social-feed/${post.id}`}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-slate-500 hover:bg-purple-50 hover:text-purple-600"
                       >
                         <span>💬</span>

@@ -125,6 +125,7 @@ export default function FollowingPage() {
       setFollowing(mockFollowing);
       setLoading(false);
     }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUnfollow = (id: string) => {

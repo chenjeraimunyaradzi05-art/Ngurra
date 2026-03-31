@@ -13,7 +13,9 @@ import {
   BookOpen, ExternalLink, Star, Eye, Download, Clock, Bookmark,
   Loader2, AlertCircle, Sparkles, TrendingUp, GraduationCap, PlayCircle
 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/formatters';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface Resource {
   id: string;
@@ -86,9 +88,11 @@ function ResourceCard({ resource, onBookmark }: { resource: Resource; onBookmark
       {/* Thumbnail */}
       {resource.thumbnail ? (
         <div className="h-40 bg-slate-700 overflow-hidden">
-          <img 
+          <OptimizedImage 
             src={toCloudinaryAutoUrl(resource.thumbnail)} 
             alt={resource.title} 
+            width={400}
+            height={160}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -194,8 +198,8 @@ export default function PersonalizedResources({ apiBase = '', token, limit = 12,
       const data = await res.json();
       setResources(data.resources || []);
       setCategories(data.categories || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load resources');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to load resources'));
     } finally {
       setLoading(false);
     }

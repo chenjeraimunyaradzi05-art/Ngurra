@@ -1,9 +1,9 @@
-// Ngurra Pathways Service Worker
+// Nexta Service Worker
 // Provides offline support, caching, and push notifications
 
-const CACHE_NAME = 'ngurra-pathways-v1';
-const STATIC_CACHE = 'ngurra-static-v1';
-const DYNAMIC_CACHE = 'ngurra-dynamic-v1';
+const CACHE_NAME = 'nexta-v1';
+const STATIC_CACHE = 'nexta-static-v1';
+const DYNAMIC_CACHE = 'nexta-dynamic-v1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
@@ -11,6 +11,11 @@ const STATIC_ASSETS = [
   '/jobs',
   '/mentorship',
   '/community',
+  '/resources',
+  '/social-feed',
+  '/events',
+  '/privacy',
+  '/terms',
   '/offline',
   '/manifest.json',
 ];
@@ -121,7 +126,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   console.log('[SW] Push received:', event);
 
-  let data = { title: 'Ngurra Pathways', body: 'You have a new notification' };
+  let data = { title: 'Nexta', body: 'You have a new update' };
 
   if (event.data) {
     try {
@@ -138,7 +143,7 @@ self.addEventListener('push', (event) => {
     vibrate: [100, 50, 100],
     data: data.data || {},
     actions: data.actions || [],
-    tag: data.tag || 'ngurra-notification',
+    tag: data.tag || 'nexta-notification',
     renotify: true,
   };
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { CheckCircle, CreditCard, FileText, AlertCircle, Shield, Zap, Star, Building } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface Tier {
   tier: string;
@@ -98,7 +99,7 @@ function BillingContent() {
       if (invoicesRes.ok && invoicesRes.data) {
         setInvoices(invoicesRes.data.invoices);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load billing data:', err);
     } finally {
       setLoading(false);
@@ -118,8 +119,8 @@ function BillingContent() {
       } else {
         setMessage({ type: 'error', text: 'Failed to start checkout. Please try again.' });
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Checkout failed' });
+    } catch (err: unknown) {
+      setMessage({ type: 'error', text: getErrorMessage(err, 'Checkout failed') });
     } finally {
       setActionLoading(false);
     }
@@ -137,8 +138,8 @@ function BillingContent() {
       } else {
         setMessage({ type: 'error', text: 'Failed to open billing portal.' });
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Portal failed' });
+    } catch (err: unknown) {
+      setMessage({ type: 'error', text: getErrorMessage(err, 'Portal failed') });
     } finally {
       setActionLoading(false);
     }

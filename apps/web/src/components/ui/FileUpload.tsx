@@ -5,6 +5,7 @@ import Image from '@/components/ui/OptimizedImage';
 import { isCloudinaryPublicId } from '@/lib/cloudinary';
 import { Upload, X, File, Image as ImageIcon, Film, Music, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { Spinner } from './Spinner';
+import { getErrorMessage } from '@/lib/formatters';
 
 interface FileUploadProps {
   accept?: string;
@@ -143,13 +144,14 @@ export function FileUpload({
       try {
         await onUpload(validatedFiles.map(f => f.file));
         setFiles(prev => prev.map(f => ({ ...f, status: 'success' as const })));
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const msg = getErrorMessage(err, 'Upload failed');
         setFiles(prev => prev.map(f => ({ 
           ...f, 
           status: 'error' as const, 
-          error: err.message || 'Upload failed' 
+          error: msg 
         })));
-        setError(err.message || 'Upload failed');
+        setError(msg);
       } finally {
         setIsUploading(false);
       }

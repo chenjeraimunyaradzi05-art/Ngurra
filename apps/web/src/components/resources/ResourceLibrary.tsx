@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 // Theme colors
 const accentPink = '#E91E8C';
@@ -366,9 +367,11 @@ function ResourceCard({
       {/* Thumbnail */}
       {resource.thumbnailUrl ? (
         <div className="relative h-40 bg-slate-100">
-          <img
+          <OptimizedImage
             src={toCloudinaryAutoUrl(resource.thumbnailUrl)}
-            alt=""
+            alt={resource.title}
+            width={400}
+            height={160}
             className="w-full h-full object-cover"
           />
           {resource.type === 'video' && resource.duration && (
@@ -555,9 +558,11 @@ function ResourceDetailModal({
           {/* Thumbnail for non-video */}
           {resource.type !== 'video' && resource.thumbnailUrl && (
             <div className="mb-6 h-48 bg-slate-100 rounded-xl overflow-hidden">
-              <img
+              <OptimizedImage
                 src={toCloudinaryAutoUrl(resource.thumbnailUrl)}
-                alt=""
+                alt={resource.title}
+                width={600}
+                height={192}
                 className="w-full h-full object-cover"
               />
             </div>

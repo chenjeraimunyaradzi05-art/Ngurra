@@ -20,10 +20,10 @@ export interface SEOProps {
   author?: string;
 }
 
-const SITE_NAME = 'Ngurra Pathways';
-const DEFAULT_DESCRIPTION = 'Connecting Aboriginal and Torres Strait Islander peoples with career opportunities, education, and mentorship.';
-const DEFAULT_IMAGE = '/images/og-default.png';
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ngurrapathways.com.au';
+const SITE_NAME = 'Nexta';
+const DEFAULT_DESCRIPTION = 'Nexta helps people discover opportunities, build skills, connect with mentors, and move forward with practical support.';
+const DEFAULT_IMAGE = '/brand/nexta-og-image.svg';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 /**
  * Generate metadata object for Next.js App Router
@@ -45,14 +45,14 @@ export function generateSEOMetadata({
   const fullImage = image.startsWith('http') ? image : `${BASE_URL}${image}`;
 
   const defaultKeywords = [
-    'Indigenous employment',
-    'Aboriginal jobs',
-    'Torres Strait Islander careers',
-    'First Nations opportunities',
-    'Indigenous mentorship',
-    'Cultural training',
-    'Reconciliation',
-    'Indigenous education',
+    'career pathways',
+    'job platform',
+    'learning pathways',
+    'mentor support',
+    'business tools',
+    'financial wellbeing',
+    'opportunity discovery',
+    'economic progress',
   ];
 
   return {
@@ -192,14 +192,9 @@ export function generateOrganizationStructuredData(): string {
     url: BASE_URL,
     logo: `${BASE_URL}/images/logo.png`,
     description: DEFAULT_DESCRIPTION,
-    sameAs: [
-      'https://www.facebook.com/ngurrapathways',
-      'https://www.linkedin.com/company/ngurra-pathways',
-      'https://twitter.com/ngurrapathways',
-    ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+61-XXX-XXX-XXX',
+      telephone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '',
       contactType: 'customer service',
       areaServed: 'AU',
       availableLanguage: 'English',

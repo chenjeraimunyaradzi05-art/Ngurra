@@ -138,5 +138,10 @@ export default async function EventsPage() {
         initialEvents = MOCK_EVENTS;
     }
 
-    return <EventsClient initialEvents={initialEvents} />;
+    return (
+        <EventsClient
+            initialEvents={initialEvents}
+            hasPrefetched={initialEvents.length > 0}
+        />
+    );
 }

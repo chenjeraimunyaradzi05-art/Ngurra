@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '../Button';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * ProfileSettings - User profile and account settings
@@ -439,7 +440,13 @@ export function ProfileSettings() {
               <div className="flex items-center gap-6">
                 <div className="relative">
                   {profile.avatar ? (
-                    <img src={toCloudinaryAutoUrl(profile.avatar)} alt="" className="w-24 h-24 rounded-full object-cover" />
+                    <OptimizedImage
+                      src={toCloudinaryAutoUrl(profile.avatar)}
+                      alt={`${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'Profile avatar'}
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
                   ) : (
                     <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 text-3xl font-medium">
                       {profile.firstName?.charAt(0) || '?'}

@@ -7,7 +7,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 
 // Type for mock functions when Jest types aren't available
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MockFn<T extends (...args: any[]) => any = (...args: any[]) => any> = T & {
   mockImplementation: (fn: T) => MockFn<T>;
   mockReturnValue: (value: ReturnType<T>) => MockFn<T>;
@@ -16,9 +15,7 @@ type MockFn<T extends (...args: any[]) => any = (...args: any[]) => any> = T & {
 
 // Declare jest global for environments without @types/jest
 declare const jest: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fn: <T extends (...args: any[]) => any = (...args: any[]) => any>(implementation?: T) => MockFn<T>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   spyOn: <T extends object, M extends keyof T>(object: T, method: M) => MockFn<any>;
 };
 
@@ -374,7 +371,7 @@ const jestMock = {
   },
 };
 
-export default {
+const testUtils = {
   mockUser,
   mockJob,
   mockApiResponses,
@@ -389,3 +386,5 @@ export default {
   formHelpers,
   eventHelpers,
 };
+
+export default testUtils;

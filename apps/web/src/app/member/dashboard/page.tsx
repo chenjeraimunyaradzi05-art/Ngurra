@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { User, Briefcase, Star, Calendar, CheckCircle, MessageSquare, Leaf, Radar, Settings, FileText, FolderOpen, Image, Video, Users, GraduationCap, File, Award, BookOpen, Heart, Gift, Smile, AlertTriangle, Download, Bell, Search, Trophy, Compass } from 'lucide-react';
+import { User, Briefcase, Star, Calendar, CheckCircle, MessageSquare, Leaf, Radar, Settings, FileText, FolderOpen, Image as ImageIcon, Video, Users, GraduationCap, File, Award, BookOpen, Heart, Gift, Smile, AlertTriangle, Download, Bell, Search, Trophy, Compass } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/apiClient';
+import { getErrorMessage } from '@/lib/formatters';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 // @ts-ignore
 import AnnouncementsBanner from '@/components/AnnouncementsBanner';
 // @ts-ignore
@@ -28,18 +30,59 @@ interface Analytics {
   applicationsByStatus: Record<string, number>;
 }
 
+interface UploadedFile {
+  id: string;
+  originalName: string;
+  fileType?: string;
+  size: number;
+  url: string;
+}
+
+interface Badge {
+  id: string;
+  name: string;
+  imageUrl?: string;
+}
+
+interface Enrolment {
+  id: string;
+  progress: number;
+  status: string;
+  course?: { title: string };
+}
+
+interface MentorshipSession {
+  id: string;
+  scheduledAt: string;
+  status: string;
+  mentor?: { name: string };
+  meetingUrl?: string;
+}
+
+interface WellnessAlert {
+  id: string;
+  message: string;
+}
+
+interface ReferralStats {
+  totalReferrals?: number;
+  pendingReferrals?: number;
+  successfulReferrals?: number;
+  count?: number;
+}
+
 export default function MemberDashboard() {
   const { user, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [files, setFiles] = useState<any[]>([]);
-  const [badges, setBadges] = useState<any[]>([]);
-  const [enrolments, setEnrolments] = useState<any[]>([]);
-  const [mentorshipSessions, setMentorshipSessions] = useState<any[]>([]);
-  const [wellnessAlerts, setWellnessAlerts] = useState<any[]>([]);
-  const [referralStats, setReferralStats] = useState<any>(null);
+  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [enrolments, setEnrolments] = useState<Enrolment[]>([]);
+  const [mentorshipSessions, setMentorshipSessions] = useState<MentorshipSession[]>([]);
+  const [wellnessAlerts, setWellnessAlerts] = useState<WellnessAlert[]>([]);
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -59,12 +102,12 @@ export default function MemberDashboard() {
         ] = await Promise.all([
           api<Profile>('/member/profile'),
           api<Analytics>('/analytics/member'),
-          api<{ files: any[] }>('/uploads/me'),
-          api<{ badges: any[] }>('/badges/user/me'),
-          api<{ enrolments: any[] }>('/courses/my/enrolments'),
-          api<{ sessions: any[] }>('/mentorship/sessions'),
-          api<{ alerts: any[] }>('/wellness/alerts'),
-          api<any>('/referrals')
+          api<{ files: UploadedFile[] }>('/uploads/me'),
+          api<{ badges: Badge[] }>('/badges/user/me'),
+          api<{ enrolments: Enrolment[] }>('/courses/my/enrolments'),
+          api<{ sessions: MentorshipSession[] }>('/mentorship/sessions'),
+          api<{ alerts: WellnessAlert[] }>('/wellness/alerts'),
+          api<ReferralStats>('/referrals')
         ]);
         
         if (profileRes.ok && profileRes.data) setProfile(profileRes.data);
@@ -75,8 +118,8 @@ export default function MemberDashboard() {
         if (sessionsRes.ok && sessionsRes.data) setMentorshipSessions(sessionsRes.data.sessions || []);
         if (wellnessRes.ok && wellnessRes.data) setWellnessAlerts(wellnessRes.data.alerts || []);
         if (referralRes.ok && referralRes.data) setReferralStats(referralRes.data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load dashboard data');
+      } catch (err: unknown) {
+        setError(getErrorMessage(err, 'Failed to load dashboard data'));
       } finally {
         setLoading(false);
       }
@@ -212,10 +255,10 @@ export default function MemberDashboard() {
               </h2>
               {files.length > 0 ? (
                 <div className="space-y-3">
-                  {files.slice(0, 3).map((file: any) => (
+                  {files.slice(0, 3).map((file: UploadedFile) => (
                     <div key={file.id} className="flex items-center justify-between p-3 bg-slate-100/70 dark:bg-slate-800/50 rounded-lg">
                       <div className="flex items-center gap-3">
-                        {file.fileType?.startsWith('image/') ? <Image className="w-5 h-5 text-purple-400" /> : 
+                        {file.fileType?.startsWith('image/') ? <ImageIcon className="w-5 h-5 text-purple-400" /> : 
                          file.fileType?.startsWith('video/') ? <Video className="w-5 h-5 text-red-400" /> :
                          <File className="w-5 h-5 text-slate-400" />}
                         <div>
@@ -248,7 +291,7 @@ export default function MemberDashboard() {
               </h2>
               {enrolments.length > 0 ? (
                 <div className="space-y-3">
-                  {enrolments.slice(0, 3).map((enrolment: any) => (
+                  {enrolments.slice(0, 3).map((enrolment: Enrolment) => (
                     <div key={enrolment.id} className="p-3 bg-slate-100/70 dark:bg-slate-800/50 rounded-lg">
                       <div className="font-medium text-sm">{enrolment.course?.title}</div>
                       <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -284,7 +327,7 @@ export default function MemberDashboard() {
               </h2>
               {wellnessAlerts.length > 0 ? (
                 <div className="space-y-2 mb-4">
-                  {wellnessAlerts.map((alert: any) => (
+                  {wellnessAlerts.map((alert: WellnessAlert) => (
                     <div key={alert.id} className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/20 p-2 rounded">
                       <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
                       <span>{alert.message}</span>
@@ -307,7 +350,7 @@ export default function MemberDashboard() {
               </h2>
               {mentorshipSessions.length > 0 ? (
                 <div className="space-y-3">
-                  {mentorshipSessions.slice(0, 2).map((session: any) => (
+                  {mentorshipSessions.slice(0, 2).map((session: MentorshipSession) => (
                     <div key={session.id} className="p-3 bg-slate-100/70 dark:bg-slate-800/50 rounded-lg border-l-2 border-purple-500">
                       <div className="font-medium text-sm">{session.mentor?.name || 'Mentor Session'}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -338,10 +381,16 @@ export default function MemberDashboard() {
               </h2>
               {badges.length > 0 ? (
                 <div className="grid grid-cols-4 gap-2">
-                  {badges.map((badge: any) => (
-                    <div key={badge.id} className="aspect-square bg-slate-100/70 dark:bg-slate-800 rounded-lg flex items-center justify-center p-2" title={badge.name}>
+                  {badges.map((badge: Badge) => (
+                    <div key={badge.id} className="relative aspect-square bg-slate-100/70 dark:bg-slate-800 rounded-lg flex items-center justify-center p-2" title={badge.name}>
                       {badge.imageUrl ? (
-                        <img src={toCloudinaryAutoUrl(badge.imageUrl)} alt={badge.name} className="w-full h-full object-contain" />
+                        <OptimizedImage
+                          src={toCloudinaryAutoUrl(badge.imageUrl)}
+                          alt={badge.name}
+                          fill
+                          sizes="(min-width: 768px) 72px, 25vw"
+                          className="w-full h-full object-contain"
+                        />
                       ) : (
                         <Award className="w-6 h-6 text-amber-500" />
                       )}

@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toCloudinaryAutoUrl } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   Search,
   Filter,
@@ -126,8 +127,8 @@ export default function EnhancedJobSearch() {
   }, [searchParams]);
 
   // Debounced search
-  const debouncedSearch = useCallback(
-    debounce(async (searchFilters: SearchFilters, pageNum: number, append = false) => {
+  const debouncedSearch = useMemo(
+    () => debounce(async (searchFilters: SearchFilters, pageNum: number, append = false) => {
       setIsLoading(true);
       try {
         const params = new URLSearchParams();
@@ -169,6 +170,7 @@ export default function EnhancedJobSearch() {
         setIsLoading(false);
       }
     }, 300),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -548,7 +550,7 @@ export default function EnhancedJobSearch() {
                       {/* Company Logo */}
                       <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
                         {job.company.logo ? (
-                          <img src={toCloudinaryAutoUrl(job.company.logo)} alt="" className="w-8 h-8 rounded" />
+                          <OptimizedImage src={toCloudinaryAutoUrl(job.company.logo)} alt={job.company.name} width={32} height={32} className="w-8 h-8 rounded" />
                         ) : (
                           <Building2 className="w-6 h-6 text-slate-500" />
                         )}

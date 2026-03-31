@@ -48,7 +48,7 @@ export default function ReferralsPage() {
       // Demo data
       setReferralData({
         referralCode: 'NG-ABC123',
-        shareUrl: 'https://ngurrapathways.com.au/',
+        shareUrl: 'https://ngurrapathways.life/',
         stats: {
           totalReferrals: 5,
           signedUp: 3,

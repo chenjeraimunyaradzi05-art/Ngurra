@@ -1,6 +1,12 @@
 [build]
+  base = "."
+  package = "apps/web"
   command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
   publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_DISABLE_NETLIFY_EDGE = "true"
 
 [functions]
   directory = "netlify/functions"

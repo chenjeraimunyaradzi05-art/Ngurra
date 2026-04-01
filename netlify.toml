@@ -1,99 +1,20 @@
 [build]
-  base      = "."
-  package   = "apps/web"
-  command   = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
-  publish   = "apps/web/.next"
-  functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "20"
-  # Set in Netlify UI: JWT_SECRET, DATABASE_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
-  # Email: SENDGRID_API_KEY, SENDGRID_FROM or AWS SES keys
-  # Rate limiting: RATE_LIMIT_SECRET, AI_RATE_LIMIT_PER_MINUTE
-  # OAuth: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET
-  # Auth: NEXTAUTH_SECRET
-
-# =============================================================================
-# Production Context (main/master branch)
-# =============================================================================
-[context.production]
-  base    = "."
   command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
+  publish = "apps/web/.next"
 
-[context.production.environment]
-  NEXT_PUBLIC_API_URL = "https://ngurra-api-production.up.railway.app"
-  NEXT_PUBLIC_SOCKET_URL = "https://ngurra-api-production.up.railway.app"
-  NEXTAUTH_URL = "https://ngurrapathways.life"
-  NODE_ENV = "production"
+[functions]
+  directory = "netlify/functions"
 
-# =============================================================================
-# Staging Context (staging branch)
-# =============================================================================
-[context.staging]
-  base    = "."
-  command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
-
-[context.staging.environment]
-  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
-  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
-  NEXTAUTH_URL = "https://staging.ngurrapathways.life"
-  NODE_ENV = "staging"
-
-# =============================================================================
-# Deploy Preview Context (PR branches)
-# =============================================================================
-[context.deploy-preview]
-  base    = "."
-  command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
-
-[context.deploy-preview.environment]
-  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
-  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
-  NEXTAUTH_URL = "https://deploy-preview-<id>--ngurrapathways.netlify.app"
-  NODE_ENV = "preview"
-
-# =============================================================================
-# Branch Deploy Context (feature branches)
-# =============================================================================
-[context.branch-deploy]
-  base    = "."
-  command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
-
-[context.branch-deploy.environment]
-  NEXT_PUBLIC_API_URL = "https://api-staging.gimbi.com.au"
-  NEXT_PUBLIC_SOCKET_URL = "https://api-staging.gimbi.com.au"
-  NEXTAUTH_URL = "https://branch-<name>--ngurrapathways.netlify.app"
-  NODE_ENV = "preview"
-
-# =============================================================================
-# Development
-# =============================================================================
-[dev]
-  command   = "npm run dev --prefix apps/web"
-  functions = "netlify/functions"
-  port      = 8888
-  autoLaunch = false
-
-# =============================================================================
-# Plugins
-# =============================================================================
-# Note: @netlify/plugin-nextjs removed - will be installed from Netlify plugins directory
-# Note: Using @netlify/plugin-nextjs v5 for Next.js 16.1.1 compatibility
-
-# =============================================================================
-# Headers for Security
-# =============================================================================
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://ngurra-api-production.up.railway.app https://api-staging.gimbi.com.au wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
 
-# Static assets caching
 [[headers]]
   for = "/_next/static/*"
   [headers.values]
@@ -107,30 +28,22 @@
 [[headers]]
   for = "/api/*"
   [headers.values]
-    # SECURITY: Restrict CORS to specific trusted domains (do not use wildcard "*")
-    Access-Control-Allow-Origin = "https://ngurrapathways.life"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Authorization, Content-Type"
     Access-Control-Allow-Credentials = "true"
+    Access-Control-Allow-Headers = "Authorization, Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Origin = "https://ngurrapathways.life"
 
-# =============================================================================
-# Redirects
-# =============================================================================
-# API Proxy - Route all /api/* requests to Railway backend
 [[redirects]]
   from = "/api/*"
   to = "https://ngurra-api-production.up.railway.app/:splat"
   status = 200
   force = true
-  headers = {X-From = "Netlify"}
 
-# Health check endpoints
 [[redirects]]
   from = "/health"
   to = "/.netlify/functions/health"
   status = 200
 
-# WWW to non-WWW redirect
 [[redirects]]
   from = "https://www.ngurrapathways.life/*"
   to = "https://ngurrapathways.life/:splat"

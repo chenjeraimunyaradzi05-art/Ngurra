@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -102,7 +102,7 @@ export function useOfflineStorage(storeName) {
     let database = null;
 
     const openDb = async () => {
-      const request = indexedDB.open('ngurra-offline', 1);
+      const request = indexedDB.open('tinashe-offline', 1);
 
       request.onerror = () => {
         console.error('Failed to open IndexedDB');

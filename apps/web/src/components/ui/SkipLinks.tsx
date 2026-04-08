@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 
@@ -9,7 +9,7 @@ import React from 'react';
  * for navigating to main content areas. Essential for screen reader users
  * and keyboard navigation.
  * 
- * Ngurra Pathways - Celestial Precious Stone Theme
+ * Tinashe - Celestial Precious Stone Theme
  */
 
 interface SkipLinkItem {

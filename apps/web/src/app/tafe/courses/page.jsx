@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { API_BASE } from '@/lib/apiBase';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -117,10 +117,10 @@ export default function TafeCourseManagement() {
 
   if (!token) {
     return (
-      <div className="ngurra-page">
+      <div className="tinashe-page">
         <div className="max-w-5xl mx-auto py-12 px-4">
-          <h1 className="ngurra-h1 mb-4">Course Management</h1>
-          <p className="ngurra-text">Please log in to manage courses.</p>
+          <h1 className="tinashe-h1 mb-4">Course Management</h1>
+          <p className="tinashe-text">Please log in to manage courses.</p>
         </div>
       </div>
     );
@@ -130,8 +130,8 @@ export default function TafeCourseManagement() {
     <div className="min-h-screen">
       {/* === HERO SECTION === */}
       <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50/40 to-purple-50/40 dark:from-slate-900 dark:to-slate-800">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
 
         <div className="relative max-w-5xl mx-auto">
           <Link href="/tafe/dashboard" className="text-pink-600 hover:text-pink-700 text-sm mb-4 inline-flex items-center gap-1 font-medium">

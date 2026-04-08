@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ const FAQ_CATEGORIES = [
         a: 'Click "Register" in the top navigation and fill out the form. Choose your account type (Job Seeker, Mentor, Employer, or TAFE) based on how you want to use the platform.'
       },
       {
-        q: 'Is Ngurra Pathways free to use?',
+        q: 'Is Tinashe free to use?',
         a: 'Yes! Job seekers and mentees can use all platform features for free. Employers have subscription options for advanced features like unlimited job posts and analytics.'
       },
       {
@@ -164,11 +164,11 @@ export default function HelpPage() {
   })).filter(c => c.questions.length > 0 || !searchQuery);
 
   return (
-    <div className="ngurra-page">
+    <div className="tinashe-page">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       {/* Hero */}

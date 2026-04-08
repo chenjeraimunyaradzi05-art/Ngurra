@@ -1,7 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Space_Grotesk } from 'next/font/google';
 import { Menu, X, Sun, Moon, Sparkles } from 'lucide-react';
@@ -17,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 
 const publicNavigation = [
   { name: 'Pathways', href: '/#pathways' },
-  { name: 'Nexta AI', href: '/#suite' },
+  { name: 'Tinashe AI', href: '/#suite' },
   { name: 'Connect', href: '/community' },
   { name: 'Business', href: '/business-suite' },
   { name: 'Partners', href: '/#partners' },
@@ -113,13 +114,20 @@ export default function HeaderNavigation() {
         <div className="flex w-full items-center justify-between border-b border-gray-200 dark:border-slate-800 py-4 lg:border-none">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
-              <span className="sr-only">Nexta</span>
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 via-slate-900 to-sky-500 text-lg font-bold text-white shadow-md">
-                N
+              <span className="sr-only">Tinashe</span>
+              <span className="relative inline-flex h-11 w-11 overflow-hidden rounded-xl border border-pink-500/30 shadow-md shadow-pink-900/20">
+                <Image
+                  src="/tinashe-logo.png"
+                  alt="Tinashe logo"
+                  fill
+                  className="object-cover"
+                  sizes="44px"
+                  priority
+                />
               </span>
               <span className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  Nexta
+                  Tinashe
                 </span>
                 <span className="hidden text-xs font-medium text-slate-500 dark:text-slate-400 xl:block">
                   Your next step, connected.

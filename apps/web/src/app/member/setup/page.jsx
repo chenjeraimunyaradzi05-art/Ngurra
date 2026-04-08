@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '../../../hooks/useAuth';
@@ -16,7 +16,7 @@ export default function MemberSetupPage() {
     const [error, setError] = useState(null);
     useEffect(() => {
         // Load draft
-        const draft = typeof window !== 'undefined' ? localStorage.getItem('ngurra_member_setup') : null;
+        const draft = typeof window !== 'undefined' ? localStorage.getItem('tinashe_member_setup') : null;
         if (draft) {
             try {
                 const parsed = JSON.parse(draft);
@@ -38,7 +38,7 @@ export default function MemberSetupPage() {
     }, [isAuthenticated, isLoading, router]);
     function saveDraft() {
         const payload = { phone, mobNation, skillLevel, careerInterest };
-        localStorage.setItem('ngurra_member_setup', JSON.stringify(payload));
+        localStorage.setItem('tinashe_member_setup', JSON.stringify(payload));
     }
     async function submit() {
         setError(null);
@@ -51,7 +51,7 @@ export default function MemberSetupPage() {
             if (!ok)
                 throw new Error(apiError || 'Failed to save profile');
             // clear draft and go to dashboard
-            localStorage.removeItem('ngurra_member_setup');
+            localStorage.removeItem('tinashe_member_setup');
             router.push('/member/dashboard');
         }
         catch (err) {

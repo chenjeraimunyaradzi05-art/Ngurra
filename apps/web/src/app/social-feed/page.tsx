@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 import { useState, useEffect, useCallback } from 'react';
@@ -320,11 +320,11 @@ export default function SocialFeedPage() {
   ];
 
   return (
-    <div className={`${spaceGrotesk.className} ngurra-page`}>
+    <div className={`${spaceGrotesk.className} tinashe-page`}>
       {/* Decorative halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
       {/* Dot pattern overlay */}
       <div

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -102,7 +102,7 @@ export default function AppearanceSettingsPage() {
               <Moon className="w-6 h-6 text-gray-500 dark:text-slate-400" />
               Appearance
             </h1>
-            <p className="text-gray-500 dark:text-slate-400">Customize how Ngurra Pathways looks</p>
+            <p className="text-gray-500 dark:text-slate-400">Customize how Tinashe looks</p>
           </div>
         </div>
 
@@ -231,7 +231,7 @@ export default function AppearanceSettingsPage() {
           </div>
 
           <p className="mt-4 text-sm text-gray-500 dark:text-slate-500">
-            Ngurra Pathways is designed to meet WCAG AA accessibility standards. 
+            Tinashe is designed to meet WCAG AA accessibility standards. 
             If you have specific accessibility needs, please{' '}
             <Link href="/help" className="text-blue-600 dark:text-blue-400 hover:underline">contact us</Link>.
           </p>

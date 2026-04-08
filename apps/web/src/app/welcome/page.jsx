@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { API_BASE } from '@/lib/apiBase';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ import useAuth from '../../hooks/useAuth';
 const STEPS = [
   {
     id: 'welcome',
-    title: 'Welcome to Ngurra Pathways',
+    title: 'Welcome to Tinashe',
   },
   {
     id: 'interests',
@@ -138,10 +138,10 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="ngurra-page py-12 px-4 relative overflow-hidden">
+    <div className="tinashe-page py-12 px-4 relative overflow-hidden">
       {/* Decorative halos */}
-      <div className="ngurra-halo-pink" />
-      <div className="ngurra-halo-purple" />
+      <div className="tinashe-halo-pink" />
+      <div className="tinashe-halo-purple" />
 
       <div className="max-w-2xl mx-auto relative">
         {/* Progress */}
@@ -193,7 +193,7 @@ export default function WelcomePage() {
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-slate-800 mb-4">
-                Welcome to Ngurra Pathways{user?.firstName ? `, ${user.firstName}` : ''}!
+                Welcome to Tinashe{user?.firstName ? `, ${user.firstName}` : ''}!
               </h1>
               <p className="text-lg text-slate-600 mb-8 max-w-md mx-auto">
                 We're excited to have you here. Let's take a moment to personalize your experience.

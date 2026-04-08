@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Notification Store
@@ -193,7 +193,7 @@ export const useNotificationStore = create<NotificationStore>()(
       },
     }),
     {
-      name: 'ngurra-notifications',
+      name: 'tinashe-notifications',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         preferences: state.preferences,

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Secure Token Storage
  * 
  * SECURITY: Stores access tokens in memory instead of localStorage to prevent XSS attacks.
@@ -62,7 +62,7 @@ export function clearTokens(): void {
   
   // Clear legacy tokens from older versions
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('ngurra_token');
+    localStorage.removeItem('tinashe_token');
   }
 }
 
@@ -127,7 +127,7 @@ export async function refreshAccessToken(): Promise<string | null> {
  */
 export async function initializeAuth(): Promise<boolean> {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('ngurra_token');
+    localStorage.removeItem('tinashe_token');
   }
   // If we already have a token in memory, we're good
   if (hasValidToken()) {

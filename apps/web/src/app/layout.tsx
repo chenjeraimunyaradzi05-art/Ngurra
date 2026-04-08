@@ -1,4 +1,4 @@
-import './globals.css';
+﻿import './globals.css';
 import dynamic from 'next/dynamic';
 import { Inter } from 'next/font/google';
 import HeaderNavigation from '../components/HeaderNavigation';
@@ -21,11 +21,11 @@ const DEVELOPER_NAME = 'Munyaradzi Chenjerai';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Nexta | The Pathway Platform for Opportunity and Economic Progress',
-    template: '%s | Nexta',
+    default: 'Tinashe | The Pathway Platform for Opportunity and Economic Progress',
+    template: '%s | Tinashe',
   },
   description:
-    'Nexta helps people discover opportunities, build skills, connect with mentors, use practical tools, and make long-term progress in one guided platform.',
+    'Tinashe helps people discover opportunities, build skills, connect with mentors, use practical tools, and make long-term progress in one guided platform.',
   keywords: [
     'career pathways',
     'job platform',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: DEVELOPER_NAME }],
   creator: DEVELOPER_NAME,
-  publisher: 'Nexta',
+  publisher: 'Tinashe',
   manifest: '/manifest.json',
   metadataBase: new URL(SITE_URL),
   alternates: {
@@ -56,35 +56,35 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Nexta',
+    title: 'Tinashe',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: SITE_URL,
-    siteName: 'Nexta',
-    title: 'Nexta | Opportunity, Connected. Progress, Supported.',
+    siteName: 'Tinashe',
+    title: 'Tinashe | Opportunity, Connected. Progress, Supported.',
     description:
       'Jobs, learning, mentors, community, money tools, and real-world support in one guided platform.',
     images: [
       {
-        url: '/brand/nexta-og-image.svg',
+        url: '/tinashe-logo.png',
         width: 1200,
-        height: 630,
-        alt: 'Nexta - pathway platform for opportunity and progress',
+        height: 1200,
+        alt: 'Tinashe - pathway platform for opportunity and progress',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nexta | Your Next Step, Connected',
+    title: 'Tinashe | Your Next Step, Connected',
     description: 'A guided platform for jobs, skills, mentors, tools, and long-term progress.',
-    images: ['/brand/nexta-og-image.svg'],
+    images: ['/tinashe-logo.png'],
   },
   icons: {
-    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
-    shortcut: [{ url: '/favicon.svg' }],
+    icon: [{ url: '/tinashe-logo.png', type: 'image/png' }],
+    apple: [{ url: '/tinashe-logo.png', type: 'image/png' }],
+    shortcut: [{ url: '/tinashe-logo.png' }],
   },
   category: 'career development',
 };
@@ -101,9 +101,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Nexta',
+    name: 'Tinashe',
     url: SITE_URL,
-    logo: `${SITE_URL}/favicon.svg`,
+    logo: `${SITE_URL}/tinashe-logo.png`,
     description:
       'A guided pathway platform for opportunity, economic progress, and long-term stability.',
     founder: DEVELOPER_NAME,
@@ -117,7 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Nexta',
+    name: 'Tinashe',
     url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',
@@ -129,7 +129,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/tinashe-logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         {/* Theme flash prevention script - runs before paint */}
@@ -138,7 +138,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('nexta-theme');
+                  var theme = localStorage.getItem('tinashe-theme');
                   var resolved = theme;
                   if (!theme || theme === 'system') {
                     resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Hook Exports
  * 
  * Central export point for all custom hooks.
- * Ngurra Pathways - Celestial Precious Stone Theme
+ * Tinashe - Celestial Precious Stone Theme
  */
 
 // Auth Hooks

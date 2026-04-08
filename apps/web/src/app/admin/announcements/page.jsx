@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Admin Announcements Management Page
@@ -387,7 +387,7 @@ export default function AdminAnnouncementsPage() {
       setAnnouncements([
         {
           id: '1',
-          title: 'Welcome to Ngurra Pathways',
+          title: 'Welcome to Tinashe',
           content: 'We are excited to have you here. Explore jobs, courses, and mentorship opportunities.',
           type: 'info',
           audience: ['all'],

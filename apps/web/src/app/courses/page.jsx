@@ -1,4 +1,4 @@
-import { API_BASE } from '@/lib/apiBase';
+﻿import { API_BASE } from '@/lib/apiBase';
 import CoursesClient from './CoursesClient';
 
 // SEO Metadata for Courses Page
@@ -7,7 +7,7 @@ export const metadata = {
   description: 'Explore culturally-grounded training courses for First Nations people. TAFE courses, certifications, and professional development designed with Indigenous perspectives.',
   keywords: ['Indigenous courses', 'First Nations training', 'Aboriginal education', 'TAFE Indigenous', 'culturally safe learning'],
   openGraph: {
-    title: 'Indigenous Training & Courses | Ngurra Pathways',
+    title: 'Indigenous Training & Courses | Tinashe',
     description: 'Explore culturally-grounded training courses for First Nations people.',
     url: 'https://ngurrapathways.life/courses',
   },

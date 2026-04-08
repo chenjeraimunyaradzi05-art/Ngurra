@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
@@ -107,15 +107,15 @@ export default function EnhancedHeader() {
               <Link href="/" className="flex items-center gap-2">
                 <Image
                   className="h-8 w-auto"
-                  src="/brand/ngurra-logo-primary.svg"
-                  alt="Ngurra Pathways"
+                  src="/brand/tinashe-logo-primary.svg"
+                  alt="Tinashe"
                   width={32}
                   height={32}
                   priority
                   unoptimized
                 />
                 <span className="hidden sm:block font-bold text-xl bg-gradient-to-r from-[#FFD700] to-[#50C878] bg-clip-text text-transparent">
-                  Ngurra
+                  Tinashe
                 </span>
               </Link>
 

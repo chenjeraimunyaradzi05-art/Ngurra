@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from 'next/link';
 import { Space_Grotesk } from 'next/font/google';
@@ -36,12 +36,12 @@ export default function Footer() {
                 N
               </div>
               <div>
-                <div className="text-lg font-bold text-white">Nexta</div>
+                <div className="text-lg font-bold text-white">Tinashe</div>
                 <div className="text-xs text-slate-400">Your next step, connected.</div>
               </div>
             </div>
             <p className="text-xs text-slate-400">
-              Nexta is the calm, capable guide for real progress: jobs, learning, mentors,
+              Tinashe is the calm, capable guide for real progress: jobs, learning, mentors,
               community, business tools, financial wellbeing, and long-term momentum.
             </p>
           </div>
@@ -61,17 +61,17 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/#suite" className="flex items-center gap-1.5 rounded-sm text-slate-400 hover:text-white transition-colors">
-                  <Bot className="w-3 h-3" /> Nexta AI
+                  <Bot className="w-3 h-3" /> Tinashe AI
                 </Link>
               </li>
               <li>
                 <Link href="/community" className="flex items-center gap-1.5 rounded-sm text-slate-400 hover:text-white transition-colors">
-                  <BookOpen className="w-3 h-3" /> Nexta Connect
+                  <BookOpen className="w-3 h-3" /> Tinashe Connect
                 </Link>
               </li>
               <li>
                 <Link href="/business-suite" className="flex items-center gap-1.5 rounded-sm text-slate-400 hover:text-white transition-colors">
-                  <Building2 className="w-3 h-3" /> Nexta Business
+                  <Building2 className="w-3 h-3" /> Tinashe Business
                 </Link>
               </li>
               <li>
@@ -155,7 +155,7 @@ export default function Footer() {
             Free to join. Your data stays yours. You control what you share.
           </p>
           <p className="whitespace-nowrap text-slate-400">
-            © {currentYear} Nexta · Built by <span className="text-white">Munyaradzi Chenjerai</span>
+            © {currentYear} Tinashe · Built by <span className="text-white">Munyaradzi Chenjerai</span>
           </p>
         </div>
       </div>

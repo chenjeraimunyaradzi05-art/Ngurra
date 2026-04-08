@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SEO Metadata Component
  * 
  * Provides consistent SEO metadata across the application.
@@ -20,8 +20,8 @@ export interface SEOProps {
   author?: string;
 }
 
-const SITE_NAME = 'Nexta';
-const DEFAULT_DESCRIPTION = 'Nexta helps people discover opportunities, build skills, connect with mentors, and move forward with practical support.';
+const SITE_NAME = 'Tinashe';
+const DEFAULT_DESCRIPTION = 'Tinashe helps people discover opportunities, build skills, connect with mentors, and move forward with practical support.';
 const DEFAULT_IMAGE = '/brand/nexta-og-image.svg';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 

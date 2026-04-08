@@ -1,5 +1,5 @@
-// UI Components barrel export
-// Ngurra Pathways - Celestial Precious Stone Theme
+﻿// UI Components barrel export
+// Tinashe - Celestial Precious Stone Theme
 
 // Skeleton components
 export { Skeleton } from './Skeleton';

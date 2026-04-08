@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { API_BASE } from '@/lib/apiBase';
 import { useState } from 'react';
@@ -105,11 +105,11 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="ngurra-page py-12 px-6">
+    <div className="tinashe-page py-12 px-6">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -325,7 +325,7 @@ export default function ContactPage() {
                 </li>
                 <li>
                   <Link href="/about" className="text-pink-600 hover:text-pink-700 text-sm">
-                    ℹ️ About Ngurra Pathways
+                    ℹ️ About Tinashe
                   </Link>
                 </li>
               </ul>

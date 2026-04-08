@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * i18n Provider and Hooks
@@ -34,7 +34,7 @@ const AVAILABLE_LOCALES = [
 ];
 
 const DEFAULT_LOCALE = 'en';
-const STORAGE_KEY = 'ngurra-locale';
+const STORAGE_KEY = 'tinashe-locale';
 
 interface I18nProviderProps {
   children: ReactNode;

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { SafeExit } from '@/components/security/SafeExit';
@@ -101,7 +101,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span>Ngurra</span>
+            <span>Tinashe</span>
           </Link>
         </div>
 
@@ -152,7 +152,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span>Ngurra</span>
+              <span>Tinashe</span>
             </Link>
 
             <div className="flex items-center gap-2">

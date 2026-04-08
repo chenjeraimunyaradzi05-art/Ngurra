@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 /**
@@ -188,7 +188,7 @@ export default function IntegrationsPage() {
                     <div className="mb-6">
                       <h2 className="text-xl font-semibold mb-2">API Keys</h2>
                       <p className="text-gray-600 text-sm">
-                        Create API keys for programmatic access to the Ngurra Pathways API.
+                        Create API keys for programmatic access to the Tinashe API.
                       </p>
                     </div>
 

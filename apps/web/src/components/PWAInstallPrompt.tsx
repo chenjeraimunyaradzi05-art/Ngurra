@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * PWA Install Prompt Component
@@ -100,7 +100,7 @@ export default function PWAInstallPrompt() {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h3 className="font-semibold text-white">Install Ngurra Pathways</h3>
+                <h3 className="font-semibold text-white">Install Tinashe</h3>
                 <p className="text-sm text-slate-400 mt-1">
                   Add to your home screen for quick access and offline support
                 </p>
@@ -204,7 +204,7 @@ export function IOSInstallInstructions() {
         </div>
         
         <p className="text-sm text-slate-400 mb-4">
-          Install Ngurra Pathways for the best experience:
+          Install Tinashe for the best experience:
         </p>
         
         <ol className="space-y-3 text-sm">

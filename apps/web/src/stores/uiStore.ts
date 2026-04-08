@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * UI Store
@@ -203,7 +203,7 @@ export const useUIStore = create<UIStore>()(
       setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
     }),
     {
-      name: 'ngurra-ui',
+      name: 'tinashe-ui',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         theme: state.theme,

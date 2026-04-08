@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -104,7 +104,7 @@ export default function SignInPage() {
               Welcome Back
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Sign in to continue to Ngurra Pathways
+              Sign in to continue to Tinashe
             </p>
           </div>
 

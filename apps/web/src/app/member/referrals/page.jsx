@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 import { useState, useEffect } from 'react';
@@ -173,7 +173,7 @@ export default function ReferralsPage() {
           {/* Social share buttons */}
           <div className="mt-6 flex gap-3">
             <a
-              href={`https://wa.me/?text=Join%20Ngurra%20Pathways%20and%20start%20your%20career%20journey!%20Use%20my%20referral%20code%3A%20${referralData?.referralCode}%20${encodeURIComponent(referralData?.shareUrl || '')}`}
+              href={`https://wa.me/?text=Join%20Tinashe%20Pathways%20and%20start%20your%20career%20journey!%20Use%20my%20referral%20code%3A%20${referralData?.referralCode}%20${encodeURIComponent(referralData?.shareUrl || '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
@@ -181,7 +181,7 @@ export default function ReferralsPage() {
               📱 WhatsApp
             </a>
             <a
-              href={`mailto:?subject=Join%20Ngurra%20Pathways&body=I%27m%20inviting%20you%20to%20join%20Ngurra%20Pathways!%20Use%20my%20referral%20code%3A%20${referralData?.referralCode}%0A%0A${referralData?.shareUrl}`}
+              href={`mailto:?subject=Join%20Tinashe%20Pathways&body=I%27m%20inviting%20you%20to%20join%20Tinashe%20Pathways!%20Use%20my%20referral%20code%3A%20${referralData?.referralCode}%0A%0A${referralData?.shareUrl}`}
               className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
             >
               ✉️ Email

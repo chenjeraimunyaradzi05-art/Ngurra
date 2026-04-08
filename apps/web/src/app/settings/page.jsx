@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import useAuth from '../../hooks/useAuth';
@@ -146,11 +146,11 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="ngurra-page p-6">
+    <div className="tinashe-page p-6">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       <div className="max-w-3xl mx-auto relative z-10">
@@ -212,9 +212,9 @@ export default function SettingsPage() {
 
         {/* Version Info */}
         <div className="mt-8 text-center text-sm text-slate-400">
-          <p>Ngurra Pathways v1.0.0</p>
+          <p>Tinashe v1.0.0</p>
           <p className="mt-1">
-            © {new Date().getFullYear()} Ngurra Pathways. All rights reserved.
+            © {new Date().getFullYear()} Tinashe. All rights reserved.
           </p>
         </div>
       </div>

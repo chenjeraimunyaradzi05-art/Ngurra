@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -379,7 +379,7 @@ export function AppearanceSettings() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Appearance</h1>
-          <p className="text-gray-500 mt-1">Customize how Ngurra Pathways looks for you</p>
+          <p className="text-gray-500 mt-1">Customize how Tinashe looks for you</p>
         </div>
         <Button variant="outline" onClick={handleReset}>
           Reset to Defaults

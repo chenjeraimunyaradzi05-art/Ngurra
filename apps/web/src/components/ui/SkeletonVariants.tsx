@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Skeleton } from './Skeleton';
 
 /**
- * Skeleton Variants for Ngurra Pathways
+ * Skeleton Variants for Tinashe
  * 
  * Pre-built skeleton loading states for common UI patterns.
  * Uses the Celestial Precious Stone theme.

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Briefcase, Heart, Landmark, Sparkles, Users } from 'lucide-react';
 
@@ -48,7 +48,7 @@ const pathwayCards = [
 
 export default function WomenPathwaysPage() {
   return (
-    <div className="ngurra-page py-10 px-4">
+    <div className="tinashe-page py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-10 shadow-sm">
           <div className="inline-flex items-center gap-2 rounded-full border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-900/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">

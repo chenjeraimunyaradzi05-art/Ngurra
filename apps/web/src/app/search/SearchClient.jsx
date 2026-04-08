@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -53,7 +53,7 @@ export default function SearchClient() {
       { id: 3, type: 'org', name: 'CareerTrackers', followers: 2560, verified: true }
     ],
     posts: [
-      { id: 1, type: 'post', author: 'Ngurra Pathways', content: 'New partnership with TAFE Queensland announced...', likes: 312 },
+      { id: 1, type: 'post', author: 'Tinashe', content: 'New partnership with TAFE Queensland announced...', likes: 312 },
       { id: 2, type: 'post', author: 'BHP Careers', content: 'Applications open for 2026 apprenticeships...', likes: 478 }
     ]
   };
@@ -85,11 +85,11 @@ export default function SearchClient() {
   };
 
   return (
-    <div className="ngurra-page pt-24 pb-20">
+    <div className="tinashe-page pt-24 pb-20">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       <div className="container mx-auto px-4 max-w-4xl relative z-10">

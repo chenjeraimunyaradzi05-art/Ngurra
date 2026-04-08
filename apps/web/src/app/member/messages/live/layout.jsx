@@ -1,5 +1,5 @@
-export const metadata = {
-  title: 'Live Chat | Ngurra Pathways',
+﻿export const metadata = {
+  title: 'Live Chat | Tinashe',
   description: 'Real-time messaging with mentors, employers, and community members.',
 };
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -54,8 +54,8 @@ export default function RentalSeekersPage() {
     <div className="min-h-screen">
       {/* === HERO SECTION === */}
       <section className="relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50/40 to-purple-50/40 dark:from-slate-900 dark:to-slate-800">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
 
         <div className="relative max-w-6xl mx-auto">
           <div className="mb-4">

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -333,7 +333,7 @@ function StorySubmitForm({ onSuccess }) {
                     className="mt-1"
                 />
                 <label htmlFor="consentToPublish" className="text-sm text-gray-600">
-                    I consent to having my story published on the Ngurra platform. I understand it will 
+                    I consent to having my story published on the Tinashe platform. I understand it will 
                     be reviewed before publication and may be edited for clarity. I confirm all 
                     information is accurate and I have the right to share this story.
                 </label>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -148,7 +148,7 @@ const generateShareLinks = (referralLink: string, message: string) => ({
   facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`,
   linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`,
   whatsapp: `https://wa.me/?text=${encodeURIComponent(`${message} ${referralLink}`)}`,
-  email: `mailto:?subject=${encodeURIComponent('Join Ngurra Pathways!')}&body=${encodeURIComponent(`${message}\n\n${referralLink}`)}`,
+  email: `mailto:?subject=${encodeURIComponent('Join Tinashe!')}&body=${encodeURIComponent(`${message}\n\n${referralLink}`)}`,
 });
 
 // Status Badge Component
@@ -277,7 +277,7 @@ function ShareModal({
   referralLink: string;
 }) {
   const { addToast } = useToast();
-  const shareMessage = "Join me on Ngurra Pathways - the platform connecting Indigenous Australians with career opportunities!";
+  const shareMessage = "Join me on Tinashe - the platform connecting Indigenous Australians with career opportunities!";
   const shareLinks = generateShareLinks(referralLink, shareMessage);
 
   const copyToClipboard = async () => {

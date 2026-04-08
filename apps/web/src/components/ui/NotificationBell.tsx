@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { Bell } from 'lucide-react';
@@ -7,7 +7,7 @@ import { Bell } from 'lucide-react';
  * NotificationBell Component
  * 
  * An animated notification bell icon with badge counter.
- * Part of the Ngurra Pathways Celestial Precious Stone theme.
+ * Part of the Tinashe Celestial Precious Stone theme.
  * 
  * Features:
  * - Animated bell shake on new notifications

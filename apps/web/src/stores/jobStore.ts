@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Job Store
@@ -298,7 +298,7 @@ export const useJobStore = create<JobStore>()(
       },
     }),
     {
-      name: 'ngurra-jobs',
+      name: 'tinashe-jobs',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         savedJobs: state.savedJobs,

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 
@@ -6,7 +6,7 @@ import React, { useEffect, useCallback, useRef, useState } from 'react';
  * Keyboard Navigation Utilities
  *
  * Custom hooks and utilities for keyboard accessibility.
- * Ngurra Pathways - Celestial Precious Stone Theme
+ * Tinashe - Celestial Precious Stone Theme
  */
 
 // ============================================================================

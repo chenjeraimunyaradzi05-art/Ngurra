@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Apprenticeships Page
@@ -16,11 +16,11 @@ const accentPurple = '#8B5CF6';
 
 export default function ApprenticeshipsPage() {
   return (
-    <div className="ngurra-page py-8 px-4">
+    <div className="tinashe-page py-8 px-4">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">

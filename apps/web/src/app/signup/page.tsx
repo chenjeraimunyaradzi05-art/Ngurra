@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -78,7 +78,7 @@ export default function SignUpPage() {
     // Enforce Female Only - must select FEMALE and check the attestation box
     if (formData.gender !== 'FEMALE') {
       setError(
-        'Ngurra Pathways is a culturally safe space for First Nations women. Please select "Female / Woman / Tiddas" to continue.',
+        'Tinashe is a culturally safe space for First Nations women. Please select "Female / Woman / Tiddas" to continue.',
       );
       return;
     }
@@ -175,7 +175,7 @@ export default function SignUpPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Create Account
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">Join Ngurra Pathways today</p>
+            <p className="text-gray-600 dark:text-gray-400">Join Tinashe today</p>
           </div>
 
           <div className="mb-6 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 p-4">
@@ -202,7 +202,7 @@ export default function SignUpPage() {
               <Lock className="w-4 h-4" /> Women-Only Safe Space
             </h3>
             <p className="text-sm text-pink-700 dark:text-pink-300">
-              Ngurra Pathways is a culturally safe digital ecosystem exclusively for First Nations
+              Tinashe is a culturally safe digital ecosystem exclusively for First Nations
               women.
             </p>
             <ul className="mt-2 space-y-1 text-xs text-pink-600 dark:text-pink-400 list-disc pl-4">

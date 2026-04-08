@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Cookie, X, Check } from 'lucide-react';
 
-const CONSENT_KEY = 'ngurra_cookie_consent';
+const CONSENT_KEY = 'tinashe_cookie_consent';
 const CONSENT_VERSION = '1'; // Increment when policy changes
 
 export default function CookieConsent() {

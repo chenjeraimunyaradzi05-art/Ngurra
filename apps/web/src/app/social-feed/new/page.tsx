@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 import { useState, useRef } from 'react';
@@ -98,7 +98,7 @@ export default function NewPostPage() {
   ];
 
   return (
-    <div className={`${spaceGrotesk.className} ngurra-page`}>
+    <div className={`${spaceGrotesk.className} tinashe-page`}>
       {/* Dot pattern overlay */}
       {/* Error Toast */}
       {error && (

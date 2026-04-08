@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Government Portal Layout
  * 
  * Layout wrapper for government user pages with
@@ -6,7 +6,7 @@
  */
 
 export const metadata = {
-  title: 'Government Portal | Ngurra Pathways',
+  title: 'Government Portal | Tinashe',
   description: 'Closing the Gap reporting and compliance dashboard for government stakeholders',
 };
 

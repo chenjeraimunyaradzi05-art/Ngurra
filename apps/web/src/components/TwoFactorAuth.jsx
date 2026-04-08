@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Two-Factor Authentication Component
@@ -151,7 +151,7 @@ export default function TwoFactorAuth() {
     if (!setupData?.backupCodes) return;
     
     const content = [
-      'Ngurra Pathways - Two-Factor Authentication Backup Codes',
+      'Tinashe - Two-Factor Authentication Backup Codes',
       '='.repeat(50),
       '',
       'Store these codes in a safe place. Each code can only be used once.',
@@ -165,7 +165,7 @@ export default function TwoFactorAuth() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'ngurra-pathways-backup-codes.txt';
+    a.download = 'tinashe-backup-codes.txt';
     a.click();
     URL.revokeObjectURL(url);
   };

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { API_BASE } from '@/lib/apiBase';
 import api from '@/lib/apiClient';
@@ -151,27 +151,27 @@ export default function PrivacyPage() {
 
   if (loading) {
     return (
-      <div className="ngurra-page max-w-4xl mx-auto px-4 py-16">
+      <div className="tinashe-page max-w-4xl mx-auto px-4 py-16">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-300 dark:border-slate-700 border-t-purple-500" />
-          <span className="ngurra-muted">Loading privacy & data settings…</span>
+          <span className="tinashe-muted">Loading privacy & data settings…</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="ngurra-page max-w-4xl mx-auto px-4 py-8">
+    <div className="tinashe-page max-w-4xl mx-auto px-4 py-8">
       <nav className="mb-6 text-sm" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-2 ngurra-muted">
-          <li><Link href="/" className="ngurra-link">Home</Link></li>
+        <ol className="flex items-center gap-2 tinashe-muted">
+          <li><Link href="/" className="tinashe-link">Home</Link></li>
           <li><span className="text-slate-400 dark:text-slate-600">/</span></li>
           <li className="text-slate-900 dark:text-white">Privacy & Data</li>
         </ol>
       </nav>
 
-      <h1 className="ngurra-h1 mb-2">Privacy & Data</h1>
-      <p className="ngurra-text mb-8">
+      <h1 className="tinashe-h1 mb-2">Privacy & Data</h1>
+      <p className="tinashe-text mb-8">
         Manage your consent choices, export your data, and request account deletion.
       </p>
 
@@ -181,9 +181,9 @@ export default function PrivacyPage() {
         </div>
       )}
 
-      <section className="ngurra-card p-6 mb-6">
-        <h2 className="ngurra-h2 text-xl mb-1">Consent Preferences</h2>
-        <p className="ngurra-muted text-sm mb-4">Last updated: {consentUpdatedLabel}</p>
+      <section className="tinashe-card p-6 mb-6">
+        <h2 className="tinashe-h2 text-xl mb-1">Consent Preferences</h2>
+        <p className="tinashe-muted text-sm mb-4">Last updated: {consentUpdatedLabel}</p>
 
         <div className="space-y-3">
           {[
@@ -196,7 +196,7 @@ export default function PrivacyPage() {
             <label key={key} className="flex items-start justify-between gap-4 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
               <div>
                 <div className="font-medium">{title}</div>
-                <div className="text-sm ngurra-muted">{desc}</div>
+                <div className="text-sm tinashe-muted">{desc}</div>
               </div>
               <input
                 type="checkbox"
@@ -209,12 +209,12 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <section className="ngurra-card p-6 mb-6">
-        <h2 className="ngurra-h2 text-xl mb-2">Community Data Benefit Agreement</h2>
-        <p className="ngurra-text mb-4">{cdba?.description || 'Anonymized, aggregated insights can help benefit community outcomes.'}</p>
+      <section className="tinashe-card p-6 mb-6">
+        <h2 className="tinashe-h2 text-xl mb-2">Community Data Benefit Agreement</h2>
+        <p className="tinashe-text mb-4">{cdba?.description || 'Anonymized, aggregated insights can help benefit community outcomes.'}</p>
 
         {cdba?.benefits?.length ? (
-          <div className="text-sm ngurra-text space-y-1">
+          <div className="text-sm tinashe-text space-y-1">
             {cdba.benefits.map((b) => (
               <div key={b}>• {b}</div>
             ))}
@@ -222,9 +222,9 @@ export default function PrivacyPage() {
         ) : null}
       </section>
 
-      <section className="ngurra-card p-6 mb-6">
-        <h2 className="ngurra-h2 text-xl mb-2">Export Your Data</h2>
-        <p className="ngurra-muted text-sm mb-4">
+      <section className="tinashe-card p-6 mb-6">
+        <h2 className="tinashe-h2 text-xl mb-2">Export Your Data</h2>
+        <p className="tinashe-muted text-sm mb-4">
           Request a portable export of your profile and activity. When ready, you can download it.
         </p>
 
@@ -233,7 +233,7 @@ export default function PrivacyPage() {
             type="button"
             disabled={exporting}
             onClick={() => requestExport('json')}
-            className="ngurra-btn-primary px-4 py-2 rounded-lg"
+            className="tinashe-btn-primary px-4 py-2 rounded-lg"
           >
             Request JSON Export
           </button>
@@ -241,7 +241,7 @@ export default function PrivacyPage() {
             type="button"
             disabled={exporting}
             onClick={() => requestExport('csv')}
-            className="ngurra-btn-secondary px-4 py-2 rounded-lg"
+            className="tinashe-btn-secondary px-4 py-2 rounded-lg"
           >
             Request CSV Export
           </button>
@@ -249,13 +249,13 @@ export default function PrivacyPage() {
 
         {exportId && (
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-            <div className="text-sm ngurra-text mb-2">Export ID: <span className="text-slate-900 dark:text-slate-200">{exportId}</span></div>
-            <div className="text-sm ngurra-muted mb-4">Status: {exportStatus?.status || 'unknown'}</div>
+            <div className="text-sm tinashe-text mb-2">Export ID: <span className="text-slate-900 dark:text-slate-200">{exportId}</span></div>
+            <div className="text-sm tinashe-muted mb-4">Status: {exportStatus?.status || 'unknown'}</div>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
                 onClick={refreshExportStatus}
-                className="ngurra-btn-secondary px-4 py-2 rounded-lg"
+                className="tinashe-btn-secondary px-4 py-2 rounded-lg"
               >
                 Refresh Status
               </button>
@@ -272,9 +272,9 @@ export default function PrivacyPage() {
         )}
       </section>
 
-      <section className="ngurra-card border-red-200 dark:border-red-900/40 p-6">
-        <h2 className="ngurra-h2 text-xl mb-2">Account Deletion</h2>
-        <p className="ngurra-muted text-sm mb-4">
+      <section className="tinashe-card border-red-200 dark:border-red-900/40 p-6">
+        <h2 className="tinashe-h2 text-xl mb-2">Account Deletion</h2>
+        <p className="tinashe-muted text-sm mb-4">
           You can request deletion of your account. A grace period applies, and you can cancel within that window.
         </p>
 
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
               type="email"
               value={confirmEmail}
               onChange={(e) => setConfirmEmail(e.target.value)}
-              className="ngurra-input"
+              className="tinashe-input"
               placeholder="you@example.com"
             />
           </div>
@@ -295,7 +295,7 @@ export default function PrivacyPage() {
               type="text"
               value={deleteReason}
               onChange={(e) => setDeleteReason(e.target.value)}
-              className="ngurra-input"
+              className="tinashe-input"
               placeholder="Your reason"
             />
           </div>

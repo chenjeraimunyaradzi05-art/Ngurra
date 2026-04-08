@@ -1,9 +1,9 @@
-// Nexta Service Worker
+﻿// Tinashe Service Worker
 // Provides offline support, caching, and push notifications
 
-const CACHE_NAME = 'nexta-v1';
-const STATIC_CACHE = 'nexta-static-v1';
-const DYNAMIC_CACHE = 'nexta-dynamic-v1';
+const CACHE_NAME = 'tinashe-v1';
+const STATIC_CACHE = 'tinashe-static-v1';
+const DYNAMIC_CACHE = 'tinashe-dynamic-v1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
@@ -126,7 +126,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   console.log('[SW] Push received:', event);
 
-  let data = { title: 'Nexta', body: 'You have a new update' };
+  let data = { title: 'Tinashe', body: 'You have a new update' };
 
   if (event.data) {
     try {
@@ -143,7 +143,7 @@ self.addEventListener('push', (event) => {
     vibrate: [100, 50, 100],
     data: data.data || {},
     actions: data.actions || [],
-    tag: data.tag || 'nexta-notification',
+    tag: data.tag || 'tinashe-notification',
     renotify: true,
   };
 
@@ -215,7 +215,7 @@ async function syncOfflineApplications() {
 // IndexedDB helpers for offline storage
 function openIndexedDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('ngurra-offline', 1);
+    const request = indexedDB.open('tinashe-offline', 1);
     
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);

@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Zustand State Management Stores
  * 
- * Centralized state management for the Ngurra Pathways web application.
+ * Centralized state management for the Tinashe web application.
  * Replaces React Context for complex state flows.
  */
 

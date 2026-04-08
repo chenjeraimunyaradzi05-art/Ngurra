@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 /**
- * Theme Provider for Nexta
+ * Theme Provider for Tinashe
  * 
  * Supports three theme modes:
  * - light: Standard light theme
@@ -138,7 +138,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = 'nexta-theme';
+const STORAGE_KEY = 'tinashe-theme';
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'dark';

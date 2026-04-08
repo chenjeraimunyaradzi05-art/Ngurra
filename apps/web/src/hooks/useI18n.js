@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Internationalization Hook for React
  * 
  * Provides localization utilities for React components.
@@ -57,7 +57,7 @@ const translations = {
     
     // Acknowledgment
     'acknowledgment.short': 'We acknowledge the Traditional Custodians of the land.',
-    'acknowledgment.full': 'Ngurra Pathways acknowledges the Traditional Custodians of the lands on which we work and live. We pay our respects to Elders past, present and emerging.',
+    'acknowledgment.full': 'Tinashe acknowledges the Traditional Custodians of the lands on which we work and live. We pay our respects to Elders past, present and emerging.',
   },
 };
 

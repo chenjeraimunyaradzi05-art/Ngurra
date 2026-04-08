@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 import { getAccessToken, refreshAccessToken } from '@/lib/tokenStore';
@@ -143,7 +143,7 @@ function ReportDetailModal({ report, onClose, onDownload }) {
           </div>
           {/* Print header */}
           <div className="hidden print:block mt-2">
-            <p className="text-sm text-gray-500">Ngurra Pathways - Closing the Gap Compliance Report</p>
+            <p className="text-sm text-gray-500">Tinashe - Closing the Gap Compliance Report</p>
             <p className="text-sm text-gray-500">Generated: {new Date().toLocaleDateString('en-AU')}</p>
           </div>
         </div>

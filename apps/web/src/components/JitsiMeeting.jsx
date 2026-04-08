@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { Video, VideoOff, Mic, MicOff, PhoneOff, Users, Maximize2, Minimize2 } from 'lucide-react';
@@ -20,7 +20,7 @@ export default function JitsiMeeting({
   onClose,
   configOverwrite = {},
   interfaceConfigOverwrite = {},
-  subject = 'Ngurra Mentorship Session',
+  subject = 'Tinashe Mentorship Session',
   height = '100%',
   width = '100%',
 }) {

@@ -1,9 +1,9 @@
-import { Eye, Keyboard, Monitor, Volume2, FileText, Mail, Settings, Check } from 'lucide-react';
+﻿import { Eye, Keyboard, Monitor, Volume2, FileText, Mail, Settings, Check } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Accessibility Statement - Ngurra Pathways',
-  description: 'Our commitment to making Ngurra Pathways accessible to all users.',
+  title: 'Accessibility Statement - Tinashe',
+  description: 'Our commitment to making Tinashe accessible to all users.',
 };
 
 export default function AccessibilityPage() {
@@ -47,7 +47,7 @@ export default function AccessibilityPage() {
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">Accessibility Statement</h1>
         <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-          We believe technology should be accessible to everyone. Ngurra Pathways 
+          We believe technology should be accessible to everyone. Tinashe 
           is committed to providing an inclusive experience for all users.
         </p>
       </div>
@@ -60,7 +60,7 @@ export default function AccessibilityPage() {
             Our Commitment
           </h2>
           <p className="text-slate-300 mb-4">
-            Ngurra Pathways is committed to ensuring digital accessibility for people with disabilities. 
+            Tinashe is committed to ensuring digital accessibility for people with disabilities. 
             We are continually improving the user experience for everyone and applying the relevant 
             accessibility standards to ensure we provide equal access to all users.
           </p>
@@ -163,7 +163,7 @@ export default function AccessibilityPage() {
         </h2>
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
           <p className="text-slate-300 mb-4">
-            We welcome your feedback on the accessibility of Ngurra Pathways. 
+            We welcome your feedback on the accessibility of Tinashe. 
             If you encounter any barriers or have suggestions for improvement, please let us know:
           </p>
           <ul className="space-y-2 text-slate-300 mb-6">

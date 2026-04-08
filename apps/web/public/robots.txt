@@ -1,5 +1,5 @@
-# Ngurra Pathways - robots.txt
-# https://ngurrapathways.life
+﻿# Tinashe - robots.txt
+# https://tinashe.life
 
 User-agent: *
 Allow: /
@@ -15,4 +15,4 @@ Disallow: /_next/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://ngurrapathways.life/sitemap.xml
+Sitemap: https://tinashe.life/sitemap.xml

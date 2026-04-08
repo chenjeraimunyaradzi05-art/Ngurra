@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+﻿import { Suspense } from 'react';
 import SearchClient from './SearchClient';
 import { Loader2 } from 'lucide-react';
 
@@ -8,11 +8,11 @@ const accentPurple = '#8B5CF6';
 
 function SearchFallback() {
   return (
-    <div className="ngurra-page pt-24 pb-20">
+    <div className="tinashe-page pt-24 pb-20">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
       <div className="container mx-auto px-4 max-w-4xl relative z-10">
         <div className="text-center py-12">

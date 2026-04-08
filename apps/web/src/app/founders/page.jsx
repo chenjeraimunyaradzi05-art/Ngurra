@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { HeartHandshake, Lightbulb, Target, Users, TrendingUp, Scale } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function FoundersPage() {
             <div>
               <h1 className="text-3xl font-bold text-white">Founders & Vision</h1>
               <p className="text-slate-400">
-                Why Ngurra Pathways exists, who built it, and the impact it aims to create
+                Why Tinashe exists, who built it, and the impact it aims to create
               </p>
             </div>
           </div>
@@ -42,8 +42,8 @@ export default function FoundersPage() {
               <Lightbulb className="w-6 h-6 text-amber-300 mb-2" />
               <h2 className="font-semibold text-white mb-1">Inspiration</h2>
               <p className="text-sm text-slate-400">
-                The idea for the platform was inspired by Takutai Garland and his fiancée, Miss
-                Fiona Leanee Baker.
+                The idea for the platform was inspired by Takutai Garland — a vision for
+                culturally grounded pathways that connect people to real opportunity.
               </p>
             </div>
             <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
@@ -70,7 +70,7 @@ export default function FoundersPage() {
           <h2 className="text-xl font-semibold text-white mb-3">What the platform is about</h2>
           <div className="space-y-3 text-slate-300">
             <p>
-              Ngurra Pathways is a culturally-grounded employment, education, and mentorship
+              Tinashe is a culturally-grounded employment, education, and mentorship
               platform designed to connect people to real opportunities and support them through the
               full journey: discovery · preparation · placement · progression.
             </p>
@@ -107,75 +107,48 @@ export default function FoundersPage() {
         {/* Founders */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 mb-8">
           <h2 className="text-xl font-semibold text-white mb-4">Founders</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-slate-900/60 to-slate-900/20 border border-slate-800 rounded-xl p-5 flex flex-col">
-              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gradient-to-br from-purple-950/30 to-slate-900/20 border border-purple-800/40 rounded-xl p-5 flex flex-col">
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl border border-purple-900/60 shadow-lg shadow-purple-900/20">
                 <OptimizedImage
                   src="/founders/Taku.jpeg"
                   alt="Portrait of Takutai Garland"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   priority
                 />
               </div>
               <div className="mt-4">
-                <h3 className="font-semibold text-white">Takutai Garland</h3>
-                <p className="text-sm text-slate-400">Platform inspiration</p>
+                <h3 className="font-semibold text-white text-lg">Takutai Garland</h3>
+                <p className="text-sm text-purple-400">Inspirational founder</p>
                 <p className="mt-3 text-sm text-slate-300">
-                  Inspired the platform concept and direction alongside his fiancée.
+                  Inspired the platform concept and direction — a vision for culturally grounded
+                  pathways that connect people to real opportunities and long-term progress.
                 </p>
               </div>
             </div>
 
             <div className="bg-gradient-to-br from-slate-900/60 to-slate-900/20 border border-slate-800 rounded-xl p-5 flex flex-col">
-              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-slate-800">
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl border border-pink-900/40 shadow-lg shadow-pink-900/20">
                 <OptimizedImage
-                  src="/founders/Fiona.jpeg"
-                  alt="Portrait of Miss Fiona Leanee Baker"
+                  src="/tinashe-logo.png"
+                  alt="Tinashe platform logo"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   priority
                 />
               </div>
               <div className="mt-4">
-                <h3 className="font-semibold text-white">Miss Fiona Leanee Baker</h3>
-                <p className="text-sm text-slate-400">Platform inspiration</p>
+                <h3 className="font-semibold text-white text-lg">Munyaradzi Chenjerai</h3>
+                <p className="text-sm text-pink-400">Developer & Architect</p>
                 <p className="mt-3 text-sm text-slate-300">
-                  Co-inspired the platform vision and the community-first approach.
+                  Designed the platform architecture and delivered the full implementation across
+                  web, API, and mobile — bringing the Tinashe vision to life.
                 </p>
               </div>
             </div>
-
-            <div className="bg-gradient-to-br from-purple-950/30 to-slate-900/20 border border-purple-800/40 rounded-xl p-5 flex flex-col">
-              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg border border-purple-900/60">
-                <OptimizedImage
-                  src="/founders/Taku and Fiona.jpeg"
-                  alt="Takutai Garland and Miss Fiona Leanee Baker together"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              </div>
-              <div className="mt-4">
-                <h3 className="font-semibold text-white">Together in vision</h3>
-                <p className="text-sm text-slate-400">Founding partners</p>
-                <p className="mt-3 text-sm text-slate-300">
-                  Their partnership anchors the platform&apos;s cultural grounding and people-first
-                  ethos.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 bg-gradient-to-br from-purple-950/30 to-slate-900/20 border border-purple-800/30 rounded-xl p-5">
-            <h3 className="font-semibold text-white">MoneyMan ©</h3>
-            <p className="text-sm text-slate-400">Architecture & coding</p>
-            <p className="mt-3 text-sm text-slate-300">
-              Designed the platform architecture and delivered the implementation across web, API,
-              and mobile.
-            </p>
           </div>
         </div>
 
@@ -224,7 +197,7 @@ export default function FoundersPage() {
               </p>
               <p>
                 By helping people move into training and employment (and stay supported once they
-                get there), Ngurra Pathways aims to contribute to long-term community strength and,
+                get there), Tinashe aims to contribute to long-term community strength and,
                 potentially, lower rates of incarceration through prevention and opportunity.
               </p>
             </div>

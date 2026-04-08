@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -111,12 +111,12 @@ const DEFAULT_TOURS: Tour[] = [
   {
     id: 'getting-started',
     title: 'Getting Started',
-    description: 'Learn the basics of Ngurra Pathways',
+    description: 'Learn the basics of Tinashe',
     duration: '5 min',
     category: 'getting-started',
     completed: false,
     steps: [
-      { id: '1', title: 'Welcome!', content: 'Let\'s take a quick tour of Ngurra Pathways and discover what you can do here.' },
+      { id: '1', title: 'Welcome!', content: 'Let\'s take a quick tour of Tinashe and discover what you can do here.' },
       { id: '2', title: 'Your Dashboard', content: 'This is your home base. See job recommendations, updates, and quick actions.', target: '#dashboard' },
       { id: '3', title: 'Job Search', content: 'Find opportunities that match your skills and interests.', target: '#job-search' },
       { id: '4', title: 'Your Profile', content: 'Complete your profile to stand out to employers.', target: '#profile' },
@@ -550,7 +550,7 @@ export function HelpTour() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Help & Tours</h1>
-      <p className="text-gray-500 mb-8">Learn how to use Ngurra Pathways effectively</p>
+      <p className="text-gray-500 mb-8">Learn how to use Tinashe effectively</p>
 
       {/* Progress */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">

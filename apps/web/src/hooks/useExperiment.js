@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { API_BASE } from '@/lib/apiBase';
@@ -44,10 +44,10 @@ export function useExperiment(experimentName, options = {}) {
         const token = getAccessToken();
         
         // Get or create anonymous ID for non-logged-in users
-        let anonymousId = localStorage.getItem('ngurra_anon_id');
+        let anonymousId = localStorage.getItem('tinashe_anon_id');
         if (!anonymousId) {
           anonymousId = `anon_${Math.random().toString(36).substring(2)}`;
-          localStorage.setItem('ngurra_anon_id', anonymousId);
+          localStorage.setItem('tinashe_anon_id', anonymousId);
         }
 
         const headers = {
@@ -96,7 +96,7 @@ export function useExperiment(experimentName, options = {}) {
     try {
       const apiBase = API_BASE;
       const token = getAccessToken();
-      const anonymousId = localStorage.getItem('ngurra_anon_id');
+      const anonymousId = localStorage.getItem('tinashe_anon_id');
 
       await fetch(`${apiBase}/experiments/convert`, {
         method: 'POST',

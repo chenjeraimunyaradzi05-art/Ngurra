@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { API_BASE } from '@/lib/apiBase';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -155,11 +155,11 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="ngurra-page relative">
+    <div className="tinashe-page relative">
       {/* Decorative halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       {/* Hero Section */}
@@ -171,10 +171,10 @@ export default function PricingPage() {
           <Sparkles className="w-5 h-5" style={{ color: '#B76E79' }} />
         </div>
 
-        <h1 className="ngurra-h1 text-4xl sm:text-5xl mb-6">
+        <h1 className="tinashe-h1 text-4xl sm:text-5xl mb-6">
           Simple, Transparent Pricing
         </h1>
-        <p className="text-xl max-w-2xl mx-auto mb-10 ngurra-text">
+        <p className="text-xl max-w-2xl mx-auto mb-10 tinashe-text">
           Connect with talented First Nations candidates and build a more inclusive workforce. 
           Choose the plan that fits your noble purpose. ✨
         </p>
@@ -274,7 +274,7 @@ export default function PricingPage() {
                   <span className="text-sm ml-1" style={{ color: 'rgba(248, 246, 255, 0.6)' }}>{getPeriod(tier)}</span>
                 </div>
 
-                <p className="text-sm mb-6 ngurra-text">{tier.description}</p>
+                <p className="text-sm mb-6 tinashe-text">{tier.description}</p>
 
                 <ul className="space-y-3 mb-6">
                   {tier.features.map((feature, idx) => (
@@ -355,7 +355,7 @@ export default function PricingPage() {
                     <p className="text-sm" style={{ color: '#B76E79' }}>Custom annual contracts from $5,000/month</p>
                   </div>
                 </div>
-                <p className="mb-6 ngurra-text">{RAP_TIER.description}</p>
+                <p className="mb-6 tinashe-text">{RAP_TIER.description}</p>
                 <Link
                   href={RAP_TIER.ctaHref}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300"

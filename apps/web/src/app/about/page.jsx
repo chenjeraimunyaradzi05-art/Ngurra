@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { API_BASE } from '@/lib/apiBase';
 import Link from 'next/link';
@@ -110,11 +110,11 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div className="ngurra-page relative">
+    <div className="tinashe-page relative">
       {/* Decorative halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       {/* Hero Section */}
@@ -127,25 +127,25 @@ export default function AboutPage() {
             <Gem className="w-5 h-5" style={{ color: '#50C878' }} />
           </div>
 
-          <h1 className="ngurra-h1 text-4xl md:text-5xl mb-6">
-            About Ngurra Pathways
+          <h1 className="tinashe-h1 text-4xl md:text-5xl mb-6">
+            About Tinashe
           </h1>
-          <p className="text-xl mb-8 max-w-3xl mx-auto ngurra-text">
-            Ngurra means "home" or "country" in many Aboriginal languages. We're building a platform 
+          <p className="text-xl mb-8 max-w-3xl mx-auto tinashe-text">
+            Tinashe means "home" or "country" in many Aboriginal languages. We're building a platform 
             that creates pathways home—to fulfilling careers, supportive communities, and a future 
             where Indigenous Australians thrive in the workplace. ✨
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/jobs"
-              className="ngurra-btn-primary px-8 py-3.5"
+              className="tinashe-btn-primary px-8 py-3.5"
             >
               <Gem className="w-5 h-5" />
               Browse Jobs
             </Link>
             <Link
               href="/mentorship"
-              className="ngurra-btn-secondary px-8 py-3.5"
+              className="tinashe-btn-secondary px-8 py-3.5"
             >
               <Sparkles className="w-5 h-5" />
               Find a Mentor
@@ -175,7 +175,7 @@ export default function AboutPage() {
                   <div className="text-3xl md:text-4xl font-bold mb-2 text-gradient-gold">
                     {stat.value}
                   </div>
-                  <div className="text-sm ngurra-muted">{stat.label}</div>
+                  <div className="text-sm tinashe-muted">{stat.label}</div>
                 </div>
               );
             })}
@@ -191,12 +191,12 @@ export default function AboutPage() {
             <span className="text-sm font-medium" style={{ color: '#50C878' }}>Our Mission</span>
           </div>
           <h2 className="text-3xl font-bold mb-6 text-gradient-gold">Building Noble Pathways</h2>
-          <p className="text-lg mb-6 ngurra-text">
-            Ngurra Pathways exists to close the employment gap for Aboriginal and Torres Strait Islander 
+          <p className="text-lg mb-6 tinashe-text">
+            Tinashe exists to close the employment gap for Aboriginal and Torres Strait Islander 
             peoples by connecting job seekers with culturally safe employers, meaningful mentorship, 
             and accredited training pathways.
           </p>
-          <p className="text-lg ngurra-text">
+          <p className="text-lg tinashe-text">
             We partner with employers who have genuine Reconciliation Action Plans (RAPs) and a 
             commitment to creating inclusive workplaces. Our platform is built on Indigenous data 
             sovereignty principles, ensuring that community members maintain control over their data.
@@ -252,7 +252,7 @@ export default function AboutPage() {
                     <Icon className="w-6 h-6" style={{ color: value.color }} />
                   </div>
                   <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">{value.title}</h3>
-                  <p className="text-sm ngurra-text">{value.description}</p>
+                  <p className="text-sm tinashe-text">{value.description}</p>
                 </div>
               );
             })}
@@ -298,7 +298,7 @@ export default function AboutPage() {
                   {partner.role}
                 </div>
                 <h3 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white">{partner.name}</h3>
-                <p className="text-sm ngurra-text">{partner.description}</p>
+                <p className="text-sm tinashe-text">{partner.description}</p>
               </div>
             ))}
           </div>
@@ -323,8 +323,8 @@ export default function AboutPage() {
           >
             <Crown className="w-10 h-10 mx-auto mb-4" style={{ color: '#FFD700' }} />
             <h2 className="text-2xl font-bold mb-6 text-gradient-gold">Acknowledgement of Country</h2>
-            <p className="mb-6 ngurra-text">
-              Ngurra Pathways acknowledges the Traditional Custodians of the lands on which we work 
+            <p className="mb-6 tinashe-text">
+              Tinashe acknowledges the Traditional Custodians of the lands on which we work 
               and live. We pay our respects to Elders past, present, and emerging, and recognise the 
               continuing connection of Aboriginal and Torres Strait Islander peoples to land, waters, 
               and community.
@@ -348,7 +348,7 @@ export default function AboutPage() {
             }}
           >
             <h2 className="text-2xl font-bold mb-4 text-gradient-gold">Ready to Start Your Journey?</h2>
-            <p className="mb-8 ngurra-text">
+            <p className="mb-8 tinashe-text">
               Whether you're looking for your next career opportunity, seeking a mentor, or wanting 
               to upskill, we're here to support you every step of the way. ✨
             </p>

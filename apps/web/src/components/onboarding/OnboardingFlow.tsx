@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -174,7 +174,7 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
     <div className="text-center max-w-2xl mx-auto">
       <div className="text-6xl mb-6">👋</div>
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-        Welcome to Ngurra Pathways
+        Welcome to Tinashe
       </h2>
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
         We're excited to have you join our community! Let's set up your profile so you can
@@ -731,7 +731,7 @@ function CompleteStep({ data, onComplete }: { data: OnboardingData; onComplete: 
         You're All Set!
       </h2>
       <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-        Welcome to Ngurra Pathways, {data.profile.preferredName || data.profile.firstName}!
+        Welcome to Tinashe, {data.profile.preferredName || data.profile.firstName}!
         Your profile is ready to go.
       </p>
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { API_BASE } from '@/lib/apiBase';
 import { useState, useEffect } from 'react';
@@ -134,7 +134,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="ngurra-page flex items-center justify-center">
+      <div className="tinashe-page flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-pink-200 border-t-pink-600" />
       </div>
     );
@@ -142,8 +142,8 @@ export default function ProfilePage() {
 
   if (!token) {
     return (
-      <div className="ngurra-page flex items-center justify-center px-4">
-        <div className="text-center ngurra-card p-8">
+      <div className="tinashe-page flex items-center justify-center px-4">
+        <div className="text-center tinashe-card p-8">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Please Sign In</h1>
           <p className="text-slate-500 dark:text-slate-400 mb-6">Sign in to edit your profile details.</p>
           <Link
@@ -159,11 +159,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="ngurra-page py-12 px-4">
+    <div className="tinashe-page py-12 px-4">
       {/* Decorative Halos */}
-      <div className="ngurra-halos">
-        <div className="ngurra-halo-pink" />
-        <div className="ngurra-halo-purple" />
+      <div className="tinashe-halos">
+        <div className="tinashe-halo-pink" />
+        <div className="tinashe-halo-purple" />
       </div>
 
       <div className="max-w-3xl mx-auto relative z-10">

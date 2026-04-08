@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Card Component Tests
  */
 import { describe, it, expect } from 'vitest';
@@ -22,8 +22,8 @@ describe('Card', () => {
     expect(container.firstChild).toHaveClass('bg-white/90');
   });
 
-  it('applies ngurra-dark variant styles', () => {
-    const { container } = render(<Card variant="ngurra-dark">Content</Card>);
+  it('applies tinashe-dark variant styles', () => {
+    const { container } = render(<Card variant="tinashe-dark">Content</Card>);
     expect(container.firstChild).toHaveClass('backdrop-blur-md');
     expect(container.firstChild).toHaveClass('bg-slate-900/90');
   });

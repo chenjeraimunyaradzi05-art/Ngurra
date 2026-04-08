@@ -1,4 +1,4 @@
-import { API_BASE } from '@/lib/apiBase';
+﻿import { API_BASE } from '@/lib/apiBase';
 import EventsClient from './EventsClient';
 
 // Fallback mock events data
@@ -13,7 +13,7 @@ const MOCK_EVENTS = [
     type: 'In Person',
     category: 'Career',
     attendees: 245,
-    organizer: 'Ngurra Pathways',
+    organizer: 'Tinashe',
     image: null,
     isFeatured: true
   },
@@ -41,7 +41,7 @@ const MOCK_EVENTS = [
     type: 'Virtual',
     category: 'Workshop',
     attendees: 56,
-    organizer: 'Ngurra Pathways',
+    organizer: 'Tinashe',
     image: null,
     isFeatured: false
   },

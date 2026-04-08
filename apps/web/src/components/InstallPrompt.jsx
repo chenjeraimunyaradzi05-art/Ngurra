@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
@@ -84,7 +84,7 @@ export default function InstallPrompt() {
               <Smartphone className="w-6 h-6 text-blue-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold mb-1">Install Ngurra Pathways</h3>
+              <h3 className="font-semibold mb-1">Install Tinashe</h3>
               <p className="text-sm text-slate-400">
                 {isIOS 
                   ? 'Tap the share button and select "Add to Home Screen" for the best experience.'

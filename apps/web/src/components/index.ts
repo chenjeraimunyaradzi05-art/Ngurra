@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Component Exports
  * 
  * Central export point for all reusable components.
- * Ngurra Pathways - Celestial Precious Stone Theme
+ * Tinashe - Celestial Precious Stone Theme
  */
 
 // Feedback Components

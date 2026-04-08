@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
@@ -144,7 +144,7 @@ export default function BusinessSuiteLayout({ children }: BusinessSuiteLayoutPro
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-white/40 text-sm">
-              Business Suite • Part of Ngurra Pathways
+              Business Suite • Part of Tinashe
             </p>
             <div className="flex items-center gap-6 text-sm">
               <Link

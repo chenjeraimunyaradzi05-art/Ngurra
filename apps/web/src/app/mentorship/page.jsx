@@ -1,4 +1,4 @@
-import { API_BASE } from '@/lib/apiBase';
+﻿import { API_BASE } from '@/lib/apiBase';
 import MentorshipClient from './MentorshipClient';
 
 // SEO Metadata for Mentorship Page
@@ -7,7 +7,7 @@ export const metadata = {
   description: 'Connect with experienced First Nations mentors for career guidance. Our culturally-safe mentorship program supports Indigenous professionals at all career stages.',
   keywords: ['Indigenous mentorship', 'First Nations mentors', 'Aboriginal career guidance', 'Indigenous professional development'],
   openGraph: {
-    title: 'Indigenous Mentorship Program | Ngurra Pathways',
+    title: 'Indigenous Mentorship Program | Tinashe',
     description: 'Connect with experienced First Nations mentors for career guidance.',
     url: 'https://ngurrapathways.life/mentorship',
   },

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Events & Cultural Gatherings Page
  * 
  * Discover career events, cultural gatherings, and networking opportunities.
@@ -73,7 +73,7 @@ const mockEvents: Event[] = [
     },
     organizer: {
       id: 'org1',
-      name: 'Ngurra Pathways',
+      name: 'Tinashe',
       verified: true,
     },
     capacity: 500,

@@ -1,4 +1,4 @@
-import { API_BASE } from '@/lib/apiBase';
+﻿import { API_BASE } from '@/lib/apiBase';
 
 interface Config {
   // API Configuration
@@ -41,8 +41,8 @@ function getConfig(): Config {
     apiTimeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '30000', 10),
     
     // Authentication
-    authTokenKey: 'ngurra_access_token',
-    refreshTokenKey: 'ngurra_refresh_token',
+    authTokenKey: 'tinashe_access_token',
+    refreshTokenKey: 'tinashe_refresh_token',
     tokenRefreshThreshold: 5 * 60 * 1000, // 5 minutes before expiry
     
     // Feature Flags

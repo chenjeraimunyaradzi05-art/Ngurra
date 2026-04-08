@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -134,10 +134,10 @@ export default function OrganizationsPage() {
   const followingOrgs = organizations.filter(o => o.isFollowing);
 
   return (
-    <div className="ngurra-page pt-24 pb-20 relative overflow-hidden">
+    <div className="tinashe-page pt-24 pb-20 relative overflow-hidden">
       {/* Decorative halos */}
-      <div className="ngurra-halo-pink" />
-      <div className="ngurra-halo-purple" />
+      <div className="tinashe-halo-pink" />
+      <div className="tinashe-halo-purple" />
 
       <div className="container mx-auto px-4 relative">
         {/* Header */}

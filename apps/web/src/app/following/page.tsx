@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -169,10 +169,10 @@ export default function FollowingPage() {
   };
 
   return (
-    <div className={`${spaceGrotesk.className} ngurra-page relative overflow-hidden`}>
+    <div className={`${spaceGrotesk.className} tinashe-page relative overflow-hidden`}>
       {/* Decorative halos */}
-      <div className="ngurra-halo-pink" />
-      <div className="ngurra-halo-purple" />
+      <div className="tinashe-halo-pink" />
+      <div className="tinashe-halo-purple" />
 
       <div className="relative max-w-4xl mx-auto px-4 py-6">
         {/* Header */}

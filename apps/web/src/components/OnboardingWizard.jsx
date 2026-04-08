@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Onboarding Wizard Component
@@ -542,7 +542,7 @@ export default function OnboardingWizard() {
           {!selectedRole && steps.length === 0 && (
             <div>
               <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-white mb-4">Welcome to Ngurra Pathways</h1>
+                <h1 className="text-4xl font-bold text-white mb-4">Welcome to Tinashe</h1>
                 <p className="text-xl text-slate-400">How would you like to use the platform?</p>
               </div>
               <RoleSelector selectedRole={selectedRole} onSelect={setSelectedRole} />

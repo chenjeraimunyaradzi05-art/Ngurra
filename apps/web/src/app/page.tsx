@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import {
   ArrowRight,
   BadgeCheck,
@@ -66,7 +66,7 @@ const pathwayPillars = [
 const productSuite = [
   {
     icon: Bot,
-    title: 'Nexta AI',
+    title: 'Tinashe AI',
     tagline: 'Personalised next steps, anytime.',
     description:
       'Guidance, planning, interview prep, resume help, readiness flows, and opportunity radar in one calm assistant.',
@@ -74,7 +74,7 @@ const productSuite = [
   },
   {
     icon: Building2,
-    title: 'Nexta Business',
+    title: 'Tinashe Business',
     tagline: 'From idea to income - with the right tools.',
     description:
       'Business setup guidance, templates, invoicing, cashbook support, documents, grants, and compliance-ready workflows.',
@@ -82,7 +82,7 @@ const productSuite = [
   },
   {
     icon: MessageSquare,
-    title: 'Nexta Connect',
+    title: 'Tinashe Connect',
     tagline: 'Support that actually shows up.',
     description:
       'Mentor matching, booking, messaging, groups, events, and community touchpoints that keep people engaged.',
@@ -91,21 +91,21 @@ const productSuite = [
 ];
 
 const optionalSubBrands = [
-  'Nexta Learn',
-  'Nexta Work',
-  'Nexta Wallet',
-  'Nexta Home',
-  'Nexta Partners',
+  'Tinashe Learn',
+  'Tinashe Work',
+  'Tinashe Wallet',
+  'Tinashe Home',
+  'Tinashe Partners',
 ];
 
 const partnerActions = [
-  { label: 'Hire with Nexta', href: '/company/setup' },
-  { label: 'Partner with Nexta', href: '/#partners' },
-  { label: 'Run Programs on Nexta', href: '/government' },
+  { label: 'Hire with Tinashe', href: '/company/setup' },
+  { label: 'Partner with Tinashe', href: '/#partners' },
+  { label: 'Run Programs on Tinashe', href: '/government' },
 ];
 
 const deckSlides = [
-  { title: 'Slide 1 - Title', body: 'Nexta. The pathway platform for opportunity and economic progress.' },
+  { title: 'Slide 1 - Title', body: 'Tinashe. The pathway platform for opportunity and economic progress.' },
   {
     title: 'Slide 2 - The Problem',
     body:
@@ -118,7 +118,7 @@ const deckSlides = [
   {
     title: 'Slide 4 - The Solution',
     body:
-      'Nexta unifies discovery, readiness, application, support, retention, progression, and independence in one guided platform.',
+      'Tinashe unifies discovery, readiness, application, support, retention, progression, and independence in one guided platform.',
   },
   {
     title: 'Slide 5 - Product Overview',
@@ -214,7 +214,7 @@ const mobileFeatureChips = ['Jobs', 'Learning', 'Mentors', 'Community', 'Money T
 const quickActions = [
   'Find Opportunities',
   'Upgrade Skills',
-  'Ask Nexta AI',
+  'Ask Tinashe AI',
   'Book a Mentor',
   'Track Money',
   'Post / Connect',
@@ -251,7 +251,7 @@ export default function HomePage() {
 
             <div className="space-y-5">
               <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                Nexta helps you take the next step &mdash; and the step after that.
+                Tinashe helps you take the next step &mdash; and the step after that.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-700 sm:text-xl">
                 Jobs, learning, mentors, community, business tools, financial wellbeing, and
@@ -318,7 +318,7 @@ export default function HomePage() {
                     Mobile Hero
                   </p>
                   <h2 className="mt-2 text-2xl font-bold text-slate-950">
-                    Nexta &mdash; your next step, in your pocket.
+                    Tinashe &mdash; your next step, in your pocket.
                   </h2>
                 </div>
                 <div className="rounded-2xl bg-slate-950 px-3 py-2 text-xs font-semibold text-white">
@@ -393,7 +393,7 @@ export default function HomePage() {
             The full pathway, not just a feature list.
           </h2>
           <p className="text-lg leading-8 text-slate-600">
-            Nexta is built around real progress: helping people discover opportunities, prepare,
+            Tinashe is built around real progress: helping people discover opportunities, prepare,
             apply, stay supported, remain stable, and keep growing.
           </p>
         </div>
@@ -500,7 +500,7 @@ export default function HomePage() {
               Partner workflows, outcome reporting, and trusted pathways for people and programs.
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300">
-              Nexta is designed for individuals, mentors, employers, training providers,
+              Tinashe is designed for individuals, mentors, employers, training providers,
               governments, and enterprise partners who need fewer tools, clearer workflows, and
               better outcomes.
             </p>
@@ -555,7 +555,7 @@ export default function HomePage() {
             Calm, capable, and practical by default.
           </h2>
           <p className="text-lg leading-8 text-slate-600">
-            Nexta should feel clear, respectful, and helpful. Not hype. Not judgement. Just
+            Tinashe should feel clear, respectful, and helpful. Not hype. Not judgement. Just
             tools, guidance, and momentum.
           </p>
         </div>
@@ -675,17 +675,17 @@ export default function HomePage() {
             </div>
             <div className="mt-5 space-y-4 text-sm leading-7 text-slate-600">
               <p>
-                Nexta is your all-in-one pathway platform for progress &mdash; designed to help you
+                Tinashe is your all-in-one pathway platform for progress &mdash; designed to help you
                 discover opportunities, build skills, get support, and move forward with
                 confidence.
               </p>
               <p>
                 Whether you&apos;re looking for work, learning something new, building a business,
-                or trying to stabilise your finances, Nexta brings the tools and guidance together
+                or trying to stabilise your finances, Tinashe brings the tools and guidance together
                 in one place.
               </p>
               <p>
-                Most platforms give you one piece of the puzzle. Nexta helps you build the whole
+                Most platforms give you one piece of the puzzle. Tinashe helps you build the whole
                 pathway &mdash; from discovery to long-term stability. Your data, your control.
               </p>
             </div>
@@ -701,7 +701,7 @@ export default function HomePage() {
                 Your next step, connected: jobs, learning, mentors, tools, and progress.
               </p>
               <p>
-                Nexta helps you move from opportunity discovery to long-term progress in one guided
+                Tinashe helps you move from opportunity discovery to long-term progress in one guided
                 platform.
               </p>
               <p>
@@ -741,7 +741,7 @@ export default function HomePage() {
               Built By
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Nexta is now positioned as a long-term progress platform, with Munyaradzi Chenjerai
+              Tinashe is now positioned as a long-term progress platform, with Munyaradzi Chenjerai
               present as the developer.
             </h2>
             <p className="mt-4 max-w-3xl text-base leading-8 text-slate-200">
@@ -755,7 +755,7 @@ export default function HomePage() {
               href="/signup"
               className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950"
             >
-              Join Nexta
+              Join Tinashe
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link

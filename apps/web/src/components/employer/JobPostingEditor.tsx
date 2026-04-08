@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -856,7 +856,7 @@ export function JobPostingEditor({
               <div className="space-y-6">
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
                   <p className="text-amber-800 dark:text-amber-300">
-                    🌏 Ngurra Pathways supports Indigenous employment initiatives. 
+                    🌏 Tinashe supports Indigenous employment initiatives. 
                     Configure settings to attract and support Indigenous candidates.
                   </p>
                 </div>

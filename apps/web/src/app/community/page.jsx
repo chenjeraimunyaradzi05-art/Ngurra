@@ -1,14 +1,14 @@
-import { API_BASE } from '@/lib/apiBase';
+﻿import { API_BASE } from '@/lib/apiBase';
 import CommunityClient from './CommunityClient';
 
 // SEO Metadata for Community Page
 export const metadata = {
   title: 'Indigenous Community Forums',
-  description: 'Join the Ngurra Pathways community. Connect with other First Nations professionals, share experiences, and support each other on your career journey.',
+  description: 'Join the Tinashe community. Connect with other First Nations professionals, share experiences, and support each other on your career journey.',
   keywords: ['Indigenous community', 'First Nations forums', 'Aboriginal networking', 'Indigenous professionals'],
   openGraph: {
-    title: 'Indigenous Community Forums | Ngurra Pathways',
-    description: 'Join the Ngurra Pathways community and connect with First Nations professionals.',
+    title: 'Indigenous Community Forums | Tinashe',
+    description: 'Join the Tinashe community and connect with First Nations professionals.',
     url: 'https://ngurrapathways.life/community',
   },
   alternates: {

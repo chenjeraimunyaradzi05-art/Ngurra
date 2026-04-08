@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Accessibility Settings Panel
@@ -60,7 +60,7 @@ const LINE_SPACING = {
   loose: { label: 'Loose', value: 2 },
 };
 
-const STORAGE_KEY = 'ngurra-a11y-settings';
+const STORAGE_KEY = 'tinashe-a11y-settings';
 
 export function AccessibilityPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { showToast } = useUIStore();

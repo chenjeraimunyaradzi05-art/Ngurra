@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -80,7 +80,7 @@ export default function MentorLayout({ children }: { children: React.ReactNode }
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
               <Star className="w-5 h-5 text-white" />
             </div>
-            <span>Ngurra <span className="text-slate-400 font-normal text-sm">Mentor</span></span>
+            <span>Tinashe <span className="text-slate-400 font-normal text-sm">Mentor</span></span>
           </Link>
         </div>
 
@@ -149,7 +149,7 @@ export default function MentorLayout({ children }: { children: React.ReactNode }
               <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
                 <Star className="w-5 h-5 text-white" />
               </div>
-              <span>Ngurra</span>
+              <span>Tinashe</span>
             </Link>
             
             <div className="flex items-center gap-2">

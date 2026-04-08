@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Experiment Store
@@ -78,10 +78,10 @@ export const useExperimentStore = create<ExperimentStore>()(
 
         try {
           // Get anonymous ID for non-logged-in users
-          let anonymousId = localStorage.getItem('ngurra_anon_id');
+          let anonymousId = localStorage.getItem('tinashe_anon_id');
           if (!anonymousId) {
             anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem('ngurra_anon_id', anonymousId);
+            localStorage.setItem('tinashe_anon_id', anonymousId);
           }
 
           const { ok, data } = await api<{ variant: string }>('/experiments/variant', {
@@ -116,7 +116,7 @@ export const useExperimentStore = create<ExperimentStore>()(
       // Track conversion
       trackConversion: async (experimentName, eventName, metadata) => {
         try {
-          const anonymousId = localStorage.getItem('ngurra_anon_id');
+          const anonymousId = localStorage.getItem('tinashe_anon_id');
           
           await api('/experiments/convert', {
             method: 'POST',
@@ -197,7 +197,7 @@ export const useExperimentStore = create<ExperimentStore>()(
       },
     }),
     {
-      name: 'ngurra-experiments',
+      name: 'tinashe-experiments',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         assignments: state.assignments,

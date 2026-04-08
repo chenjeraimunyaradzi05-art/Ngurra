@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Mentors Discovery Page
  * 
- * Browse and connect with mentors in the Ngurra Pathways community.
+ * Browse and connect with mentors in the Tinashe community.
  */
 
 'use client';

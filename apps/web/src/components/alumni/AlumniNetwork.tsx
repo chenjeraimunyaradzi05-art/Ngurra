@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -740,7 +740,7 @@ export function AlumniNetwork() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Alumni Network</h1>
-        <p className="text-gray-500 mt-1">Connect with fellow Ngurra Pathways graduates</p>
+        <p className="text-gray-500 mt-1">Connect with fellow Tinashe graduates</p>
       </div>
 
       {/* Stats */}

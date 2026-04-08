@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { API_BASE } from '@/lib/apiBase';
 import { useEffect, useState } from 'react';
@@ -204,7 +204,7 @@ export default function AdvisoryCouncilPage() {
             <div>
               <h1 className="text-3xl font-bold mb-2">Community Advisory Council</h1>
               <p className="text-lg text-slate-300 max-w-2xl">
-                Our First Nations Community Advisory Council ensures that Ngurra Pathways 
+                Our First Nations Community Advisory Council ensures that Tinashe 
                 remains culturally grounded, community-led, and accountable to the people we serve.
               </p>
             </div>

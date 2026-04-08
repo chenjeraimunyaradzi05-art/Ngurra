@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -99,7 +99,7 @@ const successStories: SuccessStory[] = [
     id: '1',
     name: 'Sarah M.',
     role: 'Site Supervisor at BuildCo',
-    story: 'Started as a trainee through Ngurra Pathways. The mentorship program helped me navigate the construction industry.',
+    story: 'Started as a trainee through Tinashe. The mentorship program helped me navigate the construction industry.',
     avatar: '👩🏽',
   },
   {
@@ -185,7 +185,7 @@ export default function CommunityClient({ initialCategories = [], initialTopics 
 
   if (loading) {
     return (
-      <div className={`${spaceGrotesk.className} ngurra-page flex items-center justify-center`}>
+      <div className={`${spaceGrotesk.className} tinashe-page flex items-center justify-center`}>
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-pink-500" />
           <p className="text-gray-400 font-medium">Loading community...</p>
@@ -195,7 +195,7 @@ export default function CommunityClient({ initialCategories = [], initialTopics 
   }
 
   return (
-    <div className={`${spaceGrotesk.className} ngurra-page`}>
+    <div className={`${spaceGrotesk.className} tinashe-page`}>
       {/* Decorative patterns */}
       <div
         className="fixed inset-0 opacity-10 pointer-events-none"
@@ -236,7 +236,7 @@ export default function CommunityClient({ initialCategories = [], initialTopics 
                 Connect & Share
               </h1>
               <p className="text-lg text-gray-400 max-w-2xl">
-                Join conversations, share experiences, and learn from the Ngurra Pathways community.
+                Join conversations, share experiences, and learn from the Tinashe community.
                 Your voice matters here.
               </p>
             </div>

@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { API_BASE } from '@/lib/apiBase';
 import { useAuth } from '@/hooks/useAuth';
 
-const NextaGlyph = () => (
+const TinasheGlyph = () => (
   <svg
     width="32"
     height="32"
@@ -37,7 +37,7 @@ export default function AIAssistant() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>(() => {
     try {
-      const raw = localStorage.getItem('nexta:ai:messages');
+      const raw = localStorage.getItem('tinashe:ai:messages');
       return raw ? JSON.parse(raw) : [];
     } catch (e) {
       return [];
@@ -50,7 +50,7 @@ export default function AIAssistant() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('nexta:ai:messages', JSON.stringify(messages));
+      localStorage.setItem('tinashe:ai:messages', JSON.stringify(messages));
     } catch (e) {
       // Ignore storage access errors.
     }
@@ -99,7 +99,7 @@ export default function AIAssistant() {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ title: 'Conversation with Nexta AI' }),
+            body: JSON.stringify({ title: 'Conversation with Tinashe AI' }),
           });
           if (created.ok) {
             const parsed = await created.json();
@@ -183,10 +183,10 @@ export default function AIAssistant() {
       }
     } catch (err) {
       console.error('AI ask error', err);
-      setError('Failed to contact Nexta AI.');
+      setError('Failed to contact Tinashe AI.');
       setMessages((prev) => [
         ...prev,
-        { role: 'ai', text: 'Sorry, Nexta AI is unavailable right now.' },
+        { role: 'ai', text: 'Sorry, Tinashe AI is unavailable right now.' },
       ]);
     } finally {
       setLoading(false);
@@ -208,7 +208,7 @@ export default function AIAssistant() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ title: 'Conversation with Nexta AI' }),
+          body: JSON.stringify({ title: 'Conversation with Tinashe AI' }),
         });
         if (created.ok) {
           const parsed = await created.json();
@@ -227,10 +227,10 @@ export default function AIAssistant() {
     <>
       <button
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-gradient-to-br from-teal-600 to-slate-900 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500"
-        aria-label="Open Nexta AI"
+        aria-label="Open Tinashe AI"
         onClick={() => setOpen(true)}
       >
-        <NextaGlyph />
+        <TinasheGlyph />
         <span className="font-bold text-white text-base">AI</span>
       </button>
 
@@ -241,9 +241,9 @@ export default function AIAssistant() {
           <div className="relative bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl w-full max-w-lg z-10">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <NextaGlyph />
+                <TinasheGlyph />
                 <div>
-                  <h3 className="font-bold text-lg">Nexta AI</h3>
+                  <h3 className="font-bold text-lg">Tinashe AI</h3>
                   <div className="text-sm text-slate-500">
                     Ask for next steps, planning help, pathway guidance, or practical tools.
                   </div>
@@ -252,7 +252,7 @@ export default function AIAssistant() {
               <button
                 className="text-slate-400 hover:text-teal-600"
                 onClick={() => setOpen(false)}
-                aria-label="Close Nexta AI"
+                aria-label="Close Tinashe AI"
               >
                 ×
               </button>
@@ -275,7 +275,7 @@ export default function AIAssistant() {
                   }`}
                 >
                   {message.role === 'ai' ? (
-                    <strong className="text-teal-700">Nexta AI:</strong>
+                    <strong className="text-teal-700">Tinashe AI:</strong>
                   ) : (
                     <strong className="text-slate-700">You:</strong>
                   )}{' '}
@@ -298,8 +298,8 @@ export default function AIAssistant() {
                   }
                 }}
                 className="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="Ask Nexta AI for your next step..."
-                aria-label="Ask Nexta AI"
+                placeholder="Ask Tinashe AI for your next step..."
+                aria-label="Ask Tinashe AI"
               />
               <button
                 className={`px-4 py-2 rounded-full text-white font-bold ${

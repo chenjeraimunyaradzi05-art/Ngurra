@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import api from '@/lib/apiClient';
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -507,7 +507,7 @@ export default function MessagesPage() {
   }, [displayMessages]);
 
   return (
-    <div className="ngurra-page pt-16">
+    <div className="tinashe-page pt-16">
       <div className="h-[calc(100vh-4rem)] flex">
         {/* Conversations List */}
         <aside

@@ -97,11 +97,6 @@ const nextConfig = {
   // Configure monorepo root for output file tracing
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
 
-  // Configure Turbopack root to the monorepo root
-  turbopack: {
-    root: path.resolve(__dirname, '../..'),
-  },
-
   // Silence dev-time warning when accessing the dev server via 127.0.0.1/localhost.
   // This affects Playwright and local dev on Windows.
   allowedDevOrigins: ['127.0.0.1', 'localhost', 'http://127.0.0.1:3000', 'http://localhost:3000'],
@@ -140,14 +135,6 @@ const nextConfig = {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
-
-  // Bundle analyzer (enable with ANALYZE=true)
-  ...(process.env.ANALYZE && {
-    experimental: {
-      // Enable bundle size reporting in build output
-      optimizePackageImports: ['lucide-react'],
-    },
-  }),
 
   // Optimize package imports for tree-shaking
   experimental: {

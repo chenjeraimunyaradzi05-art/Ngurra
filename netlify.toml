@@ -1,7 +1,7 @@
 [build]
   base = "."
   package = "apps/web"
-  command = "npm install && npm --prefix apps/web install && npm --prefix apps/web run build"
+  command = "npm install --legacy-peer-deps && npm --prefix apps/web install --legacy-peer-deps && npm --prefix apps/web run build"
   publish = "apps/web/.next"
 
 [build.environment]

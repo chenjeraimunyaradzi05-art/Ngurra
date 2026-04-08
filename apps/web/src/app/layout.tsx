@@ -160,7 +160,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body
-        className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-gray-900 cosmic:bg-cosmic-dark text-gray-900 dark:text-slate-50 cosmic:text-slate-50 transition-colors duration-200`}
+        className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-slate-950 cosmic:bg-cosmic-dark text-gray-900 dark:text-slate-50 cosmic:text-slate-50 transition-colors duration-200`}
       >
         {/* Celestial background layers - only visible in cosmic mode */}
         <div

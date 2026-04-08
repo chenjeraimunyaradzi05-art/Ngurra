@@ -103,7 +103,7 @@ export default function HeaderNavigation() {
 
   return (
     <header
-      className="bg-white/95 dark:bg-slate-950/90 cosmic:bg-cosmic-dark shadow-sm dark:shadow-slate-900/50 backdrop-blur transition-colors duration-200"
+      className="bg-white/95 dark:bg-slate-950/95 cosmic:bg-cosmic-dark border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-slate-950/50 backdrop-blur-md transition-colors duration-200"
       role="banner"
     >
       <nav
@@ -168,7 +168,7 @@ export default function HeaderNavigation() {
                 <SubscriptionBadge />
                 <button
                   onClick={handleLogout}
-                  className="inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-800 active:bg-teal-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 transition-colors duration-150"
+                  className="rounded-xl bg-slate-800 dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 dark:hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 transition-colors"
                 >
                   Logout
                 </button>
@@ -177,13 +177,13 @@ export default function HeaderNavigation() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/signin"
-                  className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-teal-700 dark:hover:text-teal-300"
+                  className="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/signup"
-                  className="inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                  className="inline-flex items-center rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-pink-500/20 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-all hover:-translate-y-px"
                 >
                   Get Started
                 </Link>

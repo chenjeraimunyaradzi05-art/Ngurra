@@ -2,14 +2,15 @@ import { redirect } from 'next/navigation';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-export default function SignUpRedirectPage({
+export default async function SignUpRedirectPage({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams?: Promise<SearchParams>;
 }) {
+  const resolvedParams: SearchParams = searchParams ? await searchParams : {};
   const qs = new URLSearchParams();
 
-  for (const [key, value] of Object.entries(searchParams || {})) {
+  for (const [key, value] of Object.entries(resolvedParams)) {
     if (Array.isArray(value)) {
       for (const v of value) {
         if (v != null) qs.append(key, v);

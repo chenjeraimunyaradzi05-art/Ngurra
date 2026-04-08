@@ -106,13 +106,12 @@ export default function EnhancedHeader() {
             <div className="flex items-center gap-8">
               <Link href="/" className="flex items-center gap-2">
                 <Image
-                  className="h-8 w-auto"
-                  src="/brand/tinashe-logo-primary.svg"
+                  className="h-9 w-9 rounded-xl object-cover border border-pink-500/30 shadow-sm"
+                  src="/tinashe-logo.png"
                   alt="Tinashe"
-                  width={32}
-                  height={32}
+                  width={36}
+                  height={36}
                   priority
-                  unoptimized
                 />
                 <span className="hidden sm:block font-bold text-xl bg-gradient-to-r from-[#FFD700] to-[#50C878] bg-clip-text text-transparent">
                   Tinashe

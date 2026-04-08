@@ -37,7 +37,7 @@
     Access-Control-Allow-Credentials = "true"
     Access-Control-Allow-Headers = "Authorization, Content-Type"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Origin = "https://ngurrapathways.life"
+    Access-Control-Allow-Origin = "https://tinashe.life"
 
 [[redirects]]
   from = "/api/*"
@@ -51,7 +51,7 @@
   status = 200
 
 [[redirects]]
-  from = "https://www.ngurrapathways.life/*"
-  to = "https://ngurrapathways.life/:splat"
+  from = "https://www.tinashe.life/*"
+  to = "https://tinashe.life/:splat"
   status = 301
   force = true

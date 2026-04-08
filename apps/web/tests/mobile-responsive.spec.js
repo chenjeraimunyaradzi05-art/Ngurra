@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 const { safeGoto, waitForAppReady } = require('./utils/test-helpers');
 
 test.describe('Mobile Responsiveness', () => {
@@ -20,7 +20,7 @@ test.describe('Mobile Responsiveness', () => {
       await expect(header).toBeVisible({ timeout: 10000 });
       
       // Logo should be visible
-      const logo = header.getByRole('img', { name: /ngurra/i });
+      const logo = header.getByRole('img', { name: /tinashe/i });
       await expect(logo).toBeVisible();
       
       // Mobile menu button should be visible (hamburger)

@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 
 /**
  * E2E Tests for Enhanced Mentorship Features
@@ -55,8 +55,8 @@ test.describe('Mentorship Features', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [memberToken]);
         
         await page.goto(`${webBase}/mentorship/browse`);
@@ -84,8 +84,8 @@ test.describe('Mentorship Features', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [mentorToken]);
         
         await page.goto(`${webBase}/mentor/availability`);
@@ -123,8 +123,8 @@ test.describe('Mentorship Features', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [memberToken]);
         
         await page.goto(`${webBase}/mentorship/sessions`);
@@ -167,8 +167,8 @@ test.describe('Mentorship Features', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [memberToken]);
         
         await page.goto(`${webBase}/mentorship/sessions/1/feedback`);
@@ -197,8 +197,8 @@ test.describe('Mentorship Features', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [mentorToken]);
         
         await page.goto(`${webBase}/mentor/earnings`);
@@ -257,8 +257,8 @@ test.describe('Mentorship Circles', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/mentorship/circles`);
@@ -296,8 +296,8 @@ test.describe('Mentorship Circles', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/mentorship/circles`);
@@ -354,8 +354,8 @@ test.describe('Course Enrolment', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/courses`);
@@ -405,8 +405,8 @@ test.describe('Course Enrolment', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/jobs/test-job/recommended-courses`);
@@ -439,8 +439,8 @@ test.describe('Course Enrolment', () => {
         
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/member/courses`);

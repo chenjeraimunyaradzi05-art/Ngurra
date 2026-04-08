@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 
 function makeJwt(payload) {
   const base64Payload = Buffer.from(JSON.stringify(payload))
@@ -13,7 +13,7 @@ async function setAuth(page, context, webBase, jwt) {
   const url = new URL(webBase);
   await context.addCookies([
     {
-      name: 'ngurra_token',
+      name: 'tinashe_token',
       value: jwt,
       domain: url.hostname,
       path: '/',
@@ -22,7 +22,7 @@ async function setAuth(page, context, webBase, jwt) {
 
   await page.goto(webBase);
   await page.evaluate((t) => {
-    localStorage.setItem('ngurra_token', t);
+    localStorage.setItem('tinashe_token', t);
   }, jwt);
 }
 

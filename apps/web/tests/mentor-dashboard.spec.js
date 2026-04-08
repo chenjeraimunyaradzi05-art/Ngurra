@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 test('Mentor dashboard fetches AiConcierge suggestions on load', async ({ page, request }) => {
     const apiBase = process.env.API_URL || 'http://127.0.0.1:3001';
     const webBase = process.env.E2E_BASE_URL || 'http://127.0.0.1:3000';
@@ -21,7 +21,7 @@ test('Mentor dashboard fetches AiConcierge suggestions on load', async ({ page, 
     });
 
     await page.goto(webBase);
-    await page.evaluate(([t]) => { localStorage.setItem('ngurra_token', t); document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; }, [token]);
+    await page.evaluate(([t]) => { localStorage.setItem('tinashe_token', t); document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; }, [token]);
     await page.goto(`${webBase}/mentor/dashboard`);
 
     // Expect AI suggestions to show up

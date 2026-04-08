@@ -1,4 +1,4 @@
-// @ts-check
+﻿// @ts-check
 const { test, expect } = require('@playwright/test');
 
 /**
@@ -18,7 +18,7 @@ async function loginAs(page, email, password) {
   // Note: auth cookie may be HttpOnly (not visible in document.cookie), so use Playwright cookie API.
   await page.waitForFunction(() => {
     try {
-      return !!localStorage.getItem('ngurra_token');
+      return !!localStorage.getItem('tinashe_token');
     } catch {
       return false;
     }
@@ -26,7 +26,7 @@ async function loginAs(page, email, password) {
 
   await expect.poll(async () => {
     const cookies = await page.context().cookies();
-    return cookies.some((c) => c.name === 'ngurra_token' && Boolean(c.value));
+    return cookies.some((c) => c.name === 'tinashe_token' && Boolean(c.value));
   }, { timeout: 15000 }).toBeTruthy();
 }
 

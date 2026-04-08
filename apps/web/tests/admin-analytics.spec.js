@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 
 test('admin CTA analytics page displays metrics', async ({ page, context }) => {
   const webBase = process.env.E2E_BASE_URL || 'http://127.0.0.1:3000';
@@ -13,7 +13,7 @@ test('admin CTA analytics page displays metrics', async ({ page, context }) => {
   // Must use domain instead of url when path is specified
   const url = new URL(webBase);
   await context.addCookies([{
-    name: 'ngurra_token',
+    name: 'tinashe_token',
     value: mockJwt,
     domain: url.hostname,
     path: '/',
@@ -41,7 +41,7 @@ test('admin CTA analytics page displays metrics', async ({ page, context }) => {
   // Also set in localStorage for client-side auth hook
   await page.goto(webBase);
   await page.evaluate((jwt) => {
-    localStorage.setItem('ngurra_token', jwt);
+    localStorage.setItem('tinashe_token', jwt);
   }, mockJwt);
 
   await page.goto(`${webBase}/admin/analytics/cta`);

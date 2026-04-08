@@ -1,5 +1,5 @@
-# =====================================
-# Ngurra Pathways - Production Docker Compose
+﻿# =====================================
+# Tinashe - Production Docker Compose
 # =====================================
 # Complete production stack with all services
 # Security: Resource limits, read-only filesystems, security options

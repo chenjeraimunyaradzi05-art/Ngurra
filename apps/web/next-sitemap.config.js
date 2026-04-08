@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || 'https://ngurrapathways.life',
+  siteUrl: process.env.SITE_URL || 'https://tinashe.life',
   generateRobotsTxt: true,
   generateIndexSitemap: true,
   

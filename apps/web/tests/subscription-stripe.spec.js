@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 
 /**
  * E2E Tests for Stripe Subscription Flow
@@ -89,8 +89,8 @@ test.describe('Stripe Subscription Flow', () => {
         // Set auth token
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         await page.goto(`${webBase}/company/billing`);
@@ -113,8 +113,8 @@ test.describe('Stripe Subscription Flow', () => {
     test('billing page shows success message after Stripe redirect', async ({ page }) => {
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         // Simulate return from Stripe with success
@@ -127,8 +127,8 @@ test.describe('Stripe Subscription Flow', () => {
     test('billing page shows canceled message after Stripe redirect', async ({ page }) => {
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         // Simulate return from Stripe with cancellation
@@ -158,8 +158,8 @@ test.describe('Stripe Subscription Flow', () => {
         // Set auth token
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
 
         await page.goto(`${webBase}/company/subscription`);
@@ -185,8 +185,8 @@ test.describe('Stripe Subscription Flow', () => {
         // Set auth token first
         await page.goto(webBase);
         await page.evaluate(([t]) => { 
-            localStorage.setItem('ngurra_token', t); 
-            document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
+            localStorage.setItem('tinashe_token', t); 
+            document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; 
         }, [token]);
         
         // Mock v2 endpoints AFTER initial page load but BEFORE subscription navigation

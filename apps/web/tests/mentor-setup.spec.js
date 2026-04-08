@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 test('Mentor setup save shows success notification', async ({ page, request }) => {
     const apiBase = process.env.API_URL || 'http://127.0.0.1:3001';
     const webBase = process.env.E2E_BASE_URL || 'http://127.0.0.1:3000';
@@ -9,7 +9,7 @@ test('Mentor setup save shows success notification', async ({ page, request }) =
     const token = lj.token;
     expect(token).toBeTruthy();
     await page.goto(webBase);
-    await page.evaluate(([t]) => { localStorage.setItem('ngurra_token', t); document.cookie = `ngurra_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; }, [token]);
+    await page.evaluate(([t]) => { localStorage.setItem('tinashe_token', t); document.cookie = `tinashe_token=${t}; path=/; max-age=${7 * 24 * 60 * 60}`; }, [token]);
     await page.goto(`${webBase}/mentor/setup`);
     await page.waitForSelector('text=Mentor profile setup');
     await page.fill('label:has-text("Expertise") input', 'Testing X');

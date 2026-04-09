@@ -7,6 +7,17 @@
 [build.environment]
   NODE_VERSION = "20"
   NEXT_DISABLE_NETLIFY_EDGE = "true"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+[context.production.environment]
+  NODE_ENV = "production"
+  NEXT_PUBLIC_APP_URL = "https://tinashe.life"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "production"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "production"
 
 [functions]
   directory = "netlify/functions"
@@ -14,7 +25,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://ngurra-api-production.up.railway.app https://api-staging.gimbi.com.au wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://api-production-11b4.up.railway.app wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
     Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
@@ -41,7 +52,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://ngurra-api-production.up.railway.app/:splat"
+  to = "https://api-production-11b4.up.railway.app/:splat"
   status = 200
   force = true
 

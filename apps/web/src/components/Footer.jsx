@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Space_Grotesk } from 'next/font/google';
 import {
   ArrowRight,
@@ -32,8 +33,14 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 via-slate-900 to-sky-500 text-lg font-bold text-white shadow-lg">
-                N
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-pink-500/30 shadow-md">
+                <Image
+                  src="/tinashe-logo.png"
+                  alt="Tinashe"
+                  fill
+                  className="object-cover"
+                  sizes="48px"
+                />
               </div>
               <div>
                 <div className="text-lg font-bold text-white">Tinashe</div>

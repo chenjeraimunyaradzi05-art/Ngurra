@@ -15,18 +15,18 @@ const TinasheGlyph = () => (
     className="drop-shadow-md"
   >
     <defs>
-      <linearGradient id="nexta-ai-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#0F766E" />
-        <stop offset="100%" stopColor="#0F172A" />
+      <linearGradient id="tinashe-ai-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#db2777" />
+        <stop offset="100%" stopColor="#7c3aed" />
       </linearGradient>
-      <linearGradient id="nexta-ai-accent" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#38BDF8" />
-        <stop offset="100%" stopColor="#F97316" />
+      <linearGradient id="tinashe-ai-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f9a8d4" />
+        <stop offset="100%" stopColor="#c4b5fd" />
       </linearGradient>
     </defs>
-    <rect x="2" y="2" width="44" height="44" rx="15" fill="url(#nexta-ai-bg)" />
+    <rect x="2" y="2" width="44" height="44" rx="15" fill="url(#tinashe-ai-bg)" />
     <path d="M14 34V14h4.2l13.6 16.2V14H36v20h-4.2L18.2 17.8V34H14Z" fill="white" />
-    <path d="M36 8L40 12L36 16L32 12L36 8Z" fill="url(#nexta-ai-accent)" />
+    <path d="M36 8L40 12L36 16L32 12L36 8Z" fill="url(#tinashe-ai-accent)" />
     <circle cx="36" cy="36" r="3" fill="#F8FAFC" opacity="0.78" />
   </svg>
 );
@@ -226,7 +226,7 @@ export default function AIAssistant() {
   return (
     <>
       <button
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-gradient-to-br from-teal-600 to-slate-900 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-xl shadow-pink-900/30 bg-gradient-to-br from-pink-600 to-purple-700 hover:from-pink-500 hover:to-purple-600 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-pink-500"
         aria-label="Open Tinashe AI"
         onClick={() => setOpen(true)}
       >
@@ -250,7 +250,7 @@ export default function AIAssistant() {
                 </div>
               </div>
               <button
-                className="text-slate-400 hover:text-teal-600"
+                className="text-slate-400 hover:text-pink-500"
                 onClick={() => setOpen(false)}
                 aria-label="Close Tinashe AI"
               >
@@ -271,11 +271,11 @@ export default function AIAssistant() {
                 <div
                   key={index}
                   className={`text-sm p-2 rounded ${
-                    message.role === 'ai' ? 'bg-white' : 'bg-teal-50 text-slate-800'
+                    message.role === 'ai' ? 'bg-white dark:bg-slate-700' : 'bg-pink-50 dark:bg-pink-950/30 text-slate-800 dark:text-slate-100'
                   }`}
                 >
                   {message.role === 'ai' ? (
-                    <strong className="text-teal-700">Tinashe AI:</strong>
+                    <strong className="text-pink-600 dark:text-pink-400">Tinashe AI:</strong>
                   ) : (
                     <strong className="text-slate-700">You:</strong>
                   )}{' '}
@@ -297,13 +297,13 @@ export default function AIAssistant() {
                     void submit();
                   }
                 }}
-                className="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
                 placeholder="Ask Tinashe AI for your next step..."
                 aria-label="Ask Tinashe AI"
               />
               <button
                 className={`px-4 py-2 rounded-full text-white font-bold ${
-                  loading || input.trim() === '' ? 'bg-slate-300' : 'bg-teal-700 hover:scale-105'
+                  loading || input.trim() === '' ? 'bg-slate-300 dark:bg-slate-600' : 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 hover:scale-105'
                 }`}
                 onClick={() => void submit()}
                 disabled={loading || input.trim() === ''}

@@ -331,9 +331,9 @@ const PLATFORM_PHRASES: PlatformPhrase[] = [
     english: 'Country / Land',
     translations: [
       { languageId: 'noongar', languageName: 'Noongar', text: 'Boodja', pronunciation: 'bood-ja' },
-      { languageId: 'dharug', languageName: 'Dharug', text: 'Ngurra', pronunciation: 'n-goo-rra' },
+      { languageId: 'dharug', languageName: 'Dharug', text: 'Tinashe', pronunciation: 'n-goo-rra' },
       { languageId: 'wiradjuri', languageName: 'Wiradjuri', text: 'Ngurambang', pronunciation: 'n-goo-ram-bang' },
-      { languageId: 'gamilaraay', languageName: 'Gamilaraay', text: 'Ngurrambaa', pronunciation: 'n-goo-ram-bah' },
+      { languageId: 'gamilaraay', languageName: 'Gamilaraay', text: 'Tinashembaa', pronunciation: 'n-goo-ram-bah' },
     ],
   },
   {

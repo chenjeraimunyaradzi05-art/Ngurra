@@ -21,7 +21,7 @@ const router = express.Router();
  * Generate a secure API key
  */
 function generateApiKey() {
-  const prefix = 'ngp_'; // Ngurra Pathways prefix
+  const prefix = 'ngp_'; // Tinashe Pathways prefix
   const key = crypto.randomBytes(32).toString('hex');
   return `${prefix}${key}`;
 }

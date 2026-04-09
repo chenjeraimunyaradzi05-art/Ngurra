@@ -97,7 +97,7 @@ export default function JobDetailScreen() {
     
     try {
       await Share.share({
-        message: `Check out this job: ${job.title} at ${job.company?.name || 'a great company'}\n\nApply on Ngurra Pathways`,
+        message: `Check out this job: ${job.title} at ${job.company?.name || 'a great company'}\n\nApply on Tinashe Pathways`,
         title: job.title,
       });
     } catch (error) {

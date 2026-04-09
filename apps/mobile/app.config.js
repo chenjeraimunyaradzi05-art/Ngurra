@@ -1,5 +1,5 @@
 /**
- * Expo App Configuration for Nexta
+ * Expo App Configuration for Tinashe
  * 
  * This configuration supports:
  * - EAS Build and Submit
@@ -10,8 +10,8 @@
 
 export default ({ config }) => ({
   ...config,
-  name: 'Nexta',
-  slug: 'nexta',
+  name: 'Tinashe',
+  slug: 'Tinashe',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -32,7 +32,7 @@ export default ({ config }) => ({
   // iOS-specific configuration
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.nexta.app',
+    bundleIdentifier: 'com.Tinashe.app',
     buildNumber: '1',
     
     // App Store metadata
@@ -43,10 +43,10 @@ export default ({ config }) => ({
     // Info.plist additions
     infoPlist: {
       // Privacy permission descriptions
-      NSCameraUsageDescription: 'Allow Nexta to access your camera to take photos for your profile or documents.',
-      NSPhotoLibraryUsageDescription: 'Allow Nexta to access your photos to upload profile pictures or documents.',
-      NSFaceIDUsageDescription: 'Use Face ID for quick and secure login to your Nexta account.',
-      NSLocationWhenInUseUsageDescription: 'Allow Nexta to access your location to find nearby opportunities and events.',
+      NSCameraUsageDescription: 'Allow Tinashe to access your camera to take photos for your profile or documents.',
+      NSPhotoLibraryUsageDescription: 'Allow Tinashe to access your photos to upload profile pictures or documents.',
+      NSFaceIDUsageDescription: 'Use Face ID for quick and secure login to your Tinashe account.',
+      NSLocationWhenInUseUsageDescription: 'Allow Tinashe to access your location to find nearby opportunities and events.',
       
       // Background modes
       UIBackgroundModes: [
@@ -60,8 +60,8 @@ export default ({ config }) => ({
     
     // Universal links - Apple App Site Association
     associatedDomains: [
-      'applinks:nexta.app',
-      'applinks:www.nexta.app',
+      'applinks:Tinashe.app',
+      'applinks:www.Tinashe.app',
     ],
     
     // Push notifications
@@ -76,7 +76,7 @@ export default ({ config }) => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0F172A',
     },
-    package: 'com.nexta.app',
+    package: 'com.Tinashe.app',
     versionCode: 1,
     
     // Permissions
@@ -100,17 +100,17 @@ export default ({ config }) => ({
         data: [
           {
             scheme: 'https',
-            host: 'nexta.app',
+            host: 'Tinashe.app',
             pathPrefix: '/jobs',
           },
           {
             scheme: 'https',
-            host: 'nexta.app',
+            host: 'Tinashe.app',
             pathPrefix: '/courses',
           },
           {
             scheme: 'https',
-            host: 'nexta.app',
+            host: 'Tinashe.app',
             pathPrefix: '/mentors',
           },
         ],
@@ -120,7 +120,7 @@ export default ({ config }) => ({
         action: 'VIEW',
         data: [
           {
-            scheme: 'nexta',
+            scheme: 'Tinashe',
           },
         ],
         category: ['BROWSABLE', 'DEFAULT'],
@@ -168,8 +168,8 @@ export default ({ config }) => ({
     [
       'expo-image-picker',
       {
-        photosPermission: 'Allow Nexta to access your photos for profile and document uploads.',
-        cameraPermission: 'Allow Nexta to use your camera for taking photos.',
+        photosPermission: 'Allow Tinashe to access your photos for profile and document uploads.',
+        cameraPermission: 'Allow Tinashe to use your camera for taking photos.',
       },
     ],
     
@@ -177,7 +177,7 @@ export default ({ config }) => ({
     [
       'expo-location',
       {
-        locationAlwaysAndWhenInUsePermission: 'Allow Nexta to use your location to find nearby opportunities and events.',
+        locationAlwaysAndWhenInUsePermission: 'Allow Tinashe to use your location to find nearby opportunities and events.',
       },
     ],
   ],
@@ -185,7 +185,7 @@ export default ({ config }) => ({
   // Extra configuration
   extra: {
     // Environment variables
-    apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.nexta.app',
+    apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.Tinashe.app',
     sentryDsn: process.env.SENTRY_DSN,
     posthogApiKey: process.env.POSTHOG_API_KEY,
     
@@ -205,20 +205,20 @@ export default ({ config }) => ({
     
     // App metadata
     appMetadata: {
-      name: 'Nexta',
+      name: 'Tinashe',
       tagline: 'Your next step, connected.',
       description: 'Jobs, learning, mentors, community, business tools, financial wellbeing, and real-world opportunities in one guided platform.',
-      supportEmail: 'support@nexta.app',
-      privacyUrl: 'https://nexta.app/privacy',
-      termsUrl: 'https://nexta.app/terms',
+      supportEmail: 'support@Tinashe.app',
+      privacyUrl: 'https://Tinashe.app/privacy',
+      termsUrl: 'https://Tinashe.app/terms',
       developerName: 'Munyaradzi Chenjerai',
       storeListing: {
         iosFullDescription:
-          'Nexta is your all-in-one pathway platform for progress - designed to help you discover opportunities, build skills, get support, and move forward with confidence.\n\nWhether you are looking for work, learning something new, building a business, or trying to stabilise your finances, Nexta brings the tools and guidance together in one place.\n\nWith Nexta you can:\n\nDiscover jobs and opportunities that match your goals\nBuild skills with learning pathways and certifications\nConnect with mentors and book sessions\nJoin communities and stay connected\nGet AI guidance for next steps, planning, and readiness\nUse practical business and money tools to stay on track\nSave and track opportunities, deadlines, and progress\nControl your privacy with clear settings and safe defaults\n\nWhy Nexta:\nMost platforms give you one piece of the puzzle. Nexta helps you build the whole pathway - from discovery to long-term stability.\nYour data, your control.\nYou choose what to share, when to share it, and who can see it.\nDownload Nexta and take your next step - and the step after that.',
+          'Tinashe is your all-in-one pathway platform for progress - designed to help you discover opportunities, build skills, get support, and move forward with confidence.\n\nWhether you are looking for work, learning something new, building a business, or trying to stabilise your finances, Tinashe brings the tools and guidance together in one place.\n\nWith Tinashe you can:\n\nDiscover jobs and opportunities that match your goals\nBuild skills with learning pathways and certifications\nConnect with mentors and book sessions\nJoin communities and stay connected\nGet AI guidance for next steps, planning, and readiness\nUse practical business and money tools to stay on track\nSave and track opportunities, deadlines, and progress\nControl your privacy with clear settings and safe defaults\n\nWhy Tinashe:\nMost platforms give you one piece of the puzzle. Tinashe helps you build the whole pathway - from discovery to long-term stability.\nYour data, your control.\nYou choose what to share, when to share it, and who can see it.\nDownload Tinashe and take your next step - and the step after that.',
         googlePlayShortDescription:
           'Your next step, connected: jobs, learning, mentors, tools, and progress.',
         googlePlayFullDescription:
-          'Nexta helps you move from opportunity discovery to long-term progress - in one guided platform.\n\nFind opportunities, build skills, get support, and track your next steps with tools designed for real life.\n\nWhat you can do:\n\nExplore jobs and career pathways\nLearn with structured training and certificates\nMatch with mentors and book sessions\nJoin communities and stay motivated\nUse AI guidance to plan next steps and prepare\nTrack goals, tasks, and progress\nUse practical money and business tools\nManage privacy and safety settings easily\n\nBuilt for progress, not pressure.\nNexta is designed to feel clear, supportive, and useful - every day.',
+          'Tinashe helps you move from opportunity discovery to long-term progress - in one guided platform.\n\nFind opportunities, build skills, get support, and track your next steps with tools designed for real life.\n\nWhat you can do:\n\nExplore jobs and career pathways\nLearn with structured training and certificates\nMatch with mentors and book sessions\nJoin communities and stay motivated\nUse AI guidance to plan next steps and prepare\nTrack goals, tasks, and progress\nUse practical money and business tools\nManage privacy and safety settings easily\n\nBuilt for progress, not pressure.\nTinashe is designed to feel clear, supportive, and useful - every day.',
         keywords: [
           'jobs',
           'career',
@@ -240,7 +240,7 @@ export default ({ config }) => ({
   },
   
   // Owner (for Expo organization)
-  owner: 'nexta',
+  owner: 'Tinashe',
   
   // Updates configuration
   updates: {

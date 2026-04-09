@@ -683,7 +683,7 @@ router.get('/export/:exportId/download', authenticateJWT, async (req, res) => {
     const extension = exportRequest.format === 'json' ? 'json' : 'csv';
 
     res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="ngurra-data-export-${exportId}.${extension}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="Tinashe-data-export-${exportId}.${extension}"`);
     res.send(exportRequest.exportData);
 
   } catch (error) {

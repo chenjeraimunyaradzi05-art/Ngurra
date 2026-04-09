@@ -38,7 +38,7 @@ function generateTrackingPixel(emailLogId) {
     .digest('hex')
     .substring(0, 16);
   
-  const baseUrl = process.env.API_BASE_URL || 'https://api.ngurrapathways.com.au';
+  const baseUrl = process.env.API_BASE_URL || 'https://api.Tinashepathways.com.au';
   return `${baseUrl}/emails/track/open/${emailLogId}/${token}`;
 }
 
@@ -48,7 +48,7 @@ function generateTrackingPixel(emailLogId) {
 function wrapLinksWithTracking(html, emailLogId) {
   if (!html) return html;
   
-  const baseUrl = process.env.API_BASE_URL || 'https://api.ngurrapathways.com.au';
+  const baseUrl = process.env.API_BASE_URL || 'https://api.Tinashepathways.com.au';
   const linkRegex = /href="(https?:\/\/[^"]+)"/g;
   
   let linkIndex = 0;

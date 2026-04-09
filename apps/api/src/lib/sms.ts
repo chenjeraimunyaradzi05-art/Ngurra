@@ -59,7 +59,7 @@ async function sendSMS(to, message) {
  * @param {object} job - Job object with title and company
  */
 async function sendJobAlertSMS(phone, job) {
-  const message = `Ngurra Pathways: New job matching your profile! "${job.title}" at ${job.companyName}. Apply now at ngurrapathways.com.au/jobs/${job.id}`;
+  const message = `Tinashe Pathways: New job matching your profile! "${job.title}" at ${job.companyName}. Apply now at Tinashepathways.com.au/jobs/${job.id}`;
   return sendSMS(phone, message);
 }
 
@@ -73,7 +73,7 @@ async function sendInterviewReminderSMS(phone, interview) {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
-  const message = `Ngurra Pathways: Interview reminder! Your interview with ${interview.companyName} for "${interview.jobTitle}" is scheduled for ${dateStr}.`;
+  const message = `Tinashe Pathways: Interview reminder! Your interview with ${interview.companyName} for "${interview.jobTitle}" is scheduled for ${dateStr}.`;
   return sendSMS(phone, message);
 }
 
@@ -87,7 +87,7 @@ async function sendSessionReminderSMS(phone, session) {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
-  const message = `Ngurra Pathways: Mentor session reminder! You have a session with ${session.mentorName} at ${dateStr}.`;
+  const message = `Tinashe Pathways: Mentor session reminder! You have a session with ${session.mentorName} at ${dateStr}.`;
   return sendSMS(phone, message);
 }
 
@@ -97,7 +97,7 @@ async function sendSessionReminderSMS(phone, session) {
  * @param {string} code - Verification code
  */
 async function sendVerificationSMS(phone, code) {
-  const message = `Ngurra Pathways: Your verification code is ${code}. This code expires in 10 minutes.`;
+  const message = `Tinashe Pathways: Your verification code is ${code}. This code expires in 10 minutes.`;
   return sendSMS(phone, message);
 }
 
@@ -252,7 +252,7 @@ async function processIncomingSMS(from, body) {
     
     // Send confirmation
     await sendSMS(normalizedPhone, 
-      'Ngurra Pathways: You have been unsubscribed from SMS notifications. Reply START to re-subscribe.');
+      'Tinashe Pathways: You have been unsubscribed from SMS notifications. Reply START to re-subscribe.');
     
     return { handled: true, action: 'opted_out' };
   }
@@ -263,7 +263,7 @@ async function processIncomingSMS(from, body) {
     
     // Send confirmation
     await sendSMS(normalizedPhone,
-      'Ngurra Pathways: You have been subscribed to SMS notifications. Reply STOP to unsubscribe.');
+      'Tinashe Pathways: You have been subscribed to SMS notifications. Reply STOP to unsubscribe.');
     
     return { handled: true, action: 'opted_in' };
   }
@@ -312,7 +312,7 @@ async function getSmsStats(startDate, endDate) {
  * Send application received SMS
  */
 async function sendApplicationReceivedSMS(phone, jobTitle, companyName) {
-  const message = `Ngurra Pathways: Your application for "${jobTitle}" at ${companyName} has been received! Check your dashboard for updates.`;
+  const message = `Tinashe Pathways: Your application for "${jobTitle}" at ${companyName} has been received! Check your dashboard for updates.`;
   return sendSMS(phone, message);
 }
 
@@ -328,7 +328,7 @@ async function sendApplicationStatusSMS(phone, jobTitle, status) {
   };
   
   const statusText = statusMessages[status] || `been updated to: ${status}`;
-  const message = `Ngurra Pathways: Your application for "${jobTitle}" has ${statusText}`;
+  const message = `Tinashe Pathways: Your application for "${jobTitle}" has ${statusText}`;
   return sendSMS(phone, message);
 }
 

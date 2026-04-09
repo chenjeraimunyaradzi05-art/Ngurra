@@ -200,7 +200,7 @@ async function createSessionEvent(tokens, session) {
 
   const event = {
     summary: `Mentorship Session with ${session.menteeName || 'Mentee'}`,
-    description: `Ngurra Pathways mentorship session\n\n${session.notes || ''}\n\nJoin: ${session.videoUrl || 'Link will be provided'}`,
+    description: `Tinashe Pathways mentorship session\n\n${session.notes || ''}\n\nJoin: ${session.videoUrl || 'Link will be provided'}`,
     start: {
       dateTime: session.scheduledAt,
       timeZone: session.timezone || 'Australia/Sydney',

@@ -6,7 +6,7 @@
  * Run with: node src/worker.js
  * 
  * In production, PM2 manages multiple worker instances:
- * pm2 start ecosystem.config.cjs --only ngurra-worker
+ * pm2 start ecosystem.config.cjs --only Tinashe-worker
  */
 
 require('dotenv').config();

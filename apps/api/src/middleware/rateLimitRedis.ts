@@ -85,7 +85,7 @@ async function initRateLimitRedis() {
       maxRetriesPerRequest: 3,
       retryDelayOnFailover: 100,
       enableReadyCheck: true,
-      keyPrefix: 'ngurra:',
+      keyPrefix: 'Tinashe:',
     });
 
     redis.on('error', (err) => {

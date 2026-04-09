@@ -53,8 +53,8 @@ export const SESSION_CONFIG = {
   store: process.env.REDIS_URL ? 'redis' : 'memory',
   
   // Session settings
-  secret: process.env.SESSION_SECRET || 'ngurra-secret-change-in-production',
-  name: 'ngurra.sid',
+  secret: process.env.SESSION_SECRET || 'Tinashe-secret-change-in-production',
+  name: 'Tinashe.sid',
   resave: false,
   saveUninitialized: false,
   
@@ -422,12 +422,12 @@ export function loadBalancerHealth() {
 export function stickySession(options = {}) {
   return (req, res, next) => {
     // Use user ID or session ID for sticky routing
-    const stickyCookie = req.cookies?.['ngurra.sticky'];
+    const stickyCookie = req.cookies?.['Tinashe.sticky'];
     
     if (!stickyCookie && req.user?.id) {
       // Set sticky cookie based on user ID
       const workerIndex = req.user.id.charCodeAt(0) % (options.numWorkers || 4);
-      res.cookie('ngurra.sticky', workerIndex.toString(), {
+      res.cookie('Tinashe.sticky', workerIndex.toString(), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 3600000, // 1 hour

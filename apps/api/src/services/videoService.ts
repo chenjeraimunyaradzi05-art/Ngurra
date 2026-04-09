@@ -40,7 +40,7 @@ const CONFIG = {
   allowedFormats: ['mp4', 'mov', 'avi', 'mkv', 'webm'],
   thumbnailCount: 3,
   hlsSegmentDuration: 6, // seconds
-  cdnBaseUrl: process.env.CDN_BASE_URL || 'https://cdn.ngurra.com',
+  cdnBaseUrl: process.env.CDN_BASE_URL || 'https://cdn.Tinashe.com',
   storagePath: process.env.VIDEO_STORAGE_PATH || '/storage/videos',
 };
 
@@ -481,7 +481,7 @@ ${CONFIG.cdnBaseUrl}/hls/${videoId}/360p.m3u8`;
       description,
       status: scheduledFor ? 'scheduled' : 'live',
       streamKey,
-      rtmpUrl: `rtmp://live.ngurra.com/stream/${streamKey}`,
+      rtmpUrl: `rtmp://live.Tinashe.com/stream/${streamKey}`,
       viewerCount: 0
     };
 

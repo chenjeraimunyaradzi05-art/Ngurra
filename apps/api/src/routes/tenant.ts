@@ -335,12 +335,12 @@ router.post('/verify-domain', requireAuth, async (req, res) => {
       verification: {
         method: 'DNS TXT Record',
         recordType: 'TXT',
-        recordName: '_ngurra-verify',
+        recordName: '_Tinashe-verify',
         recordValue: verificationToken,
-        fullRecord: `_ngurra-verify.${domain}`,
+        fullRecord: `_Tinashe-verify.${domain}`,
         instructions: [
           '1. Log in to your domain registrar',
-          `2. Add a TXT record for _ngurra-verify.${domain}`,
+          `2. Add a TXT record for _Tinashe-verify.${domain}`,
           `3. Set the value to: ${verificationToken}`,
           '4. Wait for DNS propagation (up to 24 hours)',
           '5. Click "Verify" to confirm ownership'
@@ -379,7 +379,7 @@ router.post('/check-domain', requireAuth, async (req, res) => {
     // Check DNS record (simplified - use dns.resolveTxt in production)
     try {
       const dns = require('dns').promises;
-      const records = await dns.resolveTxt(`_ngurra-verify.${domain}`);
+      const records = await dns.resolveTxt(`_Tinashe-verify.${domain}`);
       const flatRecords = records.flat();
       
       if (flatRecords.includes(expectedToken)) {

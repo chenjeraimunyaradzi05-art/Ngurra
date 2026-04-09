@@ -23,7 +23,7 @@ export function initCrashReporting() {
   Sentry.init({
     dsn: SENTRY_DSN,
     environment: ENVIRONMENT,
-    release: `ngurra-pathways-mobile@${APP_VERSION}`,
+    release: `Tinashe-pathways-mobile@${APP_VERSION}`,
     
     // Performance monitoring
     tracesSampleRate: ENVIRONMENT === 'production' ? 0.2 : 1.0,

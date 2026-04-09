@@ -101,7 +101,7 @@ const s3Client = new S3Client({
   } : undefined
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'ngurra-portfolios';
+const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'Tinashe-portfolios';
 
 // ============================================================================
 // PORTFOLIO MANAGEMENT
@@ -692,7 +692,7 @@ export async function getPublicUrl(userId) {
 
   if (!portfolio) return null;
 
-  const baseUrl = process.env.APP_URL || 'https://ngurrapathways.com.au';
+  const baseUrl = process.env.APP_URL || 'https://Tinashepathways.com.au';
   
   return {
     url: `${baseUrl}/p/${portfolio.slug}`,
@@ -730,7 +730,7 @@ export async function createShareableLink(userId, options = {}) {
     }
   });
 
-  const baseUrl = process.env.APP_URL || 'https://ngurrapathways.com.au';
+  const baseUrl = process.env.APP_URL || 'https://Tinashepathways.com.au';
 
   return {
     url: `${baseUrl}/p/s/${token}`,

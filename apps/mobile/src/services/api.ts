@@ -4,10 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3333';
 
 // Cache keys
-const CACHE_PREFIX = '@ngurra_cache_';
+const CACHE_PREFIX = '@Tinashe_cache_';
 const USER_KEY = 'user_data';
-const TOKEN_KEY = '@ngurra_auth_token';
-const REFRESH_TOKEN_KEY = '@ngurra_refresh_token';
+const TOKEN_KEY = '@Tinashe_auth_token';
+const REFRESH_TOKEN_KEY = '@Tinashe_refresh_token';
 
 interface ApiOptions extends RequestInit {
   skipRetry?: boolean;

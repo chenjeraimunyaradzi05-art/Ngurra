@@ -32,7 +32,7 @@ function generateRoomName(sessionId, mentorId) {
     .update(`${sessionId}-${mentorId}-${Date.now()}`)
     .digest('hex')
     .substring(0, 12);
-  return `ngurra-mentorship-${hash}`;
+  return `Tinashe-mentorship-${hash}`;
 }
 
 /**
@@ -99,7 +99,7 @@ function generateJitsiEmbed(roomName, subject) {
   allow="camera; microphone; fullscreen; display-capture; autoplay" 
   src="https://${JITSI_DOMAIN}/${roomName}" 
   style="height: 100%; width: 100%; border: 0px;"
-  title="${subject || 'Ngurra Mentorship Session'}"
+  title="${subject || 'Tinashe Mentorship Session'}"
 ></iframe>`;
 }
 
@@ -133,7 +133,7 @@ async function createZoomMeeting(options) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        topic: topic || 'Ngurra Mentorship Session',
+        topic: topic || 'Tinashe Mentorship Session',
         type: 2, // Scheduled meeting
         start_time: startTime,
         duration,

@@ -1,7 +1,7 @@
 /**
  * Cultural Calendar Service
  * 
- * Manages Indigenous cultural events and significant dates for the Ngurra Pathways platform.
+ * Manages Indigenous cultural events and significant dates for the Tinashe Pathways platform.
  * Provides culturally-sensitive scheduling, event discovery, and community engagement.
  * 
  * Features:
@@ -343,7 +343,7 @@ class CulturalCalendarService {
         isOnline: false,
         organizer: {
           id: 'system',
-          name: 'Ngurra Pathways',
+          name: 'Tinashe Pathways',
           type: 'ORGANIZATION' as const,
           isVerified: true,
         },
@@ -696,7 +696,7 @@ class CulturalCalendarService {
         isVerified: false,
       } : {
         id: 'system',
-        name: 'Ngurra Pathways',
+        name: 'Tinashe Pathways',
         type: 'ORGANIZATION',
         isVerified: true,
       },

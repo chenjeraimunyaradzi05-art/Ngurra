@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
-const PUSH_TOKEN_KEY = '@ngurra_push_token';
+const PUSH_TOKEN_KEY = '@Tinashe_push_token';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({

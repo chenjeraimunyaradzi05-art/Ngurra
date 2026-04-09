@@ -58,7 +58,7 @@ function mapResource(r: any, isBookmarked: boolean) {
     category: r.category,
     author: {
       id: r.authorId ?? 'system',
-      name: r.author ?? 'Ngurra Pathways',
+      name: r.author ?? 'Tinashe Pathways',
       avatar: undefined,
     },
     thumbnail: r.thumbnailUrl ?? undefined,

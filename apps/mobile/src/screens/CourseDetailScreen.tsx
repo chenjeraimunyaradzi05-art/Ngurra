@@ -243,8 +243,8 @@ export default function CourseDetailScreen({ route, navigation }: Props) {
     if (!course) return;
     try {
       await Share.share({
-        message: `Check out this course: ${course.title} on Ngurra Pathways`,
-        url: `https://ngurrapathways.com.au/courses/${courseId}`,
+        message: `Check out this course: ${course.title} on Tinashe Pathways`,
+        url: `https://Tinashepathways.com.au/courses/${courseId}`,
       });
     } catch (error) {
       console.error('Failed to share:', error);

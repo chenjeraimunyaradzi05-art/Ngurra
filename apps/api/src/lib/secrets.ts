@@ -206,7 +206,7 @@ class SecretManager {
    */
   async getFromVault(name) {
     try {
-      const path = process.env.VAULT_SECRET_PATH || 'secret/data/ngurra';
+      const path = process.env.VAULT_SECRET_PATH || 'secret/data/Tinashe';
       const response = await this.vaultClient.read(`${path}/${name}`);
       return response.data.data;
     } catch (error) {
@@ -289,7 +289,7 @@ class SecretManager {
           await this.awsClient.send(new CreateSecretCommand({
             Name: name,
             SecretString: secretValue,
-            Description: options.description || 'Ngurra Pathways secret',
+            Description: options.description || 'Tinashe Pathways secret',
           }));
         } else {
           throw error;
@@ -312,7 +312,7 @@ class SecretManager {
    */
   async setInVault(name, value, options = {}) {
     try {
-      const path = process.env.VAULT_SECRET_PATH || 'secret/data/ngurra';
+      const path = process.env.VAULT_SECRET_PATH || 'secret/data/Tinashe';
       await this.vaultClient.write(`${path}/${name}`, {
         data: typeof value === 'object' ? value : { value },
       });

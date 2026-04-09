@@ -1,7 +1,7 @@
 /**
  * Mobile App Configuration
  *
- * Central configuration values for the Nexta mobile app.
+ * Central configuration values for the Tinashe mobile app.
  */
 
 // Re-export deep linking configuration
@@ -11,7 +11,7 @@ export { linking } from './linking';
 export const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 
 // App info
-export const APP_NAME = 'Nexta';
+export const APP_NAME = 'Tinashe';
 export const APP_VERSION = '1.0.0';
 export const DEVELOPER_NAME = 'Munyaradzi Chenjerai';
 
@@ -51,19 +51,19 @@ export const TIMEOUTS = {
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',
   USER_DATA: 'user_data',
-  OFFLINE_QUEUE: '@ngurra_offline_queue',
-  SYNC_STATUS: '@ngurra_sync_status',
-  NAV_STATE: '@ngurra_nav_state',
-  ACCESSIBILITY_PREFS: '@ngurra_accessibility',
-  NOTIFICATION_PREFS: '@ngurra_notifications',
-  BIOMETRIC_ENABLED: '@ngurra_biometric',
+  OFFLINE_QUEUE: '@Tinashe_offline_queue',
+  SYNC_STATUS: '@Tinashe_sync_status',
+  NAV_STATE: '@Tinashe_nav_state',
+  ACCESSIBILITY_PREFS: '@Tinashe_accessibility',
+  NOTIFICATION_PREFS: '@Tinashe_notifications',
+  BIOMETRIC_ENABLED: '@Tinashe_biometric',
 };
 
 // Support contact info
 export const SUPPORT = {
-  EMAIL: 'support@nexta.app',
-  PHONE: '1800 NEXTA',
-  WEBSITE: 'https://nexta.app/support',
+  EMAIL: 'support@Tinashe.app',
+  PHONE: '1800 Tinashe',
+  WEBSITE: 'https://Tinashe.app/support',
 };
 
 // Analytics event names

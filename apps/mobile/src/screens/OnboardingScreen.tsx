@@ -387,7 +387,7 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
         {/* Role Selection */}
         {!selectedRole && steps.length === 0 && (
           <View>
-            <Text style={styles.title}>Welcome to Ngurra Pathways</Text>
+            <Text style={styles.title}>Welcome to Tinashe Pathways</Text>
             <Text style={styles.subtitle}>How would you like to use the platform?</Text>
 
             <View style={styles.rolesGrid}>

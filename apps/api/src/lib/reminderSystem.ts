@@ -143,7 +143,7 @@ async function sendSessionReminder(session, minutesBefore) {
     
     if (minutesBefore <= 60 && await shouldSendNotification(session.mentee.id, 'SESSION_REMINDER', 'sms')) {
       await sendUserSMS(session.mentee.id, SMS_TYPES.SESSION_REMINDERS,
-        `Ngurra Pathways: Your mentor session with ${mentorName} is ${timeLabel}. Be ready!`
+        `Tinashe Pathways: Your mentor session with ${mentorName} is ${timeLabel}. Be ready!`
       );
     }
     

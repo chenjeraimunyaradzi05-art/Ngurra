@@ -398,7 +398,7 @@ function getWellnessResources(severity = 'LOW') {
     career: [
       {
         name: 'Mentor Support',
-        description: 'Connect with an experienced mentor on Ngurra',
+        description: 'Connect with an experienced mentor on Tinashe',
         url: '/mentorship',
         internal: true,
         icon: '👥'

@@ -194,7 +194,7 @@ router.post('/', authenticate, validateRequest(z.object({ body: submitApplicatio
               recipientName: member.user.firstName,
               applicantName,
               jobTitle: job.title,
-              applicationUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/employer/applications/${application.id}`
+              applicationUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/employer/applications/${application.id}`
             },
             userId: member.user.id,
             type: 'JOB_APPLICATION_UPDATE'
@@ -392,7 +392,7 @@ router.patch('/:id', authenticate, validateRequest(z.object({ body: updateApplic
             companyName: updatedApplication.job.company,
             status,
             statusMessage: statusMessages[status],
-            applicationUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/applications/${id}`,
+            applicationUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/applications/${id}`,
             notes: notes || undefined
           },
           userId: applicant.id,

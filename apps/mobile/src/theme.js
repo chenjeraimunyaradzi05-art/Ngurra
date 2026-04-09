@@ -1,5 +1,5 @@
 /**
- * Ngurra Pathways Theme Configuration
+ * Tinashe Pathways Theme Configuration
  * Dark theme with First Nations design elements
  */
 

@@ -106,7 +106,7 @@ export function SettingsScreen() {
 
       {/* Logout Button */}
       {/* App Version */}
-      <Text style={styles.version}>Ngurra Pathways v1.0.0</Text>
+      <Text style={styles.version}>Tinashe Pathways v1.0.0</Text>
     </ScrollView>
   );
 }

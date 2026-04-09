@@ -457,17 +457,17 @@ router.get('/export/ical', authenticate, async (req: Request, res: Response) => 
     // Generate iCal format
     let ical = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Ngurra Pathways//Cultural Calendar//EN
+PRODID:-//Tinashe Pathways//Cultural Calendar//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Ngurra Pathways Cultural Calendar
+X-WR-CALNAME:Tinashe Pathways Cultural Calendar
 X-WR-TIMEZONE:Australia/Sydney
 `;
 
     events.forEach(event => {
       const dtstart = event.startDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
       const dtend = (event.endDate || event.startDate).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-      const uid = `${event.id}@ngurrapathways.com.au`;
+      const uid = `${event.id}@Tinashepathways.com.au`;
       
       ical += `BEGIN:VEVENT
 UID:${uid}

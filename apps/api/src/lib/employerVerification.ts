@@ -123,7 +123,7 @@ const s3Client = new S3Client({
   } : undefined
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'ngurra-verifications';
+const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'Tinashe-verifications';
 
 // ============================================================================
 // ABN VERIFICATION

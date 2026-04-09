@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
         });
 
         // Send email notifications
-        const partnershipsEmail = process.env.PARTNERSHIPS_EMAIL || 'partnerships@ngurrapathways.com.au';
+        const partnershipsEmail = process.env.PARTNERSHIPS_EMAIL || 'partnerships@Tinashepathways.com.au';
         
         // Send notification to partnerships team
         try {

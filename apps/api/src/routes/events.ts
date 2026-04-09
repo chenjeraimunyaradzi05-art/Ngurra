@@ -927,7 +927,7 @@ function getMockEvents(category?, eventType?, search?, featured?, limit = 10) {
       isFeatured: true,
       isFree: true,
       price: null,
-      organizer: { id: 1, firstName: 'Ngurra', lastName: 'Pathways' }
+      organizer: { id: 1, firstName: 'Tinashe', lastName: 'Pathways' }
     },
     {
       id: 2,
@@ -963,7 +963,7 @@ function getMockEvents(category?, eventType?, search?, featured?, limit = 10) {
       isFeatured: false,
       isFree: true,
       price: null,
-      organizer: { id: 1, firstName: 'Ngurra', lastName: 'Pathways' }
+      organizer: { id: 1, firstName: 'Tinashe', lastName: 'Pathways' }
     }
   ];
 

@@ -1,16 +1,16 @@
 /**
  * Deep Linking Configuration
  *
- * Enables deep linking and universal links for the Nexta mobile app.
+ * Enables deep linking and universal links for the Tinashe mobile app.
  *
  * Supported URL patterns:
- * - nexta://job/{id} - Open job detail
- * - nexta://mentor/{id} - Open mentor profile
- * - nexta://course/{id} - Open course detail
- * - nexta://messages - Open messages
- * - nexta://wellness - Open wellness check-in
- * - nexta://applications - Open my applications
- * - https://nexta.app/jobs/{id} - Universal link to job
+ * - Tinashe://job/{id} - Open job detail
+ * - Tinashe://mentor/{id} - Open mentor profile
+ * - Tinashe://course/{id} - Open course detail
+ * - Tinashe://messages - Open messages
+ * - Tinashe://wellness - Open wellness check-in
+ * - Tinashe://applications - Open my applications
+ * - https://Tinashe.app/jobs/{id} - Universal link to job
  */
 
 import * as Linking from 'expo-linking';
@@ -24,9 +24,9 @@ const prefix = Linking.createURL('/');
 export const linking = {
   prefixes: [
     prefix,
-    'nexta://',
-    'https://nexta.app',
-    'https://www.nexta.app',
+    'Tinashe://',
+    'https://Tinashe.app',
+    'https://www.Tinashe.app',
   ],
   
   config: {
@@ -88,7 +88,7 @@ export const linking = {
       MyApplications: 'applications',
       SavedJobs: 'saved-jobs',
       Wellness: 'wellness',
-      NextaAI: 'ai',
+      TinasheAI: 'ai',
       MoneyTools: 'money-tools',
       NotificationPreferences: 'notification-preferences',
       Notifications: 'notifications',
@@ -140,35 +140,35 @@ export const linking = {
 export function generateDeepLink(screen, params = {}) {
   switch (screen) {
     case 'JobDetail':
-      return `nexta://job/${params.id}`;
+      return `Tinashe://job/${params.id}`;
     case 'MentorDetail':
-      return `nexta://mentor/${params.id}`;
+      return `Tinashe://mentor/${params.id}`;
     case 'CourseDetail':
-      return `nexta://course/${params.id}`;
+      return `Tinashe://course/${params.id}`;
     case 'Apply':
-      return `nexta://apply/${params.jobId}`;
+      return `Tinashe://apply/${params.jobId}`;
     case 'BookSession':
-      return `nexta://book/${params.mentorId}`;
+      return `Tinashe://book/${params.mentorId}`;
     case 'Messages':
-      return 'nexta://messages';
+      return 'Tinashe://messages';
     case 'Notifications':
-      return 'nexta://notifications';
+      return 'Tinashe://notifications';
     case 'Wellness':
-      return 'nexta://wellness';
+      return 'Tinashe://wellness';
     case 'MyApplications':
-      return 'nexta://applications';
+      return 'Tinashe://applications';
     case 'SavedJobs':
-      return 'nexta://saved-jobs';
+      return 'Tinashe://saved-jobs';
     case 'CulturalCalendar':
-      return 'nexta://cultural-calendar';
+      return 'Tinashe://cultural-calendar';
     case 'Resources':
-      return 'nexta://resources';
+      return 'Tinashe://resources';
     case 'SecuritySettings':
-      return 'nexta://security';
+      return 'Tinashe://security';
     case 'ActiveSessions':
-      return 'nexta://sessions';
+      return 'Tinashe://sessions';
     default:
-      return 'nexta://';
+      return 'Tinashe://';
   }
 }
 
@@ -179,7 +179,7 @@ export function generateDeepLink(screen, params = {}) {
  * @returns {string} Web URL
  */
 export function generateWebLink(screen, params = {}) {
-  const baseUrl = 'https://nexta.app';
+  const baseUrl = 'https://Tinashe.app';
   
   switch (screen) {
     case 'JobDetail':

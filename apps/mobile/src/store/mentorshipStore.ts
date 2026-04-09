@@ -493,7 +493,7 @@ export const useMentorshipStore = create<MentorshipState>()(
       },
     }),
     {
-      name: 'ngurra-mentorship-store',
+      name: 'Tinashe-mentorship-store',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         searchFilters: state.searchFilters,

@@ -46,7 +46,7 @@ router.get('/export', authenticateToken, async (req, res) => {
 
     // Set headers for download
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="ngurra-data-export-${Date.now()}.json"`);
+    res.setHeader('Content-Disposition', `attachment; filename="Tinashe-data-export-${Date.now()}.json"`);
     
     res.json({
       success: true,

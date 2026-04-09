@@ -1,7 +1,7 @@
 /**
  * API Documentation Generator
  * 
- * OpenAPI 3.0 specification generator for the Ngurra Pathways API.
+ * OpenAPI 3.0 specification generator for the Tinashe Pathways API.
  * Provides comprehensive API docs with examples and Indigenous context.
  */
 
@@ -22,18 +22,18 @@ try {
 const openApiSpec = {
   openapi: '3.0.0',
   info: {
-    title: 'Ngurra Pathways API',
+    title: 'Tinashe Pathways API',
     version: '1.0.0',
     description: `
-# Ngurra Pathways API
+# Tinashe Pathways API
 
-Ngurra Pathways is Australia's leading Indigenous professional network and employment platform.
+Tinashe Pathways is Australia's leading Indigenous professional network and employment platform.
 This API powers our web and mobile applications, providing access to job listings, mentorship matching,
 community features, and culturally-informed career development tools.
 
 ## Cultural Context
 
-**Ngurra** (meaning "home" or "country" in many Aboriginal languages) represents our commitment to
+**Tinashe** (meaning "home" or "country" in many Aboriginal languages) represents our commitment to
 creating a platform that honors Indigenous heritage while empowering career growth.
 
 ## Authentication
@@ -58,29 +58,29 @@ Australian privacy laws and Indigenous cultural protocols.
 
 ## Support
 
-For API support, contact: api-support@ngurrapathways.com.au
+For API support, contact: api-support@Tinashepathways.com.au
 `,
     contact: {
-      name: 'Ngurra Pathways API Support',
-      email: 'api-support@ngurrapathways.com.au',
-      url: 'https://ngurrapathways.com.au/support',
+      name: 'Tinashe Pathways API Support',
+      email: 'api-support@Tinashepathways.com.au',
+      url: 'https://Tinashepathways.com.au/support',
     },
     license: {
       name: 'Proprietary',
-      url: 'https://ngurrapathways.com.au/api-terms',
+      url: 'https://Tinashepathways.com.au/api-terms',
     },
     'x-logo': {
-      url: 'https://ngurrapathways.com.au/logo.png',
-      altText: 'Ngurra Pathways',
+      url: 'https://Tinashepathways.com.au/logo.png',
+      altText: 'Tinashe Pathways',
     },
   },
   servers: [
     {
-      url: 'https://api.ngurrapathways.com.au/v1',
+      url: 'https://api.Tinashepathways.com.au/v1',
       description: 'Production server',
     },
     {
-      url: 'https://staging-api.ngurrapathways.com.au/v1',
+      url: 'https://staging-api.Tinashepathways.com.au/v1',
       description: 'Staging server',
     },
     {
@@ -915,7 +915,7 @@ For API support, contact: api-support@ngurrapathways.com.au
                 },
               },
               example: {
-                url: 'https://yourapp.com/webhooks/ngurra',
+                url: 'https://yourapp.com/webhooks/Tinashe',
                 events: ['job.application.new', 'mentorship.session.booked'],
               },
             },
@@ -982,7 +982,7 @@ export function initializeApiDocs(app: Express): void {
         .swagger-ui .info { margin: 20px 0 }
         .swagger-ui .info .title { color: #2d6a4f }
       `,
-      customSiteTitle: 'Ngurra Pathways API Documentation',
+      customSiteTitle: 'Tinashe Pathways API Documentation',
       customfavIcon: '/favicon.ico',
     })
   );

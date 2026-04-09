@@ -20,7 +20,7 @@ jest.mock('socket.io-client', () => ({
 
 jest.mock('@react-native-async-storage/async-storage');
 
-const AUTH_TOKEN_KEY = '@ngurra_auth_token';
+const AUTH_TOKEN_KEY = '@Tinashe_auth_token';
 
 const loadSocketModule = (token: string | null = 'test-token') => {
   jest.resetModules();

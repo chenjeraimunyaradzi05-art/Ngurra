@@ -447,13 +447,13 @@ export async function processJobAlerts(frequency = 'daily') {
                 title: job.title,
                 company: job.user?.companyProfile?.companyName || 'Company',
                 location: job.location || 'Remote',
-                url: `https://ngurrapathways.com.au/jobs/${job.id}`,
+                url: `https://Tinashepathways.com.au/jobs/${job.id}`,
                 salary: job.salaryLow && job.salaryHigh
                   ? `$${job.salaryLow.toLocaleString()} - $${job.salaryHigh.toLocaleString()}`
                   : null,
               })),
-              searchUrl: `https://ngurrapathways.com.au/jobs?saved=${search.id}`,
-              unsubscribeUrl: `https://ngurrapathways.com.au/settings/notifications`,
+              searchUrl: `https://Tinashepathways.com.au/jobs?saved=${search.id}`,
+              unsubscribeUrl: `https://Tinashepathways.com.au/settings/notifications`,
             };
 
             // Queue to email system

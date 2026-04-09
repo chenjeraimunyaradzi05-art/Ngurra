@@ -85,7 +85,7 @@ async function fetchWithAuth(url, accessToken) {
 }
 
 /**
- * Import LinkedIn profile data into user's Ngurra profile
+ * Import LinkedIn profile data into user's Tinashe profile
  * @param {string} userId - User ID to import data for
  * @param {Object} importOptions - Which fields to import
  * @returns {Promise<Object>} Updated profile

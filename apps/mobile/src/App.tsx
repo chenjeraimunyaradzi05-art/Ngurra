@@ -1,5 +1,5 @@
 /**
- * Nexta Mobile App
+ * Tinashe Mobile App
  * Main entry point with navigation, drawer, and state persistence
  * 
  * Features:
@@ -51,7 +51,7 @@ import AccessibilitySettingsScreen from './screens/AccessibilitySettingsScreen';
 import NotificationPreferencesScreen from './screens/NotificationPreferencesScreen';
 import VideoResumeScreen from './screens/VideoResumeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
-import NextaAIScreen from './screens/NextaAIScreen';
+import TinasheAIScreen from './screens/TinasheAIScreen';
 import MoneyToolsScreen from './screens/MoneyToolsScreen';
 
 // Theme
@@ -67,7 +67,7 @@ import { initializeOfflineSync } from './services/offlineSync';
 import { initializeAccessibility } from './services/accessibility';
 
 // Navigation state persistence key
-const NAVIGATION_STATE_KEY = '@nexta_nav_state';
+const NAVIGATION_STATE_KEY = '@Tinashe_nav_state';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -525,9 +525,9 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
-        name="NextaAI"
-        component={NextaAIScreen}
-        options={{ title: 'Nexta AI' }}
+        name="TinasheAI"
+        component={TinasheAIScreen}
+        options={{ title: 'Tinashe AI' }}
       />
       <Stack.Screen
         name="MoneyTools"

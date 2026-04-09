@@ -108,7 +108,7 @@ const translations = {
     
     // Indigenous acknowledgment
     'acknowledgment.short': 'We acknowledge the Traditional Custodians of the land.',
-    'acknowledgment.full': 'Ngurra Pathways acknowledges the Traditional Custodians of the lands on which we work and live. We pay our respects to Elders past, present and emerging.',
+    'acknowledgment.full': 'Tinashe Pathways acknowledges the Traditional Custodians of the lands on which we work and live. We pay our respects to Elders past, present and emerging.',
     
     // Time
     'time.justNow': 'Just now',

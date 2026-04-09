@@ -448,7 +448,7 @@ export const useJobsStore = create<JobsState>()(
       },
     }),
     {
-      name: 'ngurra-jobs-store',
+      name: 'Tinashe-jobs-store',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         savedJobs: state.savedJobs,

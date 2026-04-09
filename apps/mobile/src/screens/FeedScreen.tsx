@@ -210,8 +210,8 @@ export default function FeedScreen({ navigation }: FeedScreenProps) {
   const handleShare = async (post: Post) => {
     try {
       const result = await Share.share({
-        message: `Check out this post on Ngurra Pathways: ${post.content.substring(0, 100)}...`,
-        url: `https://ngurra.com/feed/${post.id}`,
+        message: `Check out this post on Tinashe Pathways: ${post.content.substring(0, 100)}...`,
+        url: `https://Tinashe.com/feed/${post.id}`,
       });
       
       if (result.action === Share.sharedAction) {

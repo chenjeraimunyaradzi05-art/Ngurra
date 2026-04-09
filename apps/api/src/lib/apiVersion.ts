@@ -65,7 +65,7 @@ export function versionNegotiation(defaultVersion = 'v1') {
 
 /**
  * Parse version from Accept header
- * e.g., application/vnd.ngurra+json; version=1
+ * e.g., application/vnd.Tinashe+json; version=1
  */
 function parseAcceptVersionHeader(accept) {
   if (!accept) return null;
@@ -87,7 +87,7 @@ export function deprecationResponse(oldEndpoint, newEndpoint, sunsetDate) {
     deprecated_endpoint: oldEndpoint,
     replacement_endpoint: newEndpoint,
     sunset_date: sunsetDate,
-    documentation: 'https://api.ngurrapathways.com.au/docs',
+    documentation: 'https://api.Tinashepathways.com.au/docs',
   };
 }
 

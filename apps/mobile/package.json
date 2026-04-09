@@ -1,7 +1,7 @@
 {
-  "name": "nexta-mobile",
+  "name": "tinashe-mobile",
   "version": "1.0.0",
-  "description": "Nexta mobile app - guided pathways for work, learning, support, and progress",
+  "description": "Tinashe mobile app - guided pathways for work, learning, support, and progress",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",

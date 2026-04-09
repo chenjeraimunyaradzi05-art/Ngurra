@@ -449,9 +449,9 @@ async function runRetentionCleanup() {
 function getDataProcessingRegistry() {
   return {
     controller: {
-      name: 'Ngurra Pathways',
-      contact: 'privacy@ngurrapathways.com.au',
-      dpo: 'dpo@ngurrapathways.com.au'
+      name: 'Tinashe Pathways',
+      contact: 'privacy@Tinashepathways.com.au',
+      dpo: 'dpo@Tinashepathways.com.au'
     },
     processingActivities: [
       {

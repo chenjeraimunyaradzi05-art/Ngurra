@@ -782,7 +782,7 @@ function suggestAccessibleColor(foreground, background, targetRatio) {
 }
 
 /**
- * Ngurra Pathways color palette with contrast info
+ * Tinashe Pathways color palette with contrast info
  */
 export const ACCESSIBLE_COLORS = {
   primary: {

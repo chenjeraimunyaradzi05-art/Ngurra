@@ -26,7 +26,7 @@ function getJwtSecret(): string {
       throw new Error('FATAL: JWT_SECRET must be set in production');
     }
     console.warn('⚠️  Using development JWT secret - set JWT_SECRET for production!');
-    return 'ngurra-dev-secret-minimum-32-chars';
+    return 'Tinashe-dev-secret-minimum-32-chars';
   }
   
   if (secret.length < 32 && process.env.NODE_ENV === 'production') {
@@ -135,7 +135,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     if (gender && gender !== 'FEMALE') {
        return void res.status(403).json({
          error: 'Access Restricted',
-         message: 'Ngurra Pathways is currently restricted to female registration only for cultural safety reasons.'
+         message: 'Tinashe Pathways is currently restricted to female registration only for cultural safety reasons.'
        });
     }
     

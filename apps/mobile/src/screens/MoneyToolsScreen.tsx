@@ -44,7 +44,7 @@ export default function MoneyToolsScreen() {
         </View>
         <Text style={styles.heroTitle}>Track money with less pressure.</Text>
         <Text style={styles.heroBody}>
-          Nexta keeps money tools practical: simple planning, better visibility, and calmer
+          Tinashe keeps money tools practical: simple planning, better visibility, and calmer
           next steps for everyday life and business.
         </Text>
       </View>

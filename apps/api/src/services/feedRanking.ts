@@ -6,7 +6,7 @@
  * - Engagement: Likes, comments, shares with weighted scoring
  * - Relationship: Connection strength between users
  * - Quality: Author trust level and content quality signals
- * - Cultural Relevance: Indigenous community context (unique to Ngurra)
+ * - Cultural Relevance: Indigenous community context (unique to Tinashe)
  */
 
 import { prisma as prismaClient } from '../db';
@@ -24,7 +24,7 @@ interface FeedWeights {
   culturalRelevance: number;
 }
 
-// Default weights optimized for Ngurra community platform
+// Default weights optimized for Tinashe community platform
 const DEFAULT_WEIGHTS: FeedWeights = {
   recency: 0.30,          // Time decay
   engagement: 0.25,       // User interactions
@@ -252,7 +252,7 @@ export class FeedRankingService {
 
   /**
    * Calculate cultural relevance score for Indigenous community content
-   * This is a unique feature for Ngurra Pathways
+   * This is a unique feature for Tinashe Pathways
    */
   private calculateCulturalRelevance(content: string): number {
     const lowerContent = content.toLowerCase();

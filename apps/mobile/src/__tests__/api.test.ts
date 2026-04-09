@@ -14,8 +14,8 @@ jest.mock('@react-native-async-storage/async-storage');
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
-const AUTH_TOKEN_KEY = '@ngurra_auth_token';
-const REFRESH_TOKEN_KEY = '@ngurra_refresh_token';
+const AUTH_TOKEN_KEY = '@Tinashe_auth_token';
+const REFRESH_TOKEN_KEY = '@Tinashe_refresh_token';
 
 describe('API Service', () => {
   beforeEach(() => {

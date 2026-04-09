@@ -19,7 +19,7 @@ function getJwtSecret(): string {
     }
     // Only allow this in development with explicit warning
     console.warn('⚠️  WARNING: Using development JWT secret. Set JWT_SECRET in production!');
-    return 'ngurra-dev-secret-minimum-32-chars';
+    return 'Tinashe-dev-secret-minimum-32-chars';
   }
   
   if (secret.length < 32 && process.env.NODE_ENV === 'production') {

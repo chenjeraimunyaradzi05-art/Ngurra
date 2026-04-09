@@ -76,7 +76,7 @@ export function paymentFailedTemplate(params) {
     
     <hr style="margin:24px 0; border: none; border-top: 1px solid #e5e7eb;" />
     <p style="margin:0; color:#777; font-size: 12px;">
-      If you have questions, contact us at support@ngurra.example<br/>
+      If you have questions, contact us at support@Tinashe.example<br/>
       <a href="${params.billingUrl || '#'}" style="color: #3b82f6;">Manage your billing settings</a>
     </p>
   </div>
@@ -88,13 +88,13 @@ export function paymentFailedTemplate(params) {
  * Password reset email template
  */
 function passwordResetTemplate(params) {
-    const subject = 'Reset your Ngurra Pathways password';
+    const subject = 'Reset your Tinashe Pathways password';
     const resetUrl = params.resetUrl || `${params.baseUrl}/reset-password?token=${params.token}`;
-    const text = `You requested a password reset for your Ngurra Pathways account. Click this link to reset your password: ${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, you can safely ignore this email.`;
+    const text = `You requested a password reset for your Tinashe Pathways account. Click this link to reset your password: ${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, you can safely ignore this email.`;
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
     <div style="background: linear-gradient(135deg, #1A0F2E, #2D1B69); padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Ngurra Pathways</h1>
+      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Tinashe Pathways</h1>
     </div>
     
     <div style="background: #fff; padding: 32px; border: 1px solid #e5e7eb; border-top: none;">
@@ -120,7 +120,7 @@ function passwordResetTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways. Supporting First Nations futures.
+        © ${new Date().getFullYear()} Tinashe Pathways. Supporting First Nations futures.
       </p>
     </div>
   </div>
@@ -133,11 +133,11 @@ function passwordResetTemplate(params) {
  */
 export function contactConfirmationTemplate(params: any) {
     const subject = `We received your message — ${params.subject}`;
-    const text = `Hi ${params.name},\n\nThanks for reaching out! We've received your message about "${params.subject}" and our team will respond within 24-48 hours.\n\nReference: ${params.id}\n\n— The Ngurra Pathways Team`;
+    const text = `Hi ${params.name},\n\nThanks for reaching out! We've received your message about "${params.subject}" and our team will respond within 24-48 hours.\n\nReference: ${params.id}\n\n— The Tinashe Pathways Team`;
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
     <div style="background: linear-gradient(135deg, #1A0F2E, #2D1B69); padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Ngurra Pathways</h1>
+      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Tinashe Pathways</h1>
     </div>
     
     <div style="background: #fff; padding: 32px; border: 1px solid #e5e7eb; border-top: none;">
@@ -155,13 +155,13 @@ export function contactConfirmationTemplate(params: any) {
       </div>
       
       <p style="margin:0; color: #6b7280; font-size: 14px;">
-        Need urgent help? Check our <a href="${params.baseUrl || 'https://ngurrapathways.com.au'}/help" style="color: #6B4C9A;">Help Center</a>.
+        Need urgent help? Check our <a href="${params.baseUrl || 'https://Tinashepathways.com.au'}/help" style="color: #6B4C9A;">Help Center</a>.
       </p>
     </div>
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways. Supporting First Nations futures.
+        © ${new Date().getFullYear()} Tinashe Pathways. Supporting First Nations futures.
       </p>
     </div>
   </div>
@@ -217,12 +217,12 @@ ${params.message}
  * Advertising inquiry confirmation email
  */
 export function advertisingConfirmationTemplate(params) {
-    const subject = `Thanks for your interest in advertising with Ngurra Pathways`;
-    const text = `Hi ${params.contactName},\n\nThanks for your advertising inquiry! Our partnerships team will review your request and contact you within 24-48 hours.\n\nCompany: ${params.companyName}\nSelected Plan: ${params.selectedPlan || 'Not specified'}\nReference: ${params.id}\n\n— The Ngurra Pathways Partnerships Team`;
+    const subject = `Thanks for your interest in advertising with Tinashe Pathways`;
+    const text = `Hi ${params.contactName},\n\nThanks for your advertising inquiry! Our partnerships team will review your request and contact you within 24-48 hours.\n\nCompany: ${params.companyName}\nSelected Plan: ${params.selectedPlan || 'Not specified'}\nReference: ${params.id}\n\n— The Tinashe Pathways Partnerships Team`;
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
     <div style="background: linear-gradient(135deg, #1A0F2E, #2D1B69); padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Ngurra Pathways</h1>
+      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Tinashe Pathways</h1>
       <p style="margin: 8px 0 0 0; color: rgba(255,215,0,0.7); font-size: 14px;">Partnerships & Advertising</p>
     </div>
     
@@ -252,13 +252,13 @@ export function advertisingConfirmationTemplate(params) {
       </div>
       
       <p style="margin:0; color: #6b7280; font-size: 14px;">
-        Questions? Reply to this email or contact partnerships@ngurrapathways.com.au
+        Questions? Reply to this email or contact partnerships@Tinashepathways.com.au
       </p>
     </div>
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways. Supporting First Nations futures.
+        © ${new Date().getFullYear()} Tinashe Pathways. Supporting First Nations futures.
       </p>
     </div>
   </div>
@@ -337,19 +337,19 @@ exports.advertisingNotificationTemplate = advertisingNotificationTemplate;
  * Welcome email for new users
  */
 function welcomeTemplate(params) {
-    const subject = `Welcome to Ngurra Pathways, ${params.name}!`;
-    const text = `Welcome to Ngurra Pathways, ${params.name}!\n\nYour account has been created successfully. You can now:\n- Browse and apply for jobs\n- Connect with mentors\n- Access training courses\n- Join our community\n\nGet started: ${params.dashboardUrl || 'https://ngurrapathways.com.au/dashboard'}\n\n— The Ngurra Pathways Team`;
+    const subject = `Welcome to Tinashe Pathways, ${params.name}!`;
+    const text = `Welcome to Tinashe Pathways, ${params.name}!\n\nYour account has been created successfully. You can now:\n- Browse and apply for jobs\n- Connect with mentors\n- Access training courses\n- Join our community\n\nGet started: ${params.dashboardUrl || 'https://Tinashepathways.com.au/dashboard'}\n\n— The Tinashe Pathways Team`;
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
     <div style="background: linear-gradient(135deg, #1A0F2E, #2D1B69); padding: 32px; text-align: center; border-radius: 8px 8px 0 0;">
-      <h1 style="margin:0 0 8px 0; color: #FFD700; font-size: 28px;">Welcome to Ngurra Pathways</h1>
+      <h1 style="margin:0 0 8px 0; color: #FFD700; font-size: 28px;">Welcome to Tinashe Pathways</h1>
       <p style="margin:0; color: rgba(255,215,0,0.8); font-size: 16px;">Your journey starts here</p>
     </div>
     
     <div style="background: #fff; padding: 32px; border: 1px solid #e5e7eb; border-top: none;">
       <h2 style="margin:0 0 16px 0; color: #1A0F2E;">G'day ${params.name}! 👋</h2>
       <p style="margin:0 0 24px 0; color: #374151;">
-        Your Ngurra Pathways account is ready. We're excited to support you on your career journey.
+        Your Tinashe Pathways account is ready. We're excited to support you on your career journey.
       </p>
       
       <h3 style="margin:0 0 16px 0; color: #1A0F2E; font-size: 16px;">Here's what you can do:</h3>
@@ -374,20 +374,20 @@ function welcomeTemplate(params) {
       </div>
       
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${params.dashboardUrl || 'https://ngurrapathways.com.au/dashboard'}" 
+        <a href="${params.dashboardUrl || 'https://Tinashepathways.com.au/dashboard'}" 
            style="display: inline-block; background: linear-gradient(135deg, #6B4C9A, #3D1A2A); color: #FFD700; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600;">
           Go to Dashboard
         </a>
       </div>
       
       <p style="margin:0; color: #6b7280; font-size: 14px; text-align: center;">
-        Need help? Check out our <a href="${params.baseUrl || 'https://ngurrapathways.com.au'}/help" style="color: #6B4C9A;">Help Center</a> or reply to this email.
+        Need help? Check out our <a href="${params.baseUrl || 'https://Tinashepathways.com.au'}/help" style="color: #6B4C9A;">Help Center</a> or reply to this email.
       </p>
     </div>
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways. Supporting First Nations futures.
+        © ${new Date().getFullYear()} Tinashe Pathways. Supporting First Nations futures.
       </p>
     </div>
   </div>
@@ -405,7 +405,7 @@ function verificationTemplate(params) {
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
     <div style="background: linear-gradient(135deg, #1A0F2E, #2D1B69); padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Ngurra Pathways</h1>
+      <h1 style="margin:0; color: #FFD700; font-size: 24px;">Tinashe Pathways</h1>
     </div>
     
     <div style="background: #fff; padding: 32px; border: 1px solid #e5e7eb; border-top: none;">
@@ -428,7 +428,7 @@ function verificationTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways. Supporting First Nations futures.
+        © ${new Date().getFullYear()} Tinashe Pathways. Supporting First Nations futures.
       </p>
     </div>
   </div>
@@ -480,7 +480,7 @@ function jobAlertTemplate(params) {
         <a href="${params.unsubscribeUrl}" style="color: #6b7280;">Manage alerts</a> • <a href="${params.unsubscribeUrl}" style="color: #6b7280;">Unsubscribe</a>
       </p>
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -539,7 +539,7 @@ function sessionReminderTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -597,7 +597,7 @@ function courseEnrollmentTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -609,7 +609,7 @@ function courseEnrollmentTemplate(params) {
  * Weekly digest email template
  */
 function weeklyDigestTemplate(params) {
-    const subject = `Your weekly update from Ngurra Pathways`;
+    const subject = `Your weekly update from Tinashe Pathways`;
     const text = `Hi ${params.name},\n\nHere's what happened this week:\n\n- ${params.newJobs} new jobs posted\n- ${params.newCourses} new courses available\n${params.applicationUpdates > 0 ? `- ${params.applicationUpdates} updates on your applications\n` : ''}\n\nTop job matches:\n${params.topJobs.map(j => `- ${j.title} at ${j.company}`).join('\n')}\n\nView your dashboard: ${params.dashboardUrl}`;
     
     const topJobsHtml = params.topJobs.slice(0, 3).map(job => `
@@ -664,7 +664,7 @@ function weeklyDigestTemplate(params) {
         <a href="${params.preferencesUrl}" style="color: #6b7280;">Email preferences</a> • <a href="${params.unsubscribeUrl}" style="color: #6b7280;">Unsubscribe</a>
       </p>
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -677,7 +677,7 @@ function weeklyDigestTemplate(params) {
  */
 function subscriptionConfirmationTemplate(params) {
     const subject = `Welcome to ${params.planName}!`;
-    const text = `Thanks for subscribing to ${params.planName}!\n\nYour subscription is now active. You have access to:\n${params.features.map(f => `- ${f}`).join('\n')}\n\nManage your subscription: ${params.billingUrl}\n\n— The Ngurra Pathways Team`;
+    const text = `Thanks for subscribing to ${params.planName}!\n\nYour subscription is now active. You have access to:\n${params.features.map(f => `- ${f}`).join('\n')}\n\nManage your subscription: ${params.billingUrl}\n\n— The Tinashe Pathways Team`;
     const featuresHtml = params.features.map(f => `<li style="margin-bottom: 8px;">${f}</li>`).join('');
     const html = `
   <div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#111; max-width:600px; margin:0 auto;">
@@ -722,7 +722,7 @@ function subscriptionConfirmationTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -765,7 +765,7 @@ function newApplicationTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>
@@ -824,7 +824,7 @@ function applicationStatusUpdateTemplate(params) {
     
     <div style="background: #f9fafb; padding: 16px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
       <p style="margin:0; color:#9ca3af; font-size: 12px;">
-        © ${new Date().getFullYear()} Ngurra Pathways
+        © ${new Date().getFullYear()} Tinashe Pathways
       </p>
     </div>
   </div>

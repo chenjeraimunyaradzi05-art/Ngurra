@@ -573,14 +573,14 @@ router.post('/request', authenticate, validateRequest(z.object({ body: mentorshi
         if (mentorship.mentor.email) {
           await queueEmail({
             to: mentorship.mentor.email,
-            subject: 'New Mentorship Request - Ngurra Pathways',
+            subject: 'New Mentorship Request - Tinashe Pathways',
             template: 'mentorship-request',
             templateData: {
               recipientName: mentorship.mentor.firstName,
               menteeName,
               message: message || 'No message provided',
               goals: goals?.join(', ') || 'Not specified',
-              mentorshipUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/mentorship/${mentorship.id}`
+              mentorshipUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/mentorship/${mentorship.id}`
             },
             userId: mentorship.mentor.id,
             type: 'MENTORSHIP_REQUEST'
@@ -906,7 +906,7 @@ router.post('/:id/sessions', authenticate, validateRequest(z.object({ body: ment
               duration: `${duration} minutes`,
               meetingLink: meetingLink || 'To be confirmed',
               notes: notes || '',
-              sessionUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/mentorship/${id}/sessions/${session.id}`
+              sessionUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/mentorship/${id}/sessions/${session.id}`
             },
             userId: otherUser.id,
             type: 'MENTORSHIP_SESSION'

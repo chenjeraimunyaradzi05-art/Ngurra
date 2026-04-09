@@ -65,7 +65,7 @@ export interface PresignedUrlResponse {
 
 // Configuration
 const STORAGE_CONFIG = {
-  bucket: process.env.S3_BUCKET || 'ngurra-uploads',
+  bucket: process.env.S3_BUCKET || 'Tinashe-uploads',
   region: process.env.S3_REGION || 'ap-southeast-2',
   accessKeyId: process.env.S3_ACCESS_KEY || '',
   secretAccessKey: process.env.S3_SECRET_KEY || '',

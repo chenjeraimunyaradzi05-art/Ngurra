@@ -326,7 +326,7 @@ export default function MentorDashboardScreen({ navigation }: MentorDashboardScr
           duration: 45,
           topic: 'Career Transition Strategies',
           status: 'confirmed',
-          meetingUrl: 'https://meet.ngurra.com.au/abc123',
+          meetingUrl: 'https://meet.Tinashe.com.au/abc123',
         },
         {
           id: '2',

@@ -54,7 +54,7 @@ const envSchema = z.object({
   SMTP_PORT: z.string().regex(/^\d+$/).transform(Number).optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  EMAIL_FROM: z.string().email().default('noreply@ngurrapathways.com.au'),
+  EMAIL_FROM: z.string().email().default('noreply@Tinashepathways.com.au'),
 
   // SMS (optional)
   TWILIO_ACCOUNT_SID: z.string().optional(),
@@ -149,7 +149,7 @@ function getEnvConfig() {
     return {
       nodeEnv: 'development',
       port: 3001,
-      databaseUrl: process.env.DATABASE_URL || 'postgresql://ngurra:dev_password_secure@localhost:5432/ngurra_dev',
+      databaseUrl: process.env.DATABASE_URL || 'postgresql://Tinashe:dev_password_secure@localhost:5432/Tinashe_dev',
       jwtSecret: process.env.JWT_SECRET || process.env.DEV_JWT_SECRET || 'dev-secret-key-for-local-development-only',
       jwtExpiresIn: '15m',
       jwtRefreshExpiresIn: '7d',
@@ -167,7 +167,7 @@ function getEnvConfig() {
         webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       },
       email: {
-        from: process.env.EMAIL_FROM || 'noreply@ngurrapathways.com.au',
+        from: process.env.EMAIL_FROM || 'noreply@Tinashepathways.com.au',
         sendgridKey: process.env.SENDGRID_API_KEY,
         smtpHost: process.env.SMTP_HOST,
       },

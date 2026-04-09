@@ -298,7 +298,7 @@ export default function StoriesScreen({ navigation }: StoriesScreenProps) {
     try {
       await Share.share({
         message: `Check out this inspiring story: ${story.title}`,
-        url: `https://ngurra.com/stories/${story.slug}`,
+        url: `https://Tinashe.com/stories/${story.slug}`,
         title: story.title,
       });
     } catch (err) {

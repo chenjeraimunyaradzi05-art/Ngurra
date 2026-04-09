@@ -31,7 +31,7 @@ const CREDITS = {
 
 /**
  * Generate a unique referral code
- * Format: NGURRA-XXXXXX (8 chars total for easy sharing)
+ * Format: Tinashe-XXXXXX (8 chars total for easy sharing)
  */
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed confusing chars (0, O, 1, I)
@@ -92,7 +92,7 @@ router.get('/', authenticateJWT, async (req, res) => {
 
     res.json({
       referralCode: referralCode.code,
-      shareUrl: `${process.env.FRONTEND_URL || 'https://ngurrapathways.com.au'}/register?ref=${referralCode.code}`,
+      shareUrl: `${process.env.FRONTEND_URL || 'https://Tinashepathways.com.au'}/register?ref=${referralCode.code}`,
       stats,
       credits: {
         total: totalCredits,
@@ -139,7 +139,7 @@ router.get('/code', authenticateJWT, async (req, res) => {
 
     res.json({
       code: referralCode.code,
-      shareUrl: `${process.env.FRONTEND_URL || 'https://ngurrapathways.com.au'}/register?ref=${referralCode.code}`,
+      shareUrl: `${process.env.FRONTEND_URL || 'https://Tinashepathways.com.au'}/register?ref=${referralCode.code}`,
     });
   } catch (error) {
     console.error('[Referrals] Code error:', error);

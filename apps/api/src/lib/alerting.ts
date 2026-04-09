@@ -111,7 +111,7 @@ async function fireAlert(rule: AlertRule): Promise<void> {
     severity: rule.severity,
     status: 'firing',
     message: rule.message,
-    source: 'ngurra-api',
+    source: 'Tinashe-api',
     labels: rule.labels || {},
     annotations: rule.annotations || {},
     startsAt: new Date(),
@@ -263,7 +263,7 @@ export function registerDefaultAlertRules(): void {
     message: 'Error rate exceeds 5% threshold',
     forDuration: 60000, // Must be true for 1 minute
     labels: { component: 'api' },
-    annotations: { runbook: 'https://docs.ngurra-pathways.com/runbooks/high-error-rate' },
+    annotations: { runbook: 'https://docs.Tinashe-pathways.com/runbooks/high-error-rate' },
   });
   
   // Slow response time alert
@@ -337,7 +337,7 @@ export function createSlackChannel(webhookUrl: string): NotificationChannel {
           { title: 'Source', value: alert.source, short: true },
           { title: 'Started', value: alert.startsAt.toISOString(), short: true },
         ],
-        footer: 'Ngurra Pathways Alerting',
+        footer: 'Tinashe Pathways Alerting',
         ts: Math.floor(Date.now() / 1000),
       }],
     };

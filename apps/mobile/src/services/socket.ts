@@ -114,7 +114,7 @@ interface ConnectionAcceptedData {
 // API base URL - aligned with API server port
 const SOCKET_URL =
   process.env.EXPO_PUBLIC_SOCKET_URL || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3333';
-const ACCESS_TOKEN_KEY = '@ngurra_auth_token';
+const ACCESS_TOKEN_KEY = '@Tinashe_auth_token';
 
 // Message types - aligned with server's colon-separated event naming convention
 export const MESSAGE_TYPES = {

@@ -162,7 +162,7 @@ router.get('/download/:exportId', authenticateJWT, async (req, res) => {
     });
 
     // Send the file
-    const filename = `ngurra-pathways-data-export-${new Date().toISOString().split('T')[0]}.${exportRequest.format}`;
+    const filename = `Tinashe-pathways-data-export-${new Date().toISOString().split('T')[0]}.${exportRequest.format}`;
     
     res.setHeader('Content-Type', exportRequest.format === 'json' 
       ? 'application/json' 
@@ -280,11 +280,11 @@ async function processDataExport(exportId) {
         if (user.email) {
           await queueEmail({
             to: user.email,
-            subject: 'Your Data Export is Ready - Ngurra Pathways',
+            subject: 'Your Data Export is Ready - Tinashe Pathways',
             template: 'data-export-ready',
             templateData: {
               recipientName: user.firstName || 'there',
-              exportUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/settings/privacy/exports/${exportId}`,
+              exportUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/settings/privacy/exports/${exportId}`,
               expiresAt: expiresAt.toLocaleDateString('en-AU', {
                 weekday: 'long',
                 year: 'numeric',
@@ -424,7 +424,7 @@ async function collectUserData(userId, includeUploads = false) {
 
   return {
     exportDate: new Date().toISOString(),
-    exportFormat: 'Ngurra Pathways Data Export v1.0',
+    exportFormat: 'Tinashe Pathways Data Export v1.0',
     user,
     applications: applications.map((a) => ({
       id: a.id,

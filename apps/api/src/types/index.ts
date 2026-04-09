@@ -1,7 +1,7 @@
 /**
  * API Type Definitions
  * 
- * Centralized type definitions for the Ngurra Pathways API.
+ * Centralized type definitions for the Tinashe Pathways API.
  */
 
 // ============================================================================

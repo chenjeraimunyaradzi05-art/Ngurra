@@ -141,7 +141,7 @@ const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: string }> = 
     body: 'Complete your profile to unlock more opportunities',
   },
   welcome: {
-    title: 'Welcome to Ngurra Pathways! 🌿',
+    title: 'Welcome to Tinashe Pathways! 🌿',
     body: 'Start exploring opportunities and connect with your community',
   },
 };

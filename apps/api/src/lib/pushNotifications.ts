@@ -119,7 +119,7 @@ export async function sendToDevice(token: string, notification: any, data: any =
       android: {
         priority: 'high',
         notification: {
-          channelId: 'ngurra_default',
+          channelId: 'Tinashe_default',
           icon: 'ic_notification',
           color: '#3b82f6',
         },
@@ -179,7 +179,7 @@ export async function sendToDevices(tokens: string[], notification: any, data: a
       android: {
         priority: 'high',
         notification: {
-          channelId: 'ngurra_default',
+          channelId: 'Tinashe_default',
           icon: 'ic_notification',
           color: '#3b82f6',
         },

@@ -30,7 +30,7 @@ const promptGroups = [
   },
 ];
 
-export default function NextaAIScreen() {
+export default function TinasheAIScreen() {
   const [selectedPrompt, setSelectedPrompt] = useState(promptGroups[0].prompts[0]);
 
   const response = useMemo(
@@ -47,11 +47,11 @@ export default function NextaAIScreen() {
       <View style={styles.heroCard}>
         <View style={styles.heroBadge}>
           <Ionicons name="sparkles-outline" size={16} color="#A7F3D0" />
-          <Text style={styles.heroBadgeText}>Nexta AI</Text>
+          <Text style={styles.heroBadgeText}>Tinashe AI</Text>
         </View>
         <Text style={styles.heroTitle}>Personalised next steps, anytime.</Text>
         <Text style={styles.heroBody}>
-          Use Nexta AI for planning, readiness, prompt coaching, and practical momentum when
+          Use Tinashe AI for planning, readiness, prompt coaching, and practical momentum when
           you're not sure what comes next.
         </Text>
       </View>

@@ -11,7 +11,7 @@ const PORT = rawPort && rawPort !== '5432' ? Number(rawPort) : 3001;
 
 // Log startup immediately to see if we even get this far
 console.log('========================================');
-console.log('🚀 Starting Ngurra API...');
+console.log('🚀 Starting Tinashe API...');
 console.log('========================================');
 console.log('Environment:');
 console.log('  PORT:', PORT, rawPort === '5432' ? '(ignored 5432 - PostgreSQL port)' : '');

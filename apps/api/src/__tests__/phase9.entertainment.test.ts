@@ -510,7 +510,7 @@ describe('Phase 9: Entertainment & Content Module', () => {
         .set('Authorization', `Bearer ${testUserToken}`)
         .send({
           title: 'My Success Journey',
-          story: 'I found my dream job through Ngurra Pathways!',
+          story: 'I found my dream job through Tinashe Pathways!',
           outcome: 'Landed a software engineering role',
           company: 'Tech Corp',
           role: 'Software Engineer',

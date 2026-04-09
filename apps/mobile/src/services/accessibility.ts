@@ -2,7 +2,7 @@ import { AccessibilityInfo, PixelRatio, Dimensions, Appearance, EmitterSubscript
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Storage keys
-const ACCESSIBILITY_PREFS_KEY = '@ngurra_accessibility_prefs';
+const ACCESSIBILITY_PREFS_KEY = '@Tinashe_accessibility_prefs';
 
 export interface AccessibilityPreferences {
   highContrastMode: boolean;

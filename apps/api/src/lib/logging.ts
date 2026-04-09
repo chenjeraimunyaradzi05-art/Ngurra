@@ -403,7 +403,7 @@ export function createHttpTransport(url: string, headers?: Record<string, string
  * Create default application logger
  */
 export const logger = createLogger({
-  service: 'ngurra-api',
+  service: 'Tinashe-api',
   environment: process.env.NODE_ENV || 'development',
   level: (process.env.LOG_LEVEL as LogLevel) || 'info',
   pretty: process.env.NODE_ENV !== 'production',

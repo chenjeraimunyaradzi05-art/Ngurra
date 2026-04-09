@@ -64,7 +64,7 @@ router.get('/', (req, res, next) => {
   try {
     const spec = getSpec();
     return swaggerUi.setup(spec, {
-      customSiteTitle: 'Ngurra Pathways API Docs',
+      customSiteTitle: 'Tinashe Pathways API Docs',
     })(req, res, next);
   } catch (err) {
     // eslint-disable-next-line no-console

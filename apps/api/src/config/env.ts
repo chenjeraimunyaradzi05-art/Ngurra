@@ -46,7 +46,7 @@ const envSchema = z.object({
   SENDGRID_API_KEY: z.string().optional(),
   SENDGRID_FROM_EMAIL: z.string().email().optional(),
   SENDGRID_WEBHOOK_SECRET: z.string().optional(),
-  EMAIL_FROM: z.string().email().default('noreply@ngurrapathways.com.au'),
+  EMAIL_FROM: z.string().email().default('noreply@Tinashepathways.com.au'),
 
   // SMS (optional)
   TWILIO_ACCOUNT_SID: z.string().optional(),

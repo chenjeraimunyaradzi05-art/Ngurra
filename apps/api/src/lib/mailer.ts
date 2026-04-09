@@ -9,7 +9,7 @@ try {
     // SendGrid not installed
 }
 
-const FROM = process.env.FROM_EMAIL || process.env.SENDGRID_FROM_EMAIL || 'no-reply@ngurra.example';
+const FROM = process.env.FROM_EMAIL || process.env.SENDGRID_FROM_EMAIL || 'no-reply@Tinashe.example';
 
 export interface Attachment {
     content: Buffer | string;

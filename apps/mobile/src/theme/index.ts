@@ -1,5 +1,5 @@
 /**
- * Ngurra Pathways Mobile Theme
+ * Tinashe Pathways Mobile Theme
  * 
  * Consistent design tokens for the React Native mobile app.
  * Aligned with the dark theme from the web app.

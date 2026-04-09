@@ -969,13 +969,13 @@ class PaymentService {
           if (user.email) {
             await queueEmail({
               to: user.email,
-              subject: 'Action Required: Payment Failed - Ngurra Pathways',
+              subject: 'Action Required: Payment Failed - Tinashe Pathways',
               template: 'payment-failed',
               templateData: {
                 recipientName: user.name || 'there',
                 amount: (invoice.amount_due as number) / 100,
                 invoiceUrl: invoice.hosted_invoice_url as string,
-                billingUrl: `${process.env.WEB_URL || 'https://ngurrapathways.com.au'}/settings/billing`
+                billingUrl: `${process.env.WEB_URL || 'https://Tinashepathways.com.au'}/settings/billing`
               },
               userId: user.id,
               type: 'SYSTEM_ANNOUNCEMENT',

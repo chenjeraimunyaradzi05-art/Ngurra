@@ -1,7 +1,7 @@
 /**
  * Deep Linking Configuration for React Native
  * 
- * Handles URL scheme and universal links for the Nexta app.
+ * Handles URL scheme and universal links for the Tinashe app.
  */
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -10,13 +10,13 @@ import * as Notifications from 'expo-notifications';
  * URL Scheme Configuration
  * 
  * Supported URL formats:
- * - nexta://jobs/123 - Open job details
- * - nexta://applications/456 - Open application
- * - nexta://mentors/789 - Open mentor profile
- * - nexta://courses/abc - Open course details
- * - nexta://messages/conv123 - Open conversation
- * - nexta://community/thread/456 - Open forum thread
- * - https://nexta.app/jobs/123 - Universal link
+ * - Tinashe://jobs/123 - Open job details
+ * - Tinashe://applications/456 - Open application
+ * - Tinashe://mentors/789 - Open mentor profile
+ * - Tinashe://courses/abc - Open course details
+ * - Tinashe://messages/conv123 - Open conversation
+ * - Tinashe://community/thread/456 - Open forum thread
+ * - https://Tinashe.app/jobs/123 - Universal link
  */
 
 /**
@@ -24,10 +24,10 @@ import * as Notifications from 'expo-notifications';
  */
 export const linkingConfig = {
   prefixes: [
-    'nexta://',
-    'https://nexta.app',
-    'https://www.nexta.app',
-    'https://app.nexta.app',
+    'Tinashe://',
+    'https://Tinashe.app',
+    'https://www.Tinashe.app',
+    'https://app.Tinashe.app',
   ],
   
   config: {
@@ -142,10 +142,10 @@ export function parseDeepLink(url) {
   try {
     // Remove scheme prefix
     let path = url
-      .replace('nexta://', '')
-      .replace('https://nexta.app/', '')
-      .replace('https://www.nexta.app/', '')
-      .replace('https://app.nexta.app/', '');
+      .replace('Tinashe://', '')
+      .replace('https://Tinashe.app/', '')
+      .replace('https://www.Tinashe.app/', '')
+      .replace('https://app.Tinashe.app/', '');
 
     // Parse query string
     const [pathPart, queryString] = path.split('?');
@@ -262,7 +262,7 @@ export async function handleInitialNotification(navigation) {
  * @returns {string} Deep link URL
  */
 export function createDeepLink(screen, params = {}) {
-  const baseUrl = 'nexta://';
+  const baseUrl = 'Tinashe://';
   
   const pathMap = {
     'Home': 'home',
@@ -294,7 +294,7 @@ export function createDeepLink(screen, params = {}) {
  * @returns {string} Universal link URL
  */
 export function createUniversalLink(screen, params = {}) {
-  const baseUrl = 'https://nexta.app/';
+  const baseUrl = 'https://Tinashe.app/';
   
   const pathMap = {
     'Jobs': 'jobs',

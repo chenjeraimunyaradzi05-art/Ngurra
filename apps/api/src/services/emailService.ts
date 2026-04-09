@@ -55,7 +55,7 @@ export interface EmailTemplate {
 const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
   welcome: {
     name: 'welcome',
-    subject: 'Welcome to Ngurra Pathways! 🌿',
+    subject: 'Welcome to Tinashe Pathways! 🌿',
     htmlTemplate: `
 <!DOCTYPE html>
 <html>
@@ -81,18 +81,18 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
 <body>
   <div class="container">
     <div class="header">
-      <h1>Welcome to Ngurra Pathways</h1>
+      <h1>Welcome to Tinashe Pathways</h1>
       <p>Your journey to meaningful employment begins here</p>
     </div>
     <div class="content">
       <p>Hello {{firstName}},</p>
       
       <div class="cultural-element">
-        "Ngurra" means home or country in many Aboriginal languages. 
+        "Tinashe" means home or country in many Aboriginal languages. 
         We're honoured to welcome you to our community.
       </div>
       
-      <p>Thank you for joining Ngurra Pathways. We're committed to connecting talented Indigenous Australians with meaningful career opportunities and supportive mentors.</p>
+      <p>Thank you for joining Tinashe Pathways. We're committed to connecting talented Indigenous Australians with meaningful career opportunities and supportive mentors.</p>
       
       <div class="features">
         <h3>Here's what you can do:</h3>
@@ -108,10 +108,10 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       
       <p>If you have any questions, our team is here to support you.</p>
       
-      <p>Welcome to the family,<br>The Ngurra Pathways Team</p>
+      <p>Welcome to the family,<br>The Tinashe Pathways Team</p>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways. All rights reserved.</p>
+      <p>© {{year}} Tinashe Pathways. All rights reserved.</p>
       <p>Proudly supporting Indigenous employment and community connection.</p>
       <p><a href="{{appUrl}}/unsubscribe?token={{unsubscribeToken}}">Unsubscribe</a> | <a href="{{appUrl}}/preferences">Email Preferences</a></p>
     </div>
@@ -171,7 +171,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       <p>We'll keep you updated on any changes. Good luck! 🍀</p>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways</p>
+      <p>© {{year}} Tinashe Pathways</p>
     </div>
   </div>
 </body>
@@ -237,7 +237,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       </ul>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways - Connecting Indigenous talent with opportunity</p>
+      <p>© {{year}} Tinashe Pathways - Connecting Indigenous talent with opportunity</p>
     </div>
   </div>
 </body>
@@ -270,7 +270,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
     <div class="content">
       <p>Hi {{firstName}},</p>
       
-      <p>We received a request to reset your password for your Ngurra Pathways account.</p>
+      <p>We received a request to reset your password for your Tinashe Pathways account.</p>
       
       <p style="text-align: center;">
         <a href="{{resetUrl}}" class="button">Reset Password</a>
@@ -284,10 +284,10 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
         If you didn't request this reset, please ignore this email or contact support if you're concerned.
       </div>
       
-      <p>Stay secure,<br>The Ngurra Pathways Team</p>
+      <p>Stay secure,<br>The Tinashe Pathways Team</p>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways</p>
+      <p>© {{year}} Tinashe Pathways</p>
       <p>This is an automated security email. Please don't reply directly.</p>
     </div>
   </div>
@@ -350,7 +350,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       </ul>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways</p>
+      <p>© {{year}} Tinashe Pathways</p>
     </div>
   </div>
 </body>
@@ -359,7 +359,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
 
   weekly_digest: {
     name: 'weekly_digest',
-    subject: 'Your Weekly Ngurra Pathways Update 📬',
+    subject: 'Your Weekly Tinashe Pathways Update 📬',
     htmlTemplate: `
 <!DOCTYPE html>
 <html>
@@ -390,7 +390,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
     <div class="content">
       <p>Hi {{firstName}},</p>
       
-      <p>Here's what's been happening in your Ngurra Pathways community this week:</p>
+      <p>Here's what's been happening in your Tinashe Pathways community this week:</p>
       
       <div style="text-align: center; margin: 25px 0;">
         <div class="stat-box">
@@ -442,7 +442,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       </div>
     </div>
     <div class="footer">
-      <p>© {{year}} Ngurra Pathways</p>
+      <p>© {{year}} Tinashe Pathways</p>
       <p><a href="{{appUrl}}/unsubscribe?token={{unsubscribeToken}}">Unsubscribe from weekly digest</a></p>
     </div>
   </div>
@@ -457,8 +457,8 @@ class EmailService {
   private appUrl: string;
 
   private constructor() {
-    this.defaultFrom = process.env.EMAIL_FROM || 'Ngurra Pathways <noreply@ngurrapathways.com>';
-    this.appUrl = process.env.APP_URL || 'https://app.ngurrapathways.com';
+    this.defaultFrom = process.env.EMAIL_FROM || 'Tinashe Pathways <noreply@Tinashepathways.com>';
+    this.appUrl = process.env.APP_URL || 'https://app.Tinashepathways.com';
   }
 
   static getInstance(): EmailService {

@@ -139,7 +139,7 @@ async function processDelivery(deliveryId) {
         'X-Webhook-Signature': signature,
         'X-Webhook-Event': delivery.eventType,
         'X-Webhook-Delivery': delivery.id,
-        'User-Agent': 'Ngurra-Pathways-Webhook/1.0'
+        'User-Agent': 'Tinashe-Pathways-Webhook/1.0'
       },
       body: JSON.stringify(fullPayload),
       signal: AbortSignal.timeout(30000) // 30s timeout
@@ -371,7 +371,7 @@ async function testWebhook(webhookId) {
     event: 'test.ping',
     timestamp: new Date().toISOString(),
     data: {
-      message: 'This is a test event from Ngurra Pathways',
+      message: 'This is a test event from Tinashe Pathways',
       webhookId
     }
   };
@@ -388,7 +388,7 @@ async function testWebhook(webhookId) {
         'X-Webhook-Signature': signature,
         'X-Webhook-Event': 'test.ping',
         'X-Webhook-Test': 'true',
-        'User-Agent': 'Ngurra-Pathways-Webhook/1.0'
+        'User-Agent': 'Tinashe-Pathways-Webhook/1.0'
       },
       body: JSON.stringify(testPayload),
       signal: AbortSignal.timeout(10000) // 10s timeout for test

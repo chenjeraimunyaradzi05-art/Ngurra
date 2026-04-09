@@ -684,7 +684,7 @@ class ReferralService {
    * Get referral share URL
    */
   getShareUrl(code: string): string {
-    const baseUrl = process.env.WEB_URL || 'https://ngurra.app';
+    const baseUrl = process.env.WEB_URL || 'https://Tinashe.app';
     return `${baseUrl}/join?ref=${code}`;
   }
 
@@ -693,8 +693,8 @@ class ReferralService {
    */
   getShareMessages(code: string, userName: string): { platform: string; message: string }[] {
     const shareUrl = this.getShareUrl(code);
-    const shortMessage = `Join Ngurra Pathways - Australia's Indigenous professional network! Use my referral code: ${code}`;
-    const longMessage = `Hey! I'm inviting you to join Ngurra Pathways, Australia's leading platform connecting Indigenous professionals with meaningful career opportunities. Sign up with my referral code ${code} and we'll both earn rewards! ${shareUrl}`;
+    const shortMessage = `Join Tinashe Pathways - Australia's Indigenous professional network! Use my referral code: ${code}`;
+    const longMessage = `Hey! I'm inviting you to join Tinashe Pathways, Australia's leading platform connecting Indigenous professionals with meaningful career opportunities. Sign up with my referral code ${code} and we'll both earn rewards! ${shareUrl}`;
 
     return [
       {
@@ -707,11 +707,11 @@ class ReferralService {
       },
       {
         platform: 'linkedin',
-        message: `I'm proud to be part of Ngurra Pathways, connecting Indigenous Australians with career opportunities. Join us: ${shareUrl}`,
+        message: `I'm proud to be part of Tinashe Pathways, connecting Indigenous Australians with career opportunities. Join us: ${shareUrl}`,
       },
       {
         platform: 'email',
-        message: `Subject: Join me on Ngurra Pathways!\n\n${longMessage}`,
+        message: `Subject: Join me on Tinashe Pathways!\n\n${longMessage}`,
       },
       {
         platform: 'sms',

@@ -16,7 +16,7 @@ const router = Router();
 const DEFAULT_TEMPLATES = {
   welcome: {
     name: 'Welcome Email',
-    subject: 'Welcome to Ngurra Pathways, {{firstName}}!',
+    subject: 'Welcome to Tinashe Pathways, {{firstName}}!',
     category: 'onboarding',
     variables: ['firstName', 'email', 'userType', 'loginUrl'],
     htmlTemplate: `
@@ -34,7 +34,7 @@ const DEFAULT_TEMPLATES = {
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#1a0f2e,#2d1b69);padding:32px;text-align:center;">
-              <h1 style="margin:0;color:#ffd700;font-size:28px;">Ngurra Pathways</h1>
+              <h1 style="margin:0;color:#ffd700;font-size:28px;">Tinashe Pathways</h1>
             </td>
           </tr>
           <!-- Content -->
@@ -42,7 +42,7 @@ const DEFAULT_TEMPLATES = {
             <td style="padding:40px 32px;">
               <h2 style="margin:0 0 16px;color:#f8fafc;font-size:24px;">Welcome, {{firstName}}!</h2>
               <p style="margin:0 0 24px;color:#94a3b8;font-size:16px;line-height:1.6;">
-                Thank you for joining Ngurra Pathways. We're excited to have you on board.
+                Thank you for joining Tinashe Pathways. We're excited to have you on board.
               </p>
               <p style="margin:0 0 24px;color:#94a3b8;font-size:16px;line-height:1.6;">
                 Your journey to meaningful employment starts here. Explore job opportunities, connect with mentors, and access training resources tailored for you.
@@ -56,7 +56,7 @@ const DEFAULT_TEMPLATES = {
           <tr>
             <td style="padding:24px 32px;border-top:1px solid #334155;text-align:center;">
               <p style="margin:0;color:#64748b;font-size:12px;">
-                © 2026 Ngurra Pathways. All rights reserved.
+                © 2026 Tinashe Pathways. All rights reserved.
               </p>
             </td>
           </tr>
@@ -66,18 +66,18 @@ const DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>`,
-    textTemplate: `Welcome to Ngurra Pathways, {{firstName}}!
+    textTemplate: `Welcome to Tinashe Pathways, {{firstName}}!
 
 Thank you for joining us. Your journey to meaningful employment starts here.
 
 Get started: {{loginUrl}}
 
-© 2026 Ngurra Pathways`,
+© 2026 Tinashe Pathways`,
   },
 
   passwordReset: {
     name: 'Password Reset',
-    subject: 'Reset your Ngurra Pathways password',
+    subject: 'Reset your Tinashe Pathways password',
     category: 'security',
     variables: ['firstName', 'resetUrl', 'expiresIn'],
     htmlTemplate: `
@@ -503,10 +503,10 @@ router.post('/:slug/preview', authenticate, authorize(['ADMIN']), async (req, re
       email: 'john@example.com',
       jobTitle: 'Software Developer',
       companyName: 'Tech Company',
-      loginUrl: 'https://ngurra.example/login',
-      resetUrl: 'https://ngurra.example/reset?token=xxx',
-      updatePaymentUrl: 'https://ngurra.example/billing',
-      dashboardUrl: 'https://ngurra.example/dashboard',
+      loginUrl: 'https://Tinashe.example/login',
+      resetUrl: 'https://Tinashe.example/reset?token=xxx',
+      updatePaymentUrl: 'https://Tinashe.example/billing',
+      dashboardUrl: 'https://Tinashe.example/dashboard',
       meetingLink: 'https://meet.jit.si/example',
       amount: '49.00',
       currency: '$',

@@ -37,7 +37,7 @@ function getJwtSecret(): string {
       throw new Error('FATAL: JWT_SECRET must be set in production');
     }
     console.warn('⚠️  Using development JWT secret - set JWT_SECRET for production!');
-    return 'ngurra-dev-secret-minimum-32-chars';
+    return 'Tinashe-dev-secret-minimum-32-chars';
   }
   
   return secret;

@@ -246,7 +246,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         <View style={styles.card}>
           <TouchableOpacity 
             style={styles.row}
-            onPress={() => Linking.openURL('mailto:support@ngurra.com.au')}
+            onPress={() => Linking.openURL('mailto:support@Tinashe.com.au')}
           >
             <View style={styles.rowIcon}>
               <Ionicons name="mail-outline" size={22} color={colors.text} />
@@ -259,7 +259,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
 
           <TouchableOpacity 
             style={[styles.row, styles.rowBorder]}
-            onPress={() => Linking.openURL('https://ngurra.com.au/privacy')}
+            onPress={() => Linking.openURL('https://Tinashe.com.au/privacy')}
           >
             <View style={styles.rowIcon}>
               <Ionicons name="shield-checkmark-outline" size={22} color={colors.text} />

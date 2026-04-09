@@ -40,7 +40,7 @@ export async function issueBadge({ prisma, userId, badgeId, evidenceUrl, expires
       description: badge?.description || null,
       imageUrl: badge?.imageUrl || null,
       criteriaUrl: null,
-      issuerName: badge?.issuerName || 'Ngurra Pathways',
+      issuerName: badge?.issuerName || 'Tinashe Pathways',
       issuerId: badge?.issuerId || null,
       badgeJson,
       verificationUrl: shareUrl,

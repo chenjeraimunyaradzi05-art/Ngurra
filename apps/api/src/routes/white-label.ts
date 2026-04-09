@@ -88,12 +88,12 @@ router.get('/config', async (req, res) => {
     if (!tenant) {
       return void res.json({
         isDefault: true,
-        name: 'Ngurra Pathways',
-        logoUrl: '/brand/ngurra-logo.svg',
+        name: 'Tinashe Pathways',
+        logoUrl: '/brand/Tinashe-logo.svg',
         primaryColor: '#3B82F6',
         secondaryColor: '#1E293B',
         accentColor: '#10B981',
-        footerText: '© 2025 Ngurra Pathways. All rights reserved.'
+        footerText: '© 2025 Tinashe Pathways. All rights reserved.'
       });
     }
 
@@ -101,7 +101,7 @@ router.get('/config', async (req, res) => {
       isDefault: false,
       slug: tenant.slug,
       name: tenant.name,
-      logoUrl: tenant.logoUrl || '/brand/ngurra-logo.svg',
+      logoUrl: tenant.logoUrl || '/brand/Tinashe-logo.svg',
       faviconUrl: tenant.faviconUrl,
       primaryColor: tenant.primaryColor,
       secondaryColor: tenant.secondaryColor,

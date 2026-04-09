@@ -60,15 +60,15 @@ export async function createConnectAccount(options) {
       email,
       metadata: {
         mentorId,
-        platform: 'ngurra',
+        platform: 'Tinashe',
       },
       capabilities: {
         transfers: { requested: true },
       },
       business_type: 'individual',
       business_profile: {
-        name: name || 'Ngurra Mentor',
-        product_description: 'Mentorship services via Ngurra Pathways',
+        name: name || 'Tinashe Mentor',
+        product_description: 'Mentorship services via Tinashe Pathways',
         mcc: '8299', // Educational services
       },
     });
@@ -198,7 +198,7 @@ export async function transferToMentor(options) {
       description: description || `Mentorship session payment`,
       metadata: {
         sessionId,
-        platform: 'ngurra',
+        platform: 'Tinashe',
       },
     });
     

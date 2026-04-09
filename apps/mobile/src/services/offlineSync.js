@@ -14,11 +14,11 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 
 // Storage keys
-const OFFLINE_QUEUE_KEY = '@ngurra_offline_queue';
-const SYNC_STATUS_KEY = '@ngurra_sync_status';
+const OFFLINE_QUEUE_KEY = '@Tinashe_offline_queue';
+const SYNC_STATUS_KEY = '@Tinashe_sync_status';
 
 // Background task name
-const BACKGROUND_SYNC_TASK = 'NGURRA_BACKGROUND_SYNC';
+const BACKGROUND_SYNC_TASK = 'Tinashe_BACKGROUND_SYNC';
 
 // Queue item types
 export const QueueItemType = {

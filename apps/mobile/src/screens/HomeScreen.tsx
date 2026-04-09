@@ -24,7 +24,7 @@ type RootStackParamList = {
   MyApplications: undefined;
   Profile: undefined;
   JobDetail: { id: string };
-  NextaAI: undefined;
+  TinasheAI: undefined;
   MoneyTools: undefined;
 };
 
@@ -91,7 +91,7 @@ export default function HomeScreen() {
   const quickActions = [
     { icon: 'briefcase-outline', label: 'Find Opportunities', screen: 'Jobs' as const, color: '#0F766E' },
     { icon: 'school-outline', label: 'Upgrade Skills', screen: 'Courses' as const, color: '#2563EB' },
-    { icon: 'sparkles-outline', label: 'Ask Nexta AI', screen: 'NextaAI' as const, color: '#7C3AED' },
+    { icon: 'sparkles-outline', label: 'Ask Tinashe AI', screen: 'TinasheAI' as const, color: '#7C3AED' },
     { icon: 'people-outline', label: 'Book a Mentor', screen: 'Mentorship' as const, color: '#0EA5E9' },
     { icon: 'wallet-outline', label: 'Track Money', screen: 'MoneyTools' as const, color: '#F97316' },
     { icon: 'chatbubbles-outline', label: 'Post / Connect', screen: 'Community' as const, color: '#EC4899' },
@@ -109,7 +109,7 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerCopy}>
-          <Text style={styles.eyebrow}>Nexta Home</Text>
+          <Text style={styles.eyebrow}>Tinashe Home</Text>
           <Text style={styles.greeting}>Welcome back - ready for your next step?</Text>
           <Text style={styles.subheading}>
             Jobs, learning, mentors, tools, and support that help you keep moving.
@@ -179,7 +179,7 @@ export default function HomeScreen() {
               <Ionicons name="person-circle-outline" size={22} color="#F97316" />
             </View>
             <View style={styles.setupCopy}>
-              <Text style={styles.setupTitle}>Finish your Nexta setup</Text>
+              <Text style={styles.setupTitle}>Finish your Tinashe setup</Text>
               <Text style={styles.setupSubtitle}>
                 {profile.profileCompletionPercent}% complete. A stronger profile unlocks better matches.
               </Text>

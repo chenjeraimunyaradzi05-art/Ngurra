@@ -83,7 +83,7 @@ const MOCK_STORIES: Story[] = [
 
 My journey started when an elder in my community encouraged me to pursue education. "Our stories need to be told in every language," she said, "including the language of computers."
 
-Through Ngurra Pathways, I found a mentor who understood both worlds – the corporate landscape and the importance of cultural identity. Sarah, a Ngunnawal woman who had walked this path before me, showed me it was possible to succeed without compromising who I am.
+Through Tinashe Pathways, I found a mentor who understood both worlds – the corporate landscape and the importance of cultural identity. Sarah, a Ngunnawal woman who had walked this path before me, showed me it was possible to succeed without compromising who I am.
 
 Today, I help other Indigenous youth find their path in tech. We don't have to choose between our culture and our careers. We can bring our unique perspectives to make technology more inclusive for everyone.
 
@@ -114,7 +114,7 @@ My advice to young Indigenous people: Your culture is your strength. Bring all o
 
 Education wasn't always accessible for my mob. My grandmother wasn't allowed to attend school past primary level. My mother had to travel hundreds of kilometers just to get a high school education.
 
-But things are changing. Through programs like Ngurra Pathways, more Indigenous students are finding support, scholarships, and most importantly, community.
+But things are changing. Through programs like Tinashe Pathways, more Indigenous students are finding support, scholarships, and most importantly, community.
 
 I'm now a secondary school teacher in a remote community. Every day, I see young people who remind me of myself – full of potential, sometimes unsure of their path. I tell them what I wish someone had told me: "You belong here. Your dreams are valid. And your community is behind you."`,
     author: {
@@ -141,7 +141,7 @@ I'm now a secondary school teacher in a remote community. Every day, I see young
     summary: 'How mentorship helped me reconnect with my identity',
     content: `I grew up away from my Country, in the suburbs of Melbourne. I always knew I was Indigenous, but I felt disconnected from my culture. Imposter syndrome followed me everywhere.
 
-When I joined Ngurra Pathways, I was matched with Uncle David, a Gunditjmara elder who became my mentor. He didn't just help me with my career – he helped me understand who I am.
+When I joined Tinashe Pathways, I was matched with Uncle David, a Gunditjmara elder who became my mentor. He didn't just help me with my career – he helped me understand who I am.
 
 "Culture isn't just about where you live," he told me. "It's about who you are, how you treat others, and how you carry yourself in the world."
 
@@ -501,7 +501,7 @@ export default function StoriesScreen() {
   const handleShare = useCallback(async (story: Story) => {
     try {
       await Share.share({
-        message: `Check out this inspiring story: "${story.title}" by ${story.author.name} on Ngurra Pathways`,
+        message: `Check out this inspiring story: "${story.title}" by ${story.author.name} on Tinashe Pathways`,
         title: story.title,
       });
       // Update share count

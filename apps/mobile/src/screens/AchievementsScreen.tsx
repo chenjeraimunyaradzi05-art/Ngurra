@@ -2,7 +2,7 @@
  * Achievements Screen
  * 
  * Displays user's achievements, progress, level, and leaderboard.
- * Gamification hub for the Ngurra Pathways mobile app.
+ * Gamification hub for the Tinashe Pathways mobile app.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';

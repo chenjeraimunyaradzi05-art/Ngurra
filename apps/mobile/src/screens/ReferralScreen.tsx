@@ -158,8 +158,8 @@ export default function ReferralScreen() {
 
     try {
       await Share.share({
-        message: `Join Ngurra Pathways - Australia's Indigenous professional network! Use my referral code: ${referralCode}\n\n${shareUrl}`,
-        title: 'Join Ngurra Pathways',
+        message: `Join Tinashe Pathways - Australia's Indigenous professional network! Use my referral code: ${referralCode}\n\n${shareUrl}`,
+        title: 'Join Tinashe Pathways',
       });
     } catch (error) {
       console.error('Share error:', error);
@@ -173,7 +173,7 @@ export default function ReferralScreen() {
     try {
       await Share.share({
         message: message.message,
-        title: 'Join Ngurra Pathways',
+        title: 'Join Tinashe Pathways',
       });
     } catch (error) {
       console.error('Share error:', error);

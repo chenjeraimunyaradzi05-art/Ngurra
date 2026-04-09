@@ -38,7 +38,7 @@ const ES_CONFIG = {
 // Index configurations
 const INDICES = {
   jobs: {
-    name: 'ngurra_jobs',
+    name: 'Tinashe_jobs',
     settings: {
       number_of_shards: 1,
       number_of_replicas: 1,
@@ -83,7 +83,7 @@ const INDICES = {
   },
   
   courses: {
-    name: 'ngurra_courses',
+    name: 'Tinashe_courses',
     settings: {
       number_of_shards: 1,
       number_of_replicas: 1
@@ -110,7 +110,7 @@ const INDICES = {
   },
 
   mentors: {
-    name: 'ngurra_mentors',
+    name: 'Tinashe_mentors',
     settings: {
       number_of_shards: 1,
       number_of_replicas: 1
@@ -135,7 +135,7 @@ const INDICES = {
   },
 
   forums: {
-    name: 'ngurra_forums',
+    name: 'Tinashe_forums',
     settings: {
       number_of_shards: 1,
       number_of_replicas: 1

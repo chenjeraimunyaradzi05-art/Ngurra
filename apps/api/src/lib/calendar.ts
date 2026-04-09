@@ -6,7 +6,7 @@ exports.formatForGCal = formatForGCal;
 exports.createGoogleCalendarUrl = createGoogleCalendarUrl;
 exports.createOutlookUrl = createOutlookUrl;
 function createICalEvent(opts) {
-    const uid = opts.uid || `${Date.now()}@ngurra.local`;
+    const uid = opts.uid || `${Date.now()}@Tinashe.local`;
     const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     const dtstart = opts.start.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     let dtend = '';
@@ -14,7 +14,7 @@ function createICalEvent(opts) {
         dtend = opts.end.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     const lines = [];
     lines.push('BEGIN:VCALENDAR');
-    lines.push('PRODID:-//Ngurra//Interview Scheduler//EN');
+    lines.push('PRODID:-//Tinashe//Interview Scheduler//EN');
     lines.push('VERSION:2.0');
     lines.push('CALSCALE:GREGORIAN');
     lines.push('METHOD:REQUEST');

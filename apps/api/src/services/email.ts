@@ -33,7 +33,7 @@ interface EmailResult {
 // Email templates
 const templates = {
   welcome: {
-    subject: 'Welcome to Ngurra Pathways',
+    subject: 'Welcome to Tinashe Pathways',
     template: 'welcome',
   },
   passwordReset: {

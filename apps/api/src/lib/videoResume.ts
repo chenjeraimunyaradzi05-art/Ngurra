@@ -49,7 +49,7 @@ const s3Client = new S3Client({
   } : undefined
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'ngurra-video-resumes';
+const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'Tinashe-video-resumes';
 
 // ============================================================================
 // VIDEO UPLOAD

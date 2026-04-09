@@ -1,9 +1,9 @@
 ﻿// Tinashe Service Worker
 // Provides offline support, caching, and push notifications
 
-const CACHE_NAME = 'tinashe-v1';
-const STATIC_CACHE = 'tinashe-static-v1';
-const DYNAMIC_CACHE = 'tinashe-dynamic-v1';
+const CACHE_NAME = 'tinashe-v2';
+const STATIC_CACHE = 'tinashe-static-v2';
+const DYNAMIC_CACHE = 'tinashe-dynamic-v2';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
@@ -28,7 +28,11 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        return Promise.allSettled(
+          STATIC_ASSETS.map((url) =>
+            cache.add(url).catch((e) => console.warn('[SW] Failed to cache:', url, e))
+          )
+        );
       })
       .then(() => self.skipWaiting())
   );

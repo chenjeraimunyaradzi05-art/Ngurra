@@ -826,7 +826,7 @@ export default function AdminAnalyticsDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value?: number) => [`$${(value ?? 0).toLocaleString()}`, 'Revenue']} />
+                <Tooltip formatter={(value) => [`$${Number(value ?? 0).toLocaleString()}`, 'Revenue']} />
                 <Line
                   type="monotone"
                   dataKey="value"

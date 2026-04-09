@@ -582,7 +582,7 @@ export default function AdminAnalyticsDashboard() {
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} tickLine={false} />
                 <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
                 <Tooltip
-                  formatter={(value?: number) => [`$${(value ?? 0).toLocaleString()}`, 'Revenue']}
+                  formatter={(value) => [`$${Number(value ?? 0).toLocaleString()}`, 'Revenue']}
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',

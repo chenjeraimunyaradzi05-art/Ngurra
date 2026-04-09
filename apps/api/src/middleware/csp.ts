@@ -41,6 +41,8 @@ const defaultDirectives = {
     "wss://api.Tinashepathways.com.au",
     "https://api.Tinashepathways.life",
     "wss://api.Tinashepathways.life",
+    "http://mainline.proxy.rlwy.net:45270",
+    "https://api-production-11b4.up.railway.app",
     "https://*.sentry.io",
     "https://www.google-analytics.com",
     "https://api.stripe.com",

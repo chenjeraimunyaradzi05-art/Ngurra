@@ -9,7 +9,7 @@ const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
 // In the browser, ALWAYS use the /api proxy (Netlify redirect).
 // This avoids CORS issues and keeps auth cookies on the same origin.
 // On the server (SSR), use the full backend URL for direct access.
-export const API_BASE = isBrowser ? '/api' : (envApiUrl || 'http://localhost:3333');
+export const API_BASE = isBrowser ? '/api' : (envApiUrl || 'http://mainline.proxy.rlwy.net:45270');
 
 export function withApiBase(path = '') {
   if (!path) return API_BASE;

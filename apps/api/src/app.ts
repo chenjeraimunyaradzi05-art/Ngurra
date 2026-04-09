@@ -165,7 +165,7 @@ export function createApp() {
 
   const allowedOrigins = (
     process.env.ALLOWED_ORIGINS ||
-    'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,https://Tinashepathways.com.au,https://www.Tinashepathways.com.au,https://Tinashepathways.life,https://www.Tinashepathways.life'
+    'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001,https://tinashe.life,https://www.tinashe.life,https://Tinashepathways.com.au,https://www.Tinashepathways.com.au'
   )
     .split(',')
     .map((s) => s.trim())

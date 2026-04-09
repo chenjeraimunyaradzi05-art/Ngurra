@@ -141,7 +141,7 @@ export default function FoundersPage() {
                 />
               </div>
               <div className="mt-4">
-                <h3 className="font-semibold text-white text-lg">Munyaradzi Chenjerai</h3>
+                <h3 className="font-semibold text-white text-lg">© MoneyMan</h3>
                 <p className="text-sm text-pink-400">Developer & Architect</p>
                 <p className="mt-3 text-sm text-slate-300">
                   Designed the platform architecture and delivered the full implementation across

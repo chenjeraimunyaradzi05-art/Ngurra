@@ -17,7 +17,7 @@ import Script from 'next/script';
 import { Metadata, Viewport } from 'next';
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-const DEVELOPER_NAME = 'Munyaradzi Chenjerai';
+const DEVELOPER_NAME = '© MoneyMan';
 
 export const metadata: Metadata = {
   title: {

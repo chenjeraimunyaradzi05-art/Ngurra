@@ -155,7 +155,7 @@ export default function Footer() {
             Free to join. Your data stays yours. You control what you share.
           </p>
           <p className="whitespace-nowrap text-slate-400">
-            © {currentYear} Tinashe · Built by <span className="text-white">Munyaradzi Chenjerai</span>
+            © {currentYear} Tinashe · Built by <span className="text-white">© MoneyMan</span>
           </p>
         </div>
       </div>

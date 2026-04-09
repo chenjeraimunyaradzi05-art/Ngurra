@@ -70,12 +70,12 @@ USER nodeuser
 # Environment variables
 ENV NODE_ENV=production
 
-# Note: PORT is set by Railway at runtime, we expose 3333 as default
-EXPOSE 3333
+# PORT is injected by Railway at runtime; fallback is 3001
+EXPOSE 3001
 
-# Health check - uses /health endpoint
+# Health check - uses /health/live endpoint
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=5 \
-    CMD node -e "const p=process.env.PORT||3333;require('http').get('http://localhost:'+p+'/health/live', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+    CMD node -e "const p=process.env.PORT||3001;require('http').get('http://localhost:'+p+'/health/live', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
 # Start application - esbuild outputs to dist/ directly (not dist/src/)
 ENTRYPOINT ["dumb-init", "--"]

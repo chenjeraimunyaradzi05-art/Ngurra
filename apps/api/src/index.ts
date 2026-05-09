@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
 import http from 'http';
+import { configureDatabaseUrl, databaseUrlSourceLabel } from './lib/databaseEnv';
 
 // Load environment variables FIRST before any other imports
 dotenv.config();
+const databaseEnv = configureDatabaseUrl();
 
 // Railway injects PORT for each service. API_PORT can override locally.
 const PORT = parseInt(process.env.API_PORT || process.env.PORT || '3001', 10);
@@ -14,24 +16,20 @@ console.log('========================================');
 console.log('Environment:');
 console.log('  PORT:', PORT);
 console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
-console.log('  DATABASE_URL:', process.env.DATABASE_URL ? '✅ SET' : '❌ NOT SET');
+console.log('  DATABASE_URL:', databaseEnv.url ? `✅ SET (${databaseUrlSourceLabel(databaseEnv)})` : '❌ NOT SET');
 console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET');
 console.log('  DEV_JWT_SECRET:', process.env.DEV_JWT_SECRET ? '✅ SET' : '❌ NOT SET');
 console.log('  REDIS_URL:', process.env.REDIS_URL ? '✅ SET' : '❌ NOT SET (rate limiting uses memory)');
 console.log('========================================');
 
 // Critical check: DATABASE_URL must be set
-if (!process.env.DATABASE_URL) {
+if (!databaseEnv.url) {
   console.error('');
-  console.error('❌ FATAL ERROR: DATABASE_URL is not set!');
+  console.error('❌ FATAL ERROR: no database connection URL is set!');
   console.error('');
-  console.error('Please set the DATABASE_URL environment variable in Railway:');
-  console.error('  1. Go to your Railway project');
-  console.error('  2. Click on your API service');
-  console.error('  3. Go to Variables tab');
-  console.error('  4. Add DATABASE_URL with your PostgreSQL connection string');
+  console.error('Please set DATABASE_URL, or enable the Netlify Neon integration so NETLIFY_DATABASE_URL is available.');
   console.error('');
-  console.error('Example: postgresql://user:password@host:5432/database');
+  console.error('Example: postgresql://user:password@host:5432/database?sslmode=require');
   console.error('');
   // Don't exit - let the app try to start so we can see more logs
 }

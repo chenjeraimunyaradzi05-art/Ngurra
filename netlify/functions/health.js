@@ -4,6 +4,7 @@
  */
 const https = require('https');
 const http = require('http');
+const { configureDatabaseUrl, databaseUrlSourceLabel } = require('./database-url');
 
 /**
  * Check if a URL is reachable
@@ -32,6 +33,7 @@ async function checkUrl(url, timeout = 5000) {
 exports.handler = async (event, context) => {
   const startTime = Date.now();
   const checks = {};
+  const databaseEnv = configureDatabaseUrl();
   
   // Basic service info
   const nodeEnv = process.env.NODE_ENV || 'unknown';
@@ -57,9 +59,10 @@ exports.handler = async (event, context) => {
 
   // Check database connectivity (via environment variable presence)
   checks.database = {
-    status: process.env.DATABASE_URL ? 'configured' : 'not_configured',
-    provider: process.env.DATABASE_URL?.includes('postgresql') ? 'postgres' : 
-              process.env.DATABASE_URL?.includes('mysql') ? 'mysql' : 'unknown',
+    status: databaseEnv.url ? 'configured' : 'not_configured',
+    provider: databaseEnv.url?.includes('postgresql') || databaseEnv.url?.includes('postgres://') ? 'postgres' :
+              databaseEnv.url?.includes('mysql') ? 'mysql' : 'unknown',
+    source: databaseUrlSourceLabel(databaseEnv),
   };
 
   // Check email service configuration

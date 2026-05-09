@@ -1,4 +1,5 @@
 ﻿import Link from 'next/link';
+import BrandLogo from '@/components/BrandLogo';
 import {
   ArrowRight,
   BadgeCheck,
@@ -220,6 +221,24 @@ const quickActions = [
   'Post / Connect',
 ];
 
+const trustSignals = [
+  {
+    icon: ShieldCheck,
+    title: 'Security-first experience',
+    description: 'Secure sessions, consent controls, and privacy-minded defaults across the platform.',
+  },
+  {
+    icon: Users,
+    title: 'Built for real people',
+    description: 'Clear navigation, calmer copy, and supportive pathways for users, partners, and teams.',
+  },
+  {
+    icon: LineChart,
+    title: 'Momentum you can track',
+    description: 'Visible progress, practical next actions, and a stronger sense of what to do next.',
+  },
+];
+
 const appStoreKeywords = [
   'jobs',
   'career',
@@ -314,6 +333,59 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-5">
+            <div className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 shadow-lg backdrop-blur-sm">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-[1.5rem] border border-pink-200/80 dark:border-pink-900/50 bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-slate-800 p-2 shadow-sm">
+                    <BrandLogo
+                      alt="Tinashe logo"
+                      width={72}
+                      height={72}
+                      className="h-[72px] w-[72px] rounded-[1rem] object-cover"
+                      fetchPriority="high"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-pink-600 dark:text-pink-400">
+                      Brand Shell
+                    </p>
+                    <h2 className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">
+                      Tinashe &mdash; your next step, in your pocket.
+                    </h2>
+                    <p className="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                      A cleaner first impression, stronger trust cues, and the logo placed
+                      consistently where the product story starts.
+                    </p>
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 px-3 py-2 text-xs font-semibold text-white shrink-0">
+                  Refined UX
+                </div>
+              </div>
+              <div className="grid gap-3">
+                {trustSignals.map((signal) => (
+                  <div
+                    key={signal.title}
+                    className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/60 px-4 py-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-xl bg-white dark:bg-slate-900 p-2 text-pink-600 dark:text-pink-400 shadow-sm">
+                        <signal.icon className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                          {signal.title}
+                        </p>
+                        <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                          {signal.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 shadow-lg backdrop-blur-sm">
               <div className="mb-4 flex items-center justify-between">
                 <div>

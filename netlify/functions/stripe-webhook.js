@@ -3,8 +3,10 @@
  * Handles subscription events from Stripe
  */
 
+const { configureDatabaseUrl } = require('./database-url');
 const { PrismaClient } = require('@prisma/client');
 
+configureDatabaseUrl();
 const prisma = new PrismaClient();
 
 // Import stripe dynamically to handle missing dependency gracefully

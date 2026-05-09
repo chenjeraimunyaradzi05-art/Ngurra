@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
-import Image from '@/components/ui/OptimizedImage';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   Menu,
@@ -21,6 +20,7 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import BrandLogo from './BrandLogo';
 import SubscriptionBadge from './SubscriptionBadge';
 import { NotificationDropdown } from './NotificationDropdown';
 import { SearchBar, GlobalSearch } from './SearchBar';
@@ -105,13 +105,12 @@ export default function EnhancedHeader() {
             {/* Logo */}
             <div className="flex items-center gap-8">
               <Link href="/" className="flex items-center gap-2">
-                <Image
+                <BrandLogo
                   className="h-9 w-9 rounded-xl object-cover border border-pink-500/30 shadow-sm"
-                  src="/tinashe-logo.png"
                   alt="Tinashe"
                   width={36}
                   height={36}
-                  priority
+                  fetchPriority="high"
                 />
                 <span className="hidden sm:block font-bold text-xl bg-gradient-to-r from-[#FFD700] to-[#50C878] bg-clip-text text-transparent">
                   Tinashe

@@ -16,7 +16,7 @@ import { EventEmitter } from 'events';
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_SOCKET_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
-  'http://localhost:3333';
+  (process.env.NODE_ENV === 'production' ? 'https://api.tinashe.life' : 'http://localhost:3333');
 
 // Types
 export interface SocketMessage {

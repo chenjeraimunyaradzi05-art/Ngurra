@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Space_Grotesk } from 'next/font/google';
 import { Menu, X, Sun, Moon, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SubscriptionBadge from './SubscriptionBadge';
+import BrandLogo from './BrandLogo';
 import { useTheme } from './ThemeProvider';
 
 // eslint-disable-next-line no-unused-vars
@@ -87,6 +87,7 @@ export default function HeaderNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const { resolvedTheme, setTheme, mounted } = useTheme();
 
@@ -100,6 +101,17 @@ export default function HeaderNavigation() {
   };
 
   const navItems = isAuthenticated && user ? roleNavigation(user.userType) : publicNavigation;
+
+  const isActiveLink = (href: string) => {
+    const normalizedHref = href.split('#')[0] || '/';
+    if (href.startsWith('/#')) {
+      return pathname === '/';
+    }
+    if (normalizedHref === '/') {
+      return pathname === '/';
+    }
+    return pathname === normalizedHref || pathname?.startsWith(`${normalizedHref}/`);
+  };
 
   return (
     <header
@@ -116,13 +128,12 @@ export default function HeaderNavigation() {
             <Link href="/" className="flex items-center gap-3">
               <span className="sr-only">Tinashe</span>
               <span className="relative inline-flex h-11 w-11 overflow-hidden rounded-xl border border-pink-500/30 shadow-md shadow-pink-900/20">
-                <Image
-                  src="/tinashe-logo.png"
+                <BrandLogo
                   alt="Tinashe logo"
-                  fill
-                  className="object-cover"
-                  sizes="44px"
-                  priority
+                  width={44}
+                  height={44}
+                  className="h-full w-full object-cover"
+                  fetchPriority="high"
                 />
               </span>
               <span className="flex flex-col">
@@ -139,7 +150,12 @@ export default function HeaderNavigation() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-teal-700 dark:hover:text-teal-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 rounded-sm transition-colors duration-150"
+                  aria-current={isActiveLink(link.href) ? 'page' : undefined}
+                  className={`rounded-sm text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 ${
+                    isActiveLink(link.href)
+                      ? 'text-pink-700 dark:text-pink-300'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-teal-700 dark:hover:text-teal-300'
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -213,7 +229,13 @@ export default function HeaderNavigation() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-slate-900 hover:text-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-sm px-2 py-1 transition-colors duration-150 dark:text-slate-100 dark:hover:text-teal-300"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-current={isActiveLink(link.href) ? 'page' : undefined}
+                className={`rounded-sm px-2 py-1 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                  isActiveLink(link.href)
+                    ? 'text-pink-700 dark:text-pink-300'
+                    : 'text-slate-900 hover:text-teal-700 dark:text-slate-100 dark:hover:text-teal-300'
+                }`}
               >
                 {link.name}
               </Link>
@@ -228,6 +250,7 @@ export default function HeaderNavigation() {
             ) : (
               <Link
                 href="/signup"
+                onClick={() => setMobileMenuOpen(false)}
                 className="mt-4 w-full text-center rounded-md border border-transparent bg-slate-900 px-4 py-2 text-base font-medium text-white hover:bg-teal-800"
               >
                 Get Started

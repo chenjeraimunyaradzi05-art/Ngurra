@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { HeartHandshake, Lightbulb, Target, Users, TrendingUp, Scale } from 'lucide-react';
+import BrandLogo from '@/components/BrandLogo';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 
 export default function FoundersPage() {
@@ -131,13 +132,12 @@ export default function FoundersPage() {
 
             <div className="bg-gradient-to-br from-slate-900/60 to-slate-900/20 border border-slate-800 rounded-xl p-5 flex flex-col">
               <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl border border-pink-900/40 shadow-lg shadow-pink-900/20">
-                <OptimizedImage
-                  src="/tinashe-logo.png"
+                <BrandLogo
                   alt="Tinashe platform logo"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
+                  width={720}
+                  height={900}
+                  className="h-full w-full object-cover"
+                  fetchPriority="high"
                 />
               </div>
               <div className="mt-4">

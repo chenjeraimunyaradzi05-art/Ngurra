@@ -5,11 +5,15 @@
 
 const isBrowser = typeof window !== 'undefined';
 const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+const productionFallbackApiUrl = 'https://api.tinashe.life';
+const localFallbackApiUrl = 'http://localhost:3333';
+const serverFallbackApiUrl =
+  process.env.NODE_ENV === 'production' ? productionFallbackApiUrl : localFallbackApiUrl;
 
 // In the browser, ALWAYS use the /api proxy (Netlify redirect).
 // This avoids CORS issues and keeps auth cookies on the same origin.
 // On the server (SSR), use the full backend URL for direct access.
-export const API_BASE = isBrowser ? '/api' : (envApiUrl || 'https://api-production-11b4.up.railway.app');
+export const API_BASE = isBrowser ? '/api' : envApiUrl || serverFallbackApiUrl;
 
 export function withApiBase(path = '') {
   if (!path) return API_BASE;

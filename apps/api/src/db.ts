@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { configureDatabaseUrl, databaseUrlSourceLabel } from './lib/databaseEnv';
 
 /**
  * Shared Prisma client instance for the API.
@@ -8,14 +9,18 @@ import { PrismaClient } from '@prisma/client';
 let _prisma: PrismaClient | null = null;
 
 function createPrismaClient(): PrismaClient {
-  if (!process.env.DATABASE_URL) {
-    console.error('❌ FATAL: DATABASE_URL environment variable is not set!');
-    console.error('   Please set DATABASE_URL in Railway environment variables.');
-    console.error('   Example: postgresql://user:password@host:5432/database');
+  const databaseEnv = configureDatabaseUrl();
+
+  if (!databaseEnv.url) {
+    console.error('❌ FATAL: no database connection URL is set!');
+    console.error('   Set DATABASE_URL, or let Netlify Neon provide NETLIFY_DATABASE_URL.');
+    console.error('   Example: postgresql://user:password@host:5432/database?sslmode=require');
     // In production, throw to fail fast. In dev, we might still create a client.
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('DATABASE_URL is required in production');
+      throw new Error('DATABASE_URL or NETLIFY_DATABASE_URL is required in production');
     }
+  } else if (databaseEnv.source !== 'DATABASE_URL') {
+    console.log(`🔌 Using ${databaseUrlSourceLabel(databaseEnv)}`);
   }
   
   return new PrismaClient({

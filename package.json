@@ -73,6 +73,7 @@
     "send-test-webhook": "tools/send-test-webhook.js"
   },
   "dependencies": {
+    "@netlify/neon": "^0.1.2",
     "@sendgrid/mail": "^8.1.0",
     "aws-sdk": "^2.1693.0",
     "jsonwebtoken": "^9.0.0",

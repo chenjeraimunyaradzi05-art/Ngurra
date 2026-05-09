@@ -12,12 +12,28 @@
 const COOKIE_NAME = 'auth-session';
 const MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days (matches JWT expiry)
 
+function buildSessionCookie(value: string, maxAge: number): string {
+  const parts = [
+    `${COOKIE_NAME}=${value}`,
+    'path=/',
+    `max-age=${maxAge}`,
+    'SameSite=Strict',
+    'Priority=High',
+  ];
+
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    parts.push('Secure');
+  }
+
+  return parts.join('; ');
+}
+
 /**
  * Set the auth-session cookie after successful login/signup.
  */
 export function setAuthSessionCookie(): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${COOKIE_NAME}=1; path=/; max-age=${MAX_AGE_SECONDS}; SameSite=Lax; Secure`;
+  document.cookie = buildSessionCookie('1', MAX_AGE_SECONDS);
 }
 
 /**
@@ -25,5 +41,5 @@ export function setAuthSessionCookie(): void {
  */
 export function clearAuthSessionCookie(): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax; Secure`;
+  document.cookie = buildSessionCookie('', 0);
 }

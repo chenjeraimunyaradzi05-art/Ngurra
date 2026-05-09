@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import { configureDatabaseUrl } from '../lib/databaseEnv';
 
 /**
  * Environment schema with strict validation
@@ -102,6 +103,7 @@ let _config: EnvConfig | null = null;
  * @throws Error if validation fails in production
  */
 export function validateEnv(): EnvConfig | null {
+  configureDatabaseUrl();
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {

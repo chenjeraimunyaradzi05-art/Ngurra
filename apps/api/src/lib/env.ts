@@ -7,6 +7,8 @@
  * Fails fast with clear error messages if configuration is invalid.
  */
 
+import { configureDatabaseUrl } from './databaseEnv';
+
 const { z } = require('zod');
 
 // Define environment schema
@@ -97,6 +99,7 @@ const envSchema = z.object({
  * Call this at application startup before any other initialization
  */
 function validateEnv() {
+  configureDatabaseUrl();
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {

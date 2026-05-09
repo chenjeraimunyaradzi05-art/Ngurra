@@ -12,8 +12,8 @@
 [context.production.environment]
   NODE_ENV = "production"
   NEXT_PUBLIC_APP_URL = "https://tinashe-life.netlify.app"
-  NEXT_PUBLIC_API_URL = "https://api-production-11b4.up.railway.app"
-  NEXT_PUBLIC_SOCKET_URL = "https://api-production-11b4.up.railway.app"
+  NEXT_PUBLIC_API_URL = "https://api.tinashe.life"
+  NEXT_PUBLIC_SOCKET_URL = "https://api.tinashe.life"
   NEXTAUTH_URL = "https://tinashe-life.netlify.app"
 
 [context.deploy-preview.environment]
@@ -28,7 +28,11 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https://api-production-11b4.up.railway.app http://mainline.proxy.rlwy.net:45270 wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://meet.jit.si; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://tinashe-life.netlify.app https://tinashe.life https://api.tinashe.life wss://api.tinashe.life https://api.stripe.com https://meet.jit.si https://*.sentry.io https://*.livekit.cloud wss://*.livekit.cloud; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://meet.jit.si; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Cross-Origin-Resource-Policy = "same-site"
+    X-DNS-Prefetch-Control = "off"
+    X-Permitted-Cross-Domain-Policies = "none"
     Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
@@ -55,7 +59,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://api-production-11b4.up.railway.app/:splat"
+  to = "https://api.tinashe.life/:splat"
   status = 200
   force = true
 

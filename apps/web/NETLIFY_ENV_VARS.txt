@@ -27,12 +27,12 @@ DATABASE_URL=postgresql://user:password@host:5432/database?sslmode=require
 # API CONFIGURATION (REQUIRED)
 # -----------------------------------------------------------------------------
 # Production
-NEXT_PUBLIC_API_URL=https://api.gimbi.com.au
-NEXT_PUBLIC_SOCKET_URL=https://api.gimbi.com.au
+NEXT_PUBLIC_API_URL=https://api.tinashe.life
+NEXT_PUBLIC_SOCKET_URL=https://api.tinashe.life
 
 # Staging/Preview (use these for non-production contexts)
-# NEXT_PUBLIC_API_URL=https://api-staging.gimbi.com.au
-# NEXT_PUBLIC_SOCKET_URL=https://api-staging.gimbi.com.au
+# NEXT_PUBLIC_API_URL=https://staging-api.tinashe.life
+# NEXT_PUBLIC_SOCKET_URL=https://staging-api.tinashe.life
 
 # -----------------------------------------------------------------------------
 # STRIPE PAYMENTS (REQUIRED for payments)

@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Space_Grotesk } from 'next/font/google';
+import BrandLogo from './BrandLogo';
 import {
   ArrowRight,
   Bot,
@@ -34,12 +34,12 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-pink-500/30 shadow-md">
-                <Image
-                  src="/tinashe-logo.png"
+                <BrandLogo
                   alt="Tinashe"
-                  fill
-                  className="object-cover"
-                  sizes="48px"
+                  width={48}
+                  height={48}
+                  className="h-full w-full object-cover"
+                  fetchPriority="high"
                 />
               </div>
               <div>

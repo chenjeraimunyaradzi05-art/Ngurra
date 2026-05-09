@@ -45,6 +45,18 @@ const PUBLIC_PATHS = [
   '/',
 ];
 
+const NO_INDEX_PREFIXES = ['/signin', '/signup', '/forgot-password', '/reset-password'];
+
+function applyPrivateHeaders(response: NextResponse, noIndex = false) {
+  response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+  if (noIndex) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  }
+  return response;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -62,9 +74,15 @@ export function middleware(request: NextRequest) {
   const isProtected = PROTECTED_PREFIXES.some((prefix) =>
     pathname.startsWith(prefix)
   );
+  const shouldNoIndex =
+    isProtected || NO_INDEX_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
   if (!isProtected) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    if (shouldNoIndex) {
+      return applyPrivateHeaders(response, true);
+    }
+    return response;
   }
 
   // Read Zustand persisted auth state from cookie-like storage
@@ -76,10 +94,10 @@ export function middleware(request: NextRequest) {
     // Redirect to sign-in with a return URL
     const signInUrl = new URL('/signin', request.url);
     signInUrl.searchParams.set('returnTo', pathname);
-    return NextResponse.redirect(signInUrl);
+    return applyPrivateHeaders(NextResponse.redirect(signInUrl), true);
   }
 
-  return NextResponse.next();
+  return applyPrivateHeaders(NextResponse.next(), true);
 }
 
 export const config = {

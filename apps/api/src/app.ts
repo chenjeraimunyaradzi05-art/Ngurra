@@ -291,7 +291,7 @@ export function createApp() {
   }
 
   // Security Middleware that requires parsed body
-  // app.use(hpp()); // Prevent HTTP Parameter Pollution - Disabled due to getter-only query property in some environments
+  app.use(hpp({ whitelist: ['sort', 'filter', 'fields', 'include', 'exclude'] })); // Prevent HTTP Parameter Pollution
   app.use(securitySanitize); // Sanitize input (XSS prevention)
 
   const mountRoutes = (base: any) => {

@@ -261,26 +261,33 @@ export default function HomePage() {
     <div className="space-y-20 pb-10">
 
       {/* ── Hero ──────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/20 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 px-6 py-10 shadow-xl sm:px-8 lg:px-12 lg:py-14 transition-colors duration-300">
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.14),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.10),transparent_45%)] lg:block pointer-events-none" />
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-pink-500/5 dark:bg-pink-500/8 blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden rounded-[2rem] border border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/20 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 px-6 py-10 shadow-2xl sm:px-8 lg:px-12 lg:py-14 transition-colors duration-300 mesh-bg">
+        {/* Animated gradient orbs */}
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-pink-500/20 via-purple-500/15 to-transparent blur-3xl pointer-events-none animate-orb-drift" />
+        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-gradient-to-tr from-indigo-500/15 via-cyan-500/10 to-transparent blur-3xl pointer-events-none animate-float-slow" />
+        <div className="absolute top-1/2 left-1/3 h-64 w-64 rounded-full bg-purple-500/8 blur-2xl pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.12),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.08),transparent_45%)] lg:block pointer-events-none" />
+        {/* Top gradient line */}
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-pink-500/40 to-transparent pointer-events-none" />
         <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-pink-200 dark:border-pink-900/60 bg-white/90 dark:bg-slate-900/80 px-4 py-2 text-sm font-semibold text-pink-700 dark:text-pink-300 shadow-sm backdrop-blur-sm">
-              <Sparkles className="h-4 w-4" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-pink-300/40 dark:border-pink-700/40 bg-white/60 dark:bg-slate-900/60 px-4 py-2 text-sm font-semibold text-pink-700 dark:text-pink-300 shadow-sm backdrop-blur-md animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <Sparkles className="h-4 w-4 animate-pulse" />
               Opportunity, connected. Progress, supported.
             </div>
 
             <div className="space-y-5">
-              <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
-                Tinashe helps you take the next step &mdash; and the step after that.
+              <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <span className="text-slate-950 dark:text-white">Tinashe helps you take the </span>
+                <span className="gradient-text">next step</span>
+                <span className="text-slate-950 dark:text-white"> &mdash; and the step after that.</span>
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-300 sm:text-xl">
                 Jobs, learning, mentors, community, business tools, financial wellbeing, and
                 real-world opportunities &mdash; in one guided platform built for long-term
                 progress.
               </p>
-              <p className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-pink-500/20">
+              <p className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-pink-500/30 animate-glow-pulse">
                 <BadgeCheck className="h-4 w-4" />
                 Personalised pathways. Practical tools. Real momentum.
               </p>
@@ -293,8 +300,8 @@ export default function HomePage() {
                   href={cta.href}
                   className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 ${
                     cta.primary
-                      ? 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-lg shadow-pink-500/25'
-                      : 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:border-pink-400 dark:hover:border-pink-600'
+                      ? 'btn-futuristic shadow-lg'
+                      : 'border border-slate-300/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/70 text-slate-900 dark:text-white hover:border-pink-400/60 dark:hover:border-pink-600/60 backdrop-blur-sm'
                   }`}
                 >
                   {cta.label}
@@ -308,7 +315,7 @@ export default function HomePage() {
                 <Link
                   key={cta.label}
                   href={cta.href}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white/85 dark:bg-slate-900/70 px-4 py-4 text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-all hover:border-pink-300 dark:hover:border-pink-700 hover:shadow-md backdrop-blur-sm"
+                  className="glass-card px-4 py-4 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:border-pink-300/40 dark:hover:border-pink-700/40 backdrop-blur-sm"
                 >
                   {cta.label}
                 </Link>
@@ -324,7 +331,7 @@ export default function HomePage() {
                 <Link
                   key={action.label}
                   href={action.href}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-pink-400 dark:hover:border-pink-700 transition-colors"
+                  className="chip-glass text-slate-700 dark:text-slate-300 hover:border-pink-400/40 dark:hover:border-pink-700/40"
                 >
                   {action.label}
                 </Link>
@@ -333,7 +340,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-5">
-            <div className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 shadow-lg backdrop-blur-sm">
+            <div className="card-futuristic p-5 shadow-lg">
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="rounded-[1.5rem] border border-pink-200/80 dark:border-pink-900/50 bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-slate-800 p-2 shadow-sm">
@@ -386,7 +393,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 shadow-lg backdrop-blur-sm">
+            <div className="glass-card p-5 shadow-lg">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-pink-600 dark:text-pink-400">
@@ -424,7 +431,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] bg-gradient-to-br from-slate-950 to-slate-900 p-5 text-white shadow-xl ring-1 ring-white/5">
+            <div className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950 p-5 text-white shadow-xl ring-1 ring-purple-500/15">
+              <div className="absolute inset-0 mesh-bg-dark opacity-50 pointer-events-none" />
               <div className="flex items-center gap-2 text-sm font-semibold text-emerald-300">
                 <LineChart className="h-4 w-4" />
                 In-App Home
@@ -448,7 +456,7 @@ export default function HomePage() {
                 {quickActions.map((action) => (
                   <div
                     key={action}
-                    className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-3 text-sm font-medium text-slate-100 transition-colors cursor-default"
+                    className="glass chip-glass rounded-xl px-3 py-3 text-sm font-medium text-slate-100 transition-colors cursor-default"
                   >
                     {action}
                   </div>
@@ -474,12 +482,13 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <div className="relative overflow-hidden rounded-[2rem] border border-purple-200/30 dark:border-purple-800/30 bg-gradient-to-br from-purple-50/40 to-pink-50/20 dark:from-slate-900/80 dark:to-slate-950 p-6 shadow-sm">
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
           <div className="flex flex-wrap gap-3">
             {pathwayStages.map((stage, index) => (
               <div
                 key={stage}
-                className="inline-flex items-center gap-3 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+                className="chip-glass inline-flex items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
               >
                 <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-xs text-white shrink-0">
                   {index + 1}
@@ -492,8 +501,8 @@ export default function HomePage() {
 
         <div className="grid gap-5 lg:grid-cols-4">
           {pathwayPillars.map((pillar) => (
-            <div key={pillar.title} className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm hover:shadow-md dark:hover:shadow-slate-900/50 transition-shadow">
-              <div className="inline-flex rounded-2xl bg-teal-50 dark:bg-teal-950/40 p-3 text-teal-700 dark:text-teal-400">
+            <div key={pillar.title} className="card-futuristic p-6">
+              <div className="inline-flex rounded-2xl bg-gradient-to-br from-teal-500/20 to-cyan-500/10 p-3 text-teal-600 dark:text-teal-400 animate-glow-teal">
                 <pillar.icon className="h-6 w-6" />
               </div>
               <h3 className="mt-5 text-xl font-bold text-slate-950 dark:text-white">{pillar.title}</h3>
@@ -522,9 +531,9 @@ export default function HomePage() {
           {productSuite.map((product) => (
             <div
               key={product.title}
-              className="rounded-[1.75rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm hover:shadow-md dark:hover:shadow-slate-900/50 transition-shadow"
+              className="card-futuristic p-6"
             >
-              <div className="inline-flex rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-700 dark:to-slate-800 p-3 text-white shadow-md">
+              <div className="inline-flex rounded-2xl bg-gradient-to-br from-pink-500/80 to-purple-600/80 p-3 text-white shadow-md glow-purple">
                 <product.icon className="h-6 w-6" />
               </div>
               <h3 className="mt-5 text-2xl font-bold text-slate-950 dark:text-white">{product.title}</h3>
@@ -568,7 +577,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Partners ──────────────────────────────────────────────────────────── */}
-      <section id="partners" className="rounded-[2rem] border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-6 py-10 text-white shadow-xl sm:px-8 ring-1 ring-white/5">
+      <section id="partners" className="relative overflow-hidden rounded-[2rem] border border-purple-800/20 bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950 px-6 py-10 text-white shadow-xl sm:px-8 ring-1 ring-purple-500/10 mesh-bg-dark">
+        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-pink-500/10 blur-3xl pointer-events-none animate-orb-drift" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent pointer-events-none" />
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-pink-400">
@@ -589,7 +600,7 @@ export default function HomePage() {
               <Link
                 key={action.label}
                 href={action.href}
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+                className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/30 px-4 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 backdrop-blur-sm"
               >
                 <span>{action.label}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -816,7 +827,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Bottom CTA ────────────────────────────────────────────────────────── */}
-      <section className="rounded-[2rem] border border-pink-900/30 bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950 px-6 py-10 text-white shadow-xl sm:px-8 ring-1 ring-pink-500/10">
+      <section className="relative overflow-hidden rounded-[2rem] border border-pink-900/30 bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-950 px-6 py-10 text-white shadow-xl sm:px-8 ring-1 ring-pink-500/15 aurora-bg">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-pink-500/50 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent pointer-events-none" />
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-pink-400">
@@ -835,7 +848,7 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-500/25 transition-all hover:-translate-y-0.5"
+              className="btn-futuristic shadow-lg"
             >
               Join Tinashe
               <ArrowRight className="h-4 w-4" />

@@ -1,13 +1,18 @@
 [build]
   base = "."
   package = "apps/web"
-  command = "npm install --legacy-peer-deps && npm --prefix apps/api install --legacy-peer-deps && npm --prefix apps/web install --legacy-peer-deps && npm --prefix apps/api run db:generate && npm --prefix apps/web run build"
+  command = "echo '🔧 Installing dependencies...' && npm install --legacy-peer-deps --prefer-offline --no-audit && npm --prefix apps/api install --legacy-peer-deps --prefer-offline --no-audit && npm --prefix apps/web install --legacy-peer-deps --prefer-offline --no-audit && echo '🗄️ Generating Prisma client...' && npm --prefix apps/api run db:generate && echo '🏗️ Building web app...' && npm --prefix apps/web run build"
   publish = "apps/web/.next"
 
 [build.environment]
   NODE_VERSION = "20"
   NEXT_DISABLE_NETLIFY_EDGE = "true"
   NPM_FLAGS = "--legacy-peer-deps"
+  # Neon Database - Auto-injected by Netlify Neon Integration
+  # Fallback order: NETLIFY_DATABASE_URL > NEON_DATABASE_URL > DATABASE_URL
+  DATABASE_URL = ""
+  NEON_DATABASE_URL = ""
+  NETLIFY_DATABASE_URL = ""
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Neon PostgreSQL Integration
@@ -43,7 +48,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://meet.jit.si; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://r2cdn.perplexity.ai; img-src 'self' data: blob: https:; connect-src 'self' https://tinashe-life.netlify.app https://tinashe.life https://api.tinashe.life wss://api.tinashe.life https://api.stripe.com https://meet.jit.si https://*.sentry.io https://*.livekit.cloud wss://*.livekit.cloud https://*.neon.tech wss://*.neon.tech; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://meet.jit.si; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://meet.jit.si; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://r2cdn.perplexity.ai; img-src 'self' data: blob: https:; connect-src 'self' https://tinashe-life.netlify.app https://tinashe.life https://api.tinashe.life wss://api.tinashe.life https://api.stripe.com https://meet.jit.si https://*.sentry.io https://*.livekit.cloud wss://*.livekit.cloud https://*.neon.tech wss://*.neon.tech https://neon.tech; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://meet.jit.si; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests; block-all-mixed-content"
     Cross-Origin-Opener-Policy = "same-origin-allow-popups"
     Cross-Origin-Embedder-Policy = "unsafe-none"
     Cross-Origin-Resource-Policy = "same-site"

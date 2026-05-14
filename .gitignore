@@ -76,3 +76,12 @@ source code/
 
 # Netlify build artifacts
 .netlify/
+netlify/functions/node_modules/
+
+# Audit / scan outputs
+audit_output.txt
+audit-output.txt
+security-audit-*.json
+
+# Local scratch files
+app-improved.js

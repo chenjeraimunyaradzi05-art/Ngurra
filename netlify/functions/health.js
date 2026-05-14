@@ -37,7 +37,7 @@ exports.handler = async (event, context) => {
   
   // Basic service info
   const nodeEnv = process.env.NODE_ENV || 'unknown';
-  const region = process.env.AWS_REGION || context.awsRequestId ? 'aws-lambda' : 'local';
+  const region = process.env.AWS_REGION || (context.awsRequestId ? 'aws-lambda' : 'local');
   
   // Check API endpoint if configured
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;

@@ -8,11 +8,16 @@
   NODE_VERSION = "20"
   NEXT_DISABLE_NETLIFY_EDGE = "true"
   NPM_FLAGS = "--legacy-peer-deps"
-  # Neon Database - Auto-injected by Netlify Neon Integration
-  # Fallback order: NETLIFY_DATABASE_URL > NEON_DATABASE_URL > DATABASE_URL
-  DATABASE_URL = ""
-  NEON_DATABASE_URL = ""
-  NETLIFY_DATABASE_URL = ""
+  # Prisma needs a DATABASE_URL value at build time for `prisma generate`,
+  # but `generate` only reads the schema, not the live DB — so a placeholder is fine.
+  # The REAL connection string is injected at runtime by:
+  #   1. Netlify Neon Integration -> NETLIFY_DATABASE_URL  (preferred)
+  #   2. Manual env var          -> NEON_DATABASE_URL
+  #   3. Manual env var          -> DATABASE_URL
+  # databaseEnv.ts resolves these in that order; first non-empty wins.
+  # DO NOT set DATABASE_URL/NETLIFY_DATABASE_URL/NEON_DATABASE_URL here —
+  # doing so would override the values the Neon integration injects.
+  PRISMA_GENERATE_DATAPROXY = "false"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Neon PostgreSQL Integration

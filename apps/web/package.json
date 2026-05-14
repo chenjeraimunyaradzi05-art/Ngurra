@@ -18,7 +18,7 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "audit": "npm audit --audit-level=high",
-    "audit:fix": "npm audit fix",
+    "audit:fix": "npm audit fix"
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.21",
